@@ -6,12 +6,8 @@ const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
 const url = require('url')
-const { ipcMain } = electron;
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg);
-  event.sender.send('asynchronous-reply', 'pong');
-})
+const api = require('./electron/api');
 
 
 // Keep a global reference of the window object, if you don't, the window will
