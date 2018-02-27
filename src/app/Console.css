@@ -1,0 +1,24 @@
+.Console {
+  color: #fff;
+}
+
+.run {
+  padding: 10px;
+  display: flex;
+}
+
+.button {
+  margin-right: 10px;
+}
+
+.stdoutContainer {
+  overflow: scroll;
+  height: 200px;
+}
+
+.stdout {
+  color: white;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+  height: 100%;
+}
