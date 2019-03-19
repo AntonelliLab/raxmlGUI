@@ -4,16 +4,3 @@
   height: 100vh;
   color: white;
 }
-
-.input {
-  flex-grow: 1;
-  padding: 10px;
-}
-
-.files {
-  margin-left: 10px;
-}
-
-.console {
-  /* border-top: 1px solid #aaa; */
-}

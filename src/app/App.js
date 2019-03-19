@@ -1,62 +1,82 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import Button from 'material-ui/Button';
-// import withTheme from './withTheme';
-import ipcRenderer from '../app/ipcRenderer';
-import Console from './Console';
-import cn from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import IconAdd from '@material-ui/icons/Add';
+// import Dropzone from 'react-dropzone'
+import Input from './Input';
+import Raxml from './Raxml';
+// import randomString from 'crypto-random-string';
 import './App.css';
+import store from './store';
 
 const styles = theme => ({
   input: {
-    borderBottom: `1px solid ${theme.palette.primary.main}`,
+    // borderBottom: `1px solid ${theme.palette.primary.main}`,
+  },
+  AppBar: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  Toolbar: {
+    minHeight: 0,
+  },
+  tab: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 4px',
+  },
+  tabIcon: {
+    marginRight: theme.spacing.unit,
   },
 });
 
 class App extends React.Component {
-  state = {
-    filename: '',
-  };
 
-  componentDidMount() {
-    ipcRenderer.on('open-file', (event, arg) => {
-      console.log('Opened file:', arg);
-    });
-    ipcRenderer.on('filename', (event, arg) => {
-      console.log('filename:', arg);
-      this.setState({
-        filename: arg,
-      });
-    });
-  }
-
-  onClickOpenFile = () => {
-    ipcRenderer.send('open-file');
-  }
-
-  onClickRun = () => {
-    ipcRenderer.send('run');
+  handleTabChange = (event, value) => {
+    store.setActive(value);
   }
 
   render() {
     const { classes } = this.props;
 
-    return (
-      <div className="App">
-        <div className={cn("input", classes.input)}>
-          <Button raised color="primary" onClick={this.onClickOpenFile}>
-            Open file
-          </Button>
-          <div className="files">
-            { this.state.filename }
-          </div>
-        </div>
+    const TabItems = store.models.map(model => (
+      // <Tab key={model.id} label={`Model ${model.id}`} />
+      <Tab key={model.id} icon={
+        <span className={classes.tab}>
+          <CircularProgress color="inherit" size={20} className={classes.tabIcon}
+            variant={model.running ? "indeterminate" : "static"} value={100} />
+          {`Model ${model.id}`}
+        </span>
+      } />
+    ));
 
-        <div className="console">
-          <Console />
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <div className="App">
+          <Input input={store.input} />
+
+          <AppBar position="static" className={classes.AppBar}>
+            <Tabs value={store.activeIndex} onChange={this.handleTabChange}>
+              { TabItems }
+            </Tabs>
+            <Toolbar className={classes.Toolbar}>
+              <IconButton onClick={store.addModel}>
+                <IconAdd />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <Raxml model={store.activeModel} />
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -65,5 +85,4 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-// export default withTheme(withStyles(styles)(App));
-export default withStyles(styles)(App);
+export default withStyles(styles)(observer(App));
