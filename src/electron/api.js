@@ -30,7 +30,6 @@ ipcMain.on('open-file', (event, arg) => {
         event.sender.send('error', { message: `Error trying to open file ${filename}: ${err.message}`});
         return;
       }
-      // event.sender.send('filename', filename);
       event.sender.send('file', {
         filename,
         size: stats.size,
@@ -85,7 +84,6 @@ function cancelProcess(id) {
     state.processes[id].kill();
     console.log(`Killed RAxML proces ${id}`);
     delete state.processes[id];
-    // event.sender.send('raxml-close', { id });
   }
 }
 
