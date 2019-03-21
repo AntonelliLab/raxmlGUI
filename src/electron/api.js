@@ -2,12 +2,11 @@ const electron = require('electron');
 const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs');
+const os = require('os');
 
 const { ipcMain, dialog } = electron;
 
 const state = {
-  raxmlProcess: null,
-  files: null,
   processes: {},
 };
 
@@ -18,7 +17,10 @@ ipcMain.on('asynchronous-message', (event, arg) => {
 
 ipcMain.on('open-file', (event, arg) => {
   state.files = dialog.showOpenDialog({
-    properties: ['openFile', 'multiSelections']
+    properties: [
+      'openFile',
+      'multiSelections',
+    ]
   });
   console.log('files:', state.files);
   if (state.files) {
@@ -63,6 +65,7 @@ ipcMain.on('run', (event, arg) => {
 
   proc.on('close', code => {
     event.sender.send('raxml-close', { id, code });
+    delete state.processes[id];
   });
 });
 
@@ -88,16 +91,15 @@ function cancelProcess(id) {
 
 function runRaxml(args) {
   const binaryName = `raxmlHPC-PTHREADS-SSE3-Mac`;
-  const binaryPath = path.resolve('raxml', 'binaries', binaryName);
-  console.log('binaryPath:', binaryPath, '__dirname:', __dirname);
-  // const ext = path.extname(inputPath);
-  // const name = path.basename(inputPath, ext);
-  // const outPath = path.dirname(inputPath);
-  // const args = `-T 2 -f a -x 572 -m GTRGAMMA -p 820 -N 100 -s "${inputPath}" -n ${name}.tre  -O -w ${outPath}`;
-  
-  // console.log(`ext: '${ext}, name: '${name}', outPath: '${outPath}', -> args: ${args}`);
+  const rootDir = electron.app.isPackaged ? electron.app.getAppPath() : __dirname;
+  const binaryDir = path.resolve(rootDir, '..', '..', 'bin', 'raxml');
+  const binaryPath = path.resolve(binaryDir, binaryName);
+  console.log('binaryPath:', binaryPath);
 
-  // const proc = childProcess.spawn(binaryPath, process.argv.slice(2), { stdio: 'inherit' });
-  const proc = childProcess.spawn(binaryPath, args, { stdio: 'pipe' });
+  const proc = childProcess.spawn(binaryName, args, {
+    stdio: 'pipe',
+    cwd: os.homedir(),
+    env: { PATH: `${process.env.path}:${binaryDir}` },
+  });
   return proc;
 }

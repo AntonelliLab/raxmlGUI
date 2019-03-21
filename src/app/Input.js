@@ -34,12 +34,17 @@ const styles = theme => ({
   },
   path: {
     cursor: 'pointer',
+    color: theme.palette.secondary.main,
+    marginLeft: 4,
   },
   button: {
     margin: theme.spacing.unit,
   },
-  leftIcon: {
-    marginRight: theme.spacing.unit,
+  changeOutDir: {
+    marginTop: 4,
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.unit,
   },
   iconSmall: {
     fontSize: 20,
@@ -58,8 +63,9 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
         Input
         <div className={classes.fileInfo}>
           <div>
+            Path: 
             <span className={classes.path} onClick={input.openInputFile}>
-              Path: { input.filename }
+              { input.filename }
             </span>
           </div>
           <div>
@@ -74,14 +80,15 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
         Output
         <div className={classes.fileInfo}>
           <div>
+            Path: 
             <span className={classes.path} onClick={input.openOutDir}>
-              Path: { input.outDir }
+              { input.outDir }
             </span>
-            <Button size="small" onClick={input.selectOutDir}>
-              <FolderIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
-              Change
-            </Button>
           </div>
+          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={input.selectOutDir}>
+            Change
+            <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
+          </Button>
         </div>
       </div>
     </div>

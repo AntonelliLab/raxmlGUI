@@ -40,9 +40,13 @@ class Input {
   }
 
   constructor() {
+    this.listen();
+  }
+
+  listen = () => {
     ipcRenderer.on('file', this.onFile);
     ipcRenderer.on('outDir', this.onOutDir);
-  }  
+  }
 
   selectFile = () => {
     ipcRenderer.send('open-file');
