@@ -1,6 +1,6 @@
-const electron = require('electron')
-const path = require('path')
-const url = require('url')
+const electron = require('electron');
+const path = require('path');
+const url = require('url');
 const isDev = require('electron-is-dev');
 
 require("@babel/register");
