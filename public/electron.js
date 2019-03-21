@@ -3,6 +3,7 @@ const path = require('path')
 const url = require('url')
 const isDev = require('electron-is-dev');
 
+require("@babel/register");
 require('../src/electron/api');
 
 // Module to control application life.
