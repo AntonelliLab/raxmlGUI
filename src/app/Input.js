@@ -9,23 +9,16 @@ import classNames from 'classnames';
 
 const styles = theme => ({
   Input: {
-    // flexGrow: 1,
     minHeight: '300px',
     padding: '10px',
   },
   files: {
     marginTop: '10px',
-    // border: '1px solid #999',
-    // padding: '10px',
   },
   input: {
-    // borderLeft: `3px solid ${theme.palette.primary.main}`,
-    // paddingLeft: '5px',
   },
   output: {
     marginTop: '20px',
-    // borderLeft: `3px solid ${theme.palette.primary.main}`,
-    // paddingLeft: '5px',
   },
   fileInfo: {
     fontSize: '0.75em',
