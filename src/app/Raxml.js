@@ -2,8 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-// import LinearProgress from '@material-ui/core/LinearProgress';
-// import Fade from '@material-ui/core/Fade';
 import { withStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -23,7 +21,6 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   textField: {
-    // marginTop: -16,
   },
   run: {
     marginTop: '20px',
@@ -39,11 +36,6 @@ class Console extends React.Component {
   onMountStdoutContainer = (el) => {
     this.stdoutContainer = el;
   }
-
-  // shouldComponentUpdate() {
-  //   this.keepToBottom = this.isAtBottom();
-  //   return true;
-  // }
 
   componentDidUpdate() {
     if (this.keepToBottom) {
@@ -63,7 +55,6 @@ class Console extends React.Component {
     const diff = scrollHeight - clientHeight;
     this.stdoutContainer.scrollTop = diff;
   }
-
 
   render() {
     const { model } = this.props;
@@ -128,7 +119,6 @@ class Raxml extends React.Component {
             <TextField
               className={classes.textField}
               onChange={(e) => model.setOutName(e.target.value)}
-              // label="Model name"
               id="outName"
               value={model.outName}
               placeholder={model.outNamePlaceholder}
