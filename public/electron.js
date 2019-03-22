@@ -38,6 +38,10 @@ let mainWindow;
  * Add event listeners...
  */
 function initialize() {
+  // Make this a single instance app
+  const shouldQuit = makeSingleInstance();
+  if (shouldQuit) return app.quit();
+
   function createMainWindow () {
     // Window options for the main window
     const mainWindowOptions = {
