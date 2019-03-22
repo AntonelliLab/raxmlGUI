@@ -250,6 +250,9 @@ class Alignments {
   removeAlignment = (alignment) => {
     delete this.alignments[alignment.path];
   }
+
+  removeAllAlignments = () => {
+    this.alignments = {};
   }
 }
 

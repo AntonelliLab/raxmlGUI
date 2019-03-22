@@ -184,6 +184,9 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       <Button variant="contained" color="primary" onClick={alignments.loadAlignmentFiles}>
         Open files
       </Button>
+      <Button variant="contained" color="primary" onClick={alignments.removeAllAlignments}>
+        Clear all
+      </Button>
       {/* { FileInfo } */}
       <ul>
         {renderAlignments()}
