@@ -158,7 +158,6 @@ class Alignments {
     // Listen to alignments being added
     ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
       this.addAlignments(data);
-      this.processAlignments(data);
     });
 
     // Listener taken from processAlignments()
@@ -236,6 +235,8 @@ class Alignments {
 
   addAlignments = (alignments) => {
     alignments.map(alignment => this.addAlignment(alignment));
+    // Send alignments to main process for processing
+    ipcRenderer.send(ALIGNMENTS_ADDED_IPC, alignments);
   }
 
   addAlignment = (alignment) => {
@@ -245,13 +246,6 @@ class Alignments {
       [alignment.path]: alignment
     };
   }
-
-  processAlignments = alignments => {
-    console.log("processAlignments", alignments);
-    // alignments is an array of information
-    // Send alignments to main process
-    ipcRenderer.send(ALIGNMENTS_ADDED_IPC, alignments);
-  };
 
   deleteAlignment = (alignment) => {
     _.omit(this.alignments, alignment.path);
