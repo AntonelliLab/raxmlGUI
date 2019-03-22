@@ -1,8 +1,8 @@
-const electron = require('electron');
-const path = require('path');
-const childProcess = require('child_process');
-const fs = require('fs');
-const os = require('os');
+import electron from 'electron';
+import path from 'path';
+import childProcess from 'child_process';
+import fs from 'fs';
+import os from 'os';
 
 const { ipcMain, dialog } = electron;
 
