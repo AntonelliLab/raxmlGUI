@@ -247,8 +247,9 @@ class Alignments {
     };
   }
 
-  deleteAlignment = (alignment) => {
-    _.omit(this.alignments, alignment.path);
+  removeAlignment = (alignment) => {
+    delete this.alignments[alignment.path];
+  }
   }
 }
 

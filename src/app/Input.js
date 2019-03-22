@@ -125,7 +125,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
             className="button"
             variant="contained"
             color="primary"
-            onClick={() => console.log(alignment)}
+            onClick={() => alignments.removeAlignment(alignment)}
           >
             Clear
           </Button>
