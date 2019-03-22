@@ -47,12 +47,12 @@ class App extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const TabItems = store.models.map(model => (
-      <Tab key={model.id} icon={
+    const TabItems = store.runs.map(run => (
+      <Tab key={run.id} icon={
         <span className={classes.tab}>
           <CircularProgress color="inherit" size={20} className={classes.tabIcon}
-            variant={model.running ? "indeterminate" : "static"} value={100} />
-          {`Model ${model.id}`}
+            variant={run.running ? "indeterminate" : "static"} value={100} />
+          {`Run ${run.id}`}
         </span>
       } />
     ));
@@ -68,12 +68,12 @@ class App extends React.Component {
               { TabItems }
             </Tabs>
             <Toolbar className={classes.Toolbar}>
-              <IconButton onClick={store.addModel}>
+              <IconButton onClick={store.addRun}>
                 <IconAdd />
               </IconButton>
             </Toolbar>
           </AppBar>
-          <Raxml model={store.activeModel} />
+          <Raxml run={store.activeRun} />
         </div>
       </React.Fragment>
     );

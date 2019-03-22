@@ -40,7 +40,7 @@ import {
   CALCULATION_CANCELED_IPC
 } from "../constants/ipc";
 
-export const modelTypeNames = [
+export const runTypeNames = [
   'Fast tree search',
   'ML search',
   'ML + rapid bootstrap',
@@ -195,7 +195,7 @@ decorate(Alignments, {
   deleteAlignment: action
 });
 
-class Model {
+class Run {
   constructor(parent, id) {
     this.parent = parent;
     this.id = id;
@@ -217,7 +217,7 @@ class Model {
 
   //@computed
   get typeName() {
-    return modelTypeNames[this.type];
+    return runTypeNames[this.type];
   }
 
   get disabled() {
@@ -289,7 +289,7 @@ class Model {
 
   delete = () => {
     this.cancel();
-    this.parent.deleteModel(this);
+    this.parent.deleteRun(this);
   }
 
   dispose = () => {
@@ -306,7 +306,7 @@ class Model {
     ipcRenderer.on('raxml-output', this.onStdout);
     ipcRenderer.on('raxml-close', (event, data) => {
       const { id, code } = data;
-      console.log(`RAxML process for model ${id} closed with code ${code}`);
+      console.log(`RAxML process for run ${id} closed with code ${code}`);
       if (id === this.id) {
         runInAction("raxml-close", () => {
           this.running = false;
@@ -331,7 +331,7 @@ class Model {
   }
 }
 
-decorate(Model, {
+decorate(Run, {
   type: observable,
   raxmlBinary: observable,
   running: observable,
@@ -350,45 +350,45 @@ decorate(Model, {
   delete: action,
 })
 
-class ModelList {
-  models = [];
+class RunList {
+  runs = [];
   activeIndex = 0;
   // TODO: replace with alignment field
   input = new Alignment({ filename: '' });
   alignments = new Alignments();
 
   constructor() {
-    this.addModel();
+    this.addRun();
 
     ipcRenderer.on('filename', (event, filename) => {
       this.reset();
     });
   }
 
-  get activeModel() {
-    return this.models[this.activeIndex];
+  get activeRun() {
+    return this.runs[this.activeIndex];
   }
 
   reset = () => {
-    console.log('TODO: Reset models on new file...');
+    console.log('TODO: Reset runs on new file...');
   }
 
-  addModel = () => {
-    console.log('addModel...');
+  addRun = () => {
+    console.log('addRun...');
     let maxId = 0;
-    this.models.forEach(model => maxId = Math.max(model.id, maxId));
-    this.models.push(new Model(this, maxId + 1));
-    this.activeIndex = this.models.length - 1;
+    this.runs.forEach(run => maxId = Math.max(run.id, maxId));
+    this.runs.push(new Run(this, maxId + 1));
+    this.activeIndex = this.runs.length - 1;
   }
   
-  deleteModel = (model) => {
-    const modelIndex = this.models.findIndex((m => m.id === model.id));
-    this.models.splice(modelIndex, 1);
-    // model.dispose();
-    if (this.models.length === 0) {
-      this.models.push(new Model(this, 1));
+  deleteRun = (run) => {
+    const runIndex = this.runs.findIndex((m => m.id === run.id));
+    this.runs.splice(runIndex, 1);
+    // run.dispose();
+    if (this.runs.length === 0) {
+      this.runs.push(new Run(this, 1));
     }
-    this.activeIndex = Math.min(this.models.length - 1, this.activeIndex);
+    this.activeIndex = Math.min(this.runs.length - 1, this.activeIndex);
   }
 
   setActive = (index) => {
@@ -396,22 +396,22 @@ class ModelList {
   }
 
   deleteActive = () => {
-    this.deleteModel(this.activeModel);
+    this.deleteRun(this.activeRun);
   }
 }
 
-decorate(ModelList, {
-  models: observable,
+decorate(RunList, {
+  runs: observable,
   activeIndex: observable,
   input: observable,
-  activeModel: computed,
-  addModel: action,
-  deleteModel: action,
+  activeRun: computed,
+  addRun: action,
+  deleteRun: action,
   setActive: action,
   deleteActive: action,
   testStdout: action,
 })
 
-const store = new ModelList();
+const store = new RunList();
 
 export default store;

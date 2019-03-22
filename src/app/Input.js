@@ -15,7 +15,7 @@ const styles = theme => ({
   files: {
     marginTop: '10px',
   },
-  input: {
+  alignments: {
   },
   output: {
     marginTop: '20px',
@@ -48,21 +48,21 @@ const styles = theme => ({
 
 });
 
-const Input = withStyles(styles)(observer(({ classes, input }) => {
+const Input = withStyles(styles)(observer(({ classes, alignments }) => {
 
-  const FileInfo = input.ok ? (
+  const FileInfo = alignments.ok ? (
     <div className={classes.files}>
-      <div className={classes.input}>
+      <div className={classes.alignments}>
         Input
         <div className={classes.fileInfo}>
           <div>
             Path: 
-            <span className={classes.path} onClick={input.openInputFile}>
-              { input.filename }
+            <span className={classes.path} onClick={alignments.openInputFile}>
+              { alignments.filename }
             </span>
           </div>
           <div>
-            Size: { format(',')(input.size) } bytes
+            Size: { format(',')(alignments.size) } bytes
           </div>
           <div>
             Type: Not detected yet
@@ -74,11 +74,11 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
         <div className={classes.fileInfo}>
           <div>
             Path: 
-            <span className={classes.path} onClick={input.openOutDir}>
-              { input.outDir }
+            <span className={classes.path} onClick={alignments.openOutDir}>
+              { alignments.outDir }
             </span>
           </div>
-          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={input.selectOutDir}>
+          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
             Change
             <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
           </Button>
@@ -89,8 +89,8 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
 
   return (
     <div className={classes.Input}>
-      <Button variant="contained" color="primary" onClick={input.loadAlignmentFiles}>
-        Open file
+      <Button variant="contained" color="primary" onClick={alignments.loadAlignmentFiles}>
+        Open files
       </Button>
       { FileInfo }
     </div>
@@ -100,7 +100,7 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
 
 Input.propTypes = {
   classes: PropTypes.object.isRequired,
-  input: PropTypes.object.isRequired,
+  alignments: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(observer(Input));

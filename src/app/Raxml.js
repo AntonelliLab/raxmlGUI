@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import IconDelete from '@material-ui/icons/Delete';
 import TextField from '@material-ui/core/TextField';
-import { modelTypeNames } from './store';
+import { runTypeNames } from './store';
 import './Raxml.css';
 
 
@@ -57,17 +57,17 @@ class Console extends React.Component {
   }
 
   render() {
-    const { model } = this.props;
+    const { run } = this.props;
     return (
       <div className="Console stdoutContainer" ref={this.onMountStdoutContainer}>
         <div>
           <code className="code">
-            {model.raxmlBinary} { model.args.join(' ') }
+            {run.raxmlBinary} { run.args.join(' ') }
           </code>
         </div>
         <div>
           <code className="code">
-          { model.stdout }
+          { run.stdout }
           </code>
         </div>
       </div>
@@ -76,7 +76,7 @@ class Console extends React.Component {
 }
 
 Console.propTypes = {
-  model: PropTypes.object.isRequired,
+  run: PropTypes.object.isRequired,
 }
 
 const ObservableConsole = observer(Console)
@@ -84,9 +84,9 @@ const ObservableConsole = observer(Console)
 class Raxml extends React.Component {
 
   render() {
-    const { classes, model } = this.props;
+    const { classes, run } = this.props;
 
-    const MenuItemsModel = modelTypeNames.map((name, index) => (
+    const MenuItemsRun = runTypeNames.map((name, index) => (
       <MenuItem key={index} value={index}>{name}</MenuItem>
     ));
     
@@ -95,21 +95,21 @@ class Raxml extends React.Component {
         <div className="controls">
           <FormControl className={classes.formControl}>
             <Select
-              value={model.type}
-              onChange={(_, item) => model.setType(item.props.value)}
-              name="model"
+              value={run.type}
+              onChange={(_, item) => run.setType(item.props.value)}
+              name="run"
             >
-              { MenuItemsModel }
+              { MenuItemsRun }
             </Select>
-            <FormHelperText>Model</FormHelperText>
+            <FormHelperText>Run</FormHelperText>
           </FormControl>
           <FormControl className={classes.formControl}>
             <Select
-              value={model.numCpu}
-              onChange={(_, item) => model.setNumCpu(item.props.value)}
+              value={run.numCpu}
+              onChange={(_, item) => run.setNumCpu(item.props.value)}
               name="Number of cpus"
               >
-              { model.cpuOptions.map(value => (
+              { run.cpuOptions.map(value => (
                 <MenuItem key={value} value={value}>{value}</MenuItem>
               )) }
             </Select>
@@ -118,50 +118,50 @@ class Raxml extends React.Component {
           <FormControl className={classes.formControl}>
             <TextField
               className={classes.textField}
-              onChange={(e) => model.setOutName(e.target.value)}
+              onChange={(e) => run.setOutName(e.target.value)}
               id="outName"
-              value={model.outName}
-              placeholder={model.outNamePlaceholder}
+              value={run.outName}
+              placeholder={run.outNamePlaceholder}
               helperText="Output suffix"
             />
           </FormControl>
           <FormControl className={classes.formControl}>
-            <Button variant="outlined" color="default" onClick={model.delete}>
+            <Button variant="outlined" color="default" onClick={run.delete}>
               <IconDelete />
-              Remove model
+              Remove run
             </Button>
           </FormControl>
         </div>
         <div className={classes.run}>
           <div>
           
-            { !model.running ? (
+            { !run.running ? (
               <Button variant="contained" className={classes.button}
-                disabled={model.disabled}
+                disabled={run.disabled}
                 color='primary'
-                onClick={model.run}
+                onClick={run.run}
               >
                 Run
               </Button>
             ) : (
               <Button variant="contained" className={classes.button}
                 color='secondary'
-                onClick={model.cancel}
+                onClick={run.cancel}
               >
                 Cancel
               </Button>
             )}
-            { model.stdout ? (
+            { run.stdout ? (
               <Button variant="contained" className={classes.button}
                 color='default'
-                onClick={model.clearStdout}
+                onClick={run.clearStdout}
               >
                 Clear
               </Button>
             ) : null }
           </div>
         </div>
-        <ObservableConsole model={model} />
+        <ObservableConsole run={run} />
       </div>
     );
   }
@@ -169,7 +169,7 @@ class Raxml extends React.Component {
 
 Raxml.propTypes = {
   classes: PropTypes.object.isRequired,
-  model: PropTypes.object.isRequired,
+  run: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(observer(Raxml));
