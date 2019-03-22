@@ -61,7 +61,7 @@ class App extends React.Component {
       <React.Fragment>
         <CssBaseline />
         <div className="App">
-          <Input input={store.input} alignments={store.alignments} />
+          <Input alignments={store.alignments} />
 
           <AppBar position="static" className={classes.AppBar}>
             <Tabs value={store.activeIndex} onChange={this.handleTabChange}>
