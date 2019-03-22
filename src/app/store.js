@@ -62,7 +62,9 @@ class Alignment {
   numberSequences = 0;
   parsingComplete = false;
   typecheckingComplete = false;
-  checkrunComplete = false;
+  checkRunComplete = false;
+  checkRunData = '';
+  checkRunSuccess = false;
   sequences = undefined;
 
   // TODO: this does not belong here
@@ -132,6 +134,15 @@ decorate(Alignment, {
   path: observable,
   size: observable,
   outDir: observable,
+  fileFormat: observable,
+  length: observable,
+  numberSequences: observable,
+  parsingComplete: observable,
+  typecheckingComplete: observable,
+  checkRunComplete: observable,
+  checkRunData: observable,
+  checkRunSuccess: observable,
+  sequences: observable,
   ok: computed,
   dir: computed,
   base: computed,
