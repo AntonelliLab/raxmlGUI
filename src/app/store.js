@@ -17,7 +17,7 @@ export const modelTypeNames = [
 
 export const MAX_NUM_CPUS = cpus().length;
 
-class Input {
+class Alignment {
   path = '';
   size = 0;
   outDir = '';
@@ -56,7 +56,7 @@ class Input {
     ipcRenderer.send('open-dir');
   }
 
-  openInputFile = () => {
+  openAlignmentFile = () => {
     ipcRenderer.send('open-item', this.path);
   }
   
@@ -82,7 +82,7 @@ class Input {
 
 }
 
-decorate(Input, {
+decorate(Alignment, {
   path: observable,
   size: observable,
   outDir: observable,
@@ -250,7 +250,7 @@ decorate(Model, {
 class ModelList {
   models = [];
   activeIndex = 0;
-  input = new Input();
+  input = new Alignment();
 
   constructor() {
     this.addModel();
