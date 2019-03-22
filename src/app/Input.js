@@ -55,7 +55,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
   function showStatus(alignment) {
     const { error, path, parsingComplete, typecheckingComplete } = alignment;
     if (error) {
-      return <p className="red-text">{error}</p>;
+      return <p>{error}</p>;
     }
     if (!parsingComplete || !typecheckingComplete) {
       return null;
@@ -66,7 +66,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
           className="button"
           variant="contained"
           color="primary"
-          onClick={() => this.props.onFolderOpen(path)}
+          onClick={() => console.log(path)}
         >
           Open Folder
         </Button>
@@ -74,7 +74,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
           className="button"
           variant="contained"
           color="primary"
-          onClick={() => this.showSequences(path)}
+          onClick={() => console.log(path)}
         >
           Show
         </Button>
@@ -92,7 +92,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       return (
         <div>
           <CircularProgress thickness={7} />
-          <p className="red-text">Parsing alignment</p>
+          <p>Parsing alignment</p>
         </div>
       );
     }
@@ -100,7 +100,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       return (
         <div>
           <CircularProgress thickness={7} />
-          <p className="red-text">Typechecking alignment</p>
+          <p>Typechecking alignment</p>
         </div>
       );
     }
@@ -108,7 +108,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       return (
         <div>
           <CircularProgress thickness={7} />
-          <p className="red-text">Performing checkrun for alignment</p>
+          <p>Performing checkrun for alignment</p>
         </div>
       );
     }
@@ -119,22 +119,22 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
     return _.map(alignments.alignments, alignment => {
       const { name, path, fileFormat, dataType } = alignment;
       return (
-        <li className="collection-item avatar" key={path}>
+        <li key={path}>
           {renderProgress(alignment)}
           <Button
             className="button"
             variant="contained"
             color="primary"
-            onClick={() => this.props.removeAlignment(alignment)}
+            onClick={() => console.log(alignment)}
           >
             Clear
           </Button>
-          <div style={styles.fileName}>
+          <div>
             <Typography variant="body2" >Filename: {name}</Typography>
             <Typography variant="body2" >File format: {fileFormat}</Typography>
             <Typography variant="body2" >Data type: {dataType}</Typography>
           </div>
-          <div className="secondary-content" style={styles.secondaryContent}>
+          <div>
             {showStatus(alignment)}
           </div>
         </li>
@@ -185,7 +185,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
         Open files
       </Button>
       {/* { FileInfo } */}
-      <ul className="collection alignment-list">
+      <ul>
         {renderAlignments()}
       </ul>
     </div>
