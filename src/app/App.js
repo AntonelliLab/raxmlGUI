@@ -10,7 +10,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconAdd from '@material-ui/icons/Add';
-// import Dropzone from 'react-dropzone'
 
 import Input from './Input';
 import Raxml from './Raxml';
@@ -19,7 +18,6 @@ import store from './store';
 
 const styles = theme => ({
   input: {
-    // borderBottom: `1px solid ${theme.palette.primary.main}`,
   },
   AppBar: {
     display: 'flex',
