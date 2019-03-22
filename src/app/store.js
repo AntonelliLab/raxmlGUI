@@ -94,14 +94,7 @@ class Alignment {
   }
 
   listen = () => {
-    ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
-      this.processAlignments(data);
-    });
     ipcRenderer.on("outDir", this.onOutDir);
-  };
-
-  loadAlignmentFiles = () => {
-    ipcRenderer.send(ALIGNMENT_SELECT_IPC);
   };
 
   selectOutDir = () => {
@@ -114,11 +107,6 @@ class Alignment {
 
   openOutDir = () => {
     ipcRenderer.send("open-item", this.outDir);
-  };
-
-  processAlignments = alignments => {
-    console.log("processAlignments", alignments);
-    // alignments is an array of information
   };
 
   onFile = (event, data) => {
@@ -166,11 +154,85 @@ class Alignments {
   }
 
   listen = () => {
+    // Listen to alignments being added
     ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
       this.addAlignments(data);
-      // this.processAlignments(data);
+      this.processAlignments(data);
     });
+
+    // Listener taken from processAlignments()
+    // Receive a progress update for one of the alignments being parsed
+    ipcRenderer.on(
+      PARSING_PROGRESS_IPC,
+      (event, { alignment, numberSequencesParsed }) => {
+        this.alignments = { ...this.alignments, [alignment.path]: { ...alignment, numberSequencesParsed } }
+      }
+    );
+
+    // Receive update that one alignment has completed parsing
+    ipcRenderer.on(PARSING_END_IPC, (event, { alignment }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment }
+      };
+    });
+
+    // Receive update that the parsing of one alignment has failed
+    ipcRenderer.on(PARSING_ERROR_IPC, (event, { alignment, error }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment, error }
+      };
+    });
+
+    // Receive a progress update for one of the alignments being typechecked
+    ipcRenderer.on(
+      TYPECHECKING_PROGRESS_IPC,
+      (event, { alignment, numberSequencesTypechecked }) => {
+        this.alignments = {
+          ...this.alignments,
+          [alignment.path]: { ...alignment, numberSequencesTypechecked }
+        };
+      }
+    );
+
+    // Receive update that one alignment has completed typechecking
+    ipcRenderer.on(TYPECHECKING_END_IPC, (event, { alignment }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment }
+      };
+    });
+
+    // Receive update that the typechecking of one alignment has failed
+    ipcRenderer.on(TYPECHECKING_ERROR_IPC, (event, { alignment, error }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment, error }
+      };
+    });
+
+    // Receive update that one alignment has completed the checkrun
+    ipcRenderer.on(CHECKRUN_END_IPC, (event, { alignment }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment }
+      };
+    });
+
+    // Receive update that the checkrun of one alignment has failed
+    ipcRenderer.on(CHECKRUN_ERROR_IPC, (event, { alignment, error }) => {
+      this.alignments = {
+        ...this.alignments,
+        [alignment.path]: { ...alignment, error }
+      };
+    });
+
   }
+
+  loadAlignmentFiles = () => {
+    ipcRenderer.send(ALIGNMENT_SELECT_IPC);
+  };
 
   addAlignments = (alignments) => {
     alignments.map(alignment => this.addAlignment(alignment));
@@ -183,6 +245,13 @@ class Alignments {
       [alignment.path]: new Alignment(alignment)
     };
   }
+
+  processAlignments = alignments => {
+    console.log("processAlignments", alignments);
+    // alignments is an array of information
+    // Send alignments to main process
+    ipcRenderer.send(ALIGNMENTS_ADDED_IPC, alignments);
+  };
 
   deleteAlignment = (alignment) => {
   }
