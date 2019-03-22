@@ -1,105 +1,198 @@
-import electron from 'electron';
-import path from 'path';
-import childProcess from 'child_process';
-import fs from 'fs';
-import os from 'os';
+import { ipcMain, shell } from "electron";
+import _ from "lodash";
+import os from "os";
+import path from "path";
 
-const { ipcMain, dialog } = electron;
+import { sendToMainWindow } from "./communication";
+import { transformArgsToArray, openFileDialog } from "./utils";
+import {
+  addAlignments,
+  startParsing,
+  startTypechecking,
+  startCheckrun
+} from "./alignment";
+import { createRun } from "./run";
+import { runRaxmlWithArgs, cancelCalculations } from "./analysis/run";
+import { startRuns } from "./analysis";
 
-const state = {
-  processes: {},
-};
+import {
+  GET_CPUS_IPC,
+  CPUS_COUNTED_IPC,
+  FOLDER_OPEN_IPC,
+  FOLDER_SELECT_IPC,
+  FOLDER_SELECTED_IPC,
+  FILE_SELECT_IPC,
+  FILE_SELECTED_IPC,
+  ALIGNMENT_SELECT_IPC,
+  ALIGNMENT_SELECTED_IPC,
+  ALIGNMENTS_ADDED_IPC,
+  PARSING_START_IPC,
+  TYPECHECKING_START_IPC,
+  CHECKRUN_START_IPC,
+  RUN_PROPOSED_IPC,
+  CALCULATION_START_IPC,
+  RUN_START_IPC,
+  CALCULATION_CANCEL_IPC,
+  FLAGSRUN_PROGRESS_IPC,
+  FLAGSRUN_END_IPC,
+  FLAGSRUN_ERROR_IPC
+} from "../constants/ipc";
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log('Got async message:', arg);
-  event.sender.send('asynchronous-reply', 'pong');
+// Get the number of cpus from the os
+ipcMain.on(GET_CPUS_IPC, () => {
+  console.log('api', GET_CPUS_IPC);
+  sendToMainWindow(CPUS_COUNTED_IPC, os.cpus());
 });
 
-ipcMain.on('open-file', (event, arg) => {
-  state.files = dialog.showOpenDialog({
-    properties: [
-      'openFile',
-      'multiSelections',
-    ]
-  });
-  console.log('files:', state.files);
-  if (state.files) {
-    const filename = state.files[0];
-    fs.stat(filename, (err, stats) => {
-      if (err) {
-        event.sender.send('error', { message: `Error trying to open file ${filename}: ${err.message}`});
-        return;
-      }
-      // event.sender.send('filename', filename);
-      event.sender.send('file', {
-        filename,
-        size: stats.size,
+// Open a folder with native file explorer in given path
+ipcMain.on(FOLDER_OPEN_IPC, (event, outputPath) => {
+  console.log('api', FOLDER_OPEN_IPC);
+  shell.showItemInFolder(outputPath);
+});
+
+// Open a dialog to select a folder
+ipcMain.on(FOLDER_SELECT_IPC, (event, run) => {
+  console.log('api', FOLDER_SELECT_IPC);
+  openFileDialog(
+    {
+      title: 'Select a folder',
+      properties: ['openDirectory', 'createDirectory']
+    },
+    folderPaths => {
+      const workingDirectory = folderPaths[0];
+      run.globalArgs.w = workingDirectory;
+      event.sender.send(FOLDER_SELECTED_IPC, run);
+    }
+  );
+});
+
+// Open a dialog to select a file
+ipcMain.on(FILE_SELECT_IPC, (event, run) => {
+  console.log('api', FILE_SELECT_IPC);
+  openFileDialog(
+    {
+      title: 'Select a file',
+      properties: ['openFile']
+    },
+    filePaths => {
+      event.sender.send(FILE_SELECTED_IPC, filePaths[0]);
+    }
+  );
+});
+
+// Open a dialog to select alignments
+ipcMain.on(ALIGNMENT_SELECT_IPC, (event) => {
+  console.log('api', ALIGNMENT_SELECT_IPC);
+  openFileDialog(
+    {
+      title: 'Select an alignment',
+      properties: ['openFile']
+    },
+    filePaths => {
+      const alignments = filePaths.map(filePath => {
+        return ({
+          path: filePath,
+          name: path.basename(filePath)
+        });
+      })
+      event.sender.send(ALIGNMENT_SELECTED_IPC, alignments);
+    }
+  );
+});
+
+// Receive a new batch of alignments dropped into the app
+ipcMain.on(ALIGNMENTS_ADDED_IPC, (event, alignments) => {
+  console.log('api', ALIGNMENTS_ADDED_IPC);
+  addAlignments(alignments);
+});
+
+ipcMain.on(PARSING_START_IPC, (event, alignments) => {
+  console.log('api', PARSING_START_IPC);
+  startParsing(alignments);
+});
+
+ipcMain.on(TYPECHECKING_START_IPC, (event, alignments) => {
+  console.log('api', TYPECHECKING_START_IPC);
+  startTypechecking(alignments);
+});
+
+ipcMain.on(CHECKRUN_START_IPC, (event, alignments) => {
+  console.log('api', CHECKRUN_START_IPC);
+  startCheckrun(alignments);
+});
+
+ipcMain.on(RUN_PROPOSED_IPC, (event, alignments) => {
+  console.log('api', RUN_PROPOSED_IPC);
+  createRun(alignments);
+});
+
+ipcMain.on(CALCULATION_START_IPC, (event, runs) => {
+  console.log('api', CALCULATION_START_IPC);
+  startRuns(runs);
+});
+
+function startFlagsrun(run) {
+  console.log('startFlagsrun');
+  if (!run.argsList) {
+    console.log('No args list given');
+  }
+  // An args list=array can have multiple entries
+  const argsPromises = _.map(run.argsList, args => {
+    // Transform args as object into array
+    const arrayArgs = transformArgsToArray(args);
+    arrayArgs.push('--flag-check');
+    return new Promise((resolve, reject) => {
+      runRaxmlWithArgs(run.path, arrayArgs, {
+        stdout: data => {
+          const dataString = String(data);
+          run.flagsrunData = dataString;
+          sendToMainWindow(FLAGSRUN_PROGRESS_IPC, { run });
+        },
+        close: code => {
+          run.flagsrunCode = code;
+          console.log(code);
+          console.log('Flagsrun end');
+          sendToMainWindow(FLAGSRUN_END_IPC, { run });
+          if (code === 255) {
+            const message = run.flagsrunData.toLowerCase().split('error');
+            const error = message[message.length - 1];
+            console.log('Flagsrun stdout close: Error code given for RAxML.');
+            console.log('Flagsrun data', run.flagsrunData);
+            // Send all text after the word error along as error message
+            run.flagsrunComplete = true;
+            sendToMainWindow(FLAGSRUN_ERROR_IPC, { run, error });
+            reject(run);
+          }
+          if (code === 0) {
+            resolve(run);
+          } else {
+            reject(run);
+          }
+        }
       });
+    });
+  });
+  return new Promise((resolve, reject) => {
+    Promise.all(argsPromises).then(results => {
+      console.log('All flagsrun resolved', run);
+      resolve(run);
+    });
+  });
+}
+
+ipcMain.on(RUN_START_IPC, (event, run) => {
+  console.log('api', RUN_START_IPC);
+  const flagsrunPromise = startFlagsrun(run);
+  flagsrunPromise
+    .then(run => {
+      // Chain on the actual calculation
+      startRuns([run]);
+      return run;
     })
-  }
+    .catch(error => console.log(error));
 });
 
-ipcMain.on('open-dir', (event, arg) => {
-  const dirs = dialog.showOpenDialog({
-    properties: ['openDirectory', 'createDirectory']
-  });
-  console.log('dirs:', dirs);
-  if (dirs) {
-    event.sender.send('outDir', dirs[0]);
-  }
+ipcMain.on(CALCULATION_CANCEL_IPC, (event, run) => {
+  console.log('api', CALCULATION_CANCEL_IPC);
+  cancelCalculations(run);
 });
-
-ipcMain.on('run', (event, arg) => {
-  const { id, args } = arg;
-  console.log(`Run with id ${id} and args ${args}...`);
-
-  cancelProcess(id);
-
-  const proc = runRaxml(args);
-  state.processes[id] = proc;
-  
-  proc.stdout.on('data', buffer => {
-    const content = String(buffer);
-    event.sender.send('raxml-output', { id, content });
-  });
-
-  proc.on('close', code => {
-    event.sender.send('raxml-close', { id, code });
-    delete state.processes[id];
-  });
-});
-
-ipcMain.on('cancel', (event, arg) => {
-  const id = arg;
-  console.log(`Cancel raxml process ${id}...`);
-  cancelProcess(id);
-});
-
-ipcMain.on('open-item', (event, arg) => {
-  console.log('Open item:', arg);
-  electron.shell.openItem(arg);
-});
-
-function cancelProcess(id) {
-  if (state.processes[id]) {
-    state.processes[id].kill();
-    console.log(`Killed RAxML proces ${id}`);
-    delete state.processes[id];
-    // event.sender.send('raxml-close', { id });
-  }
-}
-
-function runRaxml(args) {
-  const binaryName = `raxmlHPC-PTHREADS-SSE3-Mac`;
-  const rootDir = electron.app.isPackaged ? electron.app.getAppPath() : __dirname;
-  const binaryDir = path.resolve(rootDir, '..', '..', 'bin', 'raxml');
-  const binaryPath = path.resolve(binaryDir, binaryName);
-  console.log('binaryPath:', binaryPath);
-
-  const proc = childProcess.spawn(binaryName, args, {
-    stdio: 'pipe',
-    cwd: os.homedir(),
-    env: { PATH: `${process.env.path}:${binaryDir}` },
-  });
-  return proc;
-}

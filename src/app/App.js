@@ -13,7 +13,6 @@ import IconAdd from '@material-ui/icons/Add';
 // import Dropzone from 'react-dropzone'
 import Input from './Input';
 import Raxml from './Raxml';
-// import randomString from 'crypto-random-string';
 import './App.css';
 import store from './store';
 
@@ -48,7 +47,6 @@ class App extends React.Component {
     const { classes } = this.props;
 
     const TabItems = store.models.map(model => (
-      // <Tab key={model.id} label={`Model ${model.id}`} />
       <Tab key={model.id} icon={
         <span className={classes.tab}>
           <CircularProgress color="inherit" size={20} className={classes.tabIcon}
