@@ -13,9 +13,10 @@ const BrowserWindow = electron.BrowserWindow
 const installExtensions = async () => {
   const {
     default: installExtension,
-    REACT_DEVELOPER_TOOLS
+    REACT_DEVELOPER_TOOLS,
+    MOBX_DEVTOOLS,
   } = require("electron-devtools-installer");
-  const extensions = [REACT_DEVELOPER_TOOLS, REACT_PERF];
+  const extensions = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS];
   extensions.map(id =>
     installExtension(id, true)
       .then(name => console.log(`Added Extension:  ${name}`))
