@@ -54,7 +54,7 @@ export const modelTypeNames = [
 export const MAX_NUM_CPUS = cpus().length;
 
 class Alignment {
-  path = '';
+  path = "";
   size = 0;
   dataType = undefined;
   fileFormat = undefined;
@@ -63,16 +63,16 @@ class Alignment {
   parsingComplete = false;
   typecheckingComplete = false;
   checkRunComplete = false;
-  checkRunData = '';
+  checkRunData = "";
   checkRunSuccess = false;
   sequences = undefined;
 
   // TODO: this does not belong here
-  outDir = '';
+  outDir = "";
 
   //@computed
   get ok() {
-    return this.path !== '';
+    return this.path !== "";
   }
 
   get dir() {
@@ -87,47 +87,56 @@ class Alignment {
     return parsePath(this.path).name;
   }
 
-  constructor() {
+  constructor(alignment) {
     this.listen();
+    console.log('alignment constructor', alignment);
+    this.path = alignment.filename;
   }
 
   listen = () => {
-    ipcRenderer.on('file', this.onFile);
-    ipcRenderer.on('outDir', this.onOutDir);
-  }
+    ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
+      this.processAlignments(data);
+    });
+    ipcRenderer.on("outDir", this.onOutDir);
+  };
 
   loadAlignmentFiles = () => {
     ipcRenderer.send(ALIGNMENT_SELECT_IPC);
-  }
+  };
 
   selectOutDir = () => {
-    ipcRenderer.send('open-dir');
-  }
+    ipcRenderer.send("open-dir");
+  };
 
   openAlignmentFile = () => {
-    ipcRenderer.send('open-item', this.path);
-  }
-  
+    ipcRenderer.send("open-item", this.path);
+  };
+
   openOutDir = () => {
-    ipcRenderer.send('open-item', this.outDir);
-  }
+    ipcRenderer.send("open-item", this.outDir);
+  };
+
+  processAlignments = alignments => {
+    console.log("processAlignments", alignments);
+    // alignments is an array of information
+  };
 
   onFile = (event, data) => {
-    console.log('file:', data);
+    console.log("file:", data);
     runInAction("file", () => {
       this.path = data.filename;
       this.size = data.size;
       this.outDir = parsePath(data.filename).dir;
     });
-  }
+  };
 
   // TODO: this does not belong here
   onOutDir = (event, data) => {
-    console.log('outDir:', data);
+    console.log("outDir:", data);
     runInAction("outDir", () => {
       this.outDir = data;
     });
-  }
+  };
 }
 
 decorate(Alignment, {
@@ -148,6 +157,43 @@ decorate(Alignment, {
   base: computed,
   name: computed,
 })
+
+class Alignments {
+  alignments = {};
+
+  constructor() {
+    this.listen();
+  }
+
+  listen = () => {
+    ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
+      this.addAlignments(data);
+      // this.processAlignments(data);
+    });
+  }
+
+  addAlignments = (alignments) => {
+    alignments.map(alignment => this.addAlignment(alignment));
+  }
+
+  addAlignment = (alignment) => {
+    console.log("addAlignment...");
+    this.alignments = {
+      ...this.alignments,
+      [alignment.path]: new Alignment(alignment)
+    };
+  }
+
+  deleteAlignment = (alignment) => {
+  }
+}
+
+decorate(Alignments, {
+  alignments: observable,
+  addAlignments: action,
+  addAlignment: action,
+  deleteAlignment: action
+});
 
 class Model {
   constructor(parent, id) {
@@ -307,7 +353,9 @@ decorate(Model, {
 class ModelList {
   models = [];
   activeIndex = 0;
-  input = new Alignment();
+  // TODO: replace with alignment field
+  input = new Alignment({ filename: '' });
+  alignments = new Alignments();
 
   constructor() {
     this.addModel();
