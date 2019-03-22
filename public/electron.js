@@ -114,6 +114,7 @@ function initialize() {
   app.on('ready', async () => {
     if (isDevMode) {
       await installExtensions();
+      require("devtron").install();
     }
     createMainWindow()
   })
