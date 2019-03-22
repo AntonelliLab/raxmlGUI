@@ -18,25 +18,25 @@ export const modelTypeNames = [
 export const MAX_NUM_CPUS = cpus().length;
 
 class Input {
-  filename = '';
+  path = '';
   size = 0;
   outDir = '';
 
   //@computed
   get ok() {
-    return this.filename !== '';
+    return this.path !== '';
   }
 
   get dir() {
-    return parsePath(this.filename).dir;
+    return parsePath(this.path).dir;
   }
 
   get base() {
-    return parsePath(this.filename).base;
+    return parsePath(this.path).base;
   }
 
   get name() {
-    return parsePath(this.filename).name;
+    return parsePath(this.path).name;
   }
 
   constructor() {
@@ -57,7 +57,7 @@ class Input {
   }
 
   openInputFile = () => {
-    ipcRenderer.send('open-item', this.filename);
+    ipcRenderer.send('open-item', this.path);
   }
   
   openOutDir = () => {
@@ -67,7 +67,7 @@ class Input {
   onFile = (event, data) => {
     console.log('file:', data);
     runInAction("file", () => {
-      this.filename = data.filename;
+      this.path = data.filename;
       this.size = data.size;
       this.outDir = parsePath(data.filename).dir;
     });
@@ -83,7 +83,7 @@ class Input {
 }
 
 decorate(Input, {
-  filename: observable,
+  path: observable,
   size: observable,
   outDir: observable,
   ok: computed,
