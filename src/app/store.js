@@ -58,8 +58,8 @@ class Alignment {
     ipcRenderer.on('outDir', this.onOutDir);
   }
 
-  selectFile = () => {
-    ipcRenderer.send('open-file');
+  loadAlignmentFiles = () => {
+    ipcRenderer.send(ALIGNMENT_SELECT_IPC);
   }
 
   selectOutDir = () => {
@@ -83,13 +83,13 @@ class Alignment {
     });
   }
 
+  // TODO: this does not belong here
   onOutDir = (event, data) => {
     console.log('outDir:', data);
     runInAction("outDir", () => {
       this.outDir = data;
     });
   }
-
 }
 
 decorate(Alignment, {

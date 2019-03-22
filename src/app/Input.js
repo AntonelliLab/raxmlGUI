@@ -89,7 +89,7 @@ const Input = withStyles(styles)(observer(({ classes, input }) => {
 
   return (
     <div className={classes.Input}>
-      <Button variant="contained" color="primary" onClick={input.selectFile}>
+      <Button variant="contained" color="primary" onClick={input.loadAlignmentFiles}>
         Open file
       </Button>
       { FileInfo }
