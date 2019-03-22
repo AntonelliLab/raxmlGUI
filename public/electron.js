@@ -25,6 +25,11 @@ const installExtensions = async () => {
   );
 };
 
+// This is the dev mode definition from Daniel's initial version of the repository,
+// without explanation where the --noDevServer comes from
+// TODO: add an explanation
+const isDevMode = isDev && process.argv.indexOf("--noDevServer") === -1;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -63,7 +68,10 @@ function initialize() {
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    // TODO: make conditional as in app.ready
+    if (isDevMode) {
+      mainWindow.webContents.openDevTools();
+    }
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -100,8 +108,8 @@ function initialize() {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
-    if (isDev && process.argv.indexOf('--noDevServer') === -1) {
-      await installExtensions()
+    if (isDevMode) {
+      await installExtensions();
     }
     createMainWindow()
   })
