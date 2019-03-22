@@ -20,6 +20,16 @@ export const MAX_NUM_CPUS = cpus().length;
 class Alignment {
   path = '';
   size = 0;
+  dataType = undefined;
+  fileFormat = undefined;
+  length = 0;
+  numberSequences = 0;
+  parsingComplete = false;
+  typecheckingComplete = false;
+  checkrunComplete = false;
+  sequences = undefined;
+
+  // TODO: this does not belong here
   outDir = '';
 
   //@computed
