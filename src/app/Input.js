@@ -6,6 +6,9 @@ import Button from '@material-ui/core/Button';
 import { format } from 'd3-format';
 import FolderIcon from '@material-ui/icons/Folder';
 import classNames from 'classnames';
+import _ from "lodash";
+import Typography from "@material-ui/core/Typography";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const styles = theme => ({
   Input: {
@@ -49,6 +52,95 @@ const styles = theme => ({
 });
 
 const Input = withStyles(styles)(observer(({ classes, alignments }) => {
+  function showStatus(alignment) {
+    const { error, path, parsingComplete, typecheckingComplete } = alignment;
+    if (error) {
+      return <p className="red-text">{error}</p>;
+    }
+    if (!parsingComplete || !typecheckingComplete) {
+      return null;
+    }
+    return (
+      <div>
+        <Button
+          className="button"
+          variant="contained"
+          color="primary"
+          onClick={() => this.props.onFolderOpen(path)}
+        >
+          Open Folder
+        </Button>
+        <Button
+          className="button"
+          variant="contained"
+          color="primary"
+          onClick={() => this.showSequences(path)}
+        >
+          Show
+        </Button>
+      </div>
+    );
+  }
+
+  function renderProgress(alignment) {
+    const {
+      parsingComplete,
+      typecheckingComplete,
+      checkRunComplete
+    } = alignment;
+    if (!parsingComplete) {
+      return (
+        <div>
+          <CircularProgress thickness={7} />
+          <p className="red-text">Parsing alignment</p>
+        </div>
+      );
+    }
+    if (!typecheckingComplete) {
+      return (
+        <div>
+          <CircularProgress thickness={7} />
+          <p className="red-text">Typechecking alignment</p>
+        </div>
+      );
+    }
+    if (!checkRunComplete) {
+      return (
+        <div>
+          <CircularProgress thickness={7} />
+          <p className="red-text">Performing checkrun for alignment</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  function renderAlignments() {
+    return _.map(alignments.alignments, alignment => {
+      const { name, path, fileFormat, dataType } = alignment;
+      return (
+        <li className="collection-item avatar" key={path}>
+          {renderProgress(alignment)}
+          <Button
+            className="button"
+            variant="contained"
+            color="primary"
+            onClick={() => this.props.removeAlignment(alignment)}
+          >
+            Clear
+          </Button>
+          <div style={styles.fileName}>
+            <Typography variant="body2" >Filename: {name}</Typography>
+            <Typography variant="body2" >File format: {fileFormat}</Typography>
+            <Typography variant="body2" >Data type: {dataType}</Typography>
+          </div>
+          <div className="secondary-content" style={styles.secondaryContent}>
+            {showStatus(alignment)}
+          </div>
+        </li>
+      );
+    });
+  }
 
   const FileInfo = alignments.ok ? (
     <div className={classes.files}>
@@ -92,7 +184,10 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       <Button variant="contained" color="primary" onClick={alignments.loadAlignmentFiles}>
         Open files
       </Button>
-      { FileInfo }
+      {/* { FileInfo } */}
+      <ul className="collection alignment-list">
+        {renderAlignments()}
+      </ul>
     </div>
   );
 }));

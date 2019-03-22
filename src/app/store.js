@@ -1,4 +1,5 @@
 import { decorate, observable, computed, action, runInAction } from "mobx"
+import _ from "lodash";
 import ipcRenderer from '../app/ipcRenderer';
 import parsePath from 'parse-filepath';
 import cpus from 'cpus';
@@ -227,7 +228,6 @@ class Alignments {
         [alignment.path]: { ...alignment, error }
       };
     });
-
   }
 
   loadAlignmentFiles = () => {
@@ -242,7 +242,7 @@ class Alignments {
     console.log("addAlignment...");
     this.alignments = {
       ...this.alignments,
-      [alignment.path]: new Alignment(alignment)
+      [alignment.path]: alignment
     };
   }
 
@@ -254,6 +254,7 @@ class Alignments {
   };
 
   deleteAlignment = (alignment) => {
+    _.omit(this.alignments, alignment.path);
   }
 }
 
