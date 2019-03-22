@@ -1,0 +1,4 @@
+.analysis-panel {
+  display: flex;
+  justify-content: space-between;
+}

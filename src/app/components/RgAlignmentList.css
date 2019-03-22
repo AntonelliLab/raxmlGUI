@@ -1,0 +1,16 @@
+.alignment-list .collection-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.alignment-list {
+  height: 50vh;
+  overflow: scroll;
+}
+
+.alignment-list .collection-item .btn {
+  margin-left: 10px;
+}
