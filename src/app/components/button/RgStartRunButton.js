@@ -1,15 +1,11 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 
 import type { Run } from '../../reducers/types';
 
-import { startRun } from '../../actions';
-
 type Props = {
   run: Run,
-  startRun: () => void
 };
 
 /**
@@ -18,18 +14,15 @@ type Props = {
 class RgStartRunButton extends Component<Props> {
   props: Props;
 
-  onClickRun = () => {
-    const { run } = this.props;
-    this.props.startRun(run);
-  };
-
   render() {
+    const { classes, run } = this.props;
     return (
       <Button
-        className="button"
         variant="contained"
+        className={classes.button}
+        disabled={run.startRunDisabled}
         color="primary"
-        onClick={() => this.onClickRun()}
+        onClick={run.startRun}
       >
         Run
       </Button>
@@ -37,7 +30,4 @@ class RgStartRunButton extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { startRun }
-)(RgStartRunButton);
+export default RgStartRunButton;

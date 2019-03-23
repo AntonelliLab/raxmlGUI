@@ -307,7 +307,8 @@ class Run {
   outSubDir = '';
 
   //@computed
-  get disabled() {
+  get startRunDisabled() {
+    return false;
     return !this.parent.input.ok;
   }
 
@@ -343,10 +344,10 @@ class Run {
     ];
   }
 
-  run = () => {
-    this.running = true;
-    const { id, args } = this;
-    ipcRenderer.send('run', { id, args });
+  startRun = () => {
+    // Send runs to main process
+    ipcRenderer.send(RUN_START_IPC, this);
+    // TODO: listen to the results
   };
 
   cancel = () => {
@@ -355,8 +356,21 @@ class Run {
   };
 
   //@action
+  // TODO: this is the previous version of doing it, just replace the entire run object
+  // must be better way here, only change the relevant params
   updateRun = run => {
     console.log('updateRun:', run);
+    for (var key in run) {
+      if (run.hasOwnProperty(key)) {
+        console.log(key);
+        console.log(run[key]);
+        if (key === 'sequences') {
+          this.sequences = [run[key]];
+        } else {
+          this[key] = run[key];
+        }
+      }
+    }
   };
 
   setGlobalArgs = value => {
@@ -383,7 +397,6 @@ class Run {
   loadTreeFile = () => {
     ipcRenderer.send(FILE_SELECT_IPC, this);
   };
-
 
   setNumCpu = count => {
     console.log('setNumCpu:', count);
@@ -418,6 +431,50 @@ class Run {
       this.setArgsList(argsListTree);
     });
 
+    // TODO: listen to calculation progress
+    // TODO: do this differently, i.e. does not need to entirely override the run object here only partially
+
+    // Receive a progress update for one of the runs being calculated
+    ipcRenderer.on(FLAGSRUN_PROGRESS_IPC, (event, { run, XXXProgressUnit }) => {
+      console.log(run, XXXProgressUnit);
+      this.updateRun(run);
+    });
+
+    // Receive update that one run has completed flagsrun
+    ipcRenderer.on(FLAGSRUN_END_IPC, (event, { run }) => {
+      this.updateRun(run);
+    });
+
+    // Receive update that the flagsrun of one run has failed
+    ipcRenderer.on(FLAGSRUN_ERROR_IPC, (event, { run, error }) => {
+      console.log(run, error);
+      this.updateRun(run);
+    });
+
+    // Receive a call that one run has started being calculated
+    ipcRenderer.on(CALCULATION_START_IPC, (event, { run }) => {
+      console.log('CLient received calculation start for: ', run);
+      this.updateRun(run);
+    });
+
+    // Receive a progress update for one of the runs being calculated
+    ipcRenderer.on(CALCULATION_PROGRESS_IPC, (event, { run, XXXProgressUnit }) => {
+      console.log(run, XXXProgressUnit);
+      this.updateRun(run);
+      this.onStdout(event, run);
+    });
+
+    // Receive update that one run has completed calculation
+    ipcRenderer.on(CALCULATION_END_IPC, (event, { run }) => {
+      this.updateRun(run);
+    });
+
+    // Receive update that the calculation of one run has failed
+    ipcRenderer.on(CALCULATION_ERROR_IPC, (event, { run, error }) => {
+      console.log(run, error);
+    });
+
+
     //TODO: Define callbacks on the class and remove event listeners on dispose
     ipcRenderer.on('file', this.onFile);
     ipcRenderer.on('raxml-output', this.onStdout);
@@ -436,8 +493,8 @@ class Run {
     this.outFilename = `${parsePath(data.filename).name}_${this.id}`;
   };
 
-  onStdout = (event, data) => {
-    const { id, content } = data;
+  onStdout = (event, run) => {
+    const { id, data } = run;
     console.log(
       'Raxml output:',
       data,
@@ -448,7 +505,7 @@ class Run {
     );
     if (id === this.id) {
       runInAction('raxml-output', () => {
-        const stdout = content.replace(
+        const stdout = data.replace(
           `Warning, you specified a working directory via "-w"\nKeep in mind that RAxML only accepts absolute path names, not relative ones!`,
           ''
         );
@@ -477,9 +534,8 @@ decorate(Run, {
   running: observable,
   numCpu: observable,
   stdout: observable,
-  outFilename: observable,
   outSubDir: observable,
-  disabled: computed,
+  startRunDisabled: computed,
   outDir: computed,
   args: computed,
   setAnalysisType: action,
@@ -488,7 +544,8 @@ decorate(Run, {
   setNumCpu: action,
   setOutName: action,
   clearStdout: action,
-  delete: action
+  delete: action,
+  startRun: action
 });
 
 class RunList {
