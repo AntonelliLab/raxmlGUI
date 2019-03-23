@@ -25,10 +25,6 @@ type Props = {
 class RgAnalysisSettings extends Component<Props> {
   props: Props;
 
-  onFolderClicked = run => {
-    this.props.showInFolder(run.globalArgs.w);
-  };
-
   showStatus(run) {
     const {
       inFile,
@@ -48,14 +44,6 @@ class RgAnalysisSettings extends Component<Props> {
         >
           Input File
         </Button>
-        <Button
-          className="button"
-          variant="contained"
-          color="primary"
-          onClick={() => this.props.showInFolder(globalArgs.w)}
-        >
-          Results Folder
-        </Button>
       </div>
     );
   }
@@ -64,10 +52,6 @@ class RgAnalysisSettings extends Component<Props> {
     const { run } = this.props;
     return (
       <div className="collection-item avatar">
-        <div style={styles.fileName}>
-          <RgAnalysisSelect run={run} />
-          <RgRunOptions run={run} />
-        </div>
         <div className="secondary-content" style={styles.secondaryContent}>
           {this.showStatus(run)}
         </div>
