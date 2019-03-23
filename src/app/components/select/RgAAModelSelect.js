@@ -1,6 +1,5 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
@@ -8,9 +7,8 @@ import type { Run } from '../../reducers/types';
 
 import RgSettingsSelect from './RgSettingsSelect';
 
-import { updateRun } from '../../actions';
-
-import { runSettings } from '../../settings/run';
+import { runSettings } from '../../../settings/run';
+import { observer } from 'mobx-react';
 
 const {
   aminoAcidSubstitutionModelOptions,
@@ -45,7 +43,7 @@ class RgAAModelSelect extends Component<Props> {
     const { run } = this.props;
     const updatedRun = Object.assign({}, run);
     updatedRun.globalArgs.m = newArg;
-    this.props.updateRun(updatedRun);
+    run.setGlobalArgs(updatedRun.globalArgs);
   }
 
   onModelChange(value) {
@@ -101,7 +99,4 @@ class RgAAModelSelect extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgAAModelSelect);
+export default observer(RgAAModelSelect);
