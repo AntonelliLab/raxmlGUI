@@ -1,14 +1,12 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../../reducers/types';
 
-import { updateRun } from '../../actions';
-
-import { settings } from '../../settings/analysis';
+import { settings } from '../../../settings/analysis';
 
 const { shlike } = settings;
 
@@ -43,7 +41,7 @@ class RgSHLikeBoolean extends Component<Props> {
     // Add or remove the SH-like arguments on the end of the args list
     !enabled ? updatedRun.argsList.push(shArgs) : updatedRun.argsList.pop();
     // Set updated run
-    this.props.updateRun(updatedRun);
+    run.setArgsList(updatedRun.argsList);
     this.setState({ enabled: !enabled });
   }
 
@@ -65,7 +63,4 @@ class RgSHLikeBoolean extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgSHLikeBoolean);
+export default observer(RgSHLikeBoolean);

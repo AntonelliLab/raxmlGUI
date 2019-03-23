@@ -1,12 +1,13 @@
 // @flow
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../../reducers/types';
 
 import RgSettingsSelect from './RgSettingsSelect';
 import RgAAModelSelect from './RgAAModelSelect';
 
-import { runSettings } from '../../settings/run';
+import { runSettings } from '../../../settings/run';
 
 const {
   binarySubstitutionModelOptions,
@@ -82,4 +83,4 @@ class RgModelSelect extends Component<Props> {
   }
 }
 
-export default RgModelSelect;
+export default observer(RgModelSelect);

@@ -1,15 +1,13 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../../reducers/types';
-
-import { updateRun } from '../../actions';
 
 type Props = {
   run: Run,
@@ -79,7 +77,8 @@ class RgSettingsSelect extends Component<Props> {
     } else {
       updatedRun.argsList[index][option.argument] = value;
     }
-    this.props.updateRun(updatedRun);
+    run.setGlobalArgs(updatedRun.globalArgs);
+    run.setArgsList(updatedRun.argsList);
   }
 
   renderOptions(options) {
@@ -108,7 +107,4 @@ class RgSettingsSelect extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgSettingsSelect);
+export default observer(RgSettingsSelect);

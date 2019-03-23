@@ -281,7 +281,7 @@ class Run {
   argsList = [];
   createdAt = undefined;
   dataType = undefined;
-  globalArgs = undefined;
+  globalArgs = {};
   inFile = undefined;
   inFileFolder = undefined;
   isPartitioned = false;
@@ -348,6 +348,11 @@ class Run {
   //@action
   updateRun = run => {
     console.log('updateRun:', run);
+  };
+
+  setGlobalArgs = value => {
+    console.log('setGlobalArgs:', value);
+    this.globalArgs = value;
   };
 
   setArgsList = value => {

@@ -1,14 +1,12 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import type { Run } from '../../reducers/types';
 
-import { updateRun } from '../../actions';
-
-import { settings } from '../../settings/analysis';
+import { settings } from '../../../settings/analysis';
+import { observer } from 'mobx-react';
 
 const { brL } = settings;
 
@@ -45,7 +43,7 @@ class RgBrLBoolean extends Component<Props> {
       ? updatedRun.argsList.splice(1, 0, brLArgs)
       : updatedRun.argsList.splice(1, 1);
     // Set updated run
-    this.props.updateRun(updatedRun);
+    run.setArgsList(updatedRun.argsList);
     this.setState({ enabled: !enabled });
   }
 
@@ -67,7 +65,4 @@ class RgBrLBoolean extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgBrLBoolean);
+export default observer(RgBrLBoolean);
