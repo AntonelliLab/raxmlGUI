@@ -1,8 +1,6 @@
 /*
     Strings for ipc
 */
-export const GET_CPUS_IPC = 'GET_CPUS_IPC';
-export const CPUS_COUNTED_IPC = 'CPUS_COUNTED_IPC';
 export const FOLDER_OPEN_IPC = 'FOLDER_OPEN_IPC';
 export const FOLDER_SELECT_IPC = 'FOLDER_SELECT_IPC';
 export const FOLDER_SELECTED_IPC = 'FOLDER_SELECTED_IPC';

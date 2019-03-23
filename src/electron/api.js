@@ -1,6 +1,5 @@
 import { ipcMain, shell } from "electron";
 import _ from "lodash";
-import os from "os";
 import path from "path";
 
 import { sendToMainWindow } from "./communication";
@@ -16,8 +15,6 @@ import { runRaxmlWithArgs, cancelCalculations } from "./analysis/run";
 import { startRuns } from "./analysis";
 
 import {
-  GET_CPUS_IPC,
-  CPUS_COUNTED_IPC,
   FOLDER_OPEN_IPC,
   FOLDER_SELECT_IPC,
   FOLDER_SELECTED_IPC,
@@ -37,12 +34,6 @@ import {
   FLAGSRUN_END_IPC,
   FLAGSRUN_ERROR_IPC
 } from "../constants/ipc";
-
-// Get the number of cpus from the os
-ipcMain.on(GET_CPUS_IPC, () => {
-  console.log('api', GET_CPUS_IPC);
-  sendToMainWindow(CPUS_COUNTED_IPC, os.cpus());
-});
 
 // Open a folder with native file explorer in given path
 ipcMain.on(FOLDER_OPEN_IPC, (event, outputPath) => {

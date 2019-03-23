@@ -1,13 +1,10 @@
 import { decorate, observable, computed, action, runInAction } from 'mobx';
-import _ from 'lodash';
 import ipcRenderer from '../app/ipcRenderer';
 import parsePath from 'parse-filepath';
 import cpus from 'cpus';
 import { range } from 'd3-array';
 
 import {
-  GET_CPUS_IPC,
-  CPUS_COUNTED_IPC,
   FOLDER_OPEN_IPC,
   FOLDER_SELECT_IPC,
   FOLDER_SELECTED_IPC,
