@@ -1,6 +1,5 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,9 +7,7 @@ import Select from '@material-ui/core/Select';
 
 import type { Run } from '../../reducers/types';
 
-import { updateRun } from '../../actions';
-
-import { settings } from '../../settings/analysis';
+import { settings } from '../../../settings/analysis';
 
 const { analysesOptions } = settings;
 
@@ -25,6 +22,7 @@ type Props = {
 class RgAnalysisSelect extends Component<Props> {
   props: Props;
 
+  // TODO: this logic should probably go into the mobx thing
   onChange(event) {
     const { run } = this.props;
     const { value } = event.target;
@@ -36,12 +34,12 @@ class RgAnalysisSelect extends Component<Props> {
 
     const updatedRun = Object.assign({}, run);
     // Attach new filename to this analysis
-    runArgsList[0].n = `${run.outFilename}${
-      selectedOption.outputExt
-    }`;
+    runArgsList[0].n = `${run.outFilename}${selectedOption.outputExt}`;
     updatedRun.argsList = runArgsList;
     updatedRun.analysisType = value;
-    this.props.updateRun(updatedRun);
+
+    run.setArgsList(runArgsList);
+    run.setAnalysisType(value);
   }
 
   renderOptions() {
@@ -53,9 +51,10 @@ class RgAnalysisSelect extends Component<Props> {
   }
 
   render() {
-    const { run } = this.props;
+    const { classes, run } = this.props;
+    console.log('RgAnal', run.analysisType);
     return (
-      <FormControl>
+      <FormControl className={classes.formControl}>
         <InputLabel>Analysis</InputLabel>
         <Select
           value={run.analysisType}
@@ -69,7 +68,4 @@ class RgAnalysisSelect extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgAnalysisSelect);
+export default RgAnalysisSelect;
