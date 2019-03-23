@@ -1,5 +1,5 @@
-import { decorate, observable, computed, action, runInAction } from "mobx"
-import _ from "lodash";
+import { decorate, observable, computed, action, runInAction } from 'mobx';
+import _ from 'lodash';
 import ipcRenderer from '../app/ipcRenderer';
 import parsePath from 'parse-filepath';
 import cpus from 'cpus';
@@ -39,7 +39,7 @@ import {
   RUN_START_IPC,
   CALCULATION_CANCEL_IPC,
   CALCULATION_CANCELED_IPC
-} from "../constants/ipc";
+} from '../constants/ipc';
 
 export const runTypeNames = [
   'Fast tree search',
@@ -49,13 +49,13 @@ export const runTypeNames = [
   'Bootstrap + consensus',
   'Ancestral states',
   'Pairwise distance',
-  'RELL bootstrap',
+  'RELL bootstrap'
 ];
 
 export const MAX_NUM_CPUS = cpus().length;
 
 class Alignment {
-  path = "";
+  path = '';
   size = 0;
   dataType = undefined;
   fileFormat = undefined;
@@ -64,16 +64,16 @@ class Alignment {
   parsingComplete = false;
   typecheckingComplete = false;
   checkRunComplete = false;
-  checkRunData = "";
+  checkRunData = '';
   checkRunSuccess = false;
   sequences = undefined;
 
   // TODO: this does not belong here
-  outDir = "";
+  outDir = '';
 
   //@computed
   get ok() {
-    return this.path !== "";
+    return this.path !== '';
   }
 
   get dir() {
@@ -95,24 +95,24 @@ class Alignment {
   }
 
   listen = () => {
-    ipcRenderer.on("outDir", this.onOutDir);
+    ipcRenderer.on('outDir', this.onOutDir);
   };
 
   selectOutDir = () => {
-    ipcRenderer.send("open-dir");
+    ipcRenderer.send('open-dir');
   };
 
   openAlignmentFile = () => {
-    ipcRenderer.send("open-item", this.path);
+    ipcRenderer.send('open-item', this.path);
   };
 
   openOutDir = () => {
-    ipcRenderer.send("open-item", this.outDir);
+    ipcRenderer.send('open-item', this.outDir);
   };
 
   onFile = (event, data) => {
-    console.log("file:", data);
-    runInAction("file", () => {
+    console.log('file:', data);
+    runInAction('file', () => {
       this.path = data.filename;
       this.size = data.size;
       this.outDir = parsePath(data.filename).dir;
@@ -121,8 +121,8 @@ class Alignment {
 
   // TODO: this does not belong here
   onOutDir = (event, data) => {
-    console.log("outDir:", data);
-    runInAction("outDir", () => {
+    console.log('outDir:', data);
+    runInAction('outDir', () => {
       this.outDir = data;
     });
   };
@@ -144,8 +144,8 @@ decorate(Alignment, {
   ok: computed,
   dir: computed,
   base: computed,
-  name: computed,
-})
+  name: computed
+});
 
 class Alignments {
   alignments = {};
@@ -165,7 +165,10 @@ class Alignments {
     ipcRenderer.on(
       PARSING_PROGRESS_IPC,
       (event, { alignment, numberSequencesParsed }) => {
-        this.alignments = { ...this.alignments, [alignment.path]: { ...alignment, numberSequencesParsed } }
+        this.alignments = {
+          ...this.alignments,
+          [alignment.path]: { ...alignment, numberSequencesParsed }
+        };
       }
     );
 
@@ -227,33 +230,33 @@ class Alignments {
         [alignment.path]: { ...alignment, error }
       };
     });
-  }
+  };
 
   loadAlignmentFiles = () => {
     ipcRenderer.send(ALIGNMENT_SELECT_IPC);
   };
 
-  addAlignments = (alignments) => {
+  addAlignments = alignments => {
     alignments.map(alignment => this.addAlignment(alignment));
     // Send alignments to main process for processing
     ipcRenderer.send(ALIGNMENTS_ADDED_IPC, alignments);
-  }
+  };
 
-  addAlignment = (alignment) => {
-    console.log("addAlignment...");
+  addAlignment = alignment => {
+    console.log('addAlignment...');
     this.alignments = {
       ...this.alignments,
       [alignment.path]: alignment
     };
-  }
+  };
 
-  removeAlignment = (alignment) => {
+  removeAlignment = alignment => {
     delete this.alignments[alignment.path];
-  }
+  };
 
   removeAllAlignments = () => {
     this.alignments = {};
-  }
+  };
 }
 
 decorate(Alignments, {
@@ -267,7 +270,7 @@ class Run {
   constructor(parent, id) {
     this.parent = parent;
     this.id = id;
-    this.outFilename = parent.input.name ? `${parent.input.name}${id}.tre` : "";
+    this.outFilename = parent.input.name ? `${parent.input.name}${id}.tre` : '';
     this.listen();
   }
 
@@ -277,8 +280,8 @@ class Run {
   outFilename = "";
   running = false;
   numCpu = 2;
-  stdout = "";
-  outSubDir = "";
+  stdout = '';
+  outSubDir = '';
 
   //@computed
   get disabled() {
@@ -295,7 +298,7 @@ class Run {
 
   get args() {
     return [
-      "-T", //TODO: Only for phread version
+      '-T', //TODO: Only for phread version
       this.numCpu,
       '-f',
       'a',
@@ -313,39 +316,38 @@ class Run {
       this.outName || this.outNamePlaceholder,
       '-w',
       // this.outDir,
-      this.parent.input.outDir,
+      this.parent.input.outDir
     ];
   }
-  
 
   run = () => {
     this.running = true;
     const { id, args } = this;
     ipcRenderer.send('run', { id, args });
-  }
-  
+  };
+
   cancel = () => {
     this.running = false;
     ipcRenderer.send('cancel', this.id);
-  }
+  };
 
   //@action
   updateRun = run => {
-    console.log("updateRun:", run);
+    console.log('updateRun:', run);
   };
 
   setArgsList = value => {
-    console.log("setArgsList:", value);
+    console.log('setArgsList:', value);
     this.argsList = value;
   };
 
   setAnalysisType = value => {
-    console.log("setAnalysisType:", value);
+    console.log('setAnalysisType:', value);
     this.analysisType = value;
   };
 
   setNumCpu = count => {
-    console.log("setNumCpu:", count);
+    console.log('setNumCpu:', count);
     this.numCpu = count;
   };
 
@@ -354,21 +356,19 @@ class Run {
   };
 
   clearStdout = () => {
-    this.stdout = "";
+    this.stdout = '';
   };
 
   delete = () => {
     this.cancel();
     this.parent.deleteRun(this);
-  }
+  };
 
-  dispose = () => {
-
-  }
+  dispose = () => {};
 
   testStdout = () => {
     this.stdout += this.stdout.length + '\n';
-  }
+  };
 
   listen = () => {
     //TODO: Define callbacks on the class and remove event listeners on dispose
@@ -378,12 +378,12 @@ class Run {
       const { id, code } = data;
       console.log(`RAxML process for run ${id} closed with code ${code}`);
       if (id === this.id) {
-        runInAction("raxml-close", () => {
+        runInAction('raxml-close', () => {
           this.running = false;
         });
       }
     });
-  }
+  };
 
   onFile = (event, data) => {
     this.outName = `${parsePath(data.filename).name}_${this.id}`;
@@ -391,14 +391,24 @@ class Run {
 
   onStdout = (event, data) => {
     const { id, content } = data;
-    console.log('Raxml output:', data, 'this.id:', this.id, 'is this?', id === this.id);
+    console.log(
+      'Raxml output:',
+      data,
+      'this.id:',
+      this.id,
+      'is this?',
+      id === this.id
+    );
     if (id === this.id) {
-      runInAction("raxml-output", () => {
-        const stdout = content.replace(`Warning, you specified a working directory via "-w"\nKeep in mind that RAxML only accepts absolute path names, not relative ones!`, "");
+      runInAction('raxml-output', () => {
+        const stdout = content.replace(
+          `Warning, you specified a working directory via "-w"\nKeep in mind that RAxML only accepts absolute path names, not relative ones!`,
+          ''
+        );
         this.stdout += stdout;
       });
     }
-  }
+  };
 }
 
 decorate(Run, {
@@ -440,33 +450,33 @@ class RunList {
 
   reset = () => {
     console.log('TODO: Reset runs on new file...');
-  }
+  };
 
   addRun = () => {
     console.log('addRun...');
     let maxId = 0;
-    this.runs.forEach(run => maxId = Math.max(run.id, maxId));
+    this.runs.forEach(run => (maxId = Math.max(run.id, maxId)));
     this.runs.push(new Run(this, maxId + 1));
     this.activeIndex = this.runs.length - 1;
-  }
-  
-  deleteRun = (run) => {
-    const runIndex = this.runs.findIndex((m => m.id === run.id));
+  };
+
+  deleteRun = run => {
+    const runIndex = this.runs.findIndex(m => m.id === run.id);
     this.runs.splice(runIndex, 1);
     // run.dispose();
     if (this.runs.length === 0) {
       this.runs.push(new Run(this, 1));
     }
     this.activeIndex = Math.min(this.runs.length - 1, this.activeIndex);
-  }
+  };
 
-  setActive = (index) => {
+  setActive = index => {
     this.activeIndex = index;
-  }
+  };
 
   deleteActive = () => {
     this.deleteRun(this.activeRun);
-  }
+  };
 }
 
 decorate(RunList, {
@@ -478,8 +488,8 @@ decorate(RunList, {
   deleteRun: action,
   setActive: action,
   deleteActive: action,
-  testStdout: action,
-})
+  testStdout: action
+});
 
 const store = new RunList();
 
