@@ -296,7 +296,6 @@ class Run {
   combineOutput = false;
 
   raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
-  numCpu = 2;
   stdout = '';
   outSubDir = '';
 
@@ -311,6 +310,7 @@ class Run {
   }
 
   get cpuOptions() {
+    // TODO: Daniel why start at 2 here?
     return range(2, MAX_NUM_CPUS + 1);
   }
 
@@ -391,11 +391,6 @@ class Run {
   // Open system dialog to choose file
   loadTreeFile = () => {
     ipcRenderer.send(FILE_SELECT_IPC, this);
-  };
-
-  setNumCpu = count => {
-    console.log('setNumCpu:', count);
-    this.numCpu = count;
   };
 
   setOutFilename = name => {
@@ -554,7 +549,6 @@ decorate(Run, {
   combineOutput: observable,
   // Daniel
   raxmlBinary: observable,
-  numCpu: observable,
   stdout: observable,
   outSubDir: observable,
   //
@@ -565,7 +559,6 @@ decorate(Run, {
   setAnalysisType: action,
   setCombineOutput: action,
   loadTreeFile: action,
-  setNumCpu: action,
   setOutName: action,
   clearStdout: action,
   showInFolder: action,
