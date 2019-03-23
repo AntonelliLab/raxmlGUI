@@ -1,7 +1,6 @@
 // @flow
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -23,11 +22,6 @@ type Props = {
 
 class RgConvertPanel extends Component<Props> {
   props: Props;
-
-  onClearPressed = () => {
-    this.props.removeAllAlignments();
-    this.props.history.push('/');
-  };
 
   onCreateRunPressed = () => {
     const { alignments, history } = this.props;
@@ -56,14 +50,6 @@ class RgConvertPanel extends Component<Props> {
     const { alignments } = this.props;
     return (
       <div className="convert-panel">
-        <Button
-          className="button"
-          variant="contained"
-          color="primary"
-          onClick={this.onClearPressed}
-        >
-          Clear all
-        </Button>
         {this.renderAlignmentInfo()}
         <Button
           className="button"
