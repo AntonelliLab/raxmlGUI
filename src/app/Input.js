@@ -142,42 +142,42 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
     });
   }
 
-  const FileInfo = alignments.ok ? (
-    <div className={classes.files}>
-      <div className={classes.alignments}>
-        Input
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={alignments.openInputFile}>
-              { alignments.filename }
-            </span>
-          </div>
-          <div>
-            Size: { format(',')(alignments.size) } bytes
-          </div>
-          <div>
-            Type: Not detected yet
-          </div>
-        </div>
-      </div>
-      <div className={classes.output}>
-        Output
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={alignments.openOutDir}>
-              { alignments.outDir }
-            </span>
-          </div>
-          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
-            Change
-            <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
-          </Button>
-        </div>
-      </div>
-    </div>
-  ) : null;
+  // const FileInfo = alignments.ok ? (
+  //   <div className={classes.files}>
+  //     <div className={classes.alignments}>
+  //       Input
+  //       <div className={classes.fileInfo}>
+  //         <div>
+  //           Path:
+  //           <span className={classes.path} onClick={alignments.openInputFile}>
+  //             { alignments.filename }
+  //           </span>
+  //         </div>
+  //         <div>
+  //           Size: { format(',')(alignments.size) } bytes
+  //         </div>
+  //         <div>
+  //           Type: Not detected yet
+  //         </div>
+  //       </div>
+  //     </div>
+  //     <div className={classes.output}>
+  //       Output
+  //       <div className={classes.fileInfo}>
+  //         <div>
+  //           Path:
+  //           <span className={classes.path} onClick={alignments.openOutDir}>
+  //             { alignments.outDir }
+  //           </span>
+  //         </div>
+  //         <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
+  //           Change
+  //           <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // ) : null;
 
   return (
     <div className={classes.Input}>
@@ -194,7 +194,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
     </div>
   );
 }));
-    
+
 
 Input.propTypes = {
   classes: PropTypes.object.isRequired,
