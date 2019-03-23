@@ -285,7 +285,21 @@ class Run {
   id = 0;
 
   //@observable
-  outFilename = "";
+  analysisType = 'ML+BS';
+  argsList = [];
+  createdAt = undefined;
+  dataType = undefined;
+  globalArgs = undefined;
+  inFile = undefined;
+  inFileFolder = undefined;
+  isPartitioned = false;
+  outFilename = '';
+  partitionFile = undefined;
+  partitions = undefined;
+  path = undefined;
+  sequences = undefined;
+
+  raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
   running = false;
   numCpu = 2;
   stdout = '';
@@ -321,7 +335,7 @@ class Run {
       '-s',
       this.parent.input.filename,
       '-n',
-      this.outName || this.outNamePlaceholder,
+      this.outFilename,
       '-w',
       // this.outDir,
       this.parent.input.outDir
@@ -394,8 +408,8 @@ class Run {
   };
 
   onFile = (event, data) => {
-    this.outName = `${parsePath(data.filename).name}_${this.id}`;
-  }
+    this.outFilename = `${parsePath(data.filename).name}_${this.id}`;
+  };
 
   onStdout = (event, data) => {
     const { id, content } = data;
@@ -420,7 +434,19 @@ class Run {
 }
 
 decorate(Run, {
-  type: observable,
+  analysisType: observable,
+  argsList: observable,
+  createdAt: observable,
+  dataType: observable,
+  globalArgs: observable,
+  inFile: observable,
+  inFileFolder: observable,
+  isPartitioned: observable,
+  outFilename: observable,
+  partitionFile: observable,
+  partitions: observable,
+  path: observable,
+  sequences: observable,
   raxmlBinary: observable,
   running: observable,
   numCpu: observable,
