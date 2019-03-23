@@ -15,6 +15,7 @@ import './Raxml.css';
 import RgAnalysisSelect from './components/select/RgAnalysisSelect';
 import RgRunOptions from './components/RgRunOptions';
 import RgOutFileNameInput from './components/input/RgOutFileNameInput';
+import RgCpuSelect from './components/select/RgCpuSelect';
 
 const styles = theme => ({
   formControl: {
