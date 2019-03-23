@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
+import { observer } from 'mobx-react';
 
 type Props = {
 };
@@ -29,4 +30,4 @@ class RgOutFileNameInput extends Component<Props> {
   }
 }
 
-export default RgOutFileNameInput;
+export default observer(RgOutFileNameInput);

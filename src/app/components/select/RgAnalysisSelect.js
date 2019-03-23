@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -68,4 +69,4 @@ class RgAnalysisSelect extends Component<Props> {
   }
 }
 
-export default RgAnalysisSelect;
+export default observer(RgAnalysisSelect);
