@@ -296,7 +296,6 @@ class Run {
   combineOutput = false;
 
   raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
-  running = false;
   numCpu = 2;
   stdout = '';
   outSubDir = '';
@@ -345,9 +344,9 @@ class Run {
     // TODO: listen to the results
   };
 
-  cancel = () => {
-    this.running = false;
-    ipcRenderer.send('cancel', this.id);
+  cancelRun = () => {
+    this.isCalculating = false;
+    ipcRenderer.send('cancelRun', this.id);
   };
 
   //@action
@@ -411,7 +410,7 @@ class Run {
   };
 
   removeRun = () => {
-    this.cancel();
+    this.cancelRun();
     this.parent.deleteRun(this);
   };
 
@@ -495,7 +494,7 @@ class Run {
       console.log(`RAxML process for run ${id} closed with code ${code}`);
       if (id === this.id) {
         runInAction('raxml-close', () => {
-          this.running = false;
+          this.isCalculating = false;
         });
       }
     });
@@ -548,14 +547,16 @@ decorate(Run, {
   calculationComplete: observable,
   isCalculating: observable,
   combineOutput: observable,
+  // Daniel
   raxmlBinary: observable,
-  running: observable,
   numCpu: observable,
   stdout: observable,
   outSubDir: observable,
+  //
   startRunDisabled: computed,
   outDir: computed,
   args: computed,
+  //
   setAnalysisType: action,
   setCombineOutput: action,
   loadTreeFile: action,
