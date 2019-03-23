@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import { runTypeNames } from './store';
 import './Raxml.css';
 
+import RgOutFileNameInput from './components/input/RgOutFileNameInput';
 
 const styles = theme => ({
   formControl: {
@@ -115,16 +116,9 @@ class Raxml extends React.Component {
             </Select>
             <FormHelperText>Number of cpus</FormHelperText>
           </FormControl>
-          <FormControl className={classes.formControl}>
-            <TextField
-              className={classes.textField}
-              onChange={(e) => run.setOutName(e.target.value)}
-              id="outName"
-              value={run.outName}
-              placeholder={run.outNamePlaceholder}
-              helperText="Output suffix"
-            />
-          </FormControl>
+
+          <RgOutFileNameInput {...this.props} />
+
           <FormControl className={classes.formControl}>
             <Button variant="outlined" color="default" onClick={run.delete}>
               <IconDelete />

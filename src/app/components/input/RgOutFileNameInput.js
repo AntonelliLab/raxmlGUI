@@ -1,15 +1,9 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Input, Typography } from '@material-ui/core';
-
-import { updateRun } from '../../actions';
-
-import type { Run } from '../../reducers/types';
+import FormControl from "@material-ui/core/FormControl";
+import TextField from "@material-ui/core/TextField";
 
 type Props = {
-  run: Run,
-  updateRun: () => void
 };
 
 /**
@@ -18,30 +12,21 @@ type Props = {
 class RgOutFileNameInput extends Component<Props> {
   props: Props;
 
-  onInputChange(newValue) {
-    const { run } = this.props;
-    const updatedRun = Object.assign({}, run);
-    updatedRun.outFilename = newValue;
-    this.props.updateRun(updatedRun);
-  }
-
   render() {
-    const { run } = this.props;
+    const { classes, run } = this.props;
     return (
-      <div>
-        <Typography variant='body2'>
-          Outfile name
-        </Typography>
-        <Input
+      <FormControl className={classes.formControl}>
+        <TextField
+          className={classes.textField}
+          onChange={e => run.setOutFilename(e.target.value)}
+          id="outName"
           value={run.outFilename}
-          onChange={(event)  => this.onInputChange(event.target.value)}
+          placeholder="Placeholder"
+          helperText="Outfile name"
         />
-      </div>
+      </FormControl>
     );
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgOutFileNameInput);
+export default RgOutFileNameInput;
