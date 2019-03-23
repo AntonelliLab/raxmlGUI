@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../reducers/types';
 
@@ -10,14 +10,12 @@ import RgBrLBoolean from './toogle/RgBrLBoolean';
 import RgModelSelect from './select/RgModelSelect';
 import RgSettingsSelect from './select/RgSettingsSelect';
 import RgOutgroupSelect from './select/RgOutgroupSelect';
-
-import { updateRun } from '../actions';
+import RgLoadTreeFileButton from './button/RgLoadTreeFileButton';
+import RgCombineOutputBoolean from './toogle/RgCombineOutputBoolean';
 
 import './RgRunOptions.css';
 
-import { runSettings } from '../settings/run';
-import RgLoadTreeFileButton from './button/RgLoadTreeFileButton';
-import RgCombineOutputBoolean from './toogle/RgCombineOutputBoolean';
+import { runSettings } from '../../settings/run';
 
 const {
   numberRunsOptions,
@@ -32,7 +30,8 @@ type Props = {
 class RgRunOptions extends Component<Props> {
   props: Props;
 
-  renderOptions(run) {
+  renderOptions() {
+    const { run } = this.props;
     switch (run.analysisType) {
       case 'FT':
         // TODO fast tree search has an outgroup select, but it changes nothing in the args
@@ -149,12 +148,8 @@ class RgRunOptions extends Component<Props> {
   }
 
   render() {
-    const { run } = this.props;
-    return <div className="RgRunOptions">{this.renderOptions(run)}</div>;
+    return <div className="RgRunOptions">{this.renderOptions()}</div>;
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgRunOptions);
+export default observer(RgRunOptions);
