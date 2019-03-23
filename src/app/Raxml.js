@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import { runTypeNames } from './store';
 import './Raxml.css';
 
+import RgAnalysisSelect from "./components/select/RgAnalysisSelect";
 import RgOutFileNameInput from './components/input/RgOutFileNameInput';
 
 const styles = theme => ({
@@ -83,27 +84,14 @@ Console.propTypes = {
 const ObservableConsole = observer(Console)
 
 class Raxml extends React.Component {
-
   render() {
     const { classes, run } = this.props;
 
-    const MenuItemsRun = runTypeNames.map((name, index) => (
-      <MenuItem key={index} value={index}>{name}</MenuItem>
-    ));
-    
     return (
       <div className="Raxml">
         <div className="controls">
-          <FormControl className={classes.formControl}>
-            <Select
-              value={run.type}
-              onChange={(_, item) => run.setType(item.props.value)}
-              name="run"
-            >
-              { MenuItemsRun }
-            </Select>
-            <FormHelperText>Run</FormHelperText>
-          </FormControl>
+          <RgAnalysisSelect {...this.props} />
+
           <FormControl className={classes.formControl}>
             <Select
               value={run.numCpu}
