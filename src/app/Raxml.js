@@ -12,7 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import { runTypeNames } from './store';
 import './Raxml.css';
 
-import RgAnalysisSelect from "./components/select/RgAnalysisSelect";
+import RgAnalysisSelect from './components/select/RgAnalysisSelect';
+import RgRunOptions from './components/RgRunOptions';
 import RgOutFileNameInput from './components/input/RgOutFileNameInput';
 
 const styles = theme => ({
@@ -143,6 +144,9 @@ class Raxml extends React.Component {
             ) : null }
           </div>
         </div>
+
+        <RgRunOptions {...this.props} />
+
         <ObservableConsole run={run} />
       </div>
     );
