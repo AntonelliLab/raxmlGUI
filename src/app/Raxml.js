@@ -13,6 +13,7 @@ import RgRunOptions from './components/RgRunOptions';
 import RgOutFileNameInput from './components/input/RgOutFileNameInput';
 import RgCpuSelect from './components/select/RgCpuSelect';
 import RgStartRunButton from './components/button/RgStartRunButton';
+import RgWorkingDirectorySelectButton from './components/button/RgWorkingDirectorySelectButton';
 
 const styles = theme => ({
   formControl: {
@@ -91,6 +92,7 @@ class Raxml extends React.Component {
           <RgAnalysisSelect {...this.props} />
           <RgCpuSelect {...this.props} />
           <RgOutFileNameInput {...this.props} />
+          <RgWorkingDirectorySelectButton {...this.props} />
 
           <FormControl className={classes.formControl}>
             <Button variant="outlined" color="default" onClick={run.delete}>

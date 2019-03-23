@@ -405,6 +405,10 @@ class Run {
     this.outFilename = name;
   };
 
+  selectWorkingDirectory = () => {
+    ipcRenderer.send(FOLDER_SELECT_IPC, this);
+  };
+
   clearStdout = () => {
     this.stdout = '';
   };
@@ -427,6 +431,12 @@ class Run {
         Object.assign({}, args, this.globalArgs, { t: path })
       );
       this.setArgsList(argsListTree);
+    });
+
+    // Receive updated run with selected working directory
+    ipcRenderer.on(FOLDER_SELECTED_IPC, (event, updatedRun) => {
+      // TODO: change
+      this.updateRun(updatedRun);
     });
 
     // TODO: listen to calculation progress
