@@ -12,6 +12,7 @@ import RgAnalysisSelect from './components/select/RgAnalysisSelect';
 import RgRunOptions from './components/RgRunOptions';
 import RgOutFileNameInput from './components/input/RgOutFileNameInput';
 import RgCpuSelect from './components/select/RgCpuSelect';
+import RgStartRunButton from './components/button/RgStartRunButton';
 
 const styles = theme => ({
   formControl: {
@@ -101,15 +102,7 @@ class Raxml extends React.Component {
         <div className={classes.run}>
           <div>
             {!run.running ? (
-              <Button
-                variant="contained"
-                className={classes.button}
-                disabled={run.disabled}
-                color="primary"
-                onClick={run.run}
-              >
-                Run
-              </Button>
+              <RgStartRunButton {...this.props} />
             ) : (
               <Button
                 variant="contained"
