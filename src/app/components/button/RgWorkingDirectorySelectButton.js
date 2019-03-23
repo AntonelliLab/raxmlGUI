@@ -1,11 +1,11 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
+import { observer } from 'mobx-react';
+import FolderIcon from '@material-ui/icons/Folder';
+import classNames from 'classnames';
 
 import type { Run } from '../../reducers/types';
-
-import { selectWorkingDirectory } from '../../actions';
 
 type Props = {
   run: Run,
@@ -18,27 +18,20 @@ type Props = {
 class RgWorkingDirectorySelectButton extends Component<Props> {
   props: Props;
 
-  onSelectWorkingDirectoryClick() {
-    const { run } = this.props;
-    // The new working directory is stored in the global args for the run
-    this.props.selectWorkingDirectory(run);
-  }
-
   render() {
+    const { classes, run } = this.props;
     return (
       <Button
-        className="button"
-        variant="contained"
-        color="primary"
-        onClick={() => this.onSelectWorkingDirectoryClick()}
+        size="small"
+        variant="outlined"
+        className={classes.changeOutDir}
+        onClick={run.selectWorkingDirectory}
       >
         Select working directory
+        <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
       </Button>
     );
   }
 }
 
-export default connect(
-  undefined,
-  { selectWorkingDirectory }
-)(RgWorkingDirectorySelectButton);
+export default observer(RgWorkingDirectorySelectButton);
