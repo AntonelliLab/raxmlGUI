@@ -1,12 +1,10 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../../reducers/types';
-
-import { updateRun } from '../../actions';
 
 type Props = {
   run: Run,
@@ -23,7 +21,7 @@ class RgCombineOutputBoolean extends Component<Props> {
     // Set updated run with toggled value
     const { run } = this.props;
     const updatedRun = Object.assign({}, run, { combineOutput: !run.combineOutput});
-    this.props.updateRun(updatedRun);
+    run.setCombineOutput(updatedRun.combineOutput);
   }
 
   render() {
@@ -44,7 +42,4 @@ class RgCombineOutputBoolean extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgCombineOutputBoolean);
+export default observer(RgCombineOutputBoolean);

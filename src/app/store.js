@@ -289,7 +289,8 @@ class Run {
   partitionFile = undefined;
   partitions = undefined;
   path = undefined;
-  sequences = undefined;
+  sequences = [];
+  combineOutput = false;
 
   raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
   running = false;
@@ -363,6 +364,11 @@ class Run {
   setAnalysisType = value => {
     console.log('setAnalysisType:', value);
     this.analysisType = value;
+  };
+
+  setCombineOutput = value => {
+    console.log('setCombineOutput:', value);
+    this.combineOutput = value;
   };
 
   setNumCpu = count => {
@@ -444,6 +450,7 @@ decorate(Run, {
   partitions: observable,
   path: observable,
   sequences: observable,
+  combineOutput: observable,
   raxmlBinary: observable,
   running: observable,
   numCpu: observable,

@@ -1,12 +1,10 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-
-import { updateRun } from '../../actions';
+import { observer } from 'mobx-react';
 
 type Props = {
   run: Run,
@@ -48,7 +46,7 @@ class RgOutgroupSelect extends Component<Props> {
       }
       return true;
     });
-    this.props.updateRun(updatedRun);
+    run.setArgsList(updatedRun.argsList);
     this.setState({ value });
   }
 
@@ -76,7 +74,4 @@ class RgOutgroupSelect extends Component<Props> {
   }
 }
 
-export default connect(
-  undefined,
-  { updateRun }
-)(RgOutgroupSelect);
+export default observer(RgOutgroupSelect);
