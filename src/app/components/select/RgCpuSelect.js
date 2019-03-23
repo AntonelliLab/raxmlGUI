@@ -6,9 +6,14 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import { observer } from 'mobx-react';
 
-import type { Run } from '../../reducers/types';
+import RgSettingsSelect from './RgSettingsSelect';
+
+import type { Run } from '../../../reducers/types';
 
 
+import { runSettings } from '../../../settings/run';
+
+const { numberThreadsOption } = runSettings;
 
 type Props = {
   run: Run,
@@ -25,20 +30,13 @@ class RgCpuSelect extends Component<Props> {
   render() {
     const { run, classes } = this.props;
     return (
-      <FormControl className={classes.formControl}>
-        <InputLabel>Number of cpus</InputLabel>
-        <Select
-          value={run.numCpu}
-          onChange={(_, item) => run.setNumCpu(item.props.value)}
-          name="Number of cpus"
-        >
-          {run.cpuOptions.map(value => (
-            <MenuItem key={value} value={value}>
-              {value}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <RgSettingsSelect
+        run={run}
+        globalArg
+        description="Number of threads."
+        option={numberThreadsOption}
+        options={run.cpuOptions}
+      />
     );
   }
 }
