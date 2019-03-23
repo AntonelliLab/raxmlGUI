@@ -287,8 +287,12 @@ class Run {
   //@observable
   analysisType = 'ML+BS';
   argsList = [];
+  code = undefined;
   createdAt = undefined;
+  data = '';
   dataType = undefined;
+  flagsrunCode = undefined;
+  flagsrunData = undefined;
   globalArgs = {};
   inFile = undefined;
   inFileFolder = undefined;
@@ -298,6 +302,8 @@ class Run {
   partitions = undefined;
   path = undefined;
   sequences = [];
+  calculationComplete = false;
+  isCalculating = false;
   combineOutput = false;
 
   raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
@@ -458,11 +464,14 @@ class Run {
     });
 
     // Receive a progress update for one of the runs being calculated
-    ipcRenderer.on(CALCULATION_PROGRESS_IPC, (event, { run, XXXProgressUnit }) => {
-      console.log(run, XXXProgressUnit);
-      this.updateRun(run);
-      this.onStdout(event, run);
-    });
+    ipcRenderer.on(
+      CALCULATION_PROGRESS_IPC,
+      (event, { run, XXXProgressUnit }) => {
+        console.log(run, XXXProgressUnit);
+        this.updateRun(run);
+        this.onStdout(event, run);
+      }
+    );
 
     // Receive update that one run has completed calculation
     ipcRenderer.on(CALCULATION_END_IPC, (event, { run }) => {
@@ -473,7 +482,6 @@ class Run {
     ipcRenderer.on(CALCULATION_ERROR_IPC, (event, { run, error }) => {
       console.log(run, error);
     });
-
 
     //TODO: Define callbacks on the class and remove event listeners on dispose
     ipcRenderer.on('file', this.onFile);
@@ -518,8 +526,12 @@ class Run {
 decorate(Run, {
   analysisType: observable,
   argsList: observable,
+  code: observable,
   createdAt: observable,
+  data: observable,
   dataType: observable,
+  flagsrunCode: observable,
+  flagsrunData: observable,
   globalArgs: observable,
   inFile: observable,
   inFileFolder: observable,
@@ -529,6 +541,8 @@ decorate(Run, {
   partitions: observable,
   path: observable,
   sequences: observable,
+  calculationComplete: observable,
+  isCalculating: observable,
   combineOutput: observable,
   raxmlBinary: observable,
   running: observable,
