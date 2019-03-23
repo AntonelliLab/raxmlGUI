@@ -346,7 +346,8 @@ class Run {
 
   cancelRun = () => {
     this.isCalculating = false;
-    ipcRenderer.send('cancelRun', this.id);
+    // Send runs to main process
+    ipcRenderer.send(CALCULATION_CANCEL_IPC, this);
   };
 
   //@action
@@ -482,6 +483,12 @@ class Run {
     // Receive update that the calculation of one run has failed
     ipcRenderer.on(CALCULATION_ERROR_IPC, (event, { run, error }) => {
       console.log(run, error);
+      this.updateRun(run);
+    });
+
+    // Receive update that one run has been canceled
+    ipcRenderer.on(CALCULATION_CANCELED_IPC, (event, { run }) => {
+      this.updateRun(run);
     });
 
     //TODO: Define callbacks on the class and remove event listeners on dispose
