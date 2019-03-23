@@ -95,7 +95,7 @@ class Raxml extends React.Component {
           <RgWorkingDirectorySelectButton {...this.props} />
 
           <FormControl className={classes.formControl}>
-            <Button variant="outlined" color="default" onClick={run.delete}>
+            <Button variant="outlined" color="default" onClick={run.removeRun}>
               <IconDelete />
               Remove run
             </Button>
@@ -125,6 +125,14 @@ class Raxml extends React.Component {
                 Clear
               </Button>
             ) : null}
+            <Button
+              variant="contained"
+              className={classes.button}
+              color="primary"
+              onClick={() => run.showInFolder(run.globalArgs.w)}
+            >
+              Results Folder
+            </Button>
           </div>
         </div>
         <RgRunOptions {...this.props} />

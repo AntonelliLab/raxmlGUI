@@ -413,9 +413,14 @@ class Run {
     this.stdout = '';
   };
 
-  delete = () => {
+  removeRun = () => {
     this.cancel();
     this.parent.deleteRun(this);
+  };
+
+  // TODO: this maybe needed in a different store class as well, i.e. alignment ?
+  showInFolder = outputPath => {
+    ipcRenderer.send(FOLDER_OPEN_IPC, outputPath);
   };
 
   dispose = () => {};
@@ -560,7 +565,8 @@ decorate(Run, {
   setNumCpu: action,
   setOutName: action,
   clearStdout: action,
-  delete: action,
+  showInFolder: action,
+  removeRun: action,
   startRun: action
 });
 
