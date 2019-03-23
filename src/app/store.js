@@ -419,8 +419,6 @@ class Run {
     ipcRenderer.send(FOLDER_OPEN_IPC, outputPath);
   };
 
-  dispose = () => {};
-
   testStdout = () => {
     this.stdout += this.stdout.length + '\n';
   };
@@ -577,19 +575,11 @@ class RunList {
 
   constructor() {
     this.addRun();
-
-    ipcRenderer.on('filename', (event, filename) => {
-      this.reset();
-    });
   }
 
   get activeRun() {
     return this.runs[this.activeIndex];
   }
-
-  reset = () => {
-    console.log('TODO: Reset runs on new file...');
-  };
 
   addRun = () => {
     console.log('addRun...');
@@ -602,7 +592,6 @@ class RunList {
   deleteRun = run => {
     const runIndex = this.runs.findIndex(m => m.id === run.id);
     this.runs.splice(runIndex, 1);
-    // run.dispose();
     if (this.runs.length === 0) {
       this.runs.push(new Run(this, 1));
     }
