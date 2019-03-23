@@ -267,27 +267,20 @@ class Run {
   constructor(parent, id) {
     this.parent = parent;
     this.id = id;
-    this.outName = parent.input.name ? `${parent.input.name}${id}.tre` : '';
-    this.outNamePlaceholder = `${id}.tre`;
+    this.outFilename = parent.input.name ? `${parent.input.name}${id}.tre` : "";
     this.listen();
   }
 
   id = 0;
-  
+
   //@observable
-  type = 2;
-  raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
+  outFilename = "";
   running = false;
   numCpu = 2;
-  stdout = '';
-  outName = '';
-  outSubDir = '';
+  stdout = "";
+  outSubDir = "";
 
   //@computed
-  get typeName() {
-    return runTypeNames[this.type];
-  }
-
   get disabled() {
     return !this.parent.input.ok;
   }
@@ -302,7 +295,7 @@ class Run {
 
   get args() {
     return [
-      '-T', //TODO: Only for phread version
+      "-T", //TODO: Only for phread version
       this.numCpu,
       '-f',
       'a',
@@ -337,23 +330,32 @@ class Run {
   }
 
   //@action
-  setType = (index) => {
-    console.log('setType:', index);
-    this.type = index;
-  }
+  updateRun = run => {
+    console.log("updateRun:", run);
+  };
 
-  setNumCpu = (count) => {
-    console.log('setNumCpu:', count);
+  setArgsList = value => {
+    console.log("setArgsList:", value);
+    this.argsList = value;
+  };
+
+  setAnalysisType = value => {
+    console.log("setAnalysisType:", value);
+    this.analysisType = value;
+  };
+
+  setNumCpu = count => {
+    console.log("setNumCpu:", count);
     this.numCpu = count;
-  }
+  };
 
-  setOutName = (name) => {
-    this.outName = name;
-  }
+  setOutFilename = name => {
+    this.outFilename = name;
+  };
 
   clearStdout = () => {
-    this.stdout = '';
-  }
+    this.stdout = "";
+  };
 
   delete = () => {
     this.cancel();
@@ -405,18 +407,17 @@ decorate(Run, {
   running: observable,
   numCpu: observable,
   stdout: observable,
-  outName: observable,
+  outFilename: observable,
   outSubDir: observable,
-  typeName: computed,
   disabled: computed,
   outDir: computed,
   args: computed,
-  setType: action,
+  setAnalysisType: action,
   setNumCpu: action,
   setOutName: action,
   clearStdout: action,
-  delete: action,
-})
+  delete: action
+});
 
 class RunList {
   runs = [];
