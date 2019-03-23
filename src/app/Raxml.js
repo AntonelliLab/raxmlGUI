@@ -110,7 +110,7 @@ class Raxml extends React.Component {
                 variant="contained"
                 className={classes.button}
                 color="secondary"
-                onClick={run.cancel}
+                onClick={run.cancelRun}
               >
                 Cancel
               </Button>
