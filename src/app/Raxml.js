@@ -3,13 +3,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import IconDelete from '@material-ui/icons/Delete';
-import TextField from '@material-ui/core/TextField';
-import { runTypeNames } from './store';
+
 import './Raxml.css';
 
 import RgAnalysisSelect from './components/select/RgAnalysisSelect';
@@ -19,27 +15,25 @@ import RgCpuSelect from './components/select/RgCpuSelect';
 
 const styles = theme => ({
   formControl: {
-    marginRight: '20px',
+    marginRight: '20px'
   },
   button: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing.unit
   },
-  textField: {
-  },
+  textField: {},
   run: {
     marginTop: '20px',
     display: 'flex',
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 });
 
 class Console extends React.Component {
-
   keepToBottom = true;
 
-  onMountStdoutContainer = (el) => {
+  onMountStdoutContainer = el => {
     this.stdoutContainer = el;
-  }
+  };
 
   componentDidUpdate() {
     if (this.keepToBottom) {
@@ -52,38 +46,39 @@ class Console extends React.Component {
     const diff = scrollHeight - clientHeight;
     const scrollIsAtBottom = scrollTop === diff;
     return scrollIsAtBottom;
-  }
-  
+  };
+
   scrollConsoleToBottom = () => {
     const { scrollHeight, clientHeight } = this.stdoutContainer;
     const diff = scrollHeight - clientHeight;
     this.stdoutContainer.scrollTop = diff;
-  }
+  };
 
   render() {
     const { run } = this.props;
     return (
-      <div className="Console stdoutContainer" ref={this.onMountStdoutContainer}>
+      <div
+        className="Console stdoutContainer"
+        ref={this.onMountStdoutContainer}
+      >
         <div>
           <code className="code">
-            {run.raxmlBinary} { run.args.join(' ') }
+            {run.raxmlBinary} {run.args.join(' ')}
           </code>
         </div>
         <div>
-          <code className="code">
-          { run.stdout }
-          </code>
+          <code className="code">{run.stdout}</code>
         </div>
       </div>
-    )
+    );
   }
 }
 
 Console.propTypes = {
-  run: PropTypes.object.isRequired,
-}
+  run: PropTypes.object.isRequired
+};
 
-const ObservableConsole = observer(Console)
+const ObservableConsole = observer(Console);
 
 class Raxml extends React.Component {
   render() {
@@ -105,31 +100,36 @@ class Raxml extends React.Component {
         </div>
         <div className={classes.run}>
           <div>
-          
-            { !run.running ? (
-              <Button variant="contained" className={classes.button}
+            {!run.running ? (
+              <Button
+                variant="contained"
+                className={classes.button}
                 disabled={run.disabled}
-                color='primary'
+                color="primary"
                 onClick={run.run}
               >
                 Run
               </Button>
             ) : (
-              <Button variant="contained" className={classes.button}
-                color='secondary'
+              <Button
+                variant="contained"
+                className={classes.button}
+                color="secondary"
                 onClick={run.cancel}
               >
                 Cancel
               </Button>
             )}
-            { run.stdout ? (
-              <Button variant="contained" className={classes.button}
-                color='default'
+            {run.stdout ? (
+              <Button
+                variant="contained"
+                className={classes.button}
+                color="default"
                 onClick={run.clearStdout}
               >
                 Clear
               </Button>
-            ) : null }
+            ) : null}
           </div>
         </div>
         <RgRunOptions {...this.props} />
@@ -141,7 +141,7 @@ class Raxml extends React.Component {
 
 Raxml.propTypes = {
   classes: PropTypes.object.isRequired,
-  run: PropTypes.object.isRequired,
+  run: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(observer(Raxml));
