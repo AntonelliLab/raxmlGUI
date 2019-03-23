@@ -379,6 +379,12 @@ class Run {
     this.combineOutput = value;
   };
 
+  // Open system dialog to choose file
+  loadTreeFile = () => {
+    ipcRenderer.send(FILE_SELECT_IPC, this);
+  };
+
+
   setNumCpu = count => {
     console.log('setNumCpu:', count);
     this.numCpu = count;
@@ -404,6 +410,14 @@ class Run {
   };
 
   listen = () => {
+    // Receive tree file path
+    ipcRenderer.on(FILE_SELECTED_IPC, (event, path) => {
+      const argsListTree = this.argsList.map(args =>
+        Object.assign({}, args, this.globalArgs, { t: path })
+      );
+      this.setArgsList(argsListTree);
+    });
+
     //TODO: Define callbacks on the class and remove event listeners on dispose
     ipcRenderer.on('file', this.onFile);
     ipcRenderer.on('raxml-output', this.onStdout);
@@ -469,6 +483,8 @@ decorate(Run, {
   outDir: computed,
   args: computed,
   setAnalysisType: action,
+  setCombineOutput: action,
+  loadTreeFile: action,
   setNumCpu: action,
   setOutName: action,
   clearStdout: action,
