@@ -1,21 +1,18 @@
 // @flow
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import { observer } from 'mobx-react';
 
 import type { Run } from '../../reducers/types';
 
-import RgSettingsSelect from './RgSettingsSelect';
 
-import { updateRun, getCPUs } from '../../actions';
-
-import { runSettings } from '../../settings/run';
-
-const { numberThreadsOption } = runSettings;
 
 type Props = {
   run: Run,
   cpus: [],
-  getCPUs: () => void
 };
 
 /**
@@ -25,38 +22,25 @@ type Props = {
 class RgCpuSelect extends Component<Props> {
   props: Props;
 
-  // Getting the info about the cpu's of the machine can potentially be placed somewhere in the app start logic other than here
-  componentDidMount() {
-    this.props.getCPUs();
-  }
-
   render() {
-    const { run, cpus } = this.props;
-    const options = [];
-    let x = numberThreadsOption.min;
-    while (x <= cpus.length) {
-      options.push(x);
-      x += 1;
-    }
+    const { run, classes } = this.props;
     return (
-      <div>
-        <RgSettingsSelect
-          run={run}
-          globalArg
-          description="Number of threads."
-          option={numberThreadsOption}
-          options={options}
-        />
-      </div>
+      <FormControl className={classes.formControl}>
+        <InputLabel>Number of cpus</InputLabel>
+        <Select
+          value={run.numCpu}
+          onChange={(_, item) => run.setNumCpu(item.props.value)}
+          name="Number of cpus"
+        >
+          {run.cpuOptions.map(value => (
+            <MenuItem key={value} value={value}>
+              {value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
 }
 
-function mapStateToProps(state) {
-  return { cpus: state.app.cpus };
-}
-
-export default connect(
-  mapStateToProps,
-  { updateRun, getCPUs }
-)(RgCpuSelect);
+export default observer(RgCpuSelect);

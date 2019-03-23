@@ -92,20 +92,7 @@ class Raxml extends React.Component {
       <div className="Raxml">
         <div className="controls">
           <RgAnalysisSelect {...this.props} />
-
-          <FormControl className={classes.formControl}>
-            <Select
-              value={run.numCpu}
-              onChange={(_, item) => run.setNumCpu(item.props.value)}
-              name="Number of cpus"
-              >
-              { run.cpuOptions.map(value => (
-                <MenuItem key={value} value={value}>{value}</MenuItem>
-              )) }
-            </Select>
-            <FormHelperText>Number of cpus</FormHelperText>
-          </FormControl>
-
+          <RgCpuSelect {...this.props} />
           <RgOutFileNameInput {...this.props} />
 
           <FormControl className={classes.formControl}>
@@ -144,9 +131,7 @@ class Raxml extends React.Component {
             ) : null }
           </div>
         </div>
-
         <RgRunOptions {...this.props} />
-
         <ObservableConsole run={run} />
       </div>
     );
