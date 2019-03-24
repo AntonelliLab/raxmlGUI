@@ -1,4 +1,4 @@
-import { decorate, observable, computed, action, runInAction } from 'mobx';
+import { decorate, observable, computed, action, runInAction, toJS } from 'mobx';
 import ipcRenderer from '../app/ipcRenderer';
 import parsePath from 'parse-filepath';
 import cpus from 'cpus';
@@ -347,7 +347,7 @@ class Run {
   cancelRun = () => {
     this.isCalculating = false;
     // Send runs to main process
-    ipcRenderer.send(CALCULATION_CANCEL_IPC, this);
+    ipcRenderer.send(CALCULATION_CANCEL_IPC, toJS(this));
   };
 
   //@action
@@ -390,7 +390,7 @@ class Run {
 
   // Open system dialog to choose file
   loadTreeFile = () => {
-    ipcRenderer.send(FILE_SELECT_IPC, this);
+    ipcRenderer.send(FILE_SELECT_IPC, toJS(this));
   };
 
   setOutFilename = name => {
@@ -398,7 +398,7 @@ class Run {
   };
 
   selectWorkingDirectory = () => {
-    ipcRenderer.send(FOLDER_SELECT_IPC, this);
+    ipcRenderer.send(FOLDER_SELECT_IPC, toJS(this));
   };
 
   clearStdout = () => {
