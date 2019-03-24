@@ -98,11 +98,7 @@ class Alignment {
       if (alignment.hasOwnProperty(key)) {
         console.log(key);
         console.log(alignment[key]);
-        if (key === "sequences") {
-          this.sequences = [alignment[key]];
-        } else {
-          this[key] = alignment[key];
-        }
+        this[key] = alignment[key];
       }
     }
   };
@@ -244,7 +240,7 @@ class Alignments {
   addAlignments = alignments => {
     alignments.map(alignment => this.addAlignment(alignment));
     // Send alignments to main process for processing
-    ipcRenderer.send(ALIGNMENTS_ADDED_IPC, alignments);
+    ipcRenderer.send(ALIGNMENTS_ADDED_IPC, toJS(alignments));
   };
 
   addAlignment = alignment => {
@@ -354,7 +350,7 @@ class Run {
 
   startRun = () => {
     // Send runs to main process
-    ipcRenderer.send(RUN_START_IPC, this);
+    ipcRenderer.send(RUN_START_IPC, toJS(this));
     // TODO: listen to the results
   };
 
@@ -373,11 +369,7 @@ class Run {
       if (run.hasOwnProperty(key)) {
         console.log(key);
         console.log(run[key]);
-        if (key === 'sequences') {
-          this.sequences = [run[key]];
-        } else {
-          this[key] = run[key];
-        }
+        this[key] = run[key];
       }
     }
   };
