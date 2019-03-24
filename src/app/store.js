@@ -258,7 +258,7 @@ class Alignments {
     console.log("addAlignment...");
     this.alignments = {
       ...this.alignments,
-      [alignment.path]: alignment
+      [alignment.path]: new Alignment(alignment)
     };
   }
 
