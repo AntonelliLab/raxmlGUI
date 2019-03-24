@@ -133,6 +133,14 @@ class Raxml extends React.Component {
             >
               Results Folder
             </Button>
+            <Button
+              variant="contained"
+              className={classes.button}
+              color="primary"
+              onClick={() => run.proposeRun()}
+            >
+              Propose Run
+            </Button>
           </div>
         </div>
         <RgRunOptions {...this.props} />

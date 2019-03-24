@@ -346,6 +346,12 @@ class Run {
     ];
   }
 
+  proposeRun = () => {
+    // Send alignments to main process
+    console.log('proposeRun', this.parent.alignments.alignments);
+    ipcRenderer.send(RUN_PROPOSED_IPC, toJS(this.parent.alignments.alignments));
+  };
+
   startRun = () => {
     // Send runs to main process
     ipcRenderer.send(RUN_START_IPC, this);
@@ -444,6 +450,11 @@ class Run {
 
     // TODO: listen to calculation progress
     // TODO: do this differently, i.e. does not need to entirely override the run object here only partially
+
+    // Receive collated run data and files
+    ipcRenderer.on(RUN_CREATED_IPC, (event, createdRuns) => {
+      this.updateRun(createdRuns[0]);
+    });
 
     // Receive a progress update for one of the runs being calculated
     ipcRenderer.on(FLAGSRUN_PROGRESS_IPC, (event, { run, XXXProgressUnit }) => {
