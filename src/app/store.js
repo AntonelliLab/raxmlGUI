@@ -56,6 +56,7 @@ export const MAX_NUM_CPUS = cpus().length;
 
 class Alignment {
   path = "";
+  name = "";
   size = 0;
   dataType = undefined;
   fileFormat = undefined;
@@ -84,17 +85,17 @@ class Alignment {
     return parsePath(this.path).base;
   }
 
-  get name() {
+  get filename() {
     return parsePath(this.path).name;
   }
 
   constructor(alignment) {
     this.listen();
-    console.log('alignment constructor', alignment);
+    console.log("alignment constructor", alignment);
     this.updateAlignment(alignment);
   }
 
-  updateAlignment = (alignment) => {
+  updateAlignment = alignment => {
     console.log("updateAlignment", alignment);
     for (var key in alignment) {
       if (alignment.hasOwnProperty(key)) {
@@ -107,10 +108,72 @@ class Alignment {
         }
       }
     }
-  }
+  };
 
   listen = () => {
     ipcRenderer.on("outDir", this.onOutDir);
+    // Listener taken from processAlignments()
+    // Receive a progress update for one of the alignments being parsed
+    ipcRenderer.on(
+      PARSING_PROGRESS_IPC,
+      (event, { alignment, numberSequencesParsed }) => {
+        if (alignment.path === this.path) {
+          this.updateAlignment({ ...alignment, numberSequencesParsed })
+        };
+      }
+    );
+
+    // Receive update that one alignment has completed parsing
+    ipcRenderer.on(PARSING_END_IPC, (event, { alignment }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment })
+      };
+    });
+
+    // Receive update that the parsing of one alignment has failed
+    ipcRenderer.on(PARSING_ERROR_IPC, (event, { alignment, error }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment, error });
+      };
+    });
+
+    // Receive a progress update for one of the alignments being typechecked
+    ipcRenderer.on(
+      TYPECHECKING_PROGRESS_IPC,
+      (event, { alignment, numberSequencesTypechecked }) => {
+        if (alignment.path === this.path) {
+          this.updateAlignment({ ...alignment, numberSequencesTypechecked });
+        };
+      }
+    );
+
+    // Receive update that one alignment has completed typechecking
+    ipcRenderer.on(TYPECHECKING_END_IPC, (event, { alignment }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment });
+      };
+    });
+
+    // Receive update that the typechecking of one alignment has failed
+    ipcRenderer.on(TYPECHECKING_ERROR_IPC, (event, { alignment, error }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment, error });
+      };
+    });
+
+    // Receive update that one alignment has completed the checkrun
+    ipcRenderer.on(CHECKRUN_END_IPC, (event, { alignment }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment });
+      };
+    });
+
+    // Receive update that the checkrun of one alignment has failed
+    ipcRenderer.on(CHECKRUN_ERROR_IPC, (event, { alignment, error }) => {
+      if (alignment.path === this.path) {
+        this.updateAlignment({ ...alignment, error });
+      };
+    });
   };
 
   selectOutDir = () => {
@@ -145,6 +208,7 @@ class Alignment {
 
 decorate(Alignment, {
   path: observable,
+  name: observable,
   size: observable,
   outDir: observable,
   fileFormat: observable,
@@ -159,7 +223,7 @@ decorate(Alignment, {
   ok: computed,
   dir: computed,
   base: computed,
-  name: computed,
+  filename: computed,
 })
 
 class Alignments {
@@ -173,74 +237,6 @@ class Alignments {
     // Listen to alignments being added
     ipcRenderer.on(ALIGNMENT_SELECTED_IPC, (event, data) => {
       this.addAlignments(data);
-    });
-
-    // Listener taken from processAlignments()
-    // Receive a progress update for one of the alignments being parsed
-    ipcRenderer.on(
-      PARSING_PROGRESS_IPC,
-      (event, { alignment, numberSequencesParsed }) => {
-        this.alignments = { ...this.alignments, [alignment.path]: { ...alignment, numberSequencesParsed } }
-      }
-    );
-
-    // Receive update that one alignment has completed parsing
-    ipcRenderer.on(PARSING_END_IPC, (event, { alignment }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment }
-      };
-    });
-
-    // Receive update that the parsing of one alignment has failed
-    ipcRenderer.on(PARSING_ERROR_IPC, (event, { alignment, error }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment, error }
-      };
-    });
-
-    // Receive a progress update for one of the alignments being typechecked
-    ipcRenderer.on(
-      TYPECHECKING_PROGRESS_IPC,
-      (event, { alignment, numberSequencesTypechecked }) => {
-        this.alignments = {
-          ...this.alignments,
-          [alignment.path]: { ...alignment, numberSequencesTypechecked }
-        };
-      }
-    );
-
-    // Receive update that one alignment has completed typechecking
-    ipcRenderer.on(TYPECHECKING_END_IPC, (event, { alignment }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment }
-      };
-    });
-
-    // Receive update that the typechecking of one alignment has failed
-    ipcRenderer.on(TYPECHECKING_ERROR_IPC, (event, { alignment, error }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment, error }
-      };
-    });
-
-    // Receive update that one alignment has completed the checkrun
-    ipcRenderer.on(CHECKRUN_END_IPC, (event, { alignment }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment }
-      };
-    });
-
-    // Receive update that the checkrun of one alignment has failed
-    ipcRenderer.on(CHECKRUN_ERROR_IPC, (event, { alignment, error }) => {
-      this.alignments = {
-        ...this.alignments,
-        [alignment.path]: { ...alignment, error }
-      };
     });
   }
 
@@ -437,7 +433,7 @@ class RunList {
   runs = [];
   activeIndex = 0;
   // TODO: replace with alignment field
-  input = new Alignment({ filename: '' });
+  input = new Alignment({});
   alignments = new Alignments();
 
   constructor() {
