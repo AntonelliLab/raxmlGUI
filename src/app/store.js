@@ -91,7 +91,22 @@ class Alignment {
   constructor(alignment) {
     this.listen();
     console.log('alignment constructor', alignment);
-    this.path = alignment.filename;
+    this.updateAlignment(alignment);
+  }
+
+  updateAlignment = (alignment) => {
+    console.log("updateAlignment", alignment);
+    for (var key in alignment) {
+      if (alignment.hasOwnProperty(key)) {
+        console.log(key);
+        console.log(alignment[key]);
+        if (key === "sequences") {
+          this.sequences = [alignment[key]];
+        } else {
+          this[key] = alignment[key];
+        }
+      }
+    }
   }
 
   listen = () => {
