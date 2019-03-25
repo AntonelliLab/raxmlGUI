@@ -159,14 +159,6 @@ class Alignment {
   openAlignmentFile = () => {
     ipcRenderer.send(FILE_OPEN_IPC, this.path);
   };
-
-  onFile = (event, data) => {
-    console.log('file:', data);
-    runInAction('file', () => {
-      this.path = data.filename;
-      this.size = data.size;
-    });
-  };
 }
 
 decorate(Alignment, {
@@ -271,7 +263,6 @@ class Run {
 
   raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
   stdout = '';
-  outSubDir = '';
 
   //@computed
   get startRunDisabled() {
@@ -440,8 +431,6 @@ class Run {
     });
 
     //TODO: Define callbacks on the class and remove event listeners on dispose
-    ipcRenderer.on('file', this.onFile);
-    ipcRenderer.on('raxml-output', this.onStdout);
     ipcRenderer.on('raxml-close', (event, data) => {
       const { id, code } = data;
       console.log(`RAxML process for run ${id} closed with code ${code}`);
@@ -505,7 +494,6 @@ decorate(Run, {
   // Daniel
   raxmlBinary: observable,
   stdout: observable,
-  outSubDir: observable,
   //
   startRunDisabled: computed,
   args: computed,
@@ -570,7 +558,6 @@ decorate(RunList, {
   deleteRun: action,
   setActive: action,
   deleteActive: action,
-  testStdout: action
 });
 
 const store = new RunList();
