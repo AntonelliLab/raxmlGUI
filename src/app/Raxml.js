@@ -65,7 +65,12 @@ class Console extends React.Component {
       >
         <div>
           <code className="code">
-            {run.raxmlBinary} {run.args.join(' ')}
+            {run.argsList.map(args => {
+              return (
+                run.raxmlBinary +
+                JSON.stringify(args, undefined, 2)
+              );
+            })}
           </code>
         </div>
         <div>
