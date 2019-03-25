@@ -233,7 +233,6 @@ class Run {
   constructor(parent, id) {
     this.parent = parent;
     this.id = id;
-    this.outFilename = parent.input.name ? `${parent.input.name}${id}.tre` : '';
     this.listen();
   }
 
@@ -267,20 +266,12 @@ class Run {
   //@computed
   get startRunDisabled() {
     return false;
-    return !this.parent.input.ok;
+    return !this.parent.alignments.alignments.length > 0;
   }
 
   get cpuOptions() {
     // TODO: Daniel why start at 2 here?
     return range(2, MAX_NUM_CPUS + 1);
-  }
-
-  get args() {
-    return [
-      this.parent.input.filename,
-      '-n',
-      this.outFilename,
-    ];
   }
 
   proposeRun = () => {
@@ -306,7 +297,7 @@ class Run {
   // must be better way here, only change the relevant params
   updateRun = run => {
     console.log('updateRun:', run);
-    if (run.id === this.id) {
+    if (run.id === this.id || !run.id) {
       for (var key in run) {
         if (run.hasOwnProperty(key)) {
           this[key] = run[key];
@@ -417,28 +408,20 @@ class Run {
     // Receive update that one run has completed calculation
     ipcRenderer.on(CALCULATION_END_IPC, (event, { run }) => {
       this.updateRun(run);
+      this.onStdout(event, run);
     });
 
     // Receive update that the calculation of one run has failed
     ipcRenderer.on(CALCULATION_ERROR_IPC, (event, { run, error }) => {
       console.log(run, error);
       this.updateRun(run);
+      this.onStdout(event, run);
     });
 
     // Receive update that one run has been canceled
     ipcRenderer.on(CALCULATION_CANCELED_IPC, (event, { run }) => {
       this.updateRun(run);
-    });
-
-    //TODO: Define callbacks on the class and remove event listeners on dispose
-    ipcRenderer.on('raxml-close', (event, data) => {
-      const { id, code } = data;
-      console.log(`RAxML process for run ${id} closed with code ${code}`);
-      if (id === this.id) {
-        runInAction('raxml-close', () => {
-          this.isCalculating = false;
-        });
-      }
+      this.onStdout(event, run);
     });
   };
 
@@ -459,10 +442,7 @@ class Run {
       id === this.id
     );
     if (id === this.id) {
-      runInAction('raxml-output', () => {
-        const stdout = data;
-        this.stdout += stdout;
-      });
+      this.stdout += data;
     }
   };
 }
@@ -493,7 +473,6 @@ decorate(Run, {
   stdout: observable,
   //
   startRunDisabled: computed,
-  args: computed,
   //
   setAnalysisType: action,
   setCombineOutput: action,
@@ -508,8 +487,6 @@ decorate(Run, {
 class RunList {
   runs = [];
   activeIndex = 0;
-  // TODO: replace with alignment field
-  input = new Alignment({});
   alignments = new Alignments();
 
   constructor() {
@@ -549,7 +526,6 @@ class RunList {
 decorate(RunList, {
   runs: observable,
   activeIndex: observable,
-  input: observable,
   activeRun: computed,
   addRun: action,
   deleteRun: action,
