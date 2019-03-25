@@ -65,6 +65,14 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
           color="primary"
           onClick={() => alignment.showAlignmentFileInFolder()}
         >
+          Show Alignment in Folder
+        </Button>
+        <Button
+          className="button"
+          variant="contained"
+          color="primary"
+          onClick={() => alignment.openAlignmentFile()}
+        >
           Open Alignment
         </Button>
         <Button
