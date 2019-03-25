@@ -315,11 +315,11 @@ class Run {
   // must be better way here, only change the relevant params
   updateRun = run => {
     console.log('updateRun:', run);
-    for (var key in run) {
-      if (run.hasOwnProperty(key)) {
-        console.log(key);
-        console.log(run[key]);
-        this[key] = run[key];
+    if (run.id === this.id) {
+      for (var key in run) {
+        if (run.hasOwnProperty(key)) {
+          this[key] = run[key];
+        }
       }
     }
   };
