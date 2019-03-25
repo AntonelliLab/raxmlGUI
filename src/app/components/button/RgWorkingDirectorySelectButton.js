@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import { observer } from 'mobx-react';
 import FolderIcon from '@material-ui/icons/Folder';
 import classNames from 'classnames';
+import FormControl from '@material-ui/core/FormControl';
 
 import type { Run } from '../../reducers/types';
 
@@ -21,15 +22,18 @@ class RgWorkingDirectorySelectButton extends Component<Props> {
   render() {
     const { classes, run } = this.props;
     return (
-      <Button
-        size="small"
-        variant="outlined"
-        className={classes.changeOutDir}
-        onClick={run.selectWorkingDirectory}
-      >
-        Select working directory
-        <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
-      </Button>
+      <FormControl className={classes.formControl}>
+        <Button
+          variant="outlined"
+          color="default"
+          onClick={run.selectWorkingDirectory}
+        >
+          <FolderIcon
+            className={classNames(classes.rightIcon, classes.iconSmall)}
+          />
+          Select working directory
+        </Button>
+      </FormControl>
     );
   }
 }
