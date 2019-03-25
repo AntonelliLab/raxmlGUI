@@ -12,20 +12,14 @@ type Props = {
  */
 class RgLoadTreeFileButton extends Component<Props> {
   props: Props;
-
-  onLoadTreeFile() {
-    const { run } = this.props;
-    // The new tree file is stored in the global args for the run
-    run.loadTreeFile();
-  }
-
   render() {
+    const { run } = this.props;
     return (
       <Button
         className="button"
         variant="contained"
         color="secondary"
-        onClick={() => this.onLoadTreeFile()}
+        onClick={() => run.loadTreeFile()}
       >
         Load tree file
       </Button>
