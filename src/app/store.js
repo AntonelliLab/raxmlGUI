@@ -38,17 +38,6 @@ import {
   CALCULATION_CANCELED_IPC
 } from '../constants/ipc';
 
-export const runTypeNames = [
-  'Fast tree search',
-  'ML search',
-  'ML + rapid bootstrap',
-  'ML + thorough bootstrap',
-  'Bootstrap + consensus',
-  'Ancestral states',
-  'Pairwise distance',
-  'RELL bootstrap'
-];
-
 export const MAX_NUM_CPUS = cpus().length;
 
 class Alignment {
@@ -436,7 +425,7 @@ class Run {
 
     // Receive updated run with selected working directory
     ipcRenderer.on(FOLDER_SELECTED_IPC, (event, updatedRun) => {
-      // TODO: change
+      // TODO: change to be only the relevant param
       this.updateRun(updatedRun);
     });
 
