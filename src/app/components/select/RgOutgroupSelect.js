@@ -10,7 +10,6 @@ type Props = {
   run: Run,
   index: number,
   indices: [],
-  updateRun: () => void
 };
 
 /**
@@ -66,7 +65,10 @@ class RgOutgroupSelect extends Component<Props> {
     return (
       <FormControl>
         <InputLabel>Outgroup</InputLabel>
-        <Select value={value} onChange={this.onChange.bind(this)}>
+        <Select
+          value={value}
+          onChange={this.onChange.bind(this)}
+        >
           {this.renderOptions(run)}
         </Select>
       </FormControl>

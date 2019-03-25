@@ -17,7 +17,6 @@ const {
 
 type Props = {
   run: Run,
-  updateRun: () => void
 };
 
 /**

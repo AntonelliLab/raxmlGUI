@@ -10,7 +10,6 @@ import type { Run } from '../../reducers/types';
 
 type Props = {
   run: Run,
-  selectWorkingDirectory: () => void
 };
 
 /**
@@ -18,7 +17,6 @@ type Props = {
  */
 class RgWorkingDirectorySelectButton extends Component<Props> {
   props: Props;
-
   render() {
     const { classes, run } = this.props;
     return (

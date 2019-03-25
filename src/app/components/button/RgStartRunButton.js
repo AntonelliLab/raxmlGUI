@@ -13,7 +13,6 @@ type Props = {
  */
 class RgStartRunButton extends Component<Props> {
   props: Props;
-
   render() {
     const { classes, run } = this.props;
     return (

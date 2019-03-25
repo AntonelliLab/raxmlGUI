@@ -14,7 +14,6 @@ const { analysesOptions } = settings;
 
 type Props = {
   run: Run,
-  updateRun: () => void
 };
 
 /**
@@ -53,7 +52,6 @@ class RgAnalysisSelect extends Component<Props> {
 
   render() {
     const { classes, run } = this.props;
-    console.log('RgAnal', run.analysisType);
     return (
       <FormControl className={classes.formControl}>
         <InputLabel>Analysis</InputLabel>
