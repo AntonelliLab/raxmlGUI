@@ -288,19 +288,6 @@ class Run {
 
   get args() {
     return [
-      '-T', //TODO: Only for phread version
-      this.numCpu,
-      '-f',
-      'a',
-      '-x',
-      '572',
-      '-m',
-      'GTRGAMMA',
-      '-p',
-      '820',
-      '-N',
-      '100',
-      '-s',
       this.parent.input.filename,
       '-n',
       this.outFilename,
