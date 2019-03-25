@@ -8,6 +8,7 @@ import {
   FOLDER_OPEN_IPC,
   FOLDER_SELECT_IPC,
   FOLDER_SELECTED_IPC,
+  FILE_OPEN_IPC,
   FILE_SELECT_IPC,
   FILE_SELECTED_IPC,
   ALIGNMENT_SELECT_IPC,
@@ -159,7 +160,7 @@ class Alignment {
   };
 
   openAlignmentFile = () => {
-    ipcRenderer.send('open-item', this.path);
+    ipcRenderer.send(FILE_OPEN_IPC, this.path);
   };
 
   onFile = (event, data) => {

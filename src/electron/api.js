@@ -18,6 +18,7 @@ import {
   FOLDER_OPEN_IPC,
   FOLDER_SELECT_IPC,
   FOLDER_SELECTED_IPC,
+  FILE_OPEN_IPC,
   FILE_SELECT_IPC,
   FILE_SELECTED_IPC,
   ALIGNMENT_SELECT_IPC,
@@ -55,6 +56,12 @@ ipcMain.on(FOLDER_SELECT_IPC, (event, run) => {
       event.sender.send(FOLDER_SELECTED_IPC, run);
     }
   );
+});
+
+// Open a file with the OS's default file handler
+ipcMain.on(FILE_OPEN_IPC, (event, arg) => {
+  console.log('api', FILE_OPEN_IPC);
+  shell.openItem(arg);
 });
 
 // Open a dialog to select a file
