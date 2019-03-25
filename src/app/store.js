@@ -357,10 +357,6 @@ class Run {
     ipcRenderer.send(FOLDER_SELECT_IPC, toJS(this));
   };
 
-  clearStdout = () => {
-    this.stdout = '';
-  };
-
   removeRun = () => {
     this.cancelRun();
     this.parent.deleteRun(this);
@@ -369,10 +365,6 @@ class Run {
   // TODO: this maybe needed in a different store class as well, i.e. alignment ?
   showInFolder = outputPath => {
     ipcRenderer.send(FOLDER_OPEN_IPC, outputPath);
-  };
-
-  testStdout = () => {
-    this.stdout += this.stdout.length + '\n';
   };
 
   listen = () => {
@@ -461,11 +453,13 @@ class Run {
     });
   };
 
-  onFile = (event, data) => {
-    this.outFilename = `${parsePath(data.filename).name}_${this.id}`;
+  clearStdout = () => {
+    console.log('clearStdout');
+    this.stdout = '';
   };
 
   onStdout = (event, run) => {
+    console.log('onStdout');
     const { id, data } = run;
     console.log(
       'Raxml output:',
