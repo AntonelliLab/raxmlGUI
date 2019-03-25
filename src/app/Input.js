@@ -36,9 +36,6 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
   },
-  changeOutDir: {
-    marginTop: 4,
-  },
   rightIcon: {
     marginLeft: theme.spacing.unit,
   },

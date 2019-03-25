@@ -55,9 +55,6 @@ class Alignment {
   checkRunSuccess = false;
   sequences = undefined;
 
-  // TODO: this does not belong here
-  outDir = '';
-
   //@computed
   get ok() {
     return this.path !== '';
@@ -93,7 +90,6 @@ class Alignment {
   };
 
   listen = () => {
-    ipcRenderer.on('outDir', this.onOutDir);
     // Listener taken from processAlignments()
     // Receive a progress update for one of the alignments being parsed
     ipcRenderer.on(
@@ -166,24 +162,11 @@ class Alignment {
     ipcRenderer.send('open-item', this.path);
   };
 
-  openOutDir = () => {
-    ipcRenderer.send('open-item', this.outDir);
-  };
-
   onFile = (event, data) => {
     console.log('file:', data);
     runInAction('file', () => {
       this.path = data.filename;
       this.size = data.size;
-      this.outDir = parsePath(data.filename).dir;
-    });
-  };
-
-  // TODO: this does not belong here
-  onOutDir = (event, data) => {
-    console.log('outDir:', data);
-    runInAction('outDir', () => {
-      this.outDir = data;
     });
   };
 }
@@ -192,7 +175,6 @@ decorate(Alignment, {
   path: observable,
   name: observable,
   size: observable,
-  outDir: observable,
   fileFormat: observable,
   length: observable,
   numberSequences: observable,
@@ -298,10 +280,6 @@ class Run {
     return !this.parent.input.ok;
   }
 
-  get outDir() {
-    return this.parent.input.outDir;
-  }
-
   get cpuOptions() {
     // TODO: Daniel why start at 2 here?
     return range(2, MAX_NUM_CPUS + 1);
@@ -325,9 +303,6 @@ class Run {
       this.parent.input.filename,
       '-n',
       this.outFilename,
-      '-w',
-      // this.outDir,
-      this.parent.input.outDir
     ];
   }
 
@@ -553,7 +528,6 @@ decorate(Run, {
   outSubDir: observable,
   //
   startRunDisabled: computed,
-  outDir: computed,
   args: computed,
   //
   setAnalysisType: action,
