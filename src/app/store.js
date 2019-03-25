@@ -154,8 +154,8 @@ class Alignment {
     });
   };
 
-  selectOutDir = () => {
-    ipcRenderer.send('open-dir');
+  showAlignmentFileInFolder = () => {
+    ipcRenderer.send(FOLDER_OPEN_IPC, this.path);
   };
 
   openAlignmentFile = () => {
@@ -188,6 +188,7 @@ decorate(Alignment, {
   dir: computed,
   base: computed,
   filename: computed,
+  showAlignmentFileInFolder: action,
 });
 
 class Alignments {
