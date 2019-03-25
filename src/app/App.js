@@ -17,8 +17,6 @@ import './App.css';
 import store from './store';
 
 const styles = theme => ({
-  input: {
-  },
   AppBar: {
     display: 'flex',
     flexDirection: 'row',
