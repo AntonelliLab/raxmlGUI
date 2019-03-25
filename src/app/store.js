@@ -460,10 +460,7 @@ class Run {
     );
     if (id === this.id) {
       runInAction('raxml-output', () => {
-        const stdout = data.replace(
-          `Warning, you specified a working directory via "-w"\nKeep in mind that RAxML only accepts absolute path names, not relative ones!`,
-          ''
-        );
+        const stdout = data;
         this.stdout += stdout;
       });
     }
