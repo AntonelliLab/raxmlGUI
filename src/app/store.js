@@ -75,7 +75,6 @@ class Alignment {
 
   constructor(alignment) {
     this.listen();
-    console.log("alignment constructor", alignment);
     this.updateAlignment(alignment);
   }
 
@@ -83,8 +82,6 @@ class Alignment {
     console.log("updateAlignment", alignment);
     for (var key in alignment) {
       if (alignment.hasOwnProperty(key)) {
-        console.log(key);
-        console.log(alignment[key]);
         this[key] = alignment[key];
       }
     }
