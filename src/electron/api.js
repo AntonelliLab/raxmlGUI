@@ -84,15 +84,15 @@ ipcMain.on(ALIGNMENT_SELECT_IPC, (event) => {
   openFileDialog(
     {
       title: 'Select an alignment',
-      properties: ['openFile']
+      properties: ['openFile', 'multiSelections']
     },
     filePaths => {
       const alignments = filePaths.map(filePath => {
-        return ({
+        return {
           path: filePath,
           name: path.basename(filePath)
-        });
-      })
+        };
+      });
       event.sender.send(ALIGNMENT_SELECTED_IPC, alignments);
     }
   );
