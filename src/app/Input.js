@@ -192,6 +192,15 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       <Button variant="contained" color="primary" onClick={alignments.removeAllAlignments}>
         Clear all
       </Button>
+      <Button
+        variant="contained"
+        className={classes.button}
+        color="primary"
+        disabled={alignments.length === 0}
+        onClick={() => alignments.proposeRun()}
+      >
+        {alignments.length > 1 ? 'Combine alignments' : 'Analyse alignment'}
+      </Button>
       {/* { FileInfo } */}
       <ul>
         {renderAlignments()}

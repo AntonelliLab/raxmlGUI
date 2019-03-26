@@ -220,13 +220,21 @@ class Alignments {
   removeAllAlignments = () => {
     this.alignments = {};
   };
+
+  proposeRun = () => {
+    // Send alignments to main process
+    console.log('proposeRun', this.alignments);
+    ipcRenderer.send(RUN_PROPOSED_IPC, toJS(this.alignments));
+  };
 }
 
 decorate(Alignments, {
   alignments: observable,
   addAlignments: action,
   addAlignment: action,
-  deleteAlignment: action
+  removeAlignment: action,
+  removeAllAlignments: action,
+  proposeRun: action,
 });
 
 class Run {
@@ -266,7 +274,7 @@ class Run {
   //@computed
   get startRunDisabled() {
     return false;
-    return !this.parent.alignments.alignments.length > 0;
+    // return !this.parent.alignments.alignments.length > 0;
   }
 
   get cpuOptions() {
@@ -274,16 +282,9 @@ class Run {
     return range(2, MAX_NUM_CPUS + 1);
   }
 
-  proposeRun = () => {
-    // Send alignments to main process
-    console.log('proposeRun', this.parent.alignments.alignments);
-    ipcRenderer.send(RUN_PROPOSED_IPC, toJS(this.parent.alignments.alignments));
-  };
-
   startRun = () => {
     // Send runs to main process
     ipcRenderer.send(RUN_START_IPC, toJS(this));
-    // TODO: listen to the results
   };
 
   cancelRun = () => {
