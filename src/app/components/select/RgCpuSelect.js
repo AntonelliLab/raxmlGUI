@@ -22,7 +22,7 @@ class RgCpuSelect extends Component<Props> {
   props: Props;
 
   render() {
-    const { run, classes } = this.props;
+    const { run } = this.props;
     return (
       <RgSettingsSelect
         run={run}
