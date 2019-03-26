@@ -1,11 +1,10 @@
 /*
     Strings for ipc
 */
-export const GET_CPUS_IPC = 'GET_CPUS_IPC';
-export const CPUS_COUNTED_IPC = 'CPUS_COUNTED_IPC';
 export const FOLDER_OPEN_IPC = 'FOLDER_OPEN_IPC';
 export const FOLDER_SELECT_IPC = 'FOLDER_SELECT_IPC';
 export const FOLDER_SELECTED_IPC = 'FOLDER_SELECTED_IPC';
+export const FILE_OPEN_IPC = 'FILE_OPEN_IPC';
 export const FILE_SELECT_IPC = 'FILE_SELECT_IPC';
 export const FILE_SELECTED_IPC = 'FILE_SELECTED_IPC';
 export const ALIGNMENT_SELECT_IPC = 'ALIGNMENT_SELECT_IPC';

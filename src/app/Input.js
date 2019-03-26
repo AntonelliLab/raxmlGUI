@@ -36,9 +36,6 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
   },
-  changeOutDir: {
-    marginTop: 4,
-  },
   rightIcon: {
     marginLeft: theme.spacing.unit,
   },
@@ -66,9 +63,17 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
           className="button"
           variant="contained"
           color="primary"
-          onClick={() => console.log(path)}
+          onClick={() => alignment.showAlignmentFileInFolder()}
         >
-          Open Folder
+          Show Alignment in Folder
+        </Button>
+        <Button
+          className="button"
+          variant="contained"
+          color="primary"
+          onClick={() => alignment.openAlignmentFile()}
+        >
+          Open Alignment
         </Button>
         <Button
           className="button"
@@ -142,42 +147,42 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
     });
   }
 
-  const FileInfo = alignments.ok ? (
-    <div className={classes.files}>
-      <div className={classes.alignments}>
-        Input
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={alignments.openInputFile}>
-              { alignments.filename }
-            </span>
-          </div>
-          <div>
-            Size: { format(',')(alignments.size) } bytes
-          </div>
-          <div>
-            Type: Not detected yet
-          </div>
-        </div>
-      </div>
-      <div className={classes.output}>
-        Output
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={alignments.openOutDir}>
-              { alignments.outDir }
-            </span>
-          </div>
-          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
-            Change
-            <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
-          </Button>
-        </div>
-      </div>
-    </div>
-  ) : null;
+  // const FileInfo = alignments.ok ? (
+  //   <div className={classes.files}>
+  //     <div className={classes.alignments}>
+  //       Input
+  //       <div className={classes.fileInfo}>
+  //         <div>
+  //           Path:
+  //           <span className={classes.path} onClick={alignments.openInputFile}>
+  //             { alignments.filename }
+  //           </span>
+  //         </div>
+  //         <div>
+  //           Size: { format(',')(alignments.size) } bytes
+  //         </div>
+  //         <div>
+  //           Type: Not detected yet
+  //         </div>
+  //       </div>
+  //     </div>
+  //     <div className={classes.output}>
+  //       Output
+  //       <div className={classes.fileInfo}>
+  //         <div>
+  //           Path:
+  //           <span className={classes.path} onClick={alignments.openOutDir}>
+  //             { alignments.outDir }
+  //           </span>
+  //         </div>
+  //         <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
+  //           Change
+  //           <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // ) : null;
 
   return (
     <div className={classes.Input}>
@@ -187,6 +192,15 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
       <Button variant="contained" color="primary" onClick={alignments.removeAllAlignments}>
         Clear all
       </Button>
+      <Button
+        variant="contained"
+        className={classes.button}
+        color="primary"
+        disabled={Object.keys(alignments.alignments).length === 0}
+        onClick={() => alignments.proposeRun()}
+      >
+        {Object.keys(alignments.alignments).length > 1 ? 'Combine alignments' : 'Analyse alignment'}
+      </Button>
       {/* { FileInfo } */}
       <ul>
         {renderAlignments()}
@@ -194,7 +208,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
     </div>
   );
 }));
-    
+
 
 Input.propTypes = {
   classes: PropTypes.object.isRequired,

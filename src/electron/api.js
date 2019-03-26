@@ -1,6 +1,5 @@
 import { ipcMain, shell } from "electron";
 import _ from "lodash";
-import os from "os";
 import path from "path";
 
 import { sendToMainWindow } from "./communication";
@@ -16,11 +15,10 @@ import { runRaxmlWithArgs, cancelCalculations } from "./analysis/run";
 import { startRuns } from "./analysis";
 
 import {
-  GET_CPUS_IPC,
-  CPUS_COUNTED_IPC,
   FOLDER_OPEN_IPC,
   FOLDER_SELECT_IPC,
   FOLDER_SELECTED_IPC,
+  FILE_OPEN_IPC,
   FILE_SELECT_IPC,
   FILE_SELECTED_IPC,
   ALIGNMENT_SELECT_IPC,
@@ -37,12 +35,6 @@ import {
   FLAGSRUN_END_IPC,
   FLAGSRUN_ERROR_IPC
 } from "../constants/ipc";
-
-// Get the number of cpus from the os
-ipcMain.on(GET_CPUS_IPC, () => {
-  console.log('api', GET_CPUS_IPC);
-  sendToMainWindow(CPUS_COUNTED_IPC, os.cpus());
-});
 
 // Open a folder with native file explorer in given path
 ipcMain.on(FOLDER_OPEN_IPC, (event, outputPath) => {
@@ -66,6 +58,12 @@ ipcMain.on(FOLDER_SELECT_IPC, (event, run) => {
   );
 });
 
+// Open a file with the OS's default file handler
+ipcMain.on(FILE_OPEN_IPC, (event, arg) => {
+  console.log('api', FILE_OPEN_IPC);
+  shell.openItem(arg);
+});
+
 // Open a dialog to select a file
 ipcMain.on(FILE_SELECT_IPC, (event, run) => {
   console.log('api', FILE_SELECT_IPC);
@@ -86,15 +84,15 @@ ipcMain.on(ALIGNMENT_SELECT_IPC, (event) => {
   openFileDialog(
     {
       title: 'Select an alignment',
-      properties: ['openFile']
+      properties: ['openFile', 'multiSelections']
     },
     filePaths => {
       const alignments = filePaths.map(filePath => {
-        return ({
+        return {
           path: filePath,
           name: path.basename(filePath)
-        });
-      })
+        };
+      });
       event.sender.send(ALIGNMENT_SELECTED_IPC, alignments);
     }
   );

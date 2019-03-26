@@ -1,9 +1,25 @@
 {
-  "name": "raxmlgui2",
+  "name": "raxmlGUI2",
+  "productName": "raxmlGUI2",
   "version": "0.2.0",
   "private": true,
-  "author": "Captain Electron",
-  "homepage": "./",
+  "author": "AntonelliLab",
+  "license": "ISC",
+  "description": "raxmlGUI2 - A new graphical front-end for RAxML",
+  "homepage": "https://github.com/AntonelliLab/raxmlGUI2#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonelliLab/raxmlGUI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AntonelliLab/raxmlGUI2/issues"
+  },
+  "keywords": [
+    "Electron",
+    "RAxML",
+    "GUI",
+    "Phylogenetics"
+  ],
   "main": "public/electron.js",
   "scripts": {
     "start": "cross-env ELECTRON_START_URL=http://localhost:3000/ run-p react-start electron-dev",
@@ -51,6 +67,7 @@
     "electron-devtools-installer": "^2.2.4",
     "nodemon": "^1.14.11",
     "npm-run-all": "^4.1.2",
+    "prettier": "1.16.4",
     "typescript": "^3.3.3333",
     "wait-on": "^3.2.0"
   },
@@ -63,6 +80,10 @@
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI2",
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
     "files": [
       "src/electron/*"
     ],
