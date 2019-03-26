@@ -73,8 +73,9 @@ class Alignment {
     return parsePath(this.path).name;
   }
 
-  constructor(alignment) {
+  constructor(parent, alignment) {
     this.listen();
+    this.parent = parent;
     this.updateAlignment(alignment);
   }
 
@@ -142,6 +143,8 @@ class Alignment {
       if (alignment.path === this.path) {
         this.updateAlignment({ ...alignment });
       };
+      // TODO: this is a bit weird, I have to call the method in the Run class somehow
+      this.parent.parent.proposeRuns();
     });
 
     // Receive update that the checkrun of one alignment has failed
@@ -184,8 +187,9 @@ decorate(Alignment, {
 class Alignments {
   alignments = {};
 
-  constructor() {
+  constructor(parent) {
     this.listen();
+    this.parent = parent;
   }
 
   listen = () => {
@@ -209,16 +213,20 @@ class Alignments {
     console.log('addAlignment...');
     this.alignments = {
       ...this.alignments,
-      [alignment.path]: new Alignment(alignment)
+      [alignment.path]: new Alignment(this, alignment)
     };
   };
 
   removeAlignment = alignment => {
     delete this.alignments[alignment.path];
+    // TODO: this is a bit weird, I have to call the method in the Run class somehow
+    this.parent.proposeRuns();
   };
 
   removeAllAlignments = () => {
     this.alignments = {};
+    // TODO: too hacky?, I dont like this here, should maybe converted to be @computed somewhere else
+    this.parent.deleteAllRuns();
   };
 }
 
@@ -283,7 +291,6 @@ class Run {
   startRun = () => {
     // Send runs to main process
     ipcRenderer.send(RUN_START_IPC, toJS(this));
-    // TODO: listen to the results
   };
 
   cancelRun = () => {
@@ -487,7 +494,7 @@ decorate(Run, {
 class RunList {
   runs = [];
   activeIndex = 0;
-  alignments = new Alignments();
+  alignments = new Alignments(this);
 
   constructor() {
     this.addRun();
@@ -520,6 +527,14 @@ class RunList {
 
   deleteActive = () => {
     this.deleteRun(this.activeRun);
+  };
+
+  proposeRuns = () => {
+    this.runs.forEach(run => run.proposeRun())
+  };
+
+  deleteAllRuns = () => {
+    this.runs.forEach(run => this.deleteRun(run));
   };
 }
 
