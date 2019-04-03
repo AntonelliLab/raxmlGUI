@@ -27,10 +27,12 @@ const styles = theme => ({
   tab: {
     display: 'flex',
     alignItems: 'center',
-    padding: '0 4px',
+    padding: '0 40px',
+    position: 'relative',
   },
   tabIcon: {
-    marginRight: theme.spacing.unit,
+    left: 10,
+    position: 'absolute',
   },
 });
 
@@ -47,7 +49,7 @@ class App extends React.Component {
       <Tab key={run.id} icon={
         <span className={classes.tab}>
           <CircularProgress color="inherit" size={20} className={classes.tabIcon}
-            variant={run.running ? "indeterminate" : "static"} value={100} />
+            variant={run.running ? "indeterminate" : "static"} value={0} />
           {`Run ${run.id}`}
         </span>
       } />
@@ -57,8 +59,6 @@ class App extends React.Component {
       <React.Fragment>
         <CssBaseline />
         <div className="App">
-          <Input alignments={store.alignments} />
-
           <AppBar position="static" className={classes.AppBar}>
             <Tabs value={store.activeIndex} onChange={this.handleTabChange}>
               { TabItems }
@@ -69,6 +69,9 @@ class App extends React.Component {
               </IconButton>
             </Toolbar>
           </AppBar>
+
+          <Input run={store.activeRun} />
+
           <Raxml run={store.activeRun} />
         </div>
       </React.Fragment>

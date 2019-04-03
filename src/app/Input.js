@@ -6,19 +6,20 @@ import Button from '@material-ui/core/Button';
 import { format } from 'd3-format';
 import FolderIcon from '@material-ui/icons/Folder';
 import classNames from 'classnames';
-import _ from "lodash";
-import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Alignment from './Alignment';
 
 const styles = theme => ({
   Input: {
-    minHeight: '300px',
     padding: '10px',
+    flexGrow: 1,
+    height: '100%',
   },
   files: {
     marginTop: '10px',
   },
   alignments: {
+    marginTop: '10px',
+    overflowY: 'auto',
   },
   output: {
     marginTop: '20px',
@@ -48,163 +49,33 @@ const styles = theme => ({
 
 });
 
-const Input = withStyles(styles)(observer(({ classes, alignments }) => {
-  function showStatus(alignment) {
-    const { error, path, parsingComplete, typecheckingComplete } = alignment;
-    if (error) {
-      return <p>{error}</p>;
-    }
-    if (!parsingComplete || !typecheckingComplete) {
-      return null;
-    }
-    return (
-      <div>
-        <Button
-          className="button"
-          variant="contained"
-          color="primary"
-          onClick={() => alignment.showAlignmentFileInFolder()}
-        >
-          Show Alignment in Folder
-        </Button>
-        <Button
-          className="button"
-          variant="contained"
-          color="primary"
-          onClick={() => alignment.openAlignmentFile()}
-        >
-          Open Alignment
-        </Button>
-        <Button
-          className="button"
-          variant="contained"
-          color="primary"
-          onClick={() => console.log(path)}
-        >
-          Show
-        </Button>
-      </div>
-    );
-  }
-
-  function renderProgress(alignment) {
-    const {
-      parsingComplete,
-      typecheckingComplete,
-      checkRunComplete
-    } = alignment;
-    if (!parsingComplete) {
-      return (
-        <div>
-          <CircularProgress thickness={7} />
-          <p>Parsing alignment</p>
-        </div>
-      );
-    }
-    if (!typecheckingComplete) {
-      return (
-        <div>
-          <CircularProgress thickness={7} />
-          <p>Typechecking alignment</p>
-        </div>
-      );
-    }
-    if (!checkRunComplete) {
-      return (
-        <div>
-          <CircularProgress thickness={7} />
-          <p>Performing checkrun for alignment</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  function renderAlignments() {
-    return _.map(alignments.alignments, alignment => {
-      const { name, path, fileFormat, dataType } = alignment;
-      return (
-        <li key={path}>
-          {renderProgress(alignment)}
-          <Button
-            className="button"
-            variant="contained"
-            color="primary"
-            onClick={() => alignments.removeAlignment(alignment)}
-          >
-            Clear
-          </Button>
-          <div>
-            <Typography variant="body2" >Filename: {name}</Typography>
-            <Typography variant="body2" >File format: {fileFormat}</Typography>
-            <Typography variant="body2" >Data type: {dataType}</Typography>
-          </div>
-          <div>
-            {showStatus(alignment)}
-          </div>
-        </li>
-      );
-    });
-  }
-
-  // const FileInfo = alignments.ok ? (
-  //   <div className={classes.files}>
-  //     <div className={classes.alignments}>
-  //       Input
-  //       <div className={classes.fileInfo}>
-  //         <div>
-  //           Path:
-  //           <span className={classes.path} onClick={alignments.openInputFile}>
-  //             { alignments.filename }
-  //           </span>
-  //         </div>
-  //         <div>
-  //           Size: { format(',')(alignments.size) } bytes
-  //         </div>
-  //         <div>
-  //           Type: Not detected yet
-  //         </div>
-  //       </div>
-  //     </div>
-  //     <div className={classes.output}>
-  //       Output
-  //       <div className={classes.fileInfo}>
-  //         <div>
-  //           Path:
-  //           <span className={classes.path} onClick={alignments.openOutDir}>
-  //             { alignments.outDir }
-  //           </span>
-  //         </div>
-  //         <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={alignments.selectOutDir}>
-  //           Change
-  //           <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
-  //         </Button>
-  //       </div>
-  //     </div>
-  //   </div>
-  // ) : null;
+const Input = withStyles(styles)(observer(({ classes, run }) => {
+  
 
   return (
     <div className={classes.Input}>
-      <Button variant="contained" color="primary" onClick={alignments.loadAlignmentFiles}>
+      <Button variant="contained" color="primary" onClick={run.loadAlignmentFiles}>
         Open files
       </Button>
-      <Button variant="contained" color="primary" onClick={alignments.removeAllAlignments}>
+      { /*
+      <Button variant="contained" color="primary" onClick={run.removeAllAlignments}>
         Clear all
       </Button>
-      <Button
-        variant="contained"
-        className={classes.button}
-        color="primary"
-        disabled={Object.keys(alignments.alignments).length === 0}
-        onClick={() => alignments.proposeRun()}
-      >
-        {Object.keys(alignments.alignments).length > 1 ? 'Combine alignments' : 'Analyse alignment'}
-      </Button>
+      */}
       {/* { FileInfo } */}
-      <ul>
-        {renderAlignments()}
-      </ul>
+      <div className={classes.alignments}>
+        { run.alignments.map(alignment => <Alignment key={alignment.path} alignment={alignment} />) }
+      </div>
+      { run.alignments.length === 0 ? null :
+        <Button
+          variant="contained"
+          className={classes.button}
+          color="primary"
+          onClick={run.proposeRun}
+        >
+        { run.alignments.length > 1 ? 'Combine alignments' : 'Analyse alignment' }
+        </Button>
+      }
     </div>
   );
 }));
@@ -212,7 +83,7 @@ const Input = withStyles(styles)(observer(({ classes, alignments }) => {
 
 Input.propTypes = {
   classes: PropTypes.object.isRequired,
-  alignments: PropTypes.object.isRequired,
+  run: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(observer(Input));

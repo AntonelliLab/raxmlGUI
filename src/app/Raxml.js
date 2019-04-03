@@ -98,13 +98,6 @@ class Raxml extends React.Component {
           <RgCpuSelect {...this.props} />
           <RgOutFileNameInput {...this.props} />
           <RgWorkingDirectorySelectButton {...this.props} />
-
-          <FormControl className={classes.formControl}>
-            <Button variant="outlined" color="default" onClick={run.removeRun}>
-              <IconDelete />
-              Remove run
-            </Button>
-          </FormControl>
         </div>
         <div className={classes.run}>
           <div>

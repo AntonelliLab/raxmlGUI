@@ -6,6 +6,7 @@ import { sendToMainWindow } from "./communication";
 import { transformArgsToArray, openFileDialog } from "./utils";
 import {
   addAlignments,
+  addAlignment,
   startParsing,
   startTypechecking,
   startCheckrun
@@ -24,6 +25,7 @@ import {
   ALIGNMENT_SELECT_IPC,
   ALIGNMENT_SELECTED_IPC,
   ALIGNMENTS_ADDED_IPC,
+  ALIGNMENT_ADDED_IPC,
   PARSING_START_IPC,
   TYPECHECKING_START_IPC,
   CHECKRUN_START_IPC,
@@ -102,6 +104,10 @@ ipcMain.on(ALIGNMENT_SELECT_IPC, (event) => {
 ipcMain.on(ALIGNMENTS_ADDED_IPC, (event, alignments) => {
   console.log('api', ALIGNMENTS_ADDED_IPC);
   addAlignments(alignments);
+});
+ipcMain.on(ALIGNMENT_ADDED_IPC, (event, filePath) => {
+  console.log('api', ALIGNMENT_ADDED_IPC);
+  addAlignment(filePath);
 });
 
 ipcMain.on(PARSING_START_IPC, (event, alignments) => {

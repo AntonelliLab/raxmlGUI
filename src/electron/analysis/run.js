@@ -25,18 +25,22 @@ export function runRaxmlWithArgs(runPath, args, { stdout, close }) {
 
   // TODO place the transformation of args array here and call this fct directly with object
   // TODO refactor Daniels fct call into object for args
-  const child = proc.spawn(binaryPath, args, { cwd: os.homedir(), stdio: 'pipe' });
-  child.stdout.on('data', data => {
-    stdout(data);
-  });
-  child.on('close', code => {
-    close(code);
-  });
-  child.on('error', error => {
-    console.log('Child process errored out', error);
-    close(error);
-  });
-  state.raxmlProcesses[runPath] = child;
+  return new Promise((resolve, reject) => {
+    const child = proc.spawn(binaryPath, args, { cwd: os.homedir(), stdio: 'pipe' });
+    child.stdout.on('data', data => {
+      stdout(data);
+    });
+    child.on('close', code => {
+      close(code);
+      resolve(code);
+    });
+    child.on('error', error => {
+      console.log('Child process errored out', error);
+      close(error);
+      reject(error);
+    });
+    state.raxmlProcesses[runPath] = child;
+  })
 }
 
 export function cancelCalculations(run) {
