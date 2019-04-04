@@ -180,6 +180,7 @@ export default decorate(Alignment, {
   checkRunComplete: observable,
   checkRunData: observable,
   checkRunSuccess: observable,
+  error: observable,
   ok: computed,
   name: computed,
   dir: computed,
