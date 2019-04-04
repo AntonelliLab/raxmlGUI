@@ -202,7 +202,7 @@ export function createDefaultAnalysisArgs(infile) {
  * @param {String} sequence The sequence
  */
 export function checkForBinaryOrMultistate(sequence) {
-  // console.log('checkForBinaryOrMultistate');
+  console.log('checkForBinaryOrMultistate');
   // Get the sequence string, strip out N and -
   let seq = sequence.replace(/N/gi, '');
   seq = seq.replace(/-/gi, '');
