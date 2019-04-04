@@ -100,6 +100,7 @@ class Alignment {
     ipcRenderer.on(ipc.PARSING_ERROR_IPC, (event, { alignment, error }) => {
       if (alignment.path === this.path) {
         this.error = error;
+        this.parsingComplete = alignment.parsingComplete;
       };
     });
 
@@ -127,6 +128,7 @@ class Alignment {
     ipcRenderer.on(ipc.TYPECHECKING_ERROR_IPC, (event, { alignment, error }) => {
       if (alignment.path === this.path) {
         this.error = error;
+        this.typecheckingComplete = alignment.typecheckingComplete;
       };
     });
 
@@ -144,6 +146,7 @@ class Alignment {
     ipcRenderer.on(ipc.CHECKRUN_ERROR_IPC, (event, { alignment, error }) => {
       if (alignment.path === this.path) {
         this.error = error;
+        this.checkRunComplete = alignment.checkRunComplete;
       };
     });
   };
