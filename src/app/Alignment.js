@@ -11,6 +11,11 @@ import _ from "lodash";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 const styles = theme => ({
   Alignment: {
@@ -86,7 +91,7 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
   // ) : (
   //   <span>{ alignment.parsingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
-  
+
   const Type = alignment.typecheckingComplete ? (
     <Chip className={classes.chip} label={dataType} color="default" />
   ) : (
@@ -98,7 +103,7 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
   ) : (
     <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
   );
-  
+
   return (
     <div className={classes.Alignment}>
       <div>
@@ -124,6 +129,34 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
             Status: { alignment.status }
           </div>
         </div>
+        <div>
+        </div>
+        <FormControl>
+          <Select value={alignment.model} onChange={alignment.onChangeModel}>
+            {
+              (alignment.modelOptions || []).map(model => (
+                <MenuItem key={model} value={model}>
+                  { model }
+                </MenuItem>
+              ))
+            }
+          </Select>
+          <FormHelperText>Substitution model</FormHelperText>
+        </FormControl>
+        { alignment.modelExtra ? (
+          <FormControl>
+          <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>
+            {
+              alignment.modelExtra.options.map(model => (
+                <MenuItem key={model} value={model}>
+                  { model }
+                </MenuItem>
+              ))
+            }
+          </Select>
+          <FormHelperText>{alignment.modelExtra.label}</FormHelperText>
+        </FormControl>
+        ) : null }
       </div>
       { alignment.loading ? (
         <div className={classes.loading}>
