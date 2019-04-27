@@ -31,6 +31,8 @@ class Alignment {
   sequences = undefined;
   model = '';
   aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
+  // TODO: This should change all other multistate models if available, according to documentation:
+  // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
   multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
 
   constructor(run, path) {

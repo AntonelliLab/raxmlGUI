@@ -100,10 +100,14 @@ export function typecheckAlignment(alignment) {
   let numSequencesTypechecked = 0;
   _.each(alignment.sequences, (sequence, index) => {
     // Get the data type for this sequence using BioNode seq
+    // Returns 'protein', 'rna', 'dna', 'ambiguousDna', 'ambiguousRna' or undefined
     sequence.dataType = seq.checkType(sequence.seq);
+    // Returns 'binary', 'multistate' or undefined
+    const binOrMulti = checkForBinaryOrMultistate(sequence.seq);
     if (!sequence.dataType) {
-      // If seq returns undefined (i.e., not 'protein', 'rna', 'dna', 'ambiguousDna')
-      sequence.dataType = checkForBinaryOrMultistate(sequence.seq);
+      sequence.dataType = binOrMulti;
+    } else if (binOrMulti) {
+      sequence.dataType = 'mixed';
     }
     numSequencesTypechecked = index + 1;
     // sendToMainWindow(TYPECHECKING_PROGRESS_IPC, {
