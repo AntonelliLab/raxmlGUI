@@ -96,19 +96,35 @@ export async function parseAlignment(filePath) {
 }
 
 export function typecheckAlignment(alignment) {
+  const acgMatch = /[ACG]/i;
+  const proteinMatch = /[EFIJLOPQZX\*]/i;
+  const binaryMatch = /[01]/i;
+  const multistateMatch = /2/i;
   const sequenceDataTypes = [];
   let numSequencesTypechecked = 0;
   _.each(alignment.sequences, (sequence, index) => {
-    // Get the data type for this sequence using BioNode seq
-    // Returns 'protein', 'rna', 'dna', 'ambiguousDna', 'ambiguousRna' or undefined
-    sequence.dataType = seq.checkType(sequence.seq);
-    // Returns 'binary', 'multistate' or undefined
-    const binOrMulti = checkForBinaryOrMultistate(sequence.seq);
-    if (!sequence.dataType) {
-      sequence.dataType = binOrMulti;
-    } else if (binOrMulti) {
-      sequence.dataType = 'mixed';
+    const { seq } = sequence;
+    let dataType = undefined;
+    if (proteinMatch.test(seq)) {
+      dataType = 'protein';
+    } else if (acgMatch.test(seq)) {
+      const numT = (seq.match(/T/ig) || []).length;
+      const numU = (seq.match(/U/ig) || []).length;
+      if (numT > numU) {
+        dataType = 'dna';
+      } else {
+        dataType = 'rna';
+      }
     }
+
+    const isBinary = binaryMatch.test(seq);
+    const isMultistate = multistateMatch.test(seq);
+    if (!dataType) {
+      dataType = isMultistate ? 'multistate' : (isBinary ? 'binary' : undefined);
+    } else if (isBinary || isMultistate) {
+      dataType = 'mixed';
+    }
+    sequence.dataType = dataType;
     numSequencesTypechecked = index + 1;
     // sendToMainWindow(TYPECHECKING_PROGRESS_IPC, {
     //   alignment,
@@ -116,15 +132,14 @@ export function typecheckAlignment(alignment) {
     // });
     sequenceDataTypes.push(sequence.dataType);
   });
-
-  // Get the majority mode in the sequence data types array
-  alignment.dataType = sequenceDataTypes
-    .sort(
-      (i, ii) =>
-        sequenceDataTypes.filter(v => v === i).length -
-        sequenceDataTypes.filter(v => v === ii).length
-    )
-    .pop();
+  let dataType = sequenceDataTypes[0];
+  const differentTypes = sequenceDataTypes.filter(type => type !== dataType);
+  if (differentTypes.length > 0) {
+    // Only valid case with different types is binary and multistate as [01] is a subset of [012].
+    const isInvalid = sequenceDataTypes.find(type => type !== 'binary' && type !== 'multistate');
+    dataType = isInvalid ? 'invalid' : 'multistate';
+  }
+  alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
   sendToMainWindow(TYPECHECKING_END_IPC, { alignment });
   // TODO add if necessary an error from typechecking, check if BioNode throws an error
