@@ -3,10 +3,14 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/AddBox';
 import { format } from 'd3-format';
 import FolderIcon from '@material-ui/icons/Folder';
 import classNames from 'classnames';
 import Alignment from './Alignment';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
 
 const styles = theme => ({
   Input: {
@@ -17,9 +21,17 @@ const styles = theme => ({
   files: {
     marginTop: '10px',
   },
+  alignmentList: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    overflowX: 'scroll',
+  },
   alignments: {
-    marginTop: '10px',
-    overflowY: 'auto',
+    display: 'flex',
+  },
+  addAlignment: {
+    width: '200px',
+    height: '200px',
   },
   output: {
     marginTop: '20px',
@@ -50,22 +62,21 @@ const styles = theme => ({
 });
 
 const Input = withStyles(styles)(observer(({ classes, run }) => {
-  
 
   return (
     <div className={classes.Input}>
-      <Button variant="contained" color="primary" onClick={run.loadAlignmentFiles}>
-        Open files
-      </Button>
-      { /*
-      <Button variant="contained" color="primary" onClick={run.removeAllAlignments}>
-        Clear all
-      </Button>
-      */}
-      {/* { FileInfo } */}
-      <div className={classes.alignments}>
-        { run.alignments.map(alignment => <Alignment key={alignment.path} alignment={alignment} />) }
+
+      <div className={classes.alignmentList}>
+        <div className={classes.alignments}>
+        { run.alignments.map(alignment => (
+          <Alignment key={alignment.path} alignment={alignment} className="alignment" />
+        )) }
+        <Button variant="outlined" className={classNames('alignment', classes.addAlignment)} onClick={run.loadAlignmentFiles}>
+          Add alignment
+        </Button>
+        </div>
       </div>
+
       { run.alignments.length === 0 ? null :
         <Button
           variant="contained"

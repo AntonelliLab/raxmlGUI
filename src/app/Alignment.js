@@ -3,6 +3,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconDelete from '@material-ui/icons/Delete';
 import { format } from 'd3-format';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -16,6 +18,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 
 const styles = theme => ({
   Alignment: {
@@ -26,7 +31,14 @@ const styles = theme => ({
     backgroundColor: '#393939',
     border: `1px solid #999`
   },
+  card: {
+    // width: '350px',
+  },
   heading: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  content: {
     display: 'flex',
     alignItems: 'center',
   },
@@ -34,7 +46,7 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   chip: {
-    height: '20px',
+    height: '30px',
   },
   link: {
     cursor: 'pointer',
@@ -77,7 +89,7 @@ const styles = theme => ({
 
 });
 
-const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
+const Alignment = withStyles(styles)(observer(({ classes, className, alignment }) => {
   const { base, filename, path, fileFormat, dataType, numSequences, length } = alignment;
 
   const Size = alignment.parsingComplete ? (
@@ -93,7 +105,7 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
   // );
 
   const Type = alignment.typecheckingComplete ? (
-    <Chip className={classes.chip} label={dataType} color="default" />
+    <Chip className={classes.chip} label={dataType} color="secondary" />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
   );
@@ -105,70 +117,64 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
   );
 
   return (
-    <div className={classes.Alignment}>
+    <Card className={classNames(className, classes.card)} raised>
+      <CardHeader
+        avatar={
+          Type
+        }
+        action={
+          <IconButton>
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title={ alignment.filename }
+        subheader={ Size }
+      />
       <div>
-        <div className={classes.heading}>
-          <div className={classes.name}>{ filename }</div>
-          <div>
-            { Type }
+        { alignment.loading ? (
+          <div className={classes.loading}>
+            <CircularProgress variant="indeterminate" />
           </div>
-        </div>
-        <div className={classes.fileInfo}>
-          <div>
-            <span className={classes.link} onClick={alignment.openFolder}>Open folder</span>
-            <span className={classes.divider}>|</span>
-            <span className={classes.link} onClick={alignment.openFile}>Open file</span>
-          </div>
-          <div>
-            Size: { Size }
-          </div>
-          <div>
-            Format: { alignment.fileFormat }
-          </div>
-          <div>
-            Status: { alignment.status }
-          </div>
-        </div>
-        <div>
-        </div>
-        <FormControl>
-          <Select value={alignment.model} onChange={alignment.onChangeModel}>
-            {
-              (alignment.modelOptions || []).map(model => (
-                <MenuItem key={model} value={model}>
-                  { model }
-                </MenuItem>
-              ))
-            }
-          </Select>
-          <FormHelperText>Substitution model</FormHelperText>
-        </FormControl>
-        { alignment.modelExtra ? (
-          <FormControl>
-          <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>
-            {
-              alignment.modelExtra.options.map(model => (
-                <MenuItem key={model} value={model}>
-                  { model }
-                </MenuItem>
-              ))
-            }
-          </Select>
-          <FormHelperText>{alignment.modelExtra.label}</FormHelperText>
-        </FormControl>
         ) : null }
       </div>
-      { alignment.loading ? (
-        <div className={classes.loading}>
-          <CircularProgress variant="indeterminate" />
+      <CardContent>
+        <div className={classes.content}>
+          <div>
+            <FormControl>
+              <Select value={alignment.model} onChange={alignment.onChangeModel}>
+                {
+                  (alignment.modelOptions || []).map(model => (
+                    <MenuItem key={model} value={model}>
+                      { model }
+                    </MenuItem>
+                  ))
+                }
+              </Select>
+              <FormHelperText>Substitution model</FormHelperText>
+            </FormControl>
+            { alignment.modelExtra ? (
+              <FormControl>
+              <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>
+                {
+                  alignment.modelExtra.options.map(model => (
+                    <MenuItem key={model} value={model}>
+                      { model }
+                    </MenuItem>
+                  ))
+                }
+              </Select>
+              <FormHelperText>{alignment.modelExtra.label}</FormHelperText>
+            </FormControl>
+            ) : null }
+          </div>
+          <div className={classes.remove}>
+            <Button variant="outlined" color="default" onClick={alignment.remove}>
+              <IconDelete />
+            </Button>
+          </div>
         </div>
-      ) : null }
-      <div className={classes.remove}>
-        <Button variant="outlined" color="default" onClick={alignment.remove}>
-          <IconDelete />
-        </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }));
 
@@ -176,6 +182,7 @@ const Alignment = withStyles(styles)(observer(({ classes, alignment }) => {
 Alignment.propTypes = {
   classes: PropTypes.object.isRequired,
   alignment: PropTypes.object.isRequired,
+  className: PropTypes.string,
 };
 
 export default withStyles(styles)(observer(Alignment));
