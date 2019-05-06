@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/AddBox';
@@ -12,7 +12,7 @@ import Alignment from './Alignment';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   Input: {
     padding: '10px',
     flexGrow: 1,
@@ -47,21 +47,29 @@ const styles = theme => ({
     marginLeft: 4,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   rightIcon: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,
   },
   outputButton: {
-    marginLeft: theme.spacing.unit,
-  }
+    marginLeft: theme.spacing(1),
+  },
+  gridList: {
+    flexWrap: 'nowrap',
+    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)',
+    width: 500,
+  },
 
-});
+}));
 
-const Input = withStyles(styles)(observer(({ classes, run }) => {
+const Input = ({ run }) => {
+
+  const classes = useStyles();
 
   return (
     <div className={classes.Input}>
@@ -71,7 +79,7 @@ const Input = withStyles(styles)(observer(({ classes, run }) => {
         { run.alignments.map(alignment => (
           <Alignment key={alignment.path} alignment={alignment} className="alignment" />
         )) }
-        <Button variant="outlined" className={classNames('alignment', classes.addAlignment)} onClick={run.loadAlignmentFiles}>
+        <Button variant="outlined" className={`alignment ${classes.addAlignment}`} onClick={run.loadAlignmentFiles}>
           Add alignment
         </Button>
         </div>
@@ -89,7 +97,7 @@ const Input = withStyles(styles)(observer(({ classes, run }) => {
       }
     </div>
   );
-}));
+};
 
 
 Input.propTypes = {
@@ -97,4 +105,4 @@ Input.propTypes = {
   run: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(observer(Input));
+export default observer(Input);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -16,7 +16,7 @@ import Raxml from './Raxml';
 import './App.css';
 import store from './store';
 
-const styles = theme => ({
+const useStyles = makeStyles({
   AppBar: {
     display: 'flex',
     flexDirection: 'row',
@@ -36,51 +36,41 @@ const styles = theme => ({
   },
 });
 
-class App extends React.Component {
+const App = () => {
 
-  handleTabChange = (event, value) => {
-    store.setActive(value);
-  }
+  const classes = useStyles();
 
-  render() {
-    const { classes } = this.props;
+  const TabItems = store.runs.map(run => (
+    <Tab key={run.id} icon={
+      <span className={classes.tab}>
+        <CircularProgress color="inherit" size={20} className={classes.tabIcon}
+          variant={run.running ? "indeterminate" : "static"} value={0} />
+        {`Run ${run.id}`}
+      </span>
+    } />
+  ));
 
-    const TabItems = store.runs.map(run => (
-      <Tab key={run.id} icon={
-        <span className={classes.tab}>
-          <CircularProgress color="inherit" size={20} className={classes.tabIcon}
-            variant={run.running ? "indeterminate" : "static"} value={0} />
-          {`Run ${run.id}`}
-        </span>
-      } />
-    ));
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <div className="App">
+        <AppBar position="static" className={classes.AppBar}>
+          <Tabs value={store.activeIndex} onChange={(event, value) => store.setActive(value)}>
+            { TabItems }
+          </Tabs>
+          <Toolbar className={classes.Toolbar}>
+            <IconButton onClick={store.addRun}>
+              <IconAdd />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
-    return (
-      <React.Fragment>
-        <CssBaseline />
-        <div className="App">
-          <AppBar position="static" className={classes.AppBar}>
-            <Tabs value={store.activeIndex} onChange={this.handleTabChange}>
-              { TabItems }
-            </Tabs>
-            <Toolbar className={classes.Toolbar}>
-              <IconButton onClick={store.addRun}>
-                <IconAdd />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
+        <Input run={store.activeRun} />
 
-          <Input run={store.activeRun} />
-
-          <Raxml run={store.activeRun} />
-        </div>
-      </React.Fragment>
-    );
-  }
+        <Raxml run={store.activeRun} />
+      </div>
+    </React.Fragment>
+  );
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(observer(App));
+export default observer(App);

@@ -36,8 +36,9 @@
     "build": "yarn react-build && yarn electron-build"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
+    "@material-ui/core": "^4.0.0-beta.0",
+    "@material-ui/icons": "^4.0.0-beta.0",
+    "@material-ui/styles": "^4.0.0-beta.0",
     "bionode-fasta": "^0.5.6",
     "bionode-seq": "^0.1.1",
     "classnames": "^2.2.5",
@@ -47,7 +48,7 @@
     "electron-is-dev": "^1.1.0",
     "lodash": "^4.17.11",
     "mobx": "^5.9.4",
-    "mobx-react": "^5.4.3",
+    "mobx-react": "^6.0.0-rc.4",
     "parse-filepath": "^1.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.8.6",
