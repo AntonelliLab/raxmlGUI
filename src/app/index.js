@@ -11,3 +11,8 @@ const Index = () => (
 );
 
 export default Index;
+
+
+if (process.env.NODE_ENV === 'development') {
+  import('./bootstrap');
+}
