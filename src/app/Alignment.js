@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
 import InputLabel from '@material-ui/core/InputLabel';
+import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -22,6 +23,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import Partition from './Partition';
 
 const useStyles = makeStyles(theme => ({
   Alignment: {
@@ -94,6 +96,22 @@ function Alignment({ className, alignment }) {
   const { base, filename, path, fileFormat, dataType, numSequences, length } = alignment;
 
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  function handleMenuClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleMenuClose() {
+    setAnchorEl(null);
+  }
+
+  function closeMenuAndRun(callback) {
+    return () => {
+      callback();
+      setAnchorEl(null);
+    }
+  }
 
   const Size = alignment.parsingComplete ? (
     <span>{ numSequences } sequences of length { length }</span>
@@ -119,6 +137,46 @@ function Alignment({ className, alignment }) {
     <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
   );
 
+  const Content = alignment.showPartition ? (
+    <Partition alignment={alignment} />
+  ) : (
+    <div className={classes.content}>
+      <div>
+        <FormControl>
+          <Select value={alignment.model} onChange={alignment.onChangeModel}>
+            {
+              (alignment.modelOptions || []).map(model => (
+                <MenuItem key={model} value={model}>
+                  { model }
+                </MenuItem>
+              ))
+            }
+          </Select>
+          <FormHelperText>Substitution model</FormHelperText>
+        </FormControl>
+        { alignment.modelExtra ? (
+          <FormControl>
+          <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>
+            {
+              alignment.modelExtra.options.map(model => (
+                <MenuItem key={model} value={model}>
+                  { model }
+                </MenuItem>
+              ))
+            }
+          </Select>
+          <FormHelperText>{alignment.modelExtra.label}</FormHelperText>
+        </FormControl>
+        ) : null }
+      </div>
+      <div className={classes.remove}>
+        <Button variant="outlined" color="default" onClick={alignment.remove}>
+          <IconDelete />
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <Card className={classNames(className, classes.card)} raised>
       <CardHeader
@@ -126,9 +184,21 @@ function Alignment({ className, alignment }) {
           Type
         }
         action={
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
+          <div>
+            <IconButton
+              aria-owns={anchorEl ? 'alignment-menu' : undefined}
+              aria-haspopup="true"
+              onClick={handleMenuClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu id="alignment-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Show aligment</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>Show folder</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>Show partition</MenuItem>
+            </Menu>
+          </div>
         }
         title={ alignment.filename }
         subheader={ Size }
@@ -141,41 +211,7 @@ function Alignment({ className, alignment }) {
         ) : null }
       </div>
       <CardContent>
-        <div className={classes.content}>
-          <div>
-            <FormControl>
-              <Select value={alignment.model} onChange={alignment.onChangeModel}>
-                {
-                  (alignment.modelOptions || []).map(model => (
-                    <MenuItem key={model} value={model}>
-                      { model }
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-              <FormHelperText>Substitution model</FormHelperText>
-            </FormControl>
-            { alignment.modelExtra ? (
-              <FormControl>
-              <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>
-                {
-                  alignment.modelExtra.options.map(model => (
-                    <MenuItem key={model} value={model}>
-                      { model }
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-              <FormHelperText>{alignment.modelExtra.label}</FormHelperText>
-            </FormControl>
-            ) : null }
-          </div>
-          <div className={classes.remove}>
-            <Button variant="outlined" color="default" onClick={alignment.remove}>
-              <IconDelete />
-            </Button>
-          </div>
-        </div>
+      { Content }
       </CardContent>
     </Card>
   );

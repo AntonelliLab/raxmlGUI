@@ -35,6 +35,10 @@ class Alignment {
   // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
   multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
 
+  // Partition stuff
+  showPartition = false;
+  partitionText = "";
+
   constructor(run, path) {
     this.run = run;
     this.path = path;
@@ -205,6 +209,14 @@ class Alignment {
     ipcRenderer.send(ipc.FILE_OPEN_IPC, this.path);
   };
 
+  setShowPartition = (value = true) => {
+    this.showPartition = value;
+  }
+
+  setPartitionText = (value) => {
+    this.partitionText = value;
+  }
+
   dispose = () => {
     //TODO: Remove listeners (make callbacks class methods to be able to remove them)
   }
@@ -246,6 +258,8 @@ export default decorate(Alignment, {
   model: observable,
   aaMatrixName: observable,
   multistateModel: observable,
+  showPartition: observable,
+  partitionText: observable,
   ok: computed,
   name: computed,
   dir: computed,
