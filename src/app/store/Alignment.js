@@ -1,4 +1,4 @@
-import { decorate, observable, computed, action, runInAction, toJS } from 'mobx';
+import { observable, computed, action, runInAction, toJS } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
@@ -17,27 +17,27 @@ const modelOptions = {
 
 class Alignment {
   run = null;
-  path = '';
-  size = 0;
-  dataType = undefined;
-  fileFormat = undefined;
-  length = 0;
-  numSequences = 0;
-  parsingComplete = false;
-  typecheckingComplete = false;
-  checkRunComplete = false;
-  checkRunData = '';
-  checkRunSuccess = false;
-  sequences = undefined;
-  model = '';
-  aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
+  @observable path = '';
+  @observable size = 0;
+  @observable dataType = undefined;
+  @observable fileFormat = undefined;
+  @observable length = 0;
+  @observable numSequences = 0;
+  @observable parsingComplete = false;
+  @observable typecheckingComplete = false;
+  @observable checkRunComplete = false;
+  @observable checkRunData = '';
+  @observable checkRunSuccess = false;
+  @observable sequences = undefined;
+  @observable model = '';
+  @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
   // TODO: This should change all other multistate models if available, according to documentation:
   // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
-  multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
+  @observable multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
 
   // Partition stuff
-  showPartition = false;
-  partitionText = "";
+  @observable showPartition = false;
+  @observable partitionText = "";
 
   constructor(run, path) {
     this.run = run;
@@ -45,32 +45,37 @@ class Alignment {
     this.listen();
   }
 
+  @computed
   get id() {
     return this.path;
   }
 
-  //@computed
-
+  @computed
   get name() {
     return parsePath(this.path).name;
   }
 
+  @computed
   get dir() {
     return parsePath(this.path).dir;
   }
 
+  @computed
   get base() {
     return parsePath(this.path).base;
   }
 
+  @computed
   get filename() {
     return parsePath(this.path).base;
   }
 
+  @computed
   get ok() {
     return this.path !== '';
   }
 
+  @computed
   get status() {
     if (this.error) {
       return `Error: ${this.error}`;
@@ -87,10 +92,12 @@ class Alignment {
     return 'ok';
   }
 
+  @computed
   get loading() {
     return !this.checkRunComplete;
   }
 
+  @computed
   get modelOptions() {
     if (!this.dataType) {
       return [];
@@ -98,6 +105,7 @@ class Alignment {
     return modelOptions[this.dataType].options;
   }
 
+  @computed
   get modelExtra() {
     switch (this.dataType) {
       case 'protein':
@@ -201,77 +209,53 @@ class Alignment {
     });
   };
 
+  @action
   openFolder = () => {
     ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.path);
   };
 
+  @action
   openFile = () => {
     ipcRenderer.send(ipc.FILE_OPEN_IPC, this.path);
   };
 
+  @action
   setShowPartition = (value = true) => {
     this.showPartition = value;
   }
 
+  @action
   setPartitionText = (value) => {
     this.partitionText = value;
   }
 
+  @action
   dispose = () => {
     //TODO: Remove listeners (make callbacks class methods to be able to remove them)
   }
 
+  @action
   remove = () => {
     this.run.removeAlignment(this);
   };
 
+  @action
   onChangeModel = (event) => {
     console.log('onChangeModel');
     this.model = event.target.value;
   }
 
+  @action
   onChangeAAMatrixName = (event) => {
     console.log('onChangeAAMatrixName');
     this.aaMatrixName = event.target.value;
   }
 
+  @action
   onChangeMultistateModel = (event) => {
     console.log('onChangeMultistateModel');
     this.multistateModel = event.target.value;
   }
 }
 
-export default decorate(Alignment, {
-  path: observable,
-  size: observable,
-  dataType: observable,
-  fileFormat: observable,
-  sequences: observable,
-  length: observable,
-  numSequences: observable,
-  parsingComplete: observable,
-  typecheckingComplete: observable,
-  checkRunComplete: observable,
-  checkRunData: observable,
-  checkRunSuccess: observable,
-  error: observable,
-  model: observable,
-  aaMatrixName: observable,
-  multistateModel: observable,
-  showPartition: observable,
-  partitionText: observable,
-  ok: computed,
-  name: computed,
-  dir: computed,
-  base: computed,
-  filename: computed,
-  status: computed,
-  loading: computed,
-  modelOptions: computed,
-  modelExtra: computed,
-  showAlignmentFileInFolder: action,
-  onChangeModel: action,
-  onChangeAAMatrixName: action,
-  onChangeMultistateModel: action,
-});
-
+export default Alignment;

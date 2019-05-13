@@ -1,4 +1,4 @@
-import { decorate, observable, computed, action, runInAction, toJS } from 'mobx';
+import { observable, computed, action, runInAction, toJS } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
@@ -16,33 +16,30 @@ class Run {
 
   id = 0;
 
-  //@observable
-  alignments = [];
-  analysisType = 'ML+BS';
-  argsList = [];
-  code = undefined;
-  createdAt = undefined;
-  data = '';
-  dataType = undefined;
-  flagsrunCode = undefined;
-  flagsrunData = undefined;
-  globalArgs = {};
-  inFile = undefined;
-  inFileFolder = undefined;
-  isPartitioned = false;
-  outFilename = '';
-  partitionFile = undefined;
-  partitions = undefined;
-  path = undefined;
-  sequences = [];
-  calculationComplete = false;
-  isCalculating = false;
-  combineOutput = false;
+  @observable alignments = [];
+  @observable analysisType = 'ML+BS';
+  @observable argsList = [];
+  @observable code = undefined;
+  @observable createdAt = undefined;
+  @observable data = '';
+  @observable dataType = undefined;
+  @observable flagsrunCode = undefined;
+  @observable flagsrunData = undefined;
+  @observable globalArgs = {};
+  @observable inFile = undefined;
+  @observable inFileFolder = undefined;
+  @observable isPartitioned = false;
+  @observable outFilename = '';
+  @observable partitionFile = undefined;
+  @observable partitions = undefined;
+  @observable path = undefined;
+  @observable sequences = [];
+  @observable calculationComplete = false;
+  @observable isCalculating = false;
+  @observable combineOutput = false;
+  @observable raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
+  @observable stdout = '';
 
-  raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
-  stdout = '';
-
-  //@computed
   get startRunDisabled() {
     return false;
     // return !this.parent.alignments.alignments.length > 0;
@@ -53,26 +50,29 @@ class Run {
     return range(2, MAX_NUM_CPUS + 1);
   }
 
+  @action
   proposeRun = () => {
     // Send alignments to main process
     console.log('proposeRun', this.alignments);
     ipcRenderer.send(ipc.RUN_PROPOSED_IPC, toJS(this.alignments));
   };
 
+  @action
   startRun = () => {
     // Send runs to main process
     ipcRenderer.send(ipc.RUN_START_IPC, toJS(this));
   };
 
+  @action
   cancelRun = () => {
     this.isCalculating = false;
     // Send runs to main process
     ipcRenderer.send(ipc.CALCULATION_CANCEL_IPC, toJS(this));
   };
 
-  //@action
   // TODO: this is the previous version of doing it, just replace the entire run object
   // must be better way here, only change the relevant params
+  @action
   updateRun = run => {
     console.log('updateRun:', run);
     if (run.id === this.id || !run.id) {
@@ -84,49 +84,59 @@ class Run {
     }
   };
 
+  @action
   setGlobalArgs = value => {
     console.log('setGlobalArgs:', value);
     this.globalArgs = value;
   };
 
+  @action
   setArgsList = value => {
     console.log('setArgsList:', value);
     this.argsList = value;
   };
 
+  @action
   setAnalysisType = value => {
     console.log('setAnalysisType:', value);
     this.analysisType = value;
   };
 
+  @action
   setCombineOutput = value => {
     console.log('setCombineOutput:', value);
     this.combineOutput = value;
   };
 
   // Open system dialog to choose file
+  @action
   loadTreeFile = () => {
     ipcRenderer.send(ipc.FILE_SELECT_IPC, toJS(this));
   };
 
+  @action
   setOutFilename = name => {
     this.outFilename = name;
   };
 
+  @action
   selectWorkingDirectory = () => {
     ipcRenderer.send(ipc.FOLDER_SELECT_IPC, toJS(this));
   };
 
+  @action
   removeRun = () => {
     this.cancelRun();
     this.parent.deleteRun(this);
   };
 
   // TODO: this maybe needed in a different store class as well, i.e. alignment ?
+  @action
   showInFolder = outputPath => {
     ipcRenderer.send(ipc.FOLDER_OPEN_IPC, outputPath);
   };
 
+  @action
   loadAlignmentFiles = () => {
     ipcRenderer.send(ipc.ALIGNMENT_SELECT_IPC);
   };
@@ -135,6 +145,7 @@ class Run {
     return this.alignments.findIndex(alignment => alignment.id === id) >= 0;
   }
 
+  @action
   addAlignments = alignments => {
     alignments.forEach(({ path }) => {
       if (!this.haveAlignment(path)) {
@@ -143,6 +154,7 @@ class Run {
     });
   }
 
+  @action
   removeAlignment = alignment => {
     const index = this.alignments.indexOf(alignment);
     if (index >= 0) {
@@ -231,11 +243,13 @@ class Run {
     });
   };
 
+  @action
   clearStdout = () => {
     console.log('clearStdout');
     this.stdout = '';
   };
 
+  @action
   onStdout = (event, run) => {
     console.log('onStdout');
     const { id, data } = run;
@@ -253,40 +267,4 @@ class Run {
   };
 }
 
-export default decorate(Run, {
-  alignments: observable,
-  analysisType: observable,
-  argsList: observable,
-  code: observable,
-  createdAt: observable,
-  data: observable,
-  dataType: observable,
-  flagsrunCode: observable,
-  flagsrunData: observable,
-  globalArgs: observable,
-  inFile: observable,
-  inFileFolder: observable,
-  isPartitioned: observable,
-  outFilename: observable,
-  partitionFile: observable,
-  partitions: observable,
-  path: observable,
-  sequences: observable,
-  calculationComplete: observable,
-  isCalculating: observable,
-  combineOutput: observable,
-  // Daniel
-  raxmlBinary: observable,
-  stdout: observable,
-  //
-  startRunDisabled: computed,
-  //
-  setAnalysisType: action,
-  setCombineOutput: action,
-  loadTreeFile: action,
-  setOutName: action,
-  clearStdout: action,
-  showInFolder: action,
-  removeRun: action,
-  startRun: action
-});
+export default Run;

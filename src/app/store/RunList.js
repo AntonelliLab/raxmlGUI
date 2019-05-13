@@ -1,20 +1,22 @@
-import { decorate, observable, computed, action, runInAction, toJS } from 'mobx';
+import { observable, computed, action, runInAction, toJS } from 'mobx';
 import * as ipc from '../../constants/ipc';
 import Run from './Run';
 
 class RunList {
-  runs = [];
-  activeIndex = 0;
+  @observable runs = [];
+  @observable activeIndex = 0;
   // alignments = new Alignments();
 
   constructor() {
     this.addRun();
   }
 
+  @computed
   get activeRun() {
     return this.runs[this.activeIndex];
   }
 
+  @action
   addRun = () => {
     console.log('addRun...');
     let maxId = 0;
@@ -23,6 +25,7 @@ class RunList {
     this.activeIndex = this.runs.length - 1;
   };
 
+  @action
   deleteRun = run => {
     const runIndex = this.runs.findIndex(m => m.id === run.id);
     this.runs.splice(runIndex, 1);
@@ -32,21 +35,15 @@ class RunList {
     this.activeIndex = Math.min(this.runs.length - 1, this.activeIndex);
   };
 
+  @action
   setActive = index => {
     this.activeIndex = index;
   };
 
+  @action
   deleteActive = () => {
     this.deleteRun(this.activeRun);
   };
 }
 
-export default decorate(RunList, {
-  runs: observable,
-  activeIndex: observable,
-  activeRun: computed,
-  addRun: action,
-  deleteRun: action,
-  setActive: action,
-  deleteActive: action,
-});
+export default RunList;
