@@ -50,8 +50,14 @@ function initialize() {
       height: 740,
       title: app.getName(),
       resizable: true,
-      // This is essential, to avoid being throttled when in the background,
-      webPreferences: { backgroundThrottling: false }
+      webPreferences: {
+        backgroundThrottling: false, //TODO: Skip this if it doesn't affect raxml performance
+        nodeIntegration: false,
+        contextIsolation: false, // Needed to expose ipcRenderer from preload script
+        preload: path.join(app.getAppPath(), 'src', 'electron', 'preload.js'),
+        // enableRemoteModule: false
+        allowEval: false
+      }
     };
 
     if (process.platform === 'linux') {
