@@ -1,11 +1,9 @@
-import { observable, computed, action, runInAction, toJS } from 'mobx';
-import * as ipc from '../../constants/ipc';
+import { observable, computed, action } from 'mobx';
 import Run from './Run';
 
 class RunList {
   @observable runs = [];
   @observable activeIndex = 0;
-  // alignments = new Alignments();
 
   constructor() {
     this.addRun();
@@ -18,7 +16,6 @@ class RunList {
 
   @action
   addRun = () => {
-    console.log('addRun...');
     let maxId = 0;
     this.runs.forEach(run => (maxId = Math.max(run.id, maxId)));
     this.runs.push(new Run(this, maxId + 1));

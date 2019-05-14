@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction, toJS } from 'mobx';
+import { observable, computed, action, toJS } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
@@ -39,6 +39,11 @@ class Run {
   @observable combineOutput = false;
   @observable raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
   @observable stdout = '';
+
+  @computed
+  get numSites() {
+    return this.alignments.reduce((sum, n) => sum + n, 0);
+  }
 
   get startRunDisabled() {
     return false;

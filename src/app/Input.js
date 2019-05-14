@@ -3,14 +3,7 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/AddBox';
-import { format } from 'd3-format';
-import FolderIcon from '@material-ui/icons/Folder';
-import classNames from 'classnames';
 import Alignment from './Alignment';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
 
 const useStyles = makeStyles(theme => ({
   Input: {
@@ -101,7 +94,6 @@ const Input = ({ run }) => {
 
 
 Input.propTypes = {
-  classes: PropTypes.object.isRequired,
   run: PropTypes.object.isRequired,
 };
 

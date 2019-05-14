@@ -1,20 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-// import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconDelete from '@material-ui/icons/Delete';
-import { format } from 'd3-format';
-import FolderIcon from '@material-ui/icons/Folder';
 import classNames from 'classnames';
-import _ from "lodash";
-import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
-import InputLabel from '@material-ui/core/InputLabel';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -46,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   name: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   chip: {
     height: '30px',
@@ -70,16 +64,16 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 4,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   rightIcon: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,
   },
   outputButton: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
   },
   loading: {
     marginLeft: '10px',
@@ -93,7 +87,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Alignment({ className, alignment }) {
-  const { base, filename, path, fileFormat, dataType, numSequences, length } = alignment;
+  const { dataType, numSequences, length } = alignment;
 
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -131,11 +125,11 @@ function Alignment({ className, alignment }) {
     <CircularProgress variant="indeterminate" size={20} />
   );
 
-  const Check = alignment.checkRunComplete ? (
-    <span>{ alignment.checkRunSuccess ? 'ok' : 'failed' }</span>
-  ) : (
-    <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
-  );
+  // const Check = alignment.checkRunComplete ? (
+  //   <span>{ alignment.checkRunSuccess ? 'ok' : 'failed' }</span>
+  // ) : (
+  //   <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
+  // );
 
   const Content = alignment.showPartition ? (
     <Partition alignment={alignment} />
@@ -219,7 +213,6 @@ function Alignment({ className, alignment }) {
 
 
 Alignment.propTypes = {
-  classes: PropTypes.object.isRequired,
   alignment: PropTypes.object.isRequired,
   className: PropTypes.string,
 };

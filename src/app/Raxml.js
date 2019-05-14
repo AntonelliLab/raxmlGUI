@@ -3,8 +3,6 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import IconDelete from '@material-ui/icons/Delete';
 
 import './Raxml.css';
 
@@ -20,7 +18,7 @@ const styles = theme => ({
     marginRight: '20px'
   },
   button: {
-    marginRight: theme.spacing.unit
+    marginRight: theme.spacing(1)
   },
   textField: {},
   run: {

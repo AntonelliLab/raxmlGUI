@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction, toJS } from 'mobx';
+import { observable, computed, action, runInAction } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
@@ -48,6 +48,11 @@ class Alignment {
   @computed
   get id() {
     return this.path;
+  }
+
+  @computed
+  get numSites() {
+    return this.length;
   }
 
   @computed
