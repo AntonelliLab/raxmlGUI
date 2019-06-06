@@ -53,16 +53,18 @@ const App = () => {
     <React.Fragment>
       <CssBaseline />
       <div className="App">
-        <AppBar position="static" className={classes.AppBar}>
-          <Tabs value={store.activeIndex} onChange={(event, value) => store.setActive(value)}>
-            { TabItems }
-          </Tabs>
-          <Toolbar className={classes.Toolbar}>
-            <IconButton onClick={store.addRun}>
-              <IconAdd />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+        { store.runs.length === 1 ? null : (
+          <AppBar position="static" className={classes.AppBar}>
+            <Tabs value={store.activeIndex} onChange={(event, value) => store.setActive(value)}>
+              { TabItems }
+            </Tabs>
+            <Toolbar className={classes.Toolbar}>
+              <IconButton onClick={store.addRun}>
+                <IconAdd />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+        ) }
 
         <Input run={store.activeRun} />
 
