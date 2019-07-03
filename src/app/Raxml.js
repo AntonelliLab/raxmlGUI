@@ -3,31 +3,35 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
+import OptionSelect from './components/OptionSelect';
 
 import './Raxml.css';
 
-import RgAnalysisSelect from './components/select/RgAnalysisSelect';
-import RgRunOptions from './components/RgRunOptions';
-import RgOutFileNameInput from './components/input/RgOutFileNameInput';
-import RgCpuSelect from './components/select/RgCpuSelect';
-import RgStartRunButton from './components/button/RgStartRunButton';
-import RgWorkingDirectorySelectButton from './components/button/RgWorkingDirectorySelectButton';
-
 const styles = theme => ({
+  raxmlForm: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    backgroundColor: '#000',
+    // borderBottom: '1px solid #222',
+    padding: 10,
+    '& > *': {
+      marginLeft: '20px',
+    }
+  },
   formControl: {
-    marginRight: '20px'
   },
   button: {
     marginRight: theme.spacing(1)
   },
-  textField: {},
   run: {
     marginTop: '20px',
     display: 'flex',
     alignItems: 'center'
-  }
+  },
 });
 
+@observer
 class Console extends React.Component {
   keepToBottom = true;
 
@@ -83,56 +87,21 @@ Console.propTypes = {
   run: PropTypes.object.isRequired
 };
 
-const ObservableConsole = observer(Console);
-
+@observer
 class Raxml extends React.Component {
   render() {
     const { classes, run } = this.props;
 
     return (
       <div className="Raxml">
-        <div className="controls">
-          <RgAnalysisSelect {...this.props} />
-          <RgCpuSelect {...this.props} />
-          <RgOutFileNameInput {...this.props} />
-          <RgWorkingDirectorySelectButton {...this.props} />
+        <div>
+          <form className={classes.raxmlForm} autoComplete="off">
+            { run.stdout === '' ? null : <Button variant="outlined" onClick={run.clearStdout}>Clear</Button>}
+            <OptionSelect option={run.numThreads} />
+            <Button variant="contained" disabled={run.startRunDisabled} onClick={run.startRun}>Run</Button>
+          </form>
         </div>
-        <div className={classes.run}>
-          <div>
-            {!run.running ? (
-              <RgStartRunButton {...this.props} />
-            ) : (
-              <Button
-                variant="contained"
-                className={classes.button}
-                color="secondary"
-                onClick={run.cancelRun}
-              >
-                Cancel
-              </Button>
-            )}
-            {run.stdout ? (
-              <Button
-                variant="contained"
-                className={classes.button}
-                color="default"
-                onClick={run.clearStdout}
-              >
-                Clear
-              </Button>
-            ) : null}
-            <Button
-              variant="contained"
-              className={classes.button}
-              color="primary"
-              onClick={() => run.showInFolder(run.globalArgs.w)}
-            >
-              Results Folder
-            </Button>
-          </div>
-        </div>
-        <RgRunOptions {...this.props} />
-        <ObservableConsole run={run} />
+        <Console run={run} />
       </div>
     );
   }
@@ -143,4 +112,4 @@ Raxml.propTypes = {
   run: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(observer(Raxml));
+export default withStyles(styles)(Raxml);

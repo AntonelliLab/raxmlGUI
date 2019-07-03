@@ -2,10 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconDelete from '@material-ui/icons/Delete';
 import classNames from 'classnames';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
@@ -86,7 +84,7 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-function Alignment({ className, alignment }) {
+function AlignmentCard({ className, alignment }) {
   const { dataType, numSequences, length } = alignment;
 
   const classes = useStyles();
@@ -163,13 +161,13 @@ function Alignment({ className, alignment }) {
         </FormControl>
         ) : null }
       </div>
-      <div className={classes.remove}>
-        <Button variant="outlined" color="default" onClick={alignment.remove}>
-          <IconDelete />
-        </Button>
-      </div>
     </div>
   );
+  // <div className={classes.remove}>
+  //   <Button variant="outlined" color="default" onClick={alignment.remove}>
+  //     <IconDelete />
+  //   </Button>
+  // </div>
 
   return (
     <Card className={classNames(className, classes.card)} raised>
@@ -191,6 +189,7 @@ function Alignment({ className, alignment }) {
               <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Show aligment</MenuItem>
               <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>Show folder</MenuItem>
               <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>Show partition</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.remove)}>Remove alignment</MenuItem>
             </Menu>
           </div>
         }
@@ -212,9 +211,9 @@ function Alignment({ className, alignment }) {
 };
 
 
-Alignment.propTypes = {
+AlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
   className: PropTypes.string,
 };
 
-export default observer(Alignment);
+export default observer(AlignmentCard);

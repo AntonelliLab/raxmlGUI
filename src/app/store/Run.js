@@ -4,8 +4,143 @@ import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import Alignment from './Alignment';
+import { settings } from '../../settings/analysis';
+import parsePath from 'parse-filepath';
 
 export const MAX_NUM_CPUS = cpus().length;
+
+// Available parameters for different analysis
+const params = { brL: 'brL', SHlike: 'SHlike', combinedOutput: 'combinedOutput', reps: 'reps', runs: 'runs', tree: 'tree', startingTree: 'startingTree', outGroup: 'outGroup' };
+
+const analysisOptions = [
+  {
+    title: 'Fast tree search',
+    value: 'FT',
+    params: [params.brL, params.SHlike, params.outGroup],
+  },
+  {
+    title: 'ML search',
+    value: 'ML',
+    params: [params.SHlike, params.combinedOutput, params.outGroup],
+  },
+  {
+    title: 'ML + rapid bootstrap',
+    value: 'ML+BS',
+    params: [params.reps, params.brL, params.outGroup],
+  }, // default
+  {
+    title: 'ML + thorough bootstrap',
+    value: 'ML+tBS',
+    params: [params.runs, params.reps, params.brL, params.outGroup],
+  },
+  {
+    title: 'Bootstrap + consensus',
+    value: 'BS+con',
+    params: [params.reps, params.brL, params.outGroup],
+  },
+  {
+    title: 'Ancestral states',
+    value: 'AS',
+    needTree: true,
+    params: [params.tree],
+  },
+  {
+    title: 'Pairwise distances',
+    value: 'PD',
+    params: [params.startingTree],
+  },
+  {
+    title: 'RELL bootstraps',
+    value: 'RBS',
+    params: [params.reps, params.brL, params.outGroup],
+  }
+];
+
+class Option {
+  constructor(run, defaultValue, title, description) {
+    this.run = run;
+    this.defaultValue = defaultValue;
+    this.title = title;
+    this.description = description;
+  }
+  @observable value = this.defaultValue;
+  @action setValue = (value) => { this.value = value; }
+  @action reset() { this.value = this.defaultValue; }
+}
+
+class NumThreads extends Option {
+  constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
+  options = range(2, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
+}
+
+class Analysis extends Option {
+  constructor(run) { super(run, 'ML+BS', 'Analysis', 'Type of analysis'); }
+  options = settings.analysesOptions.map(({ value, title }) => ({ value, title }));
+}
+
+class NumRuns extends Option {
+  constructor(run) { super(run, 1, 'Runs', 'Number of runs'); }
+  options = [1, 10, 20, 50, 100, 500].map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.runs); }
+}
+
+class NumRepetitions extends Option {
+  constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
+  options = [100, 200, 500, 1000, 10000, 'autoMR', 'autoMRE', 'autoMRE_IGN', 'autoFC'].map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
+}
+
+//TODO: Another branch length option for FT? ('compute brL' vs 'BS brL' for the rest)
+class BranchLength extends Option {
+  constructor(run) { super(run, false, 'BS brL', 'Compute branch length'); }
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.brL); }
+}
+
+class SHlike extends Option {
+  constructor(run) { super(run, false, 'SH-like', 'Shimodaira-Hasegawa-like procedure'); }
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.SHlike); }
+}
+
+class CombinedOutput extends Option {
+  constructor(run) { super(run, false, 'combined output', 'Concatenate output trees'); }
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.combinedOutput); }
+}
+
+class StartingTree extends Option {
+  constructor(run) { super(run, 'Maximum parsimony', 'Starting tree', ''); }
+  options = ['Maximum parsimony', 'User defined'].map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.startingTree); }
+}
+
+class OutGroup extends Option {
+  constructor(run) { super(run, '<none>', 'Outgroup', ''); }
+  @computed get options() { return ['<none>', ...this.run.taxons].map(value => ({ value, title: value })); }
+  @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
+}
+
+class Tree extends Option {
+  constructor(run) { super(run, '', 'Tree', ''); }
+  @computed get notAvailable() {
+    return !(this.run.analysisOption.params.includes(params.tree) ||
+    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
+  }
+  @observable filePath = '';
+  @computed get haveFile() { return !!this.filePath; }
+  @computed get filename() { return parsePath(this.filePath).filename; }
+  @computed get name() { return parsePath(this.filePath).name; }
+  @computed get dir() { return parsePath(this.filePath).dir; }
+  @action setFilePath = (filePath) => { this.filePath = filePath; }
+  @action openFolder = () => {
+    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.filePath);
+  };
+  @action openFile = () => {
+    ipcRenderer.send(ipc.FILE_OPEN_IPC, this.filePath);
+  };
+  @action remove = () => {
+    this.setFilePath('');
+  }
+}
+
 
 class Run {
   constructor(parent, id) {
@@ -16,6 +151,47 @@ class Run {
 
   id = 0;
 
+  numThreads = new NumThreads(this);
+  analysis = new Analysis(this);
+
+  @computed
+  get analysisOption() {
+    return analysisOptions.find(opt => opt.value === this.analysis.value);
+  }
+
+  // Analysis params
+  numRuns = new NumRuns(this);
+  numRepetitions = new NumRepetitions(this);
+  branchLength = new BranchLength(this);
+  sHlike = new SHlike(this);
+  combinedOutput = new CombinedOutput(this);
+  tree = new Tree(this);
+  startingTree = new StartingTree(this);
+  outGroup = new OutGroup(this);
+
+  @observable outputName = '';
+  @action setOutputName = (value) => {
+    this.outputName = value;
+  }
+
+  @computed get haveAlignments() { return this.alignments.length > 0; }
+
+  @computed get taxons() {
+    return this.haveAlignments ? this.alignments[0].taxons : [];
+  }
+
+  // @computed
+  // get needTree() {
+  //   return this.analysisOption.params.includes(params.tree) ||
+  //     (!this.startingTree.notAvailable && this.startingTree.value === 'User defined');
+  // }
+  // @observable treeFile = '';
+  // @computed get haveTreeFile() { return !!this.treeFile; }
+  // @action setTreeFile = (filePath) => { this.treeFile = filePath; }
+
+
+
+  @observable repetitions = 100;//settings.numberRepsOptions.default;
   @observable alignments = [];
   @observable analysisType = 'ML+BS';
   @observable argsList = [];
@@ -45,9 +221,15 @@ class Run {
     return this.alignments.reduce((sum, n) => sum + n, 0);
   }
 
+  @computed
+  get needAlignment() {
+    return true;
+  }
+
+
+  @computed
   get startRunDisabled() {
-    return false;
-    // return !this.parent.alignments.alignments.length > 0;
+    return !this.alignments.length > 0;
   }
 
   get cpuOptions() {
@@ -155,6 +337,9 @@ class Run {
     alignments.forEach(({ path }) => {
       if (!this.haveAlignment(path)) {
         this.alignments.push(new Alignment(this, path));
+        if (this.alignments.length === 1) {
+          this.setOutputName(this.alignments[0].name);
+        }
       }
     });
   }
@@ -165,15 +350,24 @@ class Run {
     if (index >= 0) {
       this.alignments.splice(index, 1);
     }
+    if (!this.haveAlignments) {
+      this.reset();
+    }
+  }
+
+  @action
+  reset = () => {
+    this.outGroup.reset();
   }
 
   listen = () => {
     // Receive tree file path
-    ipcRenderer.on(ipc.FILE_SELECTED_IPC, (event, path) => {
+    ipcRenderer.on(ipc.FILE_SELECTED_IPC, (event, filePath) => {
       const argsListTree = this.argsList.map(args =>
-        Object.assign({}, args, this.globalArgs, { t: path })
+        Object.assign({}, args, this.globalArgs, { t: filePath })
       );
       this.setArgsList(argsListTree);
+      this.tree.setFilePath(filePath);
     });
 
     // Listen to alignments being added

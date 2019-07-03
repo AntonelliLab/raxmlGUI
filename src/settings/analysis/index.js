@@ -32,7 +32,8 @@ const analysesOptions = [
       // Option to chain on SH_like values
     ],
     outputExt: '.tre',
-    outputPrefix: 'RAxML_fastTree.'
+    outputPrefix: 'RAxML_fastTree.',
+    needTree: false,
   },
   {
     title: 'ML search',
@@ -57,7 +58,8 @@ const analysesOptions = [
       // One analysis chains on in the command line:
       // cat RAxML_result.combi13.tre* > combined_results.combi13.tre
     ],
-    outputExt: '.tre'
+    outputExt: '.tre',
+    needTree: false,
   },
   {
     title: 'ML + rapid bootstrap',
@@ -85,7 +87,8 @@ const analysesOptions = [
         M: undefined
       }
     ],
-    outputExt: '.tre'
+    outputExt: '.tre',
+    needTree: false,
   }, // default
   {
     title: 'ML + thorough bootstrap',
@@ -132,7 +135,8 @@ const analysesOptions = [
         w: undefined
       }
     ],
-    outputExt: '.tre'
+    outputExt: '.tre',
+    needTree: false,
   },
   {
     title: 'Bootstrap + consensus',
@@ -162,7 +166,8 @@ const analysesOptions = [
         w: undefined
       }
     ],
-    outputExt: '.con.tre'
+    outputExt: '.con.tre',
+    needTree: false,
   },
   {
     title: 'Ancestral states',
@@ -180,7 +185,8 @@ const analysesOptions = [
       }
     ],
     // TODO what makes sense here
-    outputExt: '.sta'
+    outputExt: '.sta',
+    needTree: true,
   },
   {
     title: 'Pairwise distances',
@@ -199,7 +205,8 @@ const analysesOptions = [
         t: undefined
       }
     ],
-    outputExt: '.tre'
+    outputExt: '.tre',
+    needTree: false,
   },
   {
     title: 'RELL bootstraps',
@@ -216,7 +223,8 @@ const analysesOptions = [
         w: undefined
       }
     ],
-    outputExt: '.tre'
+    outputExt: '.tre',
+    needTree: false,
   }
 ];
 

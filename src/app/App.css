@@ -5,6 +5,12 @@
   color: white;
 }
 
+.AppContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .alignment {
   width: 350px;
   height: 200px;

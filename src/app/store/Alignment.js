@@ -29,6 +29,7 @@ class Alignment {
   @observable checkRunData = '';
   @observable checkRunSuccess = false;
   @observable sequences = undefined;
+  // @observable taxons = [];
   @observable model = '';
   @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
   // TODO: This should change all other multistate models if available, according to documentation:
@@ -130,6 +131,10 @@ class Alignment {
       default:
         return null;
     }
+  }
+
+  @computed get taxons() {
+    return (this.sequences || []).map(seq => seq.id);
   }
 
 

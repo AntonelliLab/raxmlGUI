@@ -66,9 +66,11 @@ const App = () => {
           </AppBar>
         ) }
 
-        <Input run={store.activeRun} />
+        <div className="AppContent">
+          <Input run={store.activeRun} />
 
-        <Raxml run={store.activeRun} />
+          <Raxml run={store.activeRun} />
+        </div>
       </div>
     </React.Fragment>
   );

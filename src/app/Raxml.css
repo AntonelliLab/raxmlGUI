@@ -1,8 +1,12 @@
 .Raxml {
-  padding: 10px;
+  /* padding: 10px; */
   display: flex;
   flex-direction: column;
-  /* flex-grow: 1; */
+  flex-grow: 1;
+  min-width: 400px;
+  height: 100vh;
+  border-left: 1px solid #999;
+  background: black;
 }
 
 .controls {
@@ -16,7 +20,7 @@
   color: #fff;
   background: black;
   flex-grow: 1;
-  border: 1px solid #999;
+  /* border: 1px solid #999; */
   padding: 0 4px;
 }
 
