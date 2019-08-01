@@ -3,19 +3,14 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
-import AlignmentCard from './AlignmentCard';
+import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
-import OptionSelect from './components/OptionSelect';
-import OptionCheck from './components/OptionCheck';
 import TreeCard from './TreeCard';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   Input: {
-    padding: '10px 5px 10px 10px',
-    flexGrow: 1,
-    height: '100%',
-    maxWidth: '800px',
   },
   form: {
     '& > *': {
@@ -27,17 +22,18 @@ const useStyles = makeStyles(theme => ({
   },
   alignmentList: {
     display: 'flex',
+    // width: '100%',
     flexWrap: 'nowrap',
     overflowX: 'scroll',
-    borderLeft: `5px solid ${theme.palette.primary.main}`,
-    paddingLeft: 10,
+    // borderLeft: `5px solid ${theme.palette.primary.main}`,
+    // paddingLeft: 10,
   },
   treeList: {
     display: 'flex',
     flexWrap: 'nowrap',
     overflowX: 'scroll',
-    borderLeft: `5px solid ${theme.palette.secondary.main}`,
-    paddingLeft: 10,
+    // borderLeft: `5px solid ${theme.palette.secondary.main}`,
+    // paddingLeft: 10,
   },
   alignments: {
     display: 'flex',
@@ -49,6 +45,16 @@ const useStyles = makeStyles(theme => ({
   treeCard: {
     width: '350px',
     height: '100px',
+  },
+  finalInput: {
+  },
+  concatenatedAlignment: {
+    width: '350px',
+    height: '150px',
+  },
+  resultingPartitionCard: {
+    width: '350px',
+    height: '150px',
   },
   output: {
     marginTop: '20px',
@@ -75,6 +81,9 @@ const useStyles = makeStyles(theme => ({
   outputButton: {
     marginLeft: theme.spacing(1),
   },
+  outputDir: {
+    // flex: 'flex-grow',
+  },
   gridList: {
     flexWrap: 'nowrap',
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
@@ -92,25 +101,6 @@ const Input = ({ run }) => {
 
   return (
     <div className={classes.Input}>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
-        <OptionSelect option={run.analysis} />
-        <TextField
-          id="output-name"
-          label="Output name"
-          className={classes.outputName}
-          value={run.outputName}
-          onChange={e => run.setOutputName(e.target.value)}
-        />
-      </Box>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
-        <OptionSelect option={run.numRuns} />
-        <OptionSelect option={run.numRepetitions} />
-        <OptionCheck option={run.sHlike} />
-        <OptionCheck option={run.combinedOutput} />
-        <OptionSelect option={run.startingTree} />
-        <OptionSelect option={run.outGroup} />
-      </Box>
-
       <Box mb={1} className={classes.alignmentList}>
         <div className={classes.alignments}>
         { run.alignments.map(alignment => (
@@ -135,19 +125,19 @@ const Input = ({ run }) => {
         </Box>
       }
 
-      { run.alignments.length === 0 ? null :
-        <Button
-          variant="contained"
-          className={classes.button}
-          color="primary"
-          onClick={run.proposeRun}
-        >
-        Check input
-        </Button>
+      { run.alignments.length <= 1 ? null :
+        <Box className={classes.finalInput}>
+          <Typography variant="h5">Concatenated alignment</Typography>
+          <FinalAlignmentCard alignment={run.finalAlignment} className={classes.concatenatedAlignment} />
+        </Box>
       }
+
     </div>
   );
 };
+// <Box mt={1} display="flex">
+// { run.ok ? null : run.missing }
+// </Box>
 
 
 Input.propTypes = {

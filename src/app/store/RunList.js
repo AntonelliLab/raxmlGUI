@@ -24,6 +24,7 @@ class RunList {
 
   @action
   deleteRun = run => {
+    run.dispose();
     const runIndex = this.runs.findIndex(m => m.id === run.id);
     this.runs.splice(runIndex, 1);
     if (this.runs.length === 0) {

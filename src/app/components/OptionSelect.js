@@ -12,7 +12,7 @@ const OptionSelect = observer(({ option, className }) => {
     return null;
   }
   return (
-    <FormControl className={className}>
+    <FormControl className={className} title={option.hoverInfo}>
       <InputLabel htmlFor={option.title}>{option.title}</InputLabel>
       <Select
         value={option.value}

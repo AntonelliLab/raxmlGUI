@@ -18,16 +18,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Partition from './Partition';
 
 const useStyles = makeStyles(theme => ({
-  Alignment: {
-    padding: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '10px',
-    backgroundColor: '#393939',
+  AlignmentCard: {
+    // backgroundColor: theme.palette.secondary.main,
     border: `1px solid #999`
-  },
-  card: {
-    // width: '350px',
   },
   heading: {
     display: 'flex',
@@ -55,6 +48,18 @@ const useStyles = makeStyles(theme => ({
     fontSize: '0.75em',
     marginTop: '0.25em',
     overflowWrap: 'break-word',
+  },
+  partitionFileContainer: {
+    overflowY: 'auto',
+    height: 50,
+  },
+  partitionFileContent: {
+    color: 'white',
+    fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+    fontSize: '10px',
+    height: '100%',
+    overflowWrap: 'break-word',
+    whiteSpace: 'pre-wrap',
   },
   path: {
     cursor: 'pointer',
@@ -169,8 +174,10 @@ function AlignmentCard({ className, alignment }) {
   //   </Button>
   // </div>
 
+  // <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>Show partition</MenuItem>
+
   return (
-    <Card className={classNames(className, classes.card)} raised>
+    <Card className={classNames(className, classes.AlignmentCard)} raised>
       <CardHeader
         avatar={
           Type
@@ -186,9 +193,8 @@ function AlignmentCard({ className, alignment }) {
             </IconButton>
 
             <Menu id="alignment-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Show aligment</MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>Show folder</MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>Show partition</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Open aligment</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.showFileInFolder)}>Show in folder</MenuItem>
               <MenuItem onClick={closeMenuAndRun(alignment.remove)}>Remove alignment</MenuItem>
             </Menu>
           </div>
@@ -211,9 +217,82 @@ function AlignmentCard({ className, alignment }) {
 };
 
 
+function FinalAlignmentCard({ className, alignment }) {
+
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  function handleMenuClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleMenuClose() {
+    setAnchorEl(null);
+  }
+
+  function closeMenuAndRun(callback) {
+    return () => {
+      callback();
+      setAnchorEl(null);
+    }
+  }
+
+  const Size = alignment.parsingComplete ? (
+    <span>{ alignment.numSequences } sequences of length { alignment.length }</span>
+  ) : (
+    <span>Parsing... { alignment.numSequencesParsed } </span>
+  );
+
+  return (
+    <Card className={classNames(className, classes.AlignmentCard)} raised>
+      <CardHeader
+        avatar={
+          <Chip className={classes.chip} label={alignment.dataType} color="secondary" />
+        }
+        action={
+          <div>
+            <IconButton
+              aria-owns={anchorEl ? 'alignment-menu' : undefined}
+              aria-haspopup="true"
+              onClick={handleMenuClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu id="alignment-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Open aligment</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>Open folder</MenuItem>
+            </Menu>
+          </div>
+        }
+        title={ alignment.filename }
+        subheader={ Size }
+      />
+      <CardContent>
+        <div className={classes.partitionFileContainer}>
+          <code className={classes.partitionFileContent}>
+            { alignment.partitionFileContent }
+          </code>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+// <Box display="flex" alignItems="center" justifyContent="center">{tree.name}</Box>
+
+
 AlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
   className: PropTypes.string,
 };
 
-export default observer(AlignmentCard);
+FinalAlignmentCard.propTypes = {
+  alignment: PropTypes.object.isRequired,
+  className: PropTypes.string,
+};
+
+const AlignmentCardObserver = observer(AlignmentCard)
+const FinalAlignmentCardObserver = observer(FinalAlignmentCard)
+
+export default AlignmentCardObserver;
+export { FinalAlignmentCardObserver as FinalAlignmentCard }

@@ -1,6 +1,18 @@
 /*
     Strings for ipc
 */
+export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
+export const OUTPUT_DIR_SELECTED = 'OUTPUT_DIR_SELECTED';
+export const TREE_SELECT = 'TREE_SELECT';
+export const TREE_SELECTED = 'TREE_SELECTED';
+export const RUN_START = 'RUN_START';
+export const RUN_STARTED = 'RUN_STARTED';
+export const PROC_STDOUT = 'PROC_STDOUT';
+export const PROC_CLOSE = 'PROC_CLOSE';
+export const FILE_OPEN = 'FILE_OPEN';
+export const FILE_SHOW_IN_FOLDER = 'FILE_SHOW_IN_FOLDER';
+export const FOLDER_OPEN = 'FOLDER_OPEN';
+
 export const FOLDER_OPEN_IPC = 'FOLDER_OPEN_IPC';
 export const FOLDER_SELECT_IPC = 'FOLDER_SELECT_IPC';
 export const FOLDER_SELECTED_IPC = 'FOLDER_SELECTED_IPC';

@@ -1,10 +1,9 @@
-import { observable, computed, action, toJS } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
-import Alignment from './Alignment';
-import { settings } from '../../settings/analysis';
+import Alignment, { FinalAlignment } from './Alignment';
 import parsePath from 'parse-filepath';
 
 export const MAX_NUM_CPUS = cpus().length;
@@ -25,7 +24,7 @@ const analysisOptions = [
   },
   {
     title: 'ML + rapid bootstrap',
-    value: 'ML+BS',
+    value: 'ML+rBS',
     params: [params.reps, params.brL, params.outGroup],
   }, // default
   {
@@ -57,15 +56,17 @@ const analysisOptions = [
 ];
 
 class Option {
-  constructor(run, defaultValue, title, description) {
+  constructor(run, defaultValue, title, description, hoverInfo) {
     this.run = run;
     this.defaultValue = defaultValue;
     this.title = title;
     this.description = description;
+    this.hoverInfo = hoverInfo;
   }
   @observable value = this.defaultValue;
   @action setValue = (value) => { this.value = value; }
   @action reset() { this.value = this.defaultValue; }
+  @computed get isDefault() { return this.value === this.defaultValue; }
 }
 
 class NumThreads extends Option {
@@ -74,8 +75,8 @@ class NumThreads extends Option {
 }
 
 class Analysis extends Option {
-  constructor(run) { super(run, 'ML+BS', 'Analysis', 'Type of analysis'); }
-  options = settings.analysesOptions.map(({ value, title }) => ({ value, title }));
+  constructor(run) { super(run, 'ML+rBS', 'Analysis', 'Type of analysis'); }
+  options = analysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
 class NumRuns extends Option {
@@ -92,17 +93,17 @@ class NumRepetitions extends Option {
 
 //TODO: Another branch length option for FT? ('compute brL' vs 'BS brL' for the rest)
 class BranchLength extends Option {
-  constructor(run) { super(run, false, 'BS brL', 'Compute branch length'); }
+  constructor(run) { super(run, false, 'BS brL', 'Compute branch length', 'Optimize model parameters and branch lengths for the given input tree'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.brL); }
 }
 
 class SHlike extends Option {
-  constructor(run) { super(run, false, 'SH-like', 'Shimodaira-Hasegawa-like procedure'); }
+  constructor(run) { super(run, false, 'SH-like', 'Compute log-likelihood test', 'Shimodaira-Hasegawa-like procedure'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.SHlike); }
 }
 
 class CombinedOutput extends Option {
-  constructor(run) { super(run, false, 'combined output', 'Concatenate output trees'); }
+  constructor(run) { super(run, false, 'Combined output', 'Concatenate output trees'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.combinedOutput); }
 }
 
@@ -152,8 +153,8 @@ class Run {
   id = 0;
 
   numThreads = new NumThreads(this);
-  analysis = new Analysis(this);
 
+  analysis = new Analysis(this);
   @computed
   get analysisOption() {
     return analysisOptions.find(opt => opt.value === this.analysis.value);
@@ -165,14 +166,30 @@ class Run {
   branchLength = new BranchLength(this);
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
-  tree = new Tree(this);
-  startingTree = new StartingTree(this);
   outGroup = new OutGroup(this);
+  startingTree = new StartingTree(this);
 
-  @observable outputName = '';
+  tree = new Tree(this);
+  @action
+  loadTreeFile = () => {
+    ipcRenderer.send(ipc.TREE_SELECT, this.id);
+  };
+
+
+  @observable outputName = 'output';
   @action setOutputName = (value) => {
     this.outputName = value;
   }
+
+  @observable outputDir = '';
+  @action
+  setOutputDir = dir => {
+    this.outputDir = dir;
+  };
+  @action
+  selectOutputDir = () => {
+    ipcRenderer.send(ipc.OUTPUT_DIR_SELECT, this.id);
+  };
 
   @computed get haveAlignments() { return this.alignments.length > 0; }
 
@@ -180,20 +197,225 @@ class Run {
     return this.haveAlignments ? this.alignments[0].taxons : [];
   }
 
-  // @computed
-  // get needTree() {
-  //   return this.analysisOption.params.includes(params.tree) ||
-  //     (!this.startingTree.notAvailable && this.startingTree.value === 'User defined');
-  // }
-  // @observable treeFile = '';
-  // @computed get haveTreeFile() { return !!this.treeFile; }
-  // @action setTreeFile = (filePath) => { this.treeFile = filePath; }
+  finalAlignment = new FinalAlignment(this);
 
+  @observable error = '';
+
+  @computed get missing() {
+    if (!this.tree.notAvailable && !this.tree.value) {
+      return 'Missing tree, please load one.';
+    }
+    return '';
+  }
+
+  @observable running = false;
+
+  @computed get ok() {
+    return !this.error && !this.missing;
+  }
+
+  @computed
+  get startDisabled() {
+    return this.alignments.length === 0 || !this.ok || this.running;
+  }
+
+  @observable seed = Math.floor(Math.random() * 1000 + 1);
+  @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
+
+  @computed get args() {
+    const first = [];
+    const cmdArgs = [first];
+    let extension = '.tre';
+
+    // {
+    //   title: 'Fast tree search',
+    //   value: 'FT',
+    //   params: [params.brL, params.SHlike, params.outGroup],
+    // },
+    // {
+    //   title: 'ML search',
+    //   value: 'ML',
+    //   params: [params.SHlike, params.combinedOutput, params.outGroup],
+    // },
+    // {
+    //   title: 'ML + rapid bootstrap',
+    //   value: 'ML+rBS',
+    //   params: [params.reps, params.brL, params.outGroup],
+    // }, // default
+    // {
+    //   title: 'ML + thorough bootstrap',
+    //   value: 'ML+tBS',
+    //   params: [params.runs, params.reps, params.brL, params.outGroup],
+    // },
+    // {
+    //   title: 'Bootstrap + consensus',
+    //   value: 'BS+con',
+    //   params: [params.reps, params.brL, params.outGroup],
+    // },
+    // {
+    //   title: 'Ancestral states',
+    //   value: 'AS',
+    //   needTree: true,
+    //   params: [params.tree],
+    // },
+    // {
+    //   title: 'Pairwise distances',
+    //   value: 'PD',
+    //   params: [params.startingTree],
+    // },
+    // {
+    //   title: 'RELL bootstraps',
+    //   value: 'RBS',
+    //   params: [params.reps, params.brL, params.outGroup],
+    // }
+
+    switch (this.analysis.value) {
+      case 'FT':
+        // cmd= """cd %s %s &&%s %s -f E -p %s %s -n %s -s %s -O -w %s %s %s %s %s""" \
+        // % (winD, raxml_path, K[0], pro, seed_1, mod, out_file, seq_file, path_dir, part_f, cmd_temp1,cmd_temp2, winEx)
+        first.push('-T', this.numThreads.value);
+        first.push('-f', 'E');
+        first.push('-p', this.seed);
+        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-n', `${this.outputName}${extension}`);
+        first.push('-s', this.finalAlignment.path);
+        first.push('-w', this.outputDir);
+        if (this.alignments.length > 1) {
+          first.push('-q', this.finalAlignment.partitionFilePath);
+        }
+        if (this.branchLength.value) {
+          const treeFile1 = `${this.outputDir}/RAxML_fastTree.${this.outputName}${extension}`;
+          const cmd = [];
+          cmd.push('-T', this.numThreads.value);
+          cmd.push('-f', 'e');
+          cmd.push('-m', this.finalAlignment.modelFlagName);
+          cmd.push('-t', treeFile1);
+          cmd.push('-n', `${this.outputName}${extension}`);
+          cmd.push('-s', this.finalAlignment.path);
+          cmd.push('-w', this.outputDir);
+          if (this.alignments.length > 1) {
+            first.push('-q', this.finalAlignment.partitionFilePath);
+          }
+          cmdArgs.push(cmd);
+        }
+        if (this.sHlike.value) {
+          const treeFile2 = `${this.outputDir}/RAxML_result.brL.${this.outputName}${extension}`;
+          const cmd = [];
+          cmd.push('-T', this.numThreads.value);
+          cmd.push('-f', 'e');
+          cmd.push('-m', this.finalAlignment.modelFlagName);
+          cmd.push('-t', treeFile2);
+          cmd.push('-n', `${this.outputName}${extension}`);
+          cmd.push('-s', this.finalAlignment.path);
+          cmd.push('-w', this.outputDir);
+          if (this.alignments.length > 1) {
+            first.push('-q', this.finalAlignment.partitionFilePath);
+          }
+          cmdArgs.push(cmd);
+        }
+        break;
+      case 'ML':
+        break;
+      case 'ML+rBS':
+        // cmd= """cd %s %s&& %s %s %s -f a -x %s %s %s -p %s -N %s %s -s %s -n %s %s -O -w %s %s %s %s""" \
+        // % (winD, raxml_path, runWin, K[0], pro, seed_1, save_brL.get(),mod, seed_2, BSrep.get(), o, seq_file, out_file, \
+        // part_f, path_dir, const_f, result, winEx)
+        first.push('-T', this.numThreads.value);
+        first.push('-f', 'a');
+        first.push('-x', this.seedRapidBootstrap);
+        first.push('-p', this.seed);
+        first.push('-N', this.numRepetitions.value);
+        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-n', `${this.outputName}${extension}`);
+        first.push('-s', this.finalAlignment.path);
+        first.push('-w', this.outputDir);
+        if (this.alignments.length > 1) {
+          first.push('-q', this.finalAlignment.partitionFilePath);
+        }
+        break;
+      case 'ML+tBS':
+        break;
+      case 'BS+con':
+        break;
+      case 'AS':
+        break;
+      case 'PD':
+        break;
+      case 'RBS':
+        break;
+      default:
+    }
+
+    // if (!this.numRuns.notAvailable) {
+    //   first.push('-N', this.numRuns.value);
+    // }
+    // else if (!this.numRepetitions.notAvailable) {
+    //   first.push('-N', this.numRepetitions.value);
+    // }
+
+    // if (!this.branchLength.notAvailable && this.branchLength.value) {
+    //   first.push('-f', 'e');
+    //   extension = '.brL.tre';
+    // }
+    // else if (!this.sHlike.notAvailable && this.sHlike.value) {
+    //   first.push('-f', 'J');
+    //   extension = '.SH.tre';
+    // }
+
+    // if (!this.tree.notAvailable && this.tree.value) {
+    //   first.push('-t', this.tree.value);
+    // }
+    // else if (!this.startingTree.notAvailable && this.startingTree.value) {
+    //   first.push('-t', this.startingTree.value);
+    // }
+
+    // if (this.numThreads.value > 1) {
+    //   first.push('-T', this.numThreads.value);
+    // }
+
+    // if (!this.outGroup.notAvailable && !this.outGroup.isDefault) {
+    //   first.push('-o', this.outGroup.value);
+    // }
+
+    // first.push('-n', `${this.outputName}${extension}`);
+
+    return cmdArgs;
+
+    // return [
+    //   '-T', //TODO: Only for phread version
+    //   this.numCpu,
+    //   '-f',
+    //   'a',
+    //   '-x',
+    //   '572',
+    //   '-m',
+    //   'GTRGAMMA',
+    //   '-p',
+    //   '820',
+    //   '-N',
+    //   '100',
+    //   '-s',
+    //   this.parent.input.filename,
+    //   '-n',
+    //   this.outName || this.outNamePlaceholder,
+    //   '-w',
+    //   // this.outDir,
+    //   this.parent.input.outDir,
+    // ];
+  }
+
+  @action
+  start = () => {
+    const { id, args } = this;
+    console.log(`Start run ${id} with args ${args}`);
+    this.running = true;
+    ipcRenderer.send(ipc.RUN_START, { id, args });
+  };
 
 
   @observable repetitions = 100;//settings.numberRepsOptions.default;
   @observable alignments = [];
-  @observable analysisType = 'ML+BS';
+  @observable analysisType = 'ML+rBS';
   @observable argsList = [];
   @observable code = undefined;
   @observable createdAt = undefined;
@@ -227,100 +449,9 @@ class Run {
   }
 
 
-  @computed
-  get startRunDisabled() {
-    return !this.alignments.length > 0;
-  }
-
-  get cpuOptions() {
-    // TODO: Daniel why start at 2 here?
-    return range(2, MAX_NUM_CPUS + 1);
-  }
-
-  @action
-  proposeRun = () => {
-    // Send alignments to main process
-    console.log('proposeRun', this.alignments);
-    ipcRenderer.send(ipc.RUN_PROPOSED_IPC, toJS(this.alignments));
-  };
-
-  @action
-  startRun = () => {
-    // Send runs to main process
-    ipcRenderer.send(ipc.RUN_START_IPC, toJS(this));
-  };
-
-  @action
-  cancelRun = () => {
-    this.isCalculating = false;
-    // Send runs to main process
-    ipcRenderer.send(ipc.CALCULATION_CANCEL_IPC, toJS(this));
-  };
-
-  // TODO: this is the previous version of doing it, just replace the entire run object
-  // must be better way here, only change the relevant params
-  @action
-  updateRun = run => {
-    console.log('updateRun:', run);
-    if (run.id === this.id || !run.id) {
-      for (var key in run) {
-        if (run.hasOwnProperty(key)) {
-          this[key] = run[key];
-        }
-      }
-    }
-  };
-
-  @action
-  setGlobalArgs = value => {
-    console.log('setGlobalArgs:', value);
-    this.globalArgs = value;
-  };
-
-  @action
-  setArgsList = value => {
-    console.log('setArgsList:', value);
-    this.argsList = value;
-  };
-
-  @action
-  setAnalysisType = value => {
-    console.log('setAnalysisType:', value);
-    this.analysisType = value;
-  };
-
-  @action
-  setCombineOutput = value => {
-    console.log('setCombineOutput:', value);
-    this.combineOutput = value;
-  };
-
-  // Open system dialog to choose file
-  @action
-  loadTreeFile = () => {
-    ipcRenderer.send(ipc.FILE_SELECT_IPC, toJS(this));
-  };
-
-  @action
-  setOutFilename = name => {
-    this.outFilename = name;
-  };
-
-  @action
-  selectWorkingDirectory = () => {
-    ipcRenderer.send(ipc.FOLDER_SELECT_IPC, toJS(this));
-  };
-
   @action
   removeRun = () => {
-    this.cancelRun();
     this.parent.deleteRun(this);
-  };
-
-  // TODO: this maybe needed in a different store class as well, i.e. alignment ?
-  @action
-  showInFolder = outputPath => {
-    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, outputPath);
   };
 
   @action
@@ -339,6 +470,7 @@ class Run {
         this.alignments.push(new Alignment(this, path));
         if (this.alignments.length === 1) {
           this.setOutputName(this.alignments[0].name);
+          this.setOutputDir(this.alignments[0].dir);
         }
       }
     });
@@ -356,112 +488,78 @@ class Run {
   }
 
   @action
-  reset = () => {
-    this.outGroup.reset();
-  }
-
-  listen = () => {
-    // Receive tree file path
-    ipcRenderer.on(ipc.FILE_SELECTED_IPC, (event, filePath) => {
-      const argsListTree = this.argsList.map(args =>
-        Object.assign({}, args, this.globalArgs, { t: filePath })
-      );
-      this.setArgsList(argsListTree);
-      this.tree.setFilePath(filePath);
-    });
-
-    // Listen to alignments being added
-    ipcRenderer.on(ipc.ALIGNMENT_SELECTED_IPC, (event, data) => {
-      this.addAlignments(data);
-    });
-
-    // Receive updated run with selected working directory
-    ipcRenderer.on(ipc.FOLDER_SELECTED_IPC, (event, updatedRun) => {
-      // TODO: change to be only the relevant param
-      this.updateRun(updatedRun);
-    });
-
-    // TODO: listen to calculation progress
-    // TODO: do this differently, i.e. does not need to entirely override the run object here only partially
-
-    // Receive collated run data and files
-    ipcRenderer.on(ipc.RUN_CREATED_IPC, (event, createdRuns) => {
-      this.updateRun(createdRuns[0]);
-    });
-
-    // Receive a progress update for one of the runs being calculated
-    ipcRenderer.on(ipc.FLAGSRUN_PROGRESS_IPC, (event, { run, XXXProgressUnit }) => {
-      console.log(run, XXXProgressUnit);
-      this.updateRun(run);
-    });
-
-    // Receive update that one run has completed flagsrun
-    ipcRenderer.on(ipc.FLAGSRUN_END_IPC, (event, { run }) => {
-      this.updateRun(run);
-    });
-
-    // Receive update that the flagsrun of one run has failed
-    ipcRenderer.on(ipc.FLAGSRUN_ERROR_IPC, (event, { run, error }) => {
-      console.log(run, error);
-      this.updateRun(run);
-    });
-
-    // Receive a call that one run has started being calculated
-    ipcRenderer.on(ipc.CALCULATION_START_IPC, (event, { run }) => {
-      console.log('CLient received calculation start for: ', run);
-      this.updateRun(run);
-    });
-
-    // Receive a progress update for one of the runs being calculated
-    ipcRenderer.on(
-      ipc.CALCULATION_PROGRESS_IPC,
-      (event, { run, XXXProgressUnit }) => {
-        console.log(run, XXXProgressUnit);
-        this.updateRun(run);
-        this.onStdout(event, run);
-      }
-    );
-
-    // Receive update that one run has completed calculation
-    ipcRenderer.on(ipc.CALCULATION_END_IPC, (event, { run }) => {
-      this.updateRun(run);
-      this.onStdout(event, run);
-    });
-
-    // Receive update that the calculation of one run has failed
-    ipcRenderer.on(ipc.CALCULATION_ERROR_IPC, (event, { run, error }) => {
-      console.log(run, error);
-      this.updateRun(run);
-      this.onStdout(event, run);
-    });
-
-    // Receive update that one run has been canceled
-    ipcRenderer.on(ipc.CALCULATION_CANCELED_IPC, (event, { run }) => {
-      this.updateRun(run);
-      this.onStdout(event, run);
-    });
-  };
-
-  @action
   clearStdout = () => {
-    console.log('clearStdout');
     this.stdout = '';
   };
 
   @action
-  onStdout = (event, run) => {
-    console.log('onStdout');
-    const { id, data } = run;
-    console.log(
-      'Raxml output:',
-      data,
-      'this.id:',
-      this.id,
-      'is this?',
-      id === this.id
-    );
+  reset = () => {
+    this.outGroup.reset();
+  }
+
+  dispose = () => {
+    this.cancelRun();
+    this.unlisten();
+  }
+
+  listeners = []
+  listenTo = (channel, listener) => {
+    ipcRenderer.on(channel, listener);
+    this.listeners.push([channel, listener]);
+  }
+
+  listen = () => {
+
+    this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
+
+    this.listenTo(ipc.ALIGNMENT_SELECTED_IPC, this.onAlignmentAdded);
+
+    this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
+
+    this.listenTo(ipc.PROC_STDOUT, this.onProcStdout);
+    this.listenTo(ipc.PROC_CLOSE, this.onProcClose);
+  }
+
+  unlisten = () => {
+    while (!this.listeners.length > 0) {
+      const [channel, listener] = this.listeners.pop();
+      ipcRenderer.removeListener(channel, listener);
+    }
+  }
+
+  // -----------------------------------------------------------
+  // Listeners
+  // -----------------------------------------------------------
+
+  @action
+  onTreeSelected = (event, { id, filePath }) => {
     if (id === this.id) {
-      this.stdout += data;
+      this.tree.setFilePath(filePath);
+    }
+  }
+
+  @action
+  onAlignmentAdded = (event, data) => {
+    this.addAlignments(data);
+  }
+
+  @action
+  onOutputDirSelected = (event, { id, outputDir }) => {
+    this.setOutputDir(outputDir);
+  }
+
+  @action
+  onProcStdout = (event, { id, content }) => {
+    if (id === this.id) {
+      this.stdout += content;
+    }
+  };
+
+  @action
+  onProcClose = (event, { id, code }) => {
+    if (id === this.id) {
+      console.log(`Process ${id} closed with code ${code}.`);
+      this.running = false;
     }
   };
 }

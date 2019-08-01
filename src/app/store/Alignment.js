@@ -3,6 +3,7 @@ import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
 import { runSettings } from '../../settings/run';
+import { join } from 'path';
 
 const modelOptions = {
   'protein': runSettings.aminoAcidSubstitutionModelOptions,
@@ -18,8 +19,18 @@ const modelOptions = {
 class Alignment {
   run = null;
   @observable path = '';
-  @observable size = 0;
   @observable dataType = undefined;
+  @observable model = '';
+  @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
+  @computed get modelFlagName() {
+    let name = this.model;
+    if (this.dataType === 'protein')  {
+      name += this.aaMatrixName;
+    }
+    return name;
+  }
+
+  @observable size = 0;
   @observable fileFormat = undefined;
   @observable length = 0;
   @observable numSequences = 0;
@@ -30,8 +41,8 @@ class Alignment {
   @observable checkRunSuccess = false;
   @observable sequences = undefined;
   // @observable taxons = [];
-  @observable model = '';
-  @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
+
+
   // TODO: This should change all other multistate models if available, according to documentation:
   // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
   @observable multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
@@ -39,6 +50,20 @@ class Alignment {
   // Partition stuff
   @observable showPartition = false;
   @observable partitionText = "";
+  @computed get partitionType() {
+    switch (this.dataType) {
+      case 'dna':
+        return 'DNA';
+      case 'protein':
+        return this.aaMatrixName;
+      case 'binary':
+        return 'BIN';
+      case 'multistate':
+        return 'MULTI';
+      default:
+        return this.dataType;
+    }
+  }
 
   constructor(run, path) {
     this.run = run;
@@ -220,13 +245,13 @@ class Alignment {
   };
 
   @action
-  openFolder = () => {
-    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.path);
+  openFile = () => {
+    ipcRenderer.send(ipc.FILE_OPEN, this.path);
   };
 
   @action
-  openFile = () => {
-    ipcRenderer.send(ipc.FILE_OPEN_IPC, this.path);
+  showFileInFolder = () => {
+    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
   };
 
   @action
@@ -268,4 +293,112 @@ class Alignment {
   }
 }
 
-export default Alignment;
+
+class FinalAlignment {
+  constructor(run) {
+    this.run = run;
+  }
+
+  @computed get filename() {
+    return `${this.run.outputName}_concat.txt`;
+  }
+
+  @computed get dir() {
+    return this.run.outputDir;
+  }
+
+  @computed get path() {
+    return join(`${this.dir}`, `${this.filename}`);
+  }
+
+  @observable parsingComplete = true;
+
+  @computed get numAlignments() {
+    return this.run.alignments.length;
+  }
+
+  @computed get numSequences() {
+    return this.run.alignments.reduce((a, b) => Math.max(a.numSequences, b.numSequences));
+  }
+
+  @computed get length() {
+    return this.run.alignments.reduce((a, b) => a.length + b.length);
+  }
+
+  // @observable dataType = 'mixed';
+  @computed get dataType() {
+    const numAlignments = this.numAlignments;
+    if (numAlignments === 0) {
+      return 'none';
+    }
+    const firstType = this.run.alignments[0].dataType;
+    if (numAlignments === 1) {
+      return firstType;
+    }
+    for (let i = 1; i < numAlignments; ++i) {
+      if (this.run.alignments[i].dataType !== firstType) {
+        return 'mixed';
+      }
+    }
+    return firstType;
+  }
+
+  @computed get modelFlagName() {
+    const numAlignments = this.numAlignments;
+    if (numAlignments === 0) {
+      return 'none';
+    }
+    const first = this.run.alignments[0].modelFlagName;
+    if (numAlignments === 1) {
+      return first;
+    }
+    return first;
+  }
+
+  @computed get partitionFilePath() {
+    const numAlignments = this.numAlignments;
+    if (numAlignments <= 1) {
+      return '';
+    }
+    return `${this.run.outputDir}/partition.txt`;
+  }
+
+  @computed get partitionFileContent() {
+    /*
+      DNA, gene1 = 1-3676
+      BIN, morph = 3677-3851
+    */
+    if (!this.run.haveAlignments) {
+      return '';
+    }
+    let partitionFileText = '';
+    let site = 1;
+    let total = 0;
+    this.run.alignments.map((alignment, index) => {
+      total += alignment.length;
+      const { partitionType } = alignment;
+      partitionFileText += `${partitionType}, ${alignment.dataType}_${index} = ${site}-${total}\n`;
+      site += alignment.length;
+      return { partitionType, dataType: alignment.dataType, length: alignment.length };
+    });
+    return partitionFileText;
+  }
+
+  @action
+  openFile = () => {
+    ipcRenderer.send(ipc.FILE_OPEN, this.path);
+  };
+
+  @action
+  showFileInFolder = () => {
+    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
+  };
+
+  @action
+  openFolder = () => {
+    ipcRenderer.send(ipc.FOLDER_OPEN, this.dir);
+  };
+
+}
+
+export { Alignment as default, FinalAlignment };

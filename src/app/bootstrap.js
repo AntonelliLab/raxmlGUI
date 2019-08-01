@@ -11,6 +11,6 @@ ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GOT_IPC, (event, data) => {
 });
 
 function initDev(exampleFiles) {
-  store.activeRun.addAlignments(exampleFiles.slice(0, 1));
+  store.activeRun.addAlignments(exampleFiles.slice(0, 2));
   // store.activeRun.alignments[0].setShowPartition();
 }

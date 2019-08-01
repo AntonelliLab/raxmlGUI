@@ -67,12 +67,7 @@ class Console extends React.Component {
       >
         <div>
           <code className="code">
-            {run.argsList.map(args => {
-              return (
-                run.raxmlBinary +
-                JSON.stringify(args, undefined, 2)
-              );
-            })}
+            { run.args.map(args => args.join(' ')).join('\n') }
           </code>
         </div>
         <div>
@@ -98,7 +93,7 @@ class Raxml extends React.Component {
           <form className={classes.raxmlForm} autoComplete="off">
             { run.stdout === '' ? null : <Button variant="outlined" onClick={run.clearStdout}>Clear</Button>}
             <OptionSelect option={run.numThreads} />
-            <Button variant="contained" disabled={run.startRunDisabled} onClick={run.startRun}>Run</Button>
+            <Button variant="contained" disabled={run.startDisabled} onClick={run.start}>Run</Button>
           </form>
         </div>
         <Console run={run} />

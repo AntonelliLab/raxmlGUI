@@ -57,7 +57,8 @@
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.4",
     "react-msa-viewer": "^1.0.1",
-    "react-scripts": "3.0.0"
+    "react-scripts": "3.0.0",
+    "react-split-pane": "^0.1.87"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
