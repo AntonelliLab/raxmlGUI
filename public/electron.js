@@ -52,7 +52,7 @@ function initialize() {
       resizable: true,
       webPreferences: {
         backgroundThrottling: false, //TODO: Skip this if it doesn't affect raxml performance
-        nodeIntegration: false,
+        nodeIntegration: isDevMode,
         contextIsolation: false, // Needed to expose ipcRenderer from preload script
         preload: path.join(app.getAppPath(), 'src', 'electron', 'preload.js'),
         // enableRemoteModule: false
