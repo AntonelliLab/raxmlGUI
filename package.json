@@ -34,7 +34,8 @@
     "electron-build": "electron-builder",
     "electron-pack": "electron-builder --dir",
     "release": "yarn react-build && electron-builder --publish=always",
-    "build": "yarn react-build && yarn electron-build"
+    "build": "yarn react-build && yarn electron-build",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@craco/craco": "^5.2.4",
