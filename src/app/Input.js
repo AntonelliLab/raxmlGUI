@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
 import TreeCard from './TreeCard';
 import { Typography } from '@material-ui/core';
 
