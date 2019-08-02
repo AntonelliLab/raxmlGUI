@@ -5,7 +5,6 @@ import path from 'path';
 import { sendToMainWindow } from '../communication';
 import {
   deleteFile,
-  checkForBinaryOrMultistate,
   createDefaultGlobalArgs,
   createDefaultAnalysisArgs,
   transformArgsToArray
