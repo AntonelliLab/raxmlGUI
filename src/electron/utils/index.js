@@ -194,29 +194,3 @@ export function createDefaultAnalysisArgs(infile) {
     n: `${infile.name}.${now}.tre`
   };
 }
-
-/**
- * Checks an incoming sequence whether it can be regarded as binary or multistate.
- * Calculates the percentage of binary [01] characters of the entire sequence.
- * Calculates the percentage of multistate [2] characters of the entire sequence.
- * @param {String} sequence The sequence
- */
-export function checkForBinaryOrMultistate(sequence) {
-  console.log('checkForBinaryOrMultistate');
-  // Get the sequence string, strip out N and -
-  let seq = sequence.replace(/N/gi, '');
-  seq = seq.replace(/-/gi, '');
-  // Get proportion of binary characters
-  const binMatch = (seq.match(/[01]/gi) || []).length / seq.length;
-  // Get proportion of multistate characters
-  const multiMatch = (seq.match(/[2]/gi) || []).length / seq.length;
-  // If there are multistate characters in sequence, return 'multistate' as datatype
-  if (multiMatch !== 0) {
-    return 'multistate';
-  }
-  // If there are only binary characters in sequence, return 'binary' as datatype
-  if (binMatch !== 0) {
-    return 'binary';
-  }
-  return undefined;
-}
