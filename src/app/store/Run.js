@@ -204,12 +204,14 @@ class Run {
   atomNameAvailable; // Trigger atom when run is finished to re-run outputNameAvailable
 
   outputNameAvailable = promisedComputed(true, async () => {
-    if (this.atomNameAvailable.reportObserved()) {
-      console.log('\n!!!atom observed');
+    const { id, outputDir, outputName, outputNamePlaceholder, atomNameAvailable } = this;
+    const outputNameToCheck = outputName || outputNamePlaceholder;
+    const check = atomNameAvailable.reportObserved() || outputNameToCheck;
+    if (!check) {
+      return;
     }
-    const { id, outputDir, outputName, outputNamePlaceholder } = this;
     const result = await this.sendAsync(ipc.OUTPUT_CHECK, {
-      id, outputDir, outputName: outputName || outputNamePlaceholder
+      id, outputDir, outputName: outputNameToCheck
     }, ipc.OUTPUT_CHECKED);
     return result;
   });
