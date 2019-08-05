@@ -1,21 +1,28 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import red from '@material-ui/core/colors/red';
-import indigo from '@material-ui/core/colors/indigo';
-import purple from '@material-ui/core/colors/purple';
+import amber from '@material-ui/core/colors/amber';
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
     primary: {
-      main: '#3B4E2D',
+      main: '#7b3352',
     },
     secondary: {
+      main: '#2d547d',
+    },
+    model: {
+      main: '#3B4E2D',
+    },
+    input: {
       main: '#4E293A',
     },
-    tertiary: {
+    output: {
       main: '#233242',
     },
-    error: red,
+    error: amber,
+    // error: {
+    //   main: '#f2401b',
+    // },
     // Used by `getContrastText()` to maximize the contrast between the background and
     // the text.
     contrastThreshold: 3,

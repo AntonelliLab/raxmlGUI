@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
   chip: {
     height: '30px',
+    backgroundColor: theme.palette.input.main,
   },
   link: {
     cursor: 'pointer',
@@ -123,7 +124,7 @@ function AlignmentCard({ className, alignment }) {
   // );
 
   const Type = alignment.typecheckingComplete ? (
-    <Chip className={classes.chip} label={dataType} color="secondary" />
+    <Chip classes={{ colorSecondary: classes.chip }} label={dataType} color="secondary" />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
   );

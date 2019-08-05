@@ -1,10 +1,13 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, createAtom } from 'mobx';
 import ipcRenderer from '../ipcRenderer';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import Alignment, { FinalAlignment } from './Alignment';
 import parsePath from 'parse-filepath';
+import { promisedComputed } from 'computed-async-mobx';
+import { join } from 'path';
+import filenamify from 'filenamify';
 
 export const MAX_NUM_CPUS = cpus().length;
 
@@ -148,9 +151,26 @@ class Run {
     this.parent = parent;
     this.id = id;
     this.listen();
+    this.outputNamePlaceholder = `${id}`;
+    this.atomNameAvailable = createAtom('nameAvailable');
   }
 
   id = 0;
+
+  // Async query to electron backend
+  sendAsync = (channel, payload, onChannel) => {
+    return new Promise((resolve, reject) => {
+      const { id } = this;
+      const listener = (event, result) => {
+        if (result.id === this.id) {
+          ipcRenderer.removeListener(onChannel, listener);
+          resolve(result);
+        }
+      }
+      ipcRenderer.on(onChannel, listener);
+      ipcRenderer.send(channel, Object.assign({ id }, payload));
+    });
+  }
 
   numThreads = new NumThreads(this);
 
@@ -178,7 +198,36 @@ class Run {
 
   @observable outputName = 'output';
   @action setOutputName = (value) => {
-    this.outputName = value;
+    this.outputName = filenamify(value.replace(' ', '_').trim());
+  }
+
+  atomNameAvailable; // Trigger atom when run is finished to re-run outputNameAvailable
+
+  outputNameAvailable = promisedComputed(true, async () => {
+    if (this.atomNameAvailable.reportObserved()) {
+      console.log('\n!!!atom observed');
+    }
+    const { id, outputDir, outputName, outputNamePlaceholder } = this;
+    const result = await this.sendAsync(ipc.OUTPUT_CHECK, {
+      id, outputDir, outputName: outputName || outputNamePlaceholder
+    }, ipc.OUTPUT_CHECKED);
+    return result;
+  });
+
+  @computed get outputNameOk() {
+    return this.outputNameAvailable.get().ok;
+  }
+
+  @computed get outputNameNotice() {
+    return this.outputNameAvailable.get().notice;
+  }
+
+  @computed get outputNameSafe() {
+    return this.outputNameAvailable.get().outputNameUnused || this.outputNamePlaceholder;
+  }
+
+  @computed get outputFilenameSafe() {
+    return `${this.outputNameSafe}.tre`;
   }
 
   @observable outputDir = '';
@@ -191,6 +240,10 @@ class Run {
     ipcRenderer.send(ipc.OUTPUT_DIR_SELECT, this.id);
   };
 
+  @action openOutputDir = () => {
+    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.outputDir);
+  };
+
   @computed get haveAlignments() { return this.alignments.length > 0; }
 
   @computed get taxons() {
@@ -199,7 +252,7 @@ class Run {
 
   finalAlignment = new FinalAlignment(this);
 
-  @observable error = '';
+  @observable error = null;
 
   @computed get missing() {
     if (!this.tree.notAvailable && !this.tree.value) {
@@ -214,60 +267,18 @@ class Run {
     return !this.error && !this.missing;
   }
 
-  @computed
-  get startDisabled() {
+  @computed get startDisabled() {
     return this.alignments.length === 0 || !this.ok || this.running;
   }
 
   @observable seed = Math.floor(Math.random() * 1000 + 1);
   @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
 
+  @observable binaryName = 'raxmlHPC-PTHREADS-SSE3-Mac';
+
   @computed get args() {
     const first = [];
     const cmdArgs = [first];
-    let extension = '.tre';
-
-    // {
-    //   title: 'Fast tree search',
-    //   value: 'FT',
-    //   params: [params.brL, params.SHlike, params.outGroup],
-    // },
-    // {
-    //   title: 'ML search',
-    //   value: 'ML',
-    //   params: [params.SHlike, params.combinedOutput, params.outGroup],
-    // },
-    // {
-    //   title: 'ML + rapid bootstrap',
-    //   value: 'ML+rBS',
-    //   params: [params.reps, params.brL, params.outGroup],
-    // }, // default
-    // {
-    //   title: 'ML + thorough bootstrap',
-    //   value: 'ML+tBS',
-    //   params: [params.runs, params.reps, params.brL, params.outGroup],
-    // },
-    // {
-    //   title: 'Bootstrap + consensus',
-    //   value: 'BS+con',
-    //   params: [params.reps, params.brL, params.outGroup],
-    // },
-    // {
-    //   title: 'Ancestral states',
-    //   value: 'AS',
-    //   needTree: true,
-    //   params: [params.tree],
-    // },
-    // {
-    //   title: 'Pairwise distances',
-    //   value: 'PD',
-    //   params: [params.startingTree],
-    // },
-    // {
-    //   title: 'RELL bootstraps',
-    //   value: 'RBS',
-    //   params: [params.reps, params.brL, params.outGroup],
-    // }
 
     switch (this.analysis.value) {
       case 'FT':
@@ -277,39 +288,41 @@ class Run {
         first.push('-f', 'E');
         first.push('-p', this.seed);
         first.push('-m', this.finalAlignment.modelFlagName);
-        first.push('-n', `${this.outputName}${extension}`);
+        first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
-        first.push('-w', this.outputDir);
+        first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
-          first.push('-q', this.finalAlignment.partitionFilePath);
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
         if (this.branchLength.value) {
-          const treeFile1 = `${this.outputDir}/RAxML_fastTree.${this.outputName}${extension}`;
+          const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const cmd = [];
           cmd.push('-T', this.numThreads.value);
           cmd.push('-f', 'e');
           cmd.push('-m', this.finalAlignment.modelFlagName);
-          cmd.push('-t', treeFile1);
-          cmd.push('-n', `${this.outputName}${extension}`);
-          cmd.push('-s', this.finalAlignment.path);
-          cmd.push('-w', this.outputDir);
+          cmd.push('-t', `${treeFile1}`);
+          cmd.push('-n', `brL.${this.outputFilenameSafe}`);
+          cmd.push('-s', `${this.finalAlignment.path}`);
+          cmd.push('-w', `${this.outputDir}`);
           if (this.alignments.length > 1) {
-            first.push('-q', this.finalAlignment.partitionFilePath);
+            cmd.push('-q', `${this.finalAlignment.partitionFilePath}`);
           }
           cmdArgs.push(cmd);
         }
         if (this.sHlike.value) {
-          const treeFile2 = `${this.outputDir}/RAxML_result.brL.${this.outputName}${extension}`;
+          const treeFile2 = this.branchLength.value ?
+          join(this.outputDir, `RAxML_result.brL.${this.outputFilenameSafe}`) :
+          join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const cmd = [];
           cmd.push('-T', this.numThreads.value);
           cmd.push('-f', 'e');
           cmd.push('-m', this.finalAlignment.modelFlagName);
-          cmd.push('-t', treeFile2);
-          cmd.push('-n', `${this.outputName}${extension}`);
-          cmd.push('-s', this.finalAlignment.path);
-          cmd.push('-w', this.outputDir);
+          cmd.push('-t', `${treeFile2}`);
+          cmd.push('-n', `sh.${this.outputFilenameSafe}`);
+          cmd.push('-s', `${this.finalAlignment.path}`);
+          cmd.push('-w', `${this.outputDir}`);
           if (this.alignments.length > 1) {
-            first.push('-q', this.finalAlignment.partitionFilePath);
+            cmd.push('-q', `${this.finalAlignment.partitionFilePath}`);
           }
           cmdArgs.push(cmd);
         }
@@ -326,11 +339,11 @@ class Run {
         first.push('-p', this.seed);
         first.push('-N', this.numRepetitions.value);
         first.push('-m', this.finalAlignment.modelFlagName);
-        first.push('-n', `${this.outputName}${extension}`);
+        first.push('-n', `${this.outputFilenameSafe}`);
         first.push('-s', this.finalAlignment.path);
-        first.push('-w', this.outputDir);
+        first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
-          first.push('-q', this.finalAlignment.partitionFilePath);
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
         break;
       case 'ML+tBS':
@@ -377,40 +390,34 @@ class Run {
     //   first.push('-o', this.outGroup.value);
     // }
 
-    // first.push('-n', `${this.outputName}${extension}`);
+    // first.push('-n', this.outputFilenameSafe);
 
     return cmdArgs;
+  }
 
-    // return [
-    //   '-T', //TODO: Only for phread version
-    //   this.numCpu,
-    //   '-f',
-    //   'a',
-    //   '-x',
-    //   '572',
-    //   '-m',
-    //   'GTRGAMMA',
-    //   '-p',
-    //   '820',
-    //   '-N',
-    //   '100',
-    //   '-s',
-    //   this.parent.input.filename,
-    //   '-n',
-    //   this.outName || this.outNamePlaceholder,
-    //   '-w',
-    //   // this.outDir,
-    //   this.parent.input.outDir,
-    // ];
+  @computed get command() {
+    return this.args.map(cmdArgs => `${this.binaryName} ${cmdArgs.join(' ')}`).join(' &&\\\n');
   }
 
   @action
   start = () => {
-    const { id, args } = this;
+    const { id, args, binaryName } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
-    ipcRenderer.send(ipc.RUN_START, { id, args });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName });
   };
+
+  @action
+  cancel = () => {
+    ipcRenderer.send(ipc.RUN_CANCEL, this.id);
+    this.afterRun();
+  }
+
+  @action
+  afterRun = () => {
+    this.running = false;
+    this.atomNameAvailable.reportChanged();
+  }
 
 
   @observable repetitions = 100;//settings.numberRepsOptions.default;
@@ -427,7 +434,6 @@ class Run {
   @observable inFile = undefined;
   @observable inFileFolder = undefined;
   @observable isPartitioned = false;
-  @observable outFilename = '';
   @observable partitionFile = undefined;
   @observable partitions = undefined;
   @observable path = undefined;
@@ -435,8 +441,8 @@ class Run {
   @observable calculationComplete = false;
   @observable isCalculating = false;
   @observable combineOutput = false;
-  @observable raxmlBinary = 'raxmlHPC-PTHREADS-SSE3-Mac';
   @observable stdout = '';
+  @observable stderr = '';
 
   @computed
   get numSites() {
@@ -493,12 +499,17 @@ class Run {
   };
 
   @action
+  clearError = () => {
+    this.error = null;
+  };
+
+  @action
   reset = () => {
     this.outGroup.reset();
   }
 
   dispose = () => {
-    this.cancelRun();
+    this.cancel();
     this.unlisten();
   }
 
@@ -516,8 +527,11 @@ class Run {
 
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
 
-    this.listenTo(ipc.PROC_STDOUT, this.onProcStdout);
-    this.listenTo(ipc.PROC_CLOSE, this.onProcClose);
+    this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
+    this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
+    this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
+    this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
+    this.listenTo(ipc.RUN_ERROR, this.onRunError);
   }
 
   unlisten = () => {
@@ -549,17 +563,42 @@ class Run {
   }
 
   @action
-  onProcStdout = (event, { id, content }) => {
+  onRunStdout = (event, { id, content }) => {
     if (id === this.id) {
       this.stdout += content;
     }
   };
 
   @action
-  onProcClose = (event, { id, code }) => {
+  onRunStderr = (event, { id, content }) => {
     if (id === this.id) {
-      console.log(`Process ${id} closed with code ${code}.`);
-      this.running = false;
+      this.stderr += content;
+    }
+  };
+
+  @action
+  onRunStarted = (event, { id }) => {
+    if (id === this.id) {
+      console.log(`Process ${id} started...`);
+      this.running = true;
+      this.error = null;
+    }
+  };
+
+  @action
+  onRunFinished = (event, { id, code }) => {
+    if (id === this.id) {
+      console.log(`Process ${id} finished with code ${code}.`);
+      this.afterRun();
+    }
+  };
+
+  @action
+  onRunError = (event, { id, error }) => {
+    if (id === this.id) {
+      console.log(`Process ${id} finished with error:`, error);
+      this.error = error;
+      this.afterRun();
     }
   };
 }

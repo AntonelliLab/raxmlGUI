@@ -1,24 +1,23 @@
 import { app, ipcMain, shell } from "electron";
 import _ from "lodash";
 import path from "path";
+import util from "util";
 import fs from "fs";
 import os from "os";
 import childProcess from 'child_process';
 
-import { sendToMainWindow } from "./communication";
-import { transformArgsToArray, openFileDialog } from "./utils";
+import { openFileDialog } from "./utils";
 import {
   addAlignments,
   addAlignment,
   startParsing,
   startTypechecking,
-  startCheckrun
 } from "./alignment";
-import { createRun } from "./run";
-import { runRaxmlWithArgs, cancelCalculations } from "./analysis/run";
-import { startRuns } from "./analysis";
 
 import * as ipc from "../constants/ipc";
+
+const exec = util.promisify(childProcess.exec);
+const readdir = util.promisify(fs.readdir);
 
 const state = {
   processes: {},
@@ -54,40 +53,84 @@ ipcMain.on(ipc.FOLDER_OPEN, (event, fullPath) => {
   shell.showItemInFolder(fullPath);
 });
 
-ipcMain.on(ipc.RUN_START, (event, { id, args }) => {
+// Check if raxml output files already exist with current name
+ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
+  const { id, outputDir, outputName } = data;
+  const outputFilename = `${outputName}.tre`;
+  console.log('\n\nCheck unused filename:', outputFilename);
+  if (!outputDir) {
+    event.sender.send(ipc.OUTPUT_CHECKED, {
+      id, outputDir, outputName,
+      ok: true, notice: '', outputNameUnused: outputName,
+    });
+    return;
+  }
+  try {
+    const filenames = await readdir(outputDir);
+    let outputNameUnused = outputName;
+    let counter = 1;
+    while (filenames.find(filename =>
+      filename.endsWith(outputNameUnused) ||
+      filename.endsWith(`${outputNameUnused}.tre`))) {
+      outputNameUnused = `${outputName}_${counter}`;
+      ++counter;
+    }
+    const ok = outputName === outputNameUnused;
+    const notice = ok ? '' : `Using '${outputNameUnused}'`;
+    event.sender.send(ipc.OUTPUT_CHECKED, {
+      id, outputDir, outputName, ok, notice, outputNameUnused
+    });
+  }
+  catch (error) {
+    console.log(ipc.OUTPUT_CHECK, 'error:', error);
+    event.sender.send(ipc.OUTPUT_CHECKED, { id, ok: false, notice: error.message, error });
+  }
+});
+
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName }) => {
   cancelProcess(id);
 
-  const binaryName = `raxmlHPC-PTHREADS-SSE3-Mac`;
+  console.log(`Run ${id} with args:`, args);
+  // const binaryName = `raxmlHPC-PTHREADS-SSE3-Mac`;
   const rootDir = app.isPackaged ? app.getAppPath() : __dirname;
   const binaryDir = path.resolve(rootDir, '..', '..', 'bin', 'raxml');
   const binaryPath = path.resolve(binaryDir, binaryName);
 
-  const firstArgs = args[0];
-  firstArgs.push('--flag-check');
+  console.log(`Run ${id}:\n  binary: ${binaryName}\n  path: ${binaryDir}\n  args:`, args);
 
-  console.log(`Run ${id}:\n  binary: ${binaryName}\n  args: ${firstArgs.join(' ')}\n  path: ${binaryDir}`);
+  for (const arg of args) {
+    try {
+      const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`);
+      console.log(stdout, stderr);
+    }
+    catch (err) {
+      console.error('Flag check run error:', err);
+      event.sender.send(ipc.RUN_ERROR, { id, error: err });
+      return;
+    }
+  }
 
-  const proc = runProcess(binaryPath, firstArgs);
-  state.processes[id] = proc;
+  for (const arg of args) {
+    try {
+      console.log(`Run ${binaryName} with args:`, arg)
+      await runProcess(id, event, binaryPath, arg);
+    }
+    catch (err) {
+      console.error('Run error:', err);
+      event.sender.send(ipc.RUN_ERROR, { id, error: err.message });
+      return;
+    }
+  }
+  event.sender.send(ipc.RUN_FINISHED, { id });
 
-  proc.stdout.on('data', buffer => {
-    const content = String(buffer);
-    console.log('on stdout:', content);
-    event.sender.send(ipc.PROC_STDOUT, { id, content });
-  });
 
-  proc.on('close', code => {
-    console.log('on close:', code);
-    event.sender.send(ipc.PROC_CLOSE, { id, code });
-    delete state.processes[id];
-  });
 });
 
-ipcMain.on('cancel', (event, arg) => {
+ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   const id = arg;
   console.log(`Cancel raxml process ${id}...`);
   cancelProcess(id);
-  event.sender.send('raxml-close', { id });
+  // event.sender.send(ipc.RUN_CLOSED, { id });
 });
 
 ipcMain.on('open-item', (event, arg) => {
@@ -97,13 +140,14 @@ ipcMain.on('open-item', (event, arg) => {
 
 function cancelProcess(id) {
   if (state.processes[id]) {
-    state.processes[id].kill();
-    console.log(`Killed RAxML process ${id}`);
+    const proc = state.processes[id];
     delete state.processes[id];
+    proc.kill();
+    console.log(`Killed RAxML process ${id}`);
   }
 }
 
-function runProcess(binaryPath, args) {
+function spawnProcess(binaryPath, args) {
   const binaryDir = path.dirname(binaryPath);
   const binaryName = path.basename(binaryPath);
 
@@ -113,6 +157,50 @@ function runProcess(binaryPath, args) {
     env: { PATH: `${process.env.path}:${binaryDir}` },
   });
   return proc;
+}
+
+async function runProcess(id, event, binaryPath, args) {
+  return new Promise((resolve, reject) => {
+
+    cancelProcess(id);
+    try {
+
+      const proc = spawnProcess(binaryPath, args);
+      state.processes[id] = proc;
+
+      proc.stdout.on('data', buffer => {
+        const content = String(buffer);
+        console.log('on stdout:', content);
+        event.sender.send(ipc.RUN_STDOUT, { id, content });
+      });
+
+      proc.stderr.on('data', buffer => {
+        const content = String(buffer);
+        console.log('on stderr:', content);
+        event.sender.send(ipc.RUN_STDERR, { id, content });
+      });
+
+      proc.on('close', code => {
+        console.log('on close:', code);
+        delete state.processes[id];
+        if (code && code !== 0) {
+          return reject(new Error(`Check console output for error.`));
+        }
+        resolve(code);
+      });
+    }
+    catch (err) {
+      console.log('Run catch error:', err);
+      reject(err);
+    }
+  });
+}
+
+// Send promise with exit code and stdout
+async function execProcess(binaryPath, args) {
+  // const binaryDir = path.dirname(binaryPath);
+  // const binaryName = path.basename(binaryPath);
+  return exec(`${binaryPath} ${args.join(' ')}`);
 }
 
 
@@ -131,6 +219,7 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC, (event) => {
     path.join(app.getAppPath(), 'example-files', 'fasta');
   fs.readdir(dir, (err, files) => {
     const filePaths = files.map(filename => ({
+      dir: dir,
       path: path.join(dir, filename),
       name: filename,
     }));

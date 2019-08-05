@@ -57,9 +57,9 @@ const useStyles = makeStyles(theme => ({
     // maxWidth: '800px',
     borderTop: '1px solid rgba(255,255,255,0.3)',
     borderBottom: '1px solid rgba(255,255,255,0.3)',
-    flexGrow: 1,
   },
   output: {
+    flexGrow: 1,
   },
   verticalHeading: {
     writingMode: 'vertical-rl',
@@ -74,13 +74,13 @@ const useStyles = makeStyles(theme => ({
     borderRight: '1px solid #666',
   },
   modelHeading: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.model.main,
   },
   inputHeading: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.input.main,
   },
   outputHeading: {
-    backgroundColor: theme.palette.tertiary ? theme.palette.tertiary.main : '#233242',
+    backgroundColor: theme.palette.output.main,
   }
 }));
 

@@ -300,7 +300,10 @@ class FinalAlignment {
   }
 
   @computed get filename() {
-    return `${this.run.outputName}_concat.txt`;
+    if (this.numAlignments === 1) {
+      return this.run.alignments[0].filename;
+    }
+    return `${this.run.outputNameSafe}_concat.txt`;
   }
 
   @computed get dir() {
@@ -360,7 +363,7 @@ class FinalAlignment {
     if (numAlignments <= 1) {
       return '';
     }
-    return `${this.run.outputDir}/partition.txt`;
+    return join(`${this.dir}`, `${this.run.outputNameSafe}_concat.part.txt`);
   }
 
   @computed get partitionFileContent() {

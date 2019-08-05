@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarMessage from './components/SnackbarMessage';
 
 import './Raxml.css';
 
@@ -16,11 +18,10 @@ const styles = theme => ({
     // borderBottom: '1px solid #222',
     padding: 10,
     '& > *': {
-      marginLeft: '20px',
+      marginLeft: '20px'
     }
   },
-  formControl: {
-  },
+  formControl: {},
   button: {
     marginRight: theme.spacing(1)
   },
@@ -28,7 +29,7 @@ const styles = theme => ({
     marginTop: '20px',
     display: 'flex',
     alignItems: 'center'
-  },
+  }
 });
 
 @observer
@@ -66,9 +67,7 @@ class Console extends React.Component {
         ref={this.onMountStdoutContainer}
       >
         <div>
-          <code className="code">
-            { run.args.map(args => args.join(' ')).join('\n') }
-          </code>
+          <code className="code">{run.command}</code>
         </div>
         <div>
           <code className="code">{run.stdout}</code>
@@ -91,12 +90,41 @@ class Raxml extends React.Component {
       <div className="Raxml">
         <div>
           <form className={classes.raxmlForm} autoComplete="off">
-            { run.stdout === '' ? null : <Button variant="outlined" onClick={run.clearStdout}>Clear</Button>}
+            {run.stdout === '' ? null : (
+              <Button variant="outlined" onClick={run.clearStdout}>
+                Clear
+              </Button>
+            )}
+            {run.running ? (
+              <Button variant="outlined" color="primary" onClick={run.cancel}>
+                Cancel
+              </Button>
+            ) : null}
             <OptionSelect option={run.numThreads} />
-            <Button variant="contained" disabled={run.startDisabled} onClick={run.start}>Run</Button>
+            <Button
+              variant="contained"
+              disabled={run.startDisabled}
+              onClick={run.start}
+            >
+              Run
+            </Button>
           </form>
         </div>
         <Console run={run} />
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          open={!!run.error}
+          autoHideDuration={6000}
+        >
+          <SnackbarMessage
+            onClose={run.clearError}
+            variant="error"
+            message={run.error}
+          />
+        </Snackbar>
       </div>
     );
   }
