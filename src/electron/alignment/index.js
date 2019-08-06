@@ -1,12 +1,10 @@
 import _ from 'lodash';
 import fasta from 'bionode-fasta';
-import seq from 'bionode-seq';
 import path from 'path';
 
 import { sendToMainWindow } from '../communication';
 import {
   deleteFile,
-  checkForBinaryOrMultistate,
   createDefaultGlobalArgs,
   createDefaultAnalysisArgs,
   transformArgsToArray
