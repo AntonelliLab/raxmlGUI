@@ -46,8 +46,8 @@ function initialize() {
     // Window options for the main window
     const mainWindowOptions = {
       width: 1280,
-      minWidth: 1080,
-      height: 740,
+      minWidth: 960,
+      height: 760,
       title: app.getName(),
       resizable: true,
       webPreferences: {

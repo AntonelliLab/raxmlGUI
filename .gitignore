@@ -24,3 +24,7 @@ yarn-error.log*
 
 # external dependencies
 /bin/raxml
+
+# output
+RAxML_*
+*.reduced

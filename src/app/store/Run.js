@@ -152,7 +152,8 @@ class Run {
     this.id = id;
     this.listen();
     this.outputNamePlaceholder = `${id}`;
-    this.atomNameAvailable = createAtom('nameAvailable');
+    this.atomAfterRun = createAtom('AfterRun');
+    this.atomFinished = createAtom('finished');
   }
 
   id = 0;
@@ -201,12 +202,12 @@ class Run {
     this.outputName = filenamify(value.replace(' ', '_').trim());
   }
 
-  atomNameAvailable; // Trigger atom when run is finished to re-run outputNameAvailable
+  atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
 
   outputNameAvailable = promisedComputed(true, async () => {
-    const { id, outputDir, outputName, outputNamePlaceholder, atomNameAvailable } = this;
+    const { id, outputDir, outputName, outputNamePlaceholder, atomAfterRun } = this;
     const outputNameToCheck = outputName || outputNamePlaceholder;
-    const check = atomNameAvailable.reportObserved() || outputNameToCheck;
+    const check = atomAfterRun.reportObserved() || outputNameToCheck;
     if (!check) {
       return;
     }
@@ -220,12 +221,12 @@ class Run {
     return this.outputNameAvailable.get().ok;
   }
 
-  @computed get outputNameNotice() {
-    return this.outputNameAvailable.get().notice;
-  }
-
   @computed get outputNameSafe() {
     return this.outputNameAvailable.get().outputNameUnused || this.outputNamePlaceholder;
+  }
+
+  @computed get outputNameNotice() {
+    return this.outputNameOk ? '' : `New run will use output id '${this.outputNameSafe}'`;
   }
 
   @computed get outputFilenameSafe() {
@@ -246,6 +247,20 @@ class Run {
     ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.outputDir);
   };
 
+  // Result
+  @observable resultDir = ''
+  @computed get resultFilenames() {
+    return this.outputNameAvailable.get().resultFilenames || [];
+  }
+
+  @computed get haveResult() {
+    return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
+  }
+
+  @action openFile = (filePath) => {
+    ipcRenderer.send(ipc.FILE_OPEN, filePath);
+  }
+
   @computed get haveAlignments() { return this.alignments.length > 0; }
 
   @computed get taxons() {
@@ -264,6 +279,11 @@ class Run {
   }
 
   @observable running = false;
+  @observable finished = false;
+  @action clearFinished = () => {
+    this.finished = false;
+  }
+  atomFinished;
 
   @computed get ok() {
     return !this.error && !this.missing;
@@ -403,10 +423,13 @@ class Run {
 
   @action
   start = () => {
-    const { id, args, binaryName } = this;
+    const { id, args, binaryName, outputDir, outputFilenameSafe: outputFilename } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName });
+    if (this.outputName !== this.outputNameSafe) {
+      this.outputName = this.outputNameSafe;
+    }
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName, outputDir, outputFilename });
   };
 
   @action
@@ -418,7 +441,7 @@ class Run {
   @action
   afterRun = () => {
     this.running = false;
-    this.atomNameAvailable.reportChanged();
+    this.atomAfterRun.reportChanged();
   }
 
 
@@ -583,14 +606,18 @@ class Run {
     if (id === this.id) {
       console.log(`Process ${id} started...`);
       this.running = true;
+      this.finished = false;
       this.error = null;
     }
   };
 
   @action
-  onRunFinished = (event, { id, code }) => {
+  onRunFinished = (event, { id, resultDir, resultFilenames }) => {
     if (id === this.id) {
-      console.log(`Process ${id} finished with code ${code}.`);
+      console.log(`Process ${id} finished with result filenames ${resultFilenames} in dir ${resultDir}.`);
+      this.resultDir = resultDir;
+      this.atomFinished.reportChanged();
+      this.finished = true;
       this.afterRun();
     }
   };

@@ -20,7 +20,7 @@ const variantIcon = {
 
 const useStyles = makeStyles(theme => ({
   success: {
-    backgroundColor: green[600],
+    backgroundColor: green[700],
   },
   error: {
     backgroundColor: theme.palette.error.main,
@@ -41,6 +41,7 @@ const useStyles = makeStyles(theme => ({
   message: {
     display: 'flex',
     alignItems: 'center',
+    color: 'white',
   },
 }));
 

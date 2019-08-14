@@ -6,17 +6,12 @@ import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarMessage from './components/SnackbarMessage';
+import Box from '@material-ui/core/Box';
 
 import './Raxml.css';
 
 const styles = theme => ({
   raxmlForm: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    backgroundColor: '#000',
-    // borderBottom: '1px solid #222',
-    padding: 10,
     '& > *': {
       marginLeft: '20px'
     }
@@ -89,7 +84,7 @@ class Raxml extends React.Component {
     return (
       <div className="Raxml">
         <div>
-          <form className={classes.raxmlForm} autoComplete="off">
+          <Box component="form" p={1} display="flex" justifyContent="flex-end" alignItems="flex-end" className={classes.raxmlForm} noValidate autoComplete="off">
             {run.stdout === '' ? null : (
               <Button variant="outlined" onClick={run.clearStdout}>
                 Clear
@@ -108,7 +103,7 @@ class Raxml extends React.Component {
             >
               Run
             </Button>
-          </form>
+          </Box>
         </div>
         <Console run={run} />
         <Snackbar
@@ -118,11 +113,27 @@ class Raxml extends React.Component {
           }}
           open={!!run.error}
           autoHideDuration={6000}
+          onClose={run.clearError}
         >
           <SnackbarMessage
             onClose={run.clearError}
             variant="error"
             message={run.error}
+          />
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          open={run.finished}
+          autoHideDuration={6000}
+          onClose={run.clearFinished}
+        >
+          <SnackbarMessage
+            onClose={run.clearFinished}
+            variant="success"
+            message="RAxML finished!"
           />
         </Snackbar>
       </div>

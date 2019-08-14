@@ -62,32 +62,39 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     event.sender.send(ipc.OUTPUT_CHECKED, {
       id, outputDir, outputName,
       ok: true, notice: '', outputNameUnused: outputName,
+      resultFilenames: [],
     });
     return;
   }
   try {
     const filenames = await readdir(outputDir);
     let outputNameUnused = outputName;
-    let counter = 1;
-    while (filenames.find(filename =>
+    const filterResultFilenames = filename =>
       filename.endsWith(outputNameUnused) ||
-      filename.endsWith(`${outputNameUnused}.tre`))) {
-      outputNameUnused = `${outputName}_${counter}`;
+      filename.endsWith(`${outputNameUnused}.tre`);
+    const resultFilenames = filenames.filter(filterResultFilenames)
+    let counter = 1;
+    const matchCounterName = /(\w+)_\d+$/.exec(outputName);
+    const outputNameWithoutCounter = matchCounterName ? matchCounterName[1] : outputName;
+    while (filenames.find(filterResultFilenames)) {
+      outputNameUnused = `${outputNameWithoutCounter}_${counter}`;
       ++counter;
     }
     const ok = outputName === outputNameUnused;
     const notice = ok ? '' : `Using '${outputNameUnused}'`;
     event.sender.send(ipc.OUTPUT_CHECKED, {
-      id, outputDir, outputName, ok, notice, outputNameUnused
+      id, outputDir, outputName, ok, notice, outputNameUnused, resultFilenames
     });
   }
   catch (error) {
     console.log(ipc.OUTPUT_CHECK, 'error:', error);
-    event.sender.send(ipc.OUTPUT_CHECKED, { id, ok: false, notice: error.message, error });
+    event.sender.send(ipc.OUTPUT_CHECKED, {
+      id, ok: false, notice: error.message, error, resultFilenames
+    });
   }
 });
 
-ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName }) => {
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
   cancelProcess(id);
 
   console.log(`Run ${id} with args:`, args);
@@ -96,7 +103,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName }) => {
   const binaryDir = path.resolve(rootDir, '..', '..', 'bin', 'raxml');
   const binaryPath = path.resolve(binaryDir, binaryName);
 
-  console.log(`Run ${id}:\n  binary: ${binaryName}\n  path: ${binaryDir}\n  args:`, args);
+  console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
 
   for (const arg of args) {
     try {
@@ -121,7 +128,12 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName }) => {
       return;
     }
   }
-  event.sender.send(ipc.RUN_FINISHED, { id });
+
+  const filenames = await readdir(outputDir);
+  const resultFilenames = filenames.filter(filename =>
+    filename.endsWith(outputFilename));
+
+  event.sender.send(ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames });
 
 
 });
