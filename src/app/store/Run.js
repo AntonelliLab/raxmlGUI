@@ -120,6 +120,8 @@ class OutGroup extends Option {
   constructor(run) { super(run, '<none>', 'Outgroup', ''); }
   @computed get options() { return ['<none>', ...this.run.taxons].map(value => ({ value, title: value })); }
   @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
+  @computed get cmdValue() { return this.value === '<none>' ? '' : this.value }
+  //TODO: Allow multiple selections
 }
 
 class Tree extends Option {
@@ -196,6 +198,7 @@ class Run {
     ipcRenderer.send(ipc.TREE_SELECT, this.id);
   };
 
+  @observable disableCheckUndeterminedSequence = true;
 
   @observable outputName = 'output';
   @action setOutputName = (value) => {
@@ -293,8 +296,9 @@ class Run {
     return this.alignments.length === 0 || !this.ok || this.running;
   }
 
-  @observable seed = Math.floor(Math.random() * 1000 + 1);
+  @observable seedParsimony = Math.floor(Math.random() * 1000 + 1);
   @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
+  @observable seedBootstrap = Math.floor(Math.random() * 1000 + 1);
 
   @observable binaryName = 'raxmlHPC-PTHREADS-SSE3-Mac';
 
@@ -303,80 +307,240 @@ class Run {
     const cmdArgs = [first];
 
     switch (this.analysis.value) {
-      case 'FT':
+      case 'FT': // Fast tree search
+        // params: [params.brL, params.SHlike, params.outGroup],
         // cmd= """cd %s %s &&%s %s -f E -p %s %s -n %s -s %s -O -w %s %s %s %s %s""" \
         // % (winD, raxml_path, K[0], pro, seed_1, mod, out_file, seq_file, path_dir, part_f, cmd_temp1,cmd_temp2, winEx)
+        //TODO: Where is outGroup? From line 1436 in original code, -o is unchecked
         first.push('-T', this.numThreads.value);
         first.push('-f', 'E');
-        first.push('-p', this.seed);
+        first.push('-p', this.seedParsimony);
         first.push('-m', this.finalAlignment.modelFlagName);
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
         first.push('-w', `${this.outputDir}`);
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
         if (this.alignments.length > 1) {
           first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
         if (this.branchLength.value) {
           const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
-          const cmd = [];
-          cmd.push('-T', this.numThreads.value);
-          cmd.push('-f', 'e');
-          cmd.push('-m', this.finalAlignment.modelFlagName);
-          cmd.push('-t', `${treeFile1}`);
-          cmd.push('-n', `brL.${this.outputFilenameSafe}`);
-          cmd.push('-s', `${this.finalAlignment.path}`);
-          cmd.push('-w', `${this.outputDir}`);
+          const next = [];
+          next.push('-T', this.numThreads.value);
+          next.push('-f', 'e');
+          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-t', `${treeFile1}`);
+          next.push('-n', `brL.${this.outputFilenameSafe}`);
+          next.push('-s', `${this.finalAlignment.path}`);
+          next.push('-w', `${this.outputDir}`);
           if (this.alignments.length > 1) {
-            cmd.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
           }
-          cmdArgs.push(cmd);
+          cmdArgs.push(next);
         }
         if (this.sHlike.value) {
           const treeFile2 = this.branchLength.value ?
           join(this.outputDir, `RAxML_result.brL.${this.outputFilenameSafe}`) :
           join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
-          const cmd = [];
-          cmd.push('-T', this.numThreads.value);
-          cmd.push('-f', 'e');
-          cmd.push('-m', this.finalAlignment.modelFlagName);
-          cmd.push('-t', `${treeFile2}`);
-          cmd.push('-n', `sh.${this.outputFilenameSafe}`);
-          cmd.push('-s', `${this.finalAlignment.path}`);
-          cmd.push('-w', `${this.outputDir}`);
+          const next = [];
+          next.push('-T', this.numThreads.value);
+          next.push('-f', 'e');
+          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-t', `${treeFile2}`);
+          next.push('-n', `sh.${this.outputFilenameSafe}`);
+          next.push('-s', `${this.finalAlignment.path}`);
+          next.push('-w', `${this.outputDir}`);
           if (this.alignments.length > 1) {
-            cmd.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
           }
-          cmdArgs.push(cmd);
+          cmdArgs.push(next);
         }
         break;
-      case 'ML':
+      case 'ML': // ML search
+        // params: [params.SHlike, params.combinedOutput, params.outGroup],
+        // cmd= """cd %s %s&&%s %s -f d %s -N %s -O -p %s %s -s %s -n %s %s -w %s %s %s %s %s %s""" \
+        // % (winD, raxml_path, K[0], pro, mod, BSrep2.get(), random.randrange(1, 1000, 1), o, seq_file, out_file, part_f, path_dir, const_f, result2, cmd_temp2, combine_trees, winEx)
+        //TODO: Check conf_f (from line 754 in original source)
+        first.push('-T', this.numThreads.value);
+        first.push('-f', 'd');
+        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-N', this.numRepetitions.value);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        first.push('-p', this.seedParsimony);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', this.finalAlignment.path);
+        first.push('-w', `${this.outputDir}`);
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        if (this.alignments.length > 1) {
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
+        if (this.sHlike.value) {
+          const treeFile = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
+          const next = [];
+          next.push('-T', this.numThreads.value);
+          next.push('-f', 'e');
+          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-t', `${treeFile}`);
+          next.push('-n', `sh.${this.outputFilenameSafe}`);
+          next.push('-s', `${this.finalAlignment.path}`);
+          next.push('-w', `${this.outputDir}`);
+          if (this.alignments.length > 1) {
+            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          }
+          cmdArgs.push(next);
+        }
+        if (this.combinedOutput.value) {
+          // TODO: Add binary to the above commands to not assume raxml
+          // TODO: Use 'type' instead of 'cat' for windows
+          // const cmd = [];
+          // cmd.push('cat', `RAxML_*.${this.outputFilenameSafe}`);
+          // cmdArgs.push(cmd);
+        }
         break;
-      case 'ML+rBS':
+      case 'ML+rBS': // ML + rapid bootstrap
+        // params: [params.reps, params.brL, params.outGroup],
         // cmd= """cd %s %s&& %s %s %s -f a -x %s %s %s -p %s -N %s %s -s %s -n %s %s -O -w %s %s %s %s""" \
         // % (winD, raxml_path, runWin, K[0], pro, seed_1, save_brL.get(),mod, seed_2, BSrep.get(), o, seq_file, out_file, \
         // part_f, path_dir, const_f, result, winEx)
         first.push('-T', this.numThreads.value);
         first.push('-f', 'a');
         first.push('-x', this.seedRapidBootstrap);
-        first.push('-p', this.seed);
+        first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
         first.push('-m', this.finalAlignment.modelFlagName);
-        first.push('-n', `${this.outputFilenameSafe}`);
+        first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
         first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
           first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
         break;
-      case 'ML+tBS':
+      case 'ML+tBS': // ML + thorough bootstrap
+        // params: [params.runs, params.reps, params.brL, params.outGroup],
+        // cmd= """cd %s %s \
+        // &&%s %s -b %s %s %s -p %s -N %s %s -s %s -n %s %s -w %s %s -O && cd %s \
+        // &&%s %s -f d %s %s -s %s -N %s -n %s %s -w %s %s -p %s -O && cd %s \
+        // &&%s %s -f b -t %s -z %s %s -s %s -n %s -w %s %s -O %s""" \
+        // % (winD, raxml_path, K[0], pro, seed_1, mod, save_brL.get(),seed_2, BSrep.get(), o, seq_file, out_file1, part_f, path_dir, const_f,\
+        // raxml_path, K[0], pro, mod, o, seq_file, BSrep2.get(), out_file2, part_f, path_dir, const_f,random.randrange(1, 1000, 1), \
+        // raxml_path, K[0], pro, MLtreeR, trees, mod, seq_file, out_file, path_dir, result, winEx)
+        // try:
+        // 	remove="RAxML_info.%s.tre" % (only_name)
+        // ...
+        const second = [];
+        const third = [];
+        cmdArgs.push(second, third);
+        const outputFilenameSafe1 = `${this.outputNameSafe}R.tre`;
+        const outputFilenameSafe2 = `${this.outputNameSafe}B.tre`;
+        const treeFile = join(this.outputDir, `RAxML_bestTree.${outputFilenameSafe2}`); // MLtreeR
+        const treesFile = join(this.outputDir, `RAxML_bootstrap.${outputFilenameSafe1}`); // trees
+        // first wrote RAxML_bootstrap.binary_8R.tre
+        // second wrote RAxML_bootstrap.binary_8B.tre
+
+        first.push('-T', this.numThreads.value);
+        first.push('-b', this.seedBootstrap);
+        first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
+        first.push('-p', this.seedParsimony);
+        first.push('-N', this.numRepetitions.value);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        first.push('-n', outputFilenameSafe1);
+        first.push('-s', this.finalAlignment.path);
+        first.push('-w', `${this.outputDir}`);
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        if (this.alignments.length > 1) {
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
+
+        second.push('-T', this.numThreads.value);
+        second.push('-f', 'd');
+        second.push('-m', this.finalAlignment.modelFlagName);
+        second.push('-p', this.seedParsimony);
+        second.push('-N', this.numRuns.value);
+        second.push('-n', outputFilenameSafe2);
+        second.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          second.push('-O');
+        }
+        second.push('-w', `${this.outputDir}`);
+        if (this.outGroup.cmdValue) {
+          second.push('-o', this.outGroup.cmdValue);
+        }
+        if (this.alignments.length > 1) {
+          second.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
+
+        third.push('-T', this.numThreads.value);
+        third.push('-f', 'b');
+        third.push('-t', treeFile);
+        third.push('-z', treesFile);
+        third.push('-m', this.finalAlignment.modelFlagName);
+        third.push('-n', this.outputFilenameSafe);
+        third.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          third.push('-O');
+        }
+        third.push('-w', `${this.outputDir}`);
+        // if (this.alignments.length > 1) {
+        //   third.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        // }
+
         break;
-      case 'BS+con':
+      case 'BS+con': // Bootstrap + consensus
+        // params: [params.reps, params.brL, params.outGroup],
+        // BStrees_file= """  "%sRAxML_bootstrap.%s"    """ % (path_dirsimple, out_file)
+        // cmd= """cd %s %s \
+        // && %s %s %s %s -n %s -s %s %s -x %s -N %s -w %s %s %s -p %s -O && cd %s\
+        // && %s %s %s -n con.%s -J MR -z %s -w %s %s
+        // """ \
+        // % (winD, raxml_path, \
+        // K[0], pro, mod, save_brL.get(), out_file, seq_file, o, seed_1, BSrep.get(), path_dir, part_f, const_f, random.randrange(1, 1000, 1), raxml_path, \
+        // K[0], pro, mod, out_file, BStrees_file, path_dir, winEx)
         break;
-      case 'AS':
+      case 'AS': // Ancestral states
+        // params: [params.tree],
+        // cmd = """cd %s %s &&%s %s -f A -t "%s" -s %s %s -n %s -O -w %s %s %s""" \
+        // % (winD, raxml_path, K[0], pro, rooted_tree, seq_file, mod, out_file, path_dir, part_f, winEx)
+        first.push('-T', this.numThreads.value);
+        first.push('-f', 'A');
+        first.push('-t', this.tree.filePath);
+        first.push('-s', this.finalAlignment.path);
+        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-n', `${this.outputFilenameSafe}`);
+        first.push('-w', `${this.outputDir}`);
+        if (this.alignments.length > 1) {
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
         break;
-      case 'PD':
+      case 'PD': // Pairwise distances
+        // params: [params.startingTree],
+        // # "./raxmlHPC -f x -m GTRGAMMA[I] -n NAME -s INPUT -p RANDOMNR [-q PARTFILE -o OUTGROUP]"
+        // cmd = """cd %s %s &&%s %s -f x -p %s %s -s %s %s -n %s %s -O -w %s %s %s""" \
+        // % (winD, raxml_path, K[0], pro, seed_1, const_f, seq_file, mod, out_file, o, path_dir, part_f, winEx)
         break;
-      case 'RBS':
+      case 'RBS': // Rell bootstraps
+        // params: [params.reps, params.brL, params.outGroup],
+        // # "./raxmlHPC -f x -m GTRGAMMA[I] -n NAME -s INPUT -p RANDOMNR [-q PARTFILE -o OUTGROUP]"
+        // 	cmd = """cd %s %s &&%s %s -f D -p %s %s -s %s %s -n %s %s -O -w %s %s %s""" \
+        // 	% (winD, raxml_path, K[0], pro, seed_1, const_f, seq_file, mod, out_file, o, path_dir, part_f, winEx)
         break;
       default:
     }
