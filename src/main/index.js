@@ -1,10 +1,9 @@
-const electron = require('electron');
-const path = require('path');
-const url = require('url');
-const isDev = require('electron-is-dev');
+import electron from 'electron';
+import path from 'path';
+import url from 'url';
+import isDev from 'electron-is-dev';
 
-require("@babel/register");
-require('../src/electron/api');
+import './api';
 
 // Module to control application life.
 const app = electron.app
@@ -52,9 +51,10 @@ function initialize() {
       resizable: true,
       webPreferences: {
         backgroundThrottling: false, //TODO: Skip this if it doesn't affect raxml performance
-        nodeIntegration: isDevMode,
+        // nodeIntegration: isDevMode,
+        nodeIntegration: true,
         contextIsolation: false, // Needed to expose ipcRenderer from preload script
-        preload: path.join(app.getAppPath(), 'src', 'electron', 'preload.js'),
+        // preload: path.join(app.getAppPath(), 'src', 'main', 'preload.js'),
         // enableRemoteModule: false
         allowEval: false
       }
@@ -71,7 +71,8 @@ function initialize() {
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
-      pathname: path.join(__dirname, '/../build/index.html'),
+      // pathname: path.join(__dirname, '..', 'build', 'index.html'),
+      pathname: path.join(__dirname, 'index.html'),
       protocol: 'file:',
       slashes: true
     });

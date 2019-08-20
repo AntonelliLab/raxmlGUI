@@ -1,5 +1,5 @@
 import { observable, computed, action, runInAction } from 'mobx';
-import ipcRenderer from '../ipcRenderer';
+import { ipcRenderer } from 'electron';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
 import { runSettings } from '../../settings/run';

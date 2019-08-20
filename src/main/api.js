@@ -5,6 +5,7 @@ import util from "util";
 import fs from "fs";
 import os from "os";
 import childProcess from 'child_process';
+import isDev from 'electron-is-dev';
 
 import { openFileDialog } from "./utils";
 import {
@@ -97,23 +98,23 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
 ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
   cancelProcess(id);
 
-  console.log(`Run ${id} with args:`, args);
-  // const binaryName = `raxmlHPC-PTHREADS-SSE3-Mac`;
-  const rootDir = app.isPackaged ? app.getAppPath() : __dirname;
-  const binaryDir = path.resolve(rootDir, '..', '..', 'bin', 'raxml');
+  const binaryDir = path.join(__static, 'bin');
   const binaryPath = path.resolve(binaryDir, binaryName);
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
 
-  for (const arg of args) {
-    try {
-      const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`);
-      console.log(stdout, stderr);
-    }
-    catch (err) {
-      console.error('Flag check run error:', err);
-      event.sender.send(ipc.RUN_ERROR, { id, error: err });
-      return;
+  const checkFlags = isDev;
+  if (checkFlags) {
+    for (const arg of args) {
+      try {
+        const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`);
+        console.log(stdout, stderr);
+      }
+      catch (err) {
+        console.error('Flag check run error:', err);
+        event.sender.send(ipc.RUN_ERROR, { id, error: err });
+        return;
+      }
     }
   }
 
@@ -124,7 +125,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
     catch (err) {
       console.error('Run error:', err);
-      event.sender.send(ipc.RUN_ERROR, { id, error: err.message });
+      event.sender.send(ipc.RUN_ERROR, { id, error: err });
       return;
     }
   }
@@ -226,9 +227,12 @@ async function execProcess(binaryPath, args) {
 // Open a folder with native file explorer in given path
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC, (event) => {
   console.log('api', ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC);
-  const dir = app.isPackaged ?
-    path.join(path.dirname(app.getAppPath()), '..', 'example-files') :
-    path.join(app.getAppPath(), 'example-files', 'fasta');
+  // const dir = app.isPackaged ?
+  //   path.join(path.dirname(app.getAppPath()), '..', 'example-files') :
+  //   path.join(app.getAppPath(), 'example-files', 'fasta');
+  // __static is defined by electron-webpack
+  const dir = path.join(__static, 'example-files', 'fasta');
+
   fs.readdir(dir, (err, files) => {
     const filePaths = files.map(filename => ({
       dir: dir,

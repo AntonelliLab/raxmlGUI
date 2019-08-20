@@ -1,4 +1,4 @@
-import ipcRenderer from './ipcRenderer';
+import { ipcRenderer } from 'electron';
 import * as ipc from '../constants/ipc';
 import store from './store';
 import path from 'path';

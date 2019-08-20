@@ -1,5 +1,5 @@
 import { observable, computed, action, createAtom } from 'mobx';
-import ipcRenderer from '../ipcRenderer';
+import { ipcRenderer } from 'electron';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';

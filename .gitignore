@@ -23,7 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # external dependencies
-/bin/raxml
+/static/bin
 
 # output
 RAxML_*
