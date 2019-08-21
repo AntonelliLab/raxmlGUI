@@ -80,9 +80,11 @@ const Output = ({ run }) => {
         </Link>
       )}
       </Box>
-      <Box component="form" my={1}>
-        <Button onClick={run.openOutputDir} variant="outlined">Open folder</Button>
-      </Box>
+      { run.haveAlignments || haveResult ? (
+        <Box component="form" my={1}>
+          <Button onClick={run.openOutputDir} variant="outlined">Open folder</Button>
+        </Box>
+      ) : null }
     </div>
   );
 };
