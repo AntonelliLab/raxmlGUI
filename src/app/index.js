@@ -3,10 +3,13 @@ import { ThemeProvider } from '@material-ui/styles';
 
 import theme from './theme';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const Index = () => (
   <ThemeProvider theme={theme}>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </ThemeProvider>
 );
 

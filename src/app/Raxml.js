@@ -7,7 +7,8 @@ import OptionSelect from './components/OptionSelect';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarMessage from './components/SnackbarMessage';
 import Box from '@material-ui/core/Box';
-
+import ErrorBoundary from './components/ErrorBoundary';
+import ErrorDialog from './components/ErrorDialog';
 import './Raxml.css';
 
 const styles = theme => ({
@@ -106,36 +107,24 @@ class Raxml extends React.Component {
           </Box>
         </div>
         <Console run={run} />
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          open={!!run.error}
-          autoHideDuration={6000}
-          onClose={run.clearError}
-        >
-          <SnackbarMessage
-            onClose={run.clearError}
-            variant="error"
-            message={run.error}
-          />
-        </Snackbar>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          open={run.finished}
-          autoHideDuration={6000}
-          onClose={run.clearFinished}
-        >
-          <SnackbarMessage
+        <ErrorBoundary>
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            open={run.finished}
+            autoHideDuration={6000}
             onClose={run.clearFinished}
-            variant="success"
-            message="RAxML finished!"
-          />
-        </Snackbar>
+          >
+            <SnackbarMessage
+              onClose={run.clearFinished}
+              variant="success"
+              message="RAxML finished!"
+            />
+          </Snackbar>
+          <ErrorDialog error={run.error} onClose={run.clearError} />
+        </ErrorBoundary>
       </div>
     );
   }

@@ -6,6 +6,7 @@ import fs from "fs";
 import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
+import serializeError from 'serialize-error';
 
 import { openFileDialog } from "./utils";
 import {
@@ -17,12 +18,27 @@ import {
 
 import * as ipc from "../constants/ipc";
 
+import unhandled from 'electron-unhandled';
+import { reportIssue } from "../common/utils";
+
+unhandled({
+  showDialog: true,
+	reportButton: reportIssue,
+});
+
 const exec = util.promisify(childProcess.exec);
 const readdir = util.promisify(fs.readdir);
 
 const state = {
   processes: {},
 };
+
+function send(event, channel, data) {
+  if (!data.error) {
+    return event.sender.send(channel, data);
+  }
+  return event.sender.send(channel, Object.assign({}, data, { error: serializeError(data.error) }));
+}
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   openFileDialog(
@@ -31,7 +47,7 @@ ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
       properties: ['openDirectory', 'createDirectory']
     },
     folderPaths => {
-      event.sender.send(ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: folderPaths[0] });
+      send(event, ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: folderPaths[0] });
     }
   );
 });
@@ -60,7 +76,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   const outputFilename = `${outputName}.tre`;
   console.log('\n\nCheck unused filename:', outputFilename);
   if (!outputDir) {
-    event.sender.send(ipc.OUTPUT_CHECKED, {
+    send(event, ipc.OUTPUT_CHECKED, {
       id, outputDir, outputName,
       ok: true, notice: '', outputNameUnused: outputName,
       resultFilenames: [],
@@ -83,13 +99,13 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     }
     const ok = outputName === outputNameUnused;
     const notice = ok ? '' : `Using '${outputNameUnused}'`;
-    event.sender.send(ipc.OUTPUT_CHECKED, {
+    send(event, ipc.OUTPUT_CHECKED, {
       id, outputDir, outputName, ok, notice, outputNameUnused, resultFilenames
     });
   }
   catch (error) {
     console.log(ipc.OUTPUT_CHECK, 'error:', error);
-    event.sender.send(ipc.OUTPUT_CHECKED, {
+    send(event, ipc.OUTPUT_CHECKED, {
       id, ok: false, notice: error.message, error, resultFilenames
     });
   }
@@ -103,6 +119,8 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
 
+  // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
+  // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
   const checkFlags = isDev;
   if (checkFlags) {
     for (const arg of args) {
@@ -112,7 +130,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
       }
       catch (err) {
         console.error('Flag check run error:', err);
-        event.sender.send(ipc.RUN_ERROR, { id, error: err });
+        send(event, ipc.RUN_ERROR, { id, error: err });
         return;
       }
     }
@@ -125,7 +143,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
     catch (err) {
       console.error('Run error:', err);
-      event.sender.send(ipc.RUN_ERROR, { id, error: err });
+      send(event, ipc.RUN_ERROR, { id, error: err });
       return;
     }
   }
@@ -134,7 +152,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   const resultFilenames = filenames.filter(filename =>
     filename.endsWith(outputFilename));
 
-  event.sender.send(ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames });
+  send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames });
 
 
 });
@@ -143,7 +161,7 @@ ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   const id = arg;
   console.log(`Cancel raxml process ${id}...`);
   cancelProcess(id);
-  // event.sender.send(ipc.RUN_CLOSED, { id });
+  // send(event, ipc.RUN_CLOSED, { id });
 });
 
 ipcMain.on('open-item', (event, arg) => {
@@ -184,13 +202,13 @@ async function runProcess(id, event, binaryPath, args) {
       proc.stdout.on('data', buffer => {
         const content = String(buffer);
         console.log('on stdout:', content);
-        event.sender.send(ipc.RUN_STDOUT, { id, content });
+        send(event, ipc.RUN_STDOUT, { id, content });
       });
 
       proc.stderr.on('data', buffer => {
         const content = String(buffer);
         console.log('on stderr:', content);
-        event.sender.send(ipc.RUN_STDERR, { id, content });
+        send(event, ipc.RUN_STDERR, { id, content });
       });
 
       proc.on('close', code => {
@@ -239,7 +257,7 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC, (event) => {
       path: path.join(dir, filename),
       name: filename,
     }));
-    event.sender.send(ipc.ALIGNMENT_EXAMPLE_FILES_GOT_IPC, filePaths);
+    send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GOT_IPC, filePaths);
   });
 });
 
@@ -264,7 +282,7 @@ ipcMain.on(ipc.TREE_SELECT, (event, runId) => {
       properties: ['openFile']
     },
     filePaths => {
-      event.sender.send(ipc.TREE_SELECTED, { id: runId, filePath: filePaths[0] });
+      send(event, ipc.TREE_SELECTED, { id: runId, filePath: filePaths[0] });
     }
   );
 });
@@ -284,7 +302,7 @@ ipcMain.on(ipc.ALIGNMENT_SELECT_IPC, (event) => {
           name: path.basename(filePath)
         };
       });
-      event.sender.send(ipc.ALIGNMENT_SELECTED_IPC, alignments);
+      send(event, ipc.ALIGNMENT_SELECTED_IPC, alignments);
     }
   );
 });

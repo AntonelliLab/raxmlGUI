@@ -794,6 +794,14 @@ class Run {
       this.afterRun();
     }
   };
+
+  generateReport = ({ maxStdoutLength = 200 } = {}) => {
+    const { command, stdout } = this;
+    return {
+      command,
+      stdout: stdout.length > maxStdoutLength ? `[${stdout.length - maxStdoutLength} more characters]...${stdout.slice(-maxStdoutLength)}` : stdout,
+    }
+  }
 }
 
 export default Run;

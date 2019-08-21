@@ -1,15 +1,19 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import amber from '@material-ui/core/colors/amber';
+import pink from '@material-ui/core/colors/pink';
+import teal from '@material-ui/core/colors/teal';
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
-    primary: {
-      main: '#7b3352',
-    },
-    secondary: {
-      main: '#2d547d',
-    },
+    // primary: {
+    //   main: '#7b3352',
+    // },
+    // secondary: {
+    //   main: '#2d547d',
+    // },
+    primary: teal,
+    secondary: pink,
     model: {
       main: '#3B4E2D',
     },

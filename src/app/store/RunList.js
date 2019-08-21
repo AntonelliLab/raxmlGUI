@@ -42,6 +42,10 @@ class RunList {
   deleteActive = () => {
     this.deleteRun(this.activeRun);
   };
+
+  generateReport = ({ maxStdoutLength = 200 } = {}) => {
+    return this.activeRun.generateReport({ maxStdoutLength });
+  }
 }
 
 export default RunList;

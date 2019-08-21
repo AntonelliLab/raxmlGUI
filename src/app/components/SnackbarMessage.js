@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/styles';
+import Box from '@material-ui/core/Box';
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -23,7 +24,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: green[700],
   },
   error: {
-    backgroundColor: theme.palette.error.main,
+    // backgroundColor: theme.palette.error.main,
+    backgroundColor: '#f2401b',
   },
   info: {
     backgroundColor: theme.palette.primary.main,
@@ -47,8 +49,18 @@ const useStyles = makeStyles(theme => ({
 
 function SnackbarMessage(props) {
   const classes = useStyles();
-  const { className, message, onClose, variant, ...other } = props;
+  const { className, message, error, onClose, variant, ...other } = props;
   const Icon = variantIcon[variant];
+
+  const Message = error ? (
+    <div>
+      <Box mb={1}>
+        <strong>{error.name}:</strong> {error.message}
+      </Box>
+      <div>Details:</div>
+      <small>{JSON.stringify(error)}</small>
+    </div>
+  ) : message;
 
   return (
     <SnackbarContent
@@ -57,14 +69,14 @@ function SnackbarMessage(props) {
       message={
         <span id="client-snackbar" className={classes.message}>
           <Icon className={clsx(classes.icon, classes.iconVariant)} />
-          {message}
+          { Message }
         </span>
       }
-      action={[
+      action={onClose ? [
         <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
           <CloseIcon className={classes.icon} />
         </IconButton>,
-      ]}
+      ] : null }
       {...other}
     />
   );
@@ -73,6 +85,7 @@ function SnackbarMessage(props) {
 SnackbarMessage.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
+  error: PropTypes.object,
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired,
 };
