@@ -5,7 +5,9 @@ import * as ipc from 'electron-better-ipc';
 
 if (is.renderer) {
   ipc.ipcRenderer.answerMain('get-state-report', async () => {
-    const report = window.store.generateReport();
+    const storeModule = await import('../app/store');
+    const store = storeModule.default;
+    const report = store.generateReport();
     return report;
   });
 }

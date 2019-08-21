@@ -1,4 +1,4 @@
-import { app, ipcMain, shell } from "electron";
+import { app, ipcMain, shell, dialog } from "electron";
 import _ from "lodash";
 import path from "path";
 import util from "util";
@@ -7,8 +7,6 @@ import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
-
-import { openFileDialog } from "./utils";
 import {
   addAlignments,
   addAlignment,
@@ -41,15 +39,15 @@ function send(event, channel, data) {
 }
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
-  openFileDialog(
-    {
-      title: 'Select a directory for RAxML output',
-      properties: ['openDirectory', 'createDirectory']
-    },
-    folderPaths => {
-      send(event, ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: folderPaths[0] });
+  dialog.showOpenDialog({
+    title: 'Select a directory for RAxML output',
+    properties: ['openDirectory', 'createDirectory'],
+  }, paths => {
+    if (paths.length === 0) { // On cancel
+      return;
     }
-  );
+    send(event, ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: paths[0] });
+  });
 });
 
 // Open a file with the OS's default file handler
@@ -74,7 +72,7 @@ ipcMain.on(ipc.FOLDER_OPEN, (event, fullPath) => {
 ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   const { id, outputDir, outputName } = data;
   const outputFilename = `${outputName}.tre`;
-  console.log('\n\nCheck unused filename:', outputFilename);
+  console.log('Check unused filename:', outputFilename);
   if (!outputDir) {
     send(event, ipc.OUTPUT_CHECKED, {
       id, outputDir, outputName,
@@ -276,35 +274,31 @@ ipcMain.on(ipc.FILE_OPEN_IPC, (event, arg) => {
 // Open a dialog to select a file
 ipcMain.on(ipc.TREE_SELECT, (event, runId) => {
   console.log('api', ipc.TREE_SELECT);
-  openFileDialog(
-    {
-      title: 'Select a tree file',
-      properties: ['openFile']
-    },
-    filePaths => {
-      send(event, ipc.TREE_SELECTED, { id: runId, filePath: filePaths[0] });
-    }
-  );
+  dialog.showOpenDialog({
+    title: 'Select a tree file',
+    properties: ['openFile']
+  }, filePaths => {
+    if (filePaths.length === 0) { return; }
+    send(event, ipc.TREE_SELECTED, { id: runId, filePath: filePaths[0] });
+  });
 });
 
 // Open a dialog to select alignments
 ipcMain.on(ipc.ALIGNMENT_SELECT_IPC, (event) => {
   console.log('api', ipc.ALIGNMENT_SELECT_IPC);
-  openFileDialog(
-    {
-      title: 'Select an alignment',
-      properties: ['openFile', 'multiSelections']
-    },
-    filePaths => {
-      const alignments = filePaths.map(filePath => {
-        return {
-          path: filePath,
-          name: path.basename(filePath)
-        };
-      });
-      send(event, ipc.ALIGNMENT_SELECTED_IPC, alignments);
-    }
-  );
+  dialog.showOpenDialog({
+    title: 'Select an alignment',
+    properties: ['openFile', 'multiSelections']
+  }, filePaths => {
+    if (filePaths.length === 0) { return; }
+    const alignments = filePaths.map(filePath => {
+    return {
+        path: filePath,
+        name: path.basename(filePath)
+      };
+    });
+    send(event, ipc.ALIGNMENT_SELECTED_IPC, alignments);
+  });
 });
 
 // // Receive a new batch of alignments dropped into the app
