@@ -9,7 +9,7 @@ const styles = theme => ({
   Console: {
     color: '#fff',
     background: 'black',
-    flexGrow: 1,
+    // flexGrow: 1,
     // padding: '0 4px',
     padding: '10px',
   },

@@ -10,13 +10,17 @@ const styles = theme => ({
   Raxml: {
     padding: '10px',
     width: '100%',
+    flexShrink: 0,
   },
   form: {
-    '& > *': {
+    // '& > *:not(:first-child)': {
+    '& > *+*': {
       marginLeft: '20px'
     }
   },
-  formControl: {},
+  formItem: {
+    // marginRight: '20px',
+  },
   button: {
     marginRight: theme.spacing(1)
   },
@@ -34,18 +38,15 @@ class Raxml extends React.Component {
 
     return (
       <div className={classes.Raxml}>
-        <Box component="form" mt={1} mb={2} display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
-          {run.stdout === '' ? null : (
-            <Button variant="outlined" onClick={run.clearStdout}>
-              Clear
-            </Button>
-          )}
+        <Box component="form" mt={1} mb={2} display="flex" className={classes.form} noValidate autoComplete="off">
+          <OptionSelect className={classes.formItem} option={run.binary} />
+          <OptionSelect className={classes.formItem} option={run.numThreads} />
+          <div style={{ flexGrow: 1 }}/>
           {run.running ? (
             <Button variant="outlined" color="primary" onClick={run.cancel}>
               Cancel
             </Button>
           ) : null}
-          <OptionSelect option={run.numThreads} />
           <Button
             variant="contained"
             disabled={run.startDisabled}

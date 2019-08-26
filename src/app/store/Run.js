@@ -8,8 +8,22 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
+import util from 'electron-util';
 
 export const MAX_NUM_CPUS = cpus().length;
+
+const raxmlBinarySuffix = util.platform({
+  macos: '-Mac',
+  windows: '-Windows.exe',
+  linux: '-Linux',
+})
+
+const binaries = [
+  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
+  { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
+  { name: `raxmlHPC-PTHREADS-AVX${raxmlBinarySuffix}`, multithreaded: true },
+  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+];
 
 // Available parameters for different analysis
 const params = { brL: 'brL', SHlike: 'SHlike', combinedOutput: 'combinedOutput', reps: 'reps', runs: 'runs', tree: 'tree', startingTree: 'startingTree', outGroup: 'outGroup' };
@@ -72,9 +86,15 @@ class Option {
   @computed get isDefault() { return this.value === this.defaultValue; }
 }
 
+class Binary extends Option {
+  constructor(run) { super(run, binaries[3].name, 'Binary', 'Name of binary'); }
+  options = binaries.map(({ name }) => ({ value: name, title: name }));
+}
+
 class NumThreads extends Option {
   constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
   options = range(2, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value); }
 }
 
 class Analysis extends Option {
@@ -175,6 +195,7 @@ class Run {
     });
   }
 
+  binary = new Binary(this);
   numThreads = new NumThreads(this);
 
   analysis = new Analysis(this);
@@ -300,8 +321,6 @@ class Run {
   @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
   @observable seedBootstrap = Math.floor(Math.random() * 1000 + 1);
 
-  @observable binaryName = 'raxmlHPC-PTHREADS-SSE3-Mac';
-
   @computed get args() {
     const first = [];
     const cmdArgs = [first];
@@ -312,7 +331,9 @@ class Run {
         // cmd= """cd %s %s &&%s %s -f E -p %s %s -n %s -s %s -O -w %s %s %s %s %s""" \
         // % (winD, raxml_path, K[0], pro, seed_1, mod, out_file, seq_file, path_dir, part_f, cmd_temp1,cmd_temp2, winEx)
         //TODO: Where is outGroup? From line 1436 in original code, -o is unchecked
-        first.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
         first.push('-f', 'E');
         first.push('-p', this.seedParsimony);
         first.push('-m', this.finalAlignment.modelFlagName);
@@ -331,7 +352,9 @@ class Run {
         if (this.branchLength.value) {
           const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
-          next.push('-T', this.numThreads.value);
+          if (!this.numThreads.notAvailable) {
+            next.push('-T', this.numThreads.value);
+          }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
           next.push('-t', `${treeFile1}`);
@@ -348,7 +371,9 @@ class Run {
           join(this.outputDir, `RAxML_result.brL.${this.outputFilenameSafe}`) :
           join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
-          next.push('-T', this.numThreads.value);
+          if (!this.numThreads.notAvailable) {
+            next.push('-T', this.numThreads.value);
+          }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
           next.push('-t', `${treeFile2}`);
@@ -366,7 +391,9 @@ class Run {
         // cmd= """cd %s %s&&%s %s -f d %s -N %s -O -p %s %s -s %s -n %s %s -w %s %s %s %s %s %s""" \
         // % (winD, raxml_path, K[0], pro, mod, BSrep2.get(), random.randrange(1, 1000, 1), o, seq_file, out_file, part_f, path_dir, const_f, result2, cmd_temp2, combine_trees, winEx)
         //TODO: Check conf_f (from line 754 in original source)
-        first.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
         first.push('-f', 'd');
         first.push('-m', this.finalAlignment.modelFlagName);
         first.push('-N', this.numRepetitions.value);
@@ -386,7 +413,9 @@ class Run {
         if (this.sHlike.value) {
           const treeFile = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
-          next.push('-T', this.numThreads.value);
+          if (!this.numThreads.notAvailable) {
+            next.push('-T', this.numThreads.value);
+          }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
           next.push('-t', `${treeFile}`);
@@ -411,7 +440,9 @@ class Run {
         // cmd= """cd %s %s&& %s %s %s -f a -x %s %s %s -p %s -N %s %s -s %s -n %s %s -O -w %s %s %s %s""" \
         // % (winD, raxml_path, runWin, K[0], pro, seed_1, save_brL.get(),mod, seed_2, BSrep.get(), o, seq_file, out_file, \
         // part_f, path_dir, const_f, result, winEx)
-        first.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
         first.push('-f', 'a');
         first.push('-x', this.seedRapidBootstrap);
         first.push('-p', this.seedParsimony);
@@ -449,7 +480,9 @@ class Run {
         // first wrote RAxML_bootstrap.binary_8R.tre
         // second wrote RAxML_bootstrap.binary_8B.tre
 
-        first.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
         first.push('-b', this.seedBootstrap);
         first.push('-m', this.finalAlignment.modelFlagName);
         if (this.branchLength.value) {
@@ -470,7 +503,9 @@ class Run {
           first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
 
-        second.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          second.push('-T', this.numThreads.value);
+        }
         second.push('-f', 'd');
         second.push('-m', this.finalAlignment.modelFlagName);
         second.push('-p', this.seedParsimony);
@@ -488,7 +523,9 @@ class Run {
           second.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
 
-        third.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          third.push('-T', this.numThreads.value);
+        }
         third.push('-f', 'b');
         third.push('-t', treeFile);
         third.push('-z', treesFile);
@@ -519,7 +556,9 @@ class Run {
         // params: [params.tree],
         // cmd = """cd %s %s &&%s %s -f A -t "%s" -s %s %s -n %s -O -w %s %s %s""" \
         // % (winD, raxml_path, K[0], pro, rooted_tree, seq_file, mod, out_file, path_dir, part_f, winEx)
-        first.push('-T', this.numThreads.value);
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
         first.push('-f', 'A');
         first.push('-t', this.tree.filePath);
         first.push('-s', this.finalAlignment.path);
@@ -545,55 +584,22 @@ class Run {
       default:
     }
 
-    // if (!this.numRuns.notAvailable) {
-    //   first.push('-N', this.numRuns.value);
-    // }
-    // else if (!this.numRepetitions.notAvailable) {
-    //   first.push('-N', this.numRepetitions.value);
-    // }
-
-    // if (!this.branchLength.notAvailable && this.branchLength.value) {
-    //   first.push('-f', 'e');
-    //   extension = '.brL.tre';
-    // }
-    // else if (!this.sHlike.notAvailable && this.sHlike.value) {
-    //   first.push('-f', 'J');
-    //   extension = '.SH.tre';
-    // }
-
-    // if (!this.tree.notAvailable && this.tree.value) {
-    //   first.push('-t', this.tree.value);
-    // }
-    // else if (!this.startingTree.notAvailable && this.startingTree.value) {
-    //   first.push('-t', this.startingTree.value);
-    // }
-
-    // if (this.numThreads.value > 1) {
-    //   first.push('-T', this.numThreads.value);
-    // }
-
-    // if (!this.outGroup.notAvailable && !this.outGroup.isDefault) {
-    //   first.push('-o', this.outGroup.value);
-    // }
-
-    // first.push('-n', this.outputFilenameSafe);
-
     return cmdArgs;
   }
 
   @computed get command() {
-    return this.args.map(cmdArgs => `${this.binaryName} ${cmdArgs.join(' ')}`).join(' &&\\\n');
+    return this.args.map(cmdArgs => `${this.binary.value} ${cmdArgs.join(' ')}`).join(' &&\\\n');
   }
 
   @action
   start = () => {
-    const { id, args, binaryName, outputDir, outputFilenameSafe: outputFilename } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
       this.outputName = this.outputNameSafe;
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName, outputDir, outputFilename });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename });
   };
 
   @action

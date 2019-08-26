@@ -9,6 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconAdd from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 import Box from '@material-ui/core/Box';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarMessage from './components/SnackbarMessage';
@@ -23,6 +24,7 @@ import Console from './Console';
 import './App.css';
 import store from './store';
 import SplitPane from 'react-split-pane';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   AppBar: {
@@ -56,15 +58,11 @@ const useStyles = makeStyles(theme => ({
   },
   ioItem: {
     width: '100%',
-    // overflowX: 'auto',
-    // flexGrow: 1,
-    // padding: '10px 5px 10px 10px',
+    height: '100%',
   },
   model: {
   },
   input: {
-    // height: '100%',
-    // maxWidth: '800px',
     borderTop: '1px solid rgba(255,255,255,0.3)',
     borderBottom: '1px solid rgba(255,255,255,0.3)',
   },
@@ -78,7 +76,7 @@ const useStyles = makeStyles(theme => ({
     // transform: 'rotate(180deg)',
     // textAlign: 'center',
     padding: '10px 5px',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     letterSpacing: '0.25em',
     textTransform: 'uppercase',
     borderRight: '1px solid #666',
@@ -101,8 +99,13 @@ const useStyles = makeStyles(theme => ({
   raxml: {
   },
   console: {
-    flexGrow: 1,
+    height: '100%',
     borderTop: '1px solid rgba(255,255,255,0.3)',
+  },
+  deleteIcon: {
+    '&:hover': {
+      color: '#999',
+    },
   }
 }));
 
@@ -152,33 +155,33 @@ const App = () => {
         <SplitPane split="vertical" size={640} minSize={100}>
           <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.leftPanel)}>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.model}`}>
-              <div
+              <Typography
                 className={`${classes.verticalHeading} ${classes.modelHeading}`}
               >
                 Model
-              </div>
+              </Typography>
               <div className={classes.ioItem}>
                 <Model run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.input}`}>
-              <div
+              <Typography
                 className={`${classes.verticalHeading} ${classes.inputHeading}`}
               >
                 Input
-              </div>
+              </Typography>
               <div className={classes.ioItem}>
                 <Input run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.output}`}>
-              <div
+              <Typography
                 className={`${classes.verticalHeading} ${
                   classes.outputHeading
                 }`}
               >
                 Output
-              </div>
+              </Typography>
               <div className={classes.ioItem}>
                 <Output run={run} />
               </div>
@@ -187,23 +190,26 @@ const App = () => {
 
           <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.rightPanel)}>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.raxml}`}>
-              <div
+              <Typography
                 className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
               >
                 RAxML
-              </div>
+              </Typography>
               <div className={classes.ioItem}>
                 <Raxml run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.console}`}>
-              <div
+              <Typography
                 className={`${classes.verticalHeading} ${
                   classes.consoleHeading
                 }`}
               >
                 Console
-              </div>
+                {run.stdout === '' ? null : (
+                  <DeleteIcon onClick={run.clearStdout} className={classes.deleteIcon} title="Clear console"/>
+                )}
+              </Typography>
               <div className={classes.ioItem}>
                 <Console run={run} />
               </div>
