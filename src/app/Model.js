@@ -8,10 +8,10 @@ import OptionCheck from './components/OptionCheck';
 
 const useStyles = makeStyles(theme => ({
   Model: {
-    padding: '10px 5px 10px 10px',
-    flexGrow: 1,
-    height: '100%',
-    maxWidth: '800px',
+    padding: '10px',
+    // flexGrow: 1,
+    // height: '100%',
+    // maxWidth: '800px',
   },
   form: {
     '& > *': {

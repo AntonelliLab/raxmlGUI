@@ -26,6 +26,8 @@ const useStyles = makeStyles(theme => ({
     overflowX: 'scroll',
     // borderLeft: `5px solid ${theme.palette.primary.main}`,
     // paddingLeft: 10,
+    marginBottom: 0,
+    padding: '10px',
   },
   treeList: {
     display: 'flex',

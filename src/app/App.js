@@ -10,11 +10,16 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconAdd from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
-
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarMessage from './components/SnackbarMessage';
+import ErrorBoundary from './components/ErrorBoundary';
+import ErrorDialog from './components/ErrorDialog';
+import clsx from 'clsx';
 import Model from './Model';
 import Input from './Input';
 import Output from './Output';
 import Raxml from './Raxml';
+import Console from './Console';
 import './App.css';
 import store from './store';
 import SplitPane from 'react-split-pane';
@@ -41,14 +46,19 @@ const useStyles = makeStyles(theme => ({
     height: '100vh',
     overflowY: 'auto',
   },
+  leftPanel: {
+  },
+  rightPanel: {
+    borderLeft: '1px solid #999',
+  },
   ioWrapper: {
     width: '100%',
   },
   ioItem: {
-    // width: '100%',
-    overflowX: 'scroll',
-    flexGrow: 1,
-    padding: '10px 5px 10px 10px',
+    width: '100%',
+    // overflowX: 'auto',
+    // flexGrow: 1,
+    // padding: '10px 5px 10px 10px',
   },
   model: {
   },
@@ -81,6 +91,18 @@ const useStyles = makeStyles(theme => ({
   },
   outputHeading: {
     backgroundColor: theme.palette.output.main,
+  },
+  raxmlHeading: {
+    backgroundColor: '#333',
+  },
+  consoleHeading: {
+    backgroundColor: '#333',
+  },
+  raxml: {
+  },
+  console: {
+    flexGrow: 1,
+    borderTop: '1px solid rgba(255,255,255,0.3)',
   }
 }));
 
@@ -105,6 +127,8 @@ const App = () => {
     />
   ));
 
+  const run = store.activeRun;
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -125,8 +149,8 @@ const App = () => {
           </AppBar>
         )}
 
-        <SplitPane split="vertical" size={500} minSize={100}>
-          <Box display="flex" flexDirection="column" className={classes.ioContainer}>
+        <SplitPane split="vertical" size={640} minSize={100}>
+          <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.leftPanel)}>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.model}`}>
               <div
                 className={`${classes.verticalHeading} ${classes.modelHeading}`}
@@ -134,7 +158,7 @@ const App = () => {
                 Model
               </div>
               <div className={classes.ioItem}>
-                <Model run={store.activeRun} />
+                <Model run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.input}`}>
@@ -144,7 +168,7 @@ const App = () => {
                 Input
               </div>
               <div className={classes.ioItem}>
-                <Input run={store.activeRun} />
+                <Input run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.output}`}>
@@ -156,15 +180,54 @@ const App = () => {
                 Output
               </div>
               <div className={classes.ioItem}>
-                <Output run={store.activeRun} />
+                <Output run={run} />
               </div>
             </Box>
           </Box>
 
-          <div>
-            <Raxml run={store.activeRun} />
-          </div>
+          <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.rightPanel)}>
+            <Box display="flex" className={`${classes.ioWrapper} ${classes.raxml}`}>
+              <div
+                className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
+              >
+                RAxML
+              </div>
+              <div className={classes.ioItem}>
+                <Raxml run={run} />
+              </div>
+            </Box>
+            <Box display="flex" className={`${classes.ioWrapper} ${classes.console}`}>
+              <div
+                className={`${classes.verticalHeading} ${
+                  classes.consoleHeading
+                }`}
+              >
+                Console
+              </div>
+              <div className={classes.ioItem}>
+                <Console run={run} />
+              </div>
+            </Box>
+          </Box>
         </SplitPane>
+        <ErrorBoundary>
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            open={run.finished}
+            autoHideDuration={6000}
+            onClose={run.clearFinished}
+          >
+            <SnackbarMessage
+              onClose={run.clearFinished}
+              variant="success"
+              message="RAxML finished!"
+            />
+          </Snackbar>
+          <ErrorDialog error={run.error} onClose={run.clearError} />
+        </ErrorBoundary>
       </div>
     </React.Fragment>
   );

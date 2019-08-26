@@ -4,15 +4,14 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarMessage from './components/SnackbarMessage';
 import Box from '@material-ui/core/Box';
-import ErrorBoundary from './components/ErrorBoundary';
-import ErrorDialog from './components/ErrorDialog';
-import './Raxml.css';
 
 const styles = theme => ({
-  raxmlForm: {
+  Raxml: {
+    padding: '10px',
+    width: '100%',
+  },
+  form: {
     '& > *': {
       marginLeft: '20px'
     }
@@ -29,102 +28,32 @@ const styles = theme => ({
 });
 
 @observer
-class Console extends React.Component {
-  keepToBottom = true;
-
-  onMountStdoutContainer = el => {
-    this.stdoutContainer = el;
-  };
-
-  componentDidUpdate() {
-    if (this.keepToBottom) {
-      this.scrollConsoleToBottom();
-    }
-  }
-
-  isAtBottom = () => {
-    const { scrollTop, scrollHeight, clientHeight } = this.stdoutContainer;
-    const diff = scrollHeight - clientHeight;
-    const scrollIsAtBottom = scrollTop === diff;
-    return scrollIsAtBottom;
-  };
-
-  scrollConsoleToBottom = () => {
-    const { scrollHeight, clientHeight } = this.stdoutContainer;
-    const diff = scrollHeight - clientHeight;
-    this.stdoutContainer.scrollTop = diff;
-  };
-
-  render() {
-    const { run } = this.props;
-    return (
-      <div
-        className="Console stdoutContainer"
-        ref={this.onMountStdoutContainer}
-      >
-        <div>
-          <code className="code">{run.command}</code>
-        </div>
-        <div>
-          <code className="code">{run.stdout}</code>
-        </div>
-      </div>
-    );
-  }
-}
-
-Console.propTypes = {
-  run: PropTypes.object.isRequired
-};
-
-@observer
 class Raxml extends React.Component {
   render() {
     const { classes, run } = this.props;
 
     return (
-      <div className="Raxml">
-        <div>
-          <Box component="form" p={1} display="flex" justifyContent="flex-end" alignItems="flex-end" className={classes.raxmlForm} noValidate autoComplete="off">
-            {run.stdout === '' ? null : (
-              <Button variant="outlined" onClick={run.clearStdout}>
-                Clear
-              </Button>
-            )}
-            {run.running ? (
-              <Button variant="outlined" color="primary" onClick={run.cancel}>
-                Cancel
-              </Button>
-            ) : null}
-            <OptionSelect option={run.numThreads} />
-            <Button
-              variant="contained"
-              disabled={run.startDisabled}
-              onClick={run.start}
-            >
-              Run
+      <div className={classes.Raxml}>
+        <Box component="form" mt={1} mb={2} display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
+          {run.stdout === '' ? null : (
+            <Button variant="outlined" onClick={run.clearStdout}>
+              Clear
             </Button>
-          </Box>
-        </div>
-        <Console run={run} />
-        <ErrorBoundary>
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            open={run.finished}
-            autoHideDuration={6000}
-            onClose={run.clearFinished}
+          )}
+          {run.running ? (
+            <Button variant="outlined" color="primary" onClick={run.cancel}>
+              Cancel
+            </Button>
+          ) : null}
+          <OptionSelect option={run.numThreads} />
+          <Button
+            variant="contained"
+            disabled={run.startDisabled}
+            onClick={run.start}
           >
-            <SnackbarMessage
-              onClose={run.clearFinished}
-              variant="success"
-              message="RAxML finished!"
-            />
-          </Snackbar>
-          <ErrorDialog error={run.error} onClose={run.clearError} />
-        </ErrorBoundary>
+            Run
+          </Button>
+        </Box>
       </div>
     );
   }

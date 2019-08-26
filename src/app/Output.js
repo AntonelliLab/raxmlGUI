@@ -12,6 +12,7 @@ import { join } from 'path';
 const useStyles = makeStyles(theme => ({
   Output: {
     width: '100%',
+    padding: '10px',
   },
   form: {
     width: '100%',
