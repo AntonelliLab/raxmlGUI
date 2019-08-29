@@ -23,7 +23,7 @@ const OptionSelect = observer(({ option, className }) => {
         }}
       >
         {
-          option.options.map(({value, title}) => <MenuItem key={value} value={value}>{title}</MenuItem>)
+          option.options.map(({value, title}, index) => <MenuItem key={index} value={value}>{title}</MenuItem>)
         }
       </Select>
     </FormControl>

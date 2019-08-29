@@ -18,6 +18,7 @@ function initDev(exampleFiles) {
   const exampleFilesDir = path.dirname(exampleFiles[0].path);
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFiles = [
+    // 'dna.txt',
     // 'aminoacid.txt',
     'binary.txt',
     // 'mixed_data.txt',

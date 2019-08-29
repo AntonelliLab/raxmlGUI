@@ -13,6 +13,7 @@ import {
   startParsing,
   startTypechecking,
 } from "./alignment";
+import { parseAlignment } from './utils/parser';
 
 import * as ipc from "../constants/ipc";
 
@@ -232,7 +233,12 @@ async function execProcess(binaryPath, args) {
   return exec(`${binaryPath} ${args.join(' ')}`);
 }
 
-
+// // Receive a new batch of alignments dropped into the app
+ipcMain.on(ipc.ALIGNMENT_PARSE, async (event, { id, filePath }) => {
+  console.log('Parse alignment', filePath);
+  const alignment = await parseAlignment(filePath);
+  send(event, ipc.ALIGNMENT_PARSED, { id, alignment });
+});
 
 
 
@@ -248,6 +254,7 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC, (event) => {
   //   path.join(app.getAppPath(), 'example-files', 'fasta');
   // __static is defined by electron-webpack
   const dir = path.join(__static, 'example-files', 'fasta');
+  // const dir = path.join(__static, 'example-files', 'phylip');
 
   fs.readdir(dir, (err, files) => {
     const filePaths = files.map(filename => ({

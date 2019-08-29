@@ -34,12 +34,15 @@ class Alignment {
   @observable fileFormat = undefined;
   @observable length = 0;
   @observable numSequences = 0;
+  @observable sequences = undefined;
   @observable parsingComplete = false;
   @observable typecheckingComplete = false;
+  @observable loading = true;
+
+
   @observable checkRunComplete = false;
   @observable checkRunData = '';
   @observable checkRunSuccess = false;
-  @observable sequences = undefined;
   // @observable taxons = [];
 
 
@@ -73,7 +76,7 @@ class Alignment {
 
   @computed
   get id() {
-    return this.path;
+    return `${this.run.id}_${this.path}`;
   }
 
   @computed
@@ -123,10 +126,10 @@ class Alignment {
     return 'ok';
   }
 
-  @computed
-  get loading() {
-    return !this.checkRunComplete;
-  }
+  // @computed
+  // get loading() {
+  //   return !this.checkRunComplete;
+  // }
 
   @computed
   get modelOptions() {
@@ -165,9 +168,27 @@ class Alignment {
 
   listen = () => {
     // Send alignments to main process for processing
-    ipcRenderer.send(ipc.ALIGNMENT_ADDED_IPC, this.path);
+    // ipcRenderer.send(ipc.ALIGNMENT_ADDED_IPC, this.path);
+    ipcRenderer.send(ipc.ALIGNMENT_PARSE, { id: this.id, filePath: this.path });
     // Listener taken from processAlignments()
     // Receive a progress update for one of the alignments being parsed
+    ipcRenderer.on(ipc.ALIGNMENT_PARSED, (event, { id, alignment }) => {
+        if (id === this.id) {
+          runInAction(() => {
+            this.sequences = alignment.sequences;
+            this.fileFormat = alignment.fileFormat;
+            this.numSequences = alignment.numSequences;
+            this.length = alignment.length;
+            this.parsingComplete = true;
+            this.numSequencesParsed = this.numSequences;
+            this.dataType = alignment.dataType;
+            this.typecheckingComplete = alignment.typecheckingComplete;
+            this.model = modelOptions[alignment.dataType].default;
+            this.loading = false;
+          });
+        };
+    });
+
     ipcRenderer.on(ipc.PARSING_PROGRESS_IPC, (event, { alignment, numSequencesParsed }) => {
         if (alignment.path === this.path) {
           this.numSequencesParsed = numSequencesParsed;
