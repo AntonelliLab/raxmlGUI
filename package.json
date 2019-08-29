@@ -40,6 +40,7 @@
     "electron-copy": "shx cp dist/main/main.js build/electron.js",
     "compile": "run-s electron-compile electron-copy",
     "build": "run-s react-build compile electron-build",
+    "build-win": "run-s react-build compile electron-build-win",
     "build-all": "run-s react-build compile electron-build-all",
     "dist-pack": "run-s react-build compile electron-pack",
     "dist-pack-win": "run-s react-build compile electron-pack-win",

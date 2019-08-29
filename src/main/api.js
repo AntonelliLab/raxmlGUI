@@ -178,13 +178,13 @@ function cancelProcess(id) {
 }
 
 function spawnProcess(binaryPath, args) {
-  const binaryDir = path.dirname(binaryPath);
-  const binaryName = path.basename(binaryPath);
+  // const binaryDir = path.dirname(binaryPath);
+  // const binaryName = path.basename(binaryPath);
 
-  const proc = childProcess.spawn(binaryName, args, {
+  const proc = childProcess.spawn(binaryPath, args, {
     stdio: 'pipe',
     cwd: os.homedir(),
-    env: { PATH: `${process.env.path}:${binaryDir}` },
+    // env: { PATH: `${process.env.path}:${binaryDir}` },
   });
   return proc;
 }
@@ -197,6 +197,11 @@ async function runProcess(id, event, binaryPath, args) {
 
       const proc = spawnProcess(binaryPath, args);
       state.processes[id] = proc;
+      let exited = false;
+
+      const exit = ({ event, code, signal, error }) => {
+
+      }
 
       proc.stdout.on('data', buffer => {
         const content = String(buffer);
@@ -210,14 +215,23 @@ async function runProcess(id, event, binaryPath, args) {
         send(event, ipc.RUN_STDERR, { id, content });
       });
 
-      proc.on('close', code => {
-        console.log('on close:', code);
+      const onQuit = message => (code, signal) => {
+        if (exited) { return; }
+        exited = true;
         delete state.processes[id];
-        if (code && code !== 0) {
-          return reject(new Error(`Check console output for error.`));
+        if (message === 'error') {
+          return reject(code); // code is an error object on 'error' event
         }
-        resolve(code);
+        if (code === 0) {
+          return resolve(code);
+        }
+        return reject(new Error(`Exited with code ${code || signal}. Check console output for more information.`));
+      }
+
+      ['error', 'exit', 'close'].forEach(message => {
+        proc.on(message, onQuit(message));
       });
+
     }
     catch (err) {
       console.log('Run catch error:', err);
