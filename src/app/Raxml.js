@@ -42,13 +42,17 @@ class Raxml extends React.Component {
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
           <div style={{ flexGrow: 1 }}/>
+        </Box>
+        <Box component="form" display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
           {run.running ? (
-            <Button variant="outlined" color="primary" onClick={run.cancel}>
+            <Button size="small" variant="outlined" color="default" onClick={run.cancel}>
               Cancel
             </Button>
           ) : null}
           <Button
+            size="small"
             variant="contained"
+            color="default"
             disabled={run.startDisabled}
             onClick={run.start}
           >
