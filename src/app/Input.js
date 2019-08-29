@@ -10,18 +10,11 @@ import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   Input: {
-  },
-  form: {
-    '& > *': {
-      marginRight: '10px',
-    }
-  },
-  files: {
-    marginTop: '10px',
+    width: '100%',
   },
   alignmentList: {
     display: 'flex',
-    // width: '100%',
+    width: '100%',
     flexWrap: 'nowrap',
     overflowX: 'scroll',
     // borderLeft: `5px solid ${theme.palette.primary.main}`,
@@ -48,6 +41,7 @@ const useStyles = makeStyles(theme => ({
     height: '100px',
   },
   finalInput: {
+    padding: '10px',
   },
   concatenatedAlignment: {
     width: '350px',
@@ -107,8 +101,10 @@ const Input = ({ run }) => {
         { run.alignments.map(alignment => (
           <AlignmentCard key={alignment.path} alignment={alignment} className="alignment" />
         )) }
-        <Button variant="outlined" className={`alignment ${classes.addAlignment}`} onClick={run.loadAlignmentFiles}>
-          Add alignment
+        <Button variant="outlined" className={`alignment ${classes.addAlignment}`}
+          onClick={run.loadAlignmentFiles}
+          title={ run.haveAlignments ? "Concatenate new alignments and create partition" : "" }>
+          { run.haveAlignments ? 'Add alignment' : 'Load alignment' }
         </Button>
         </div>
       </Box>

@@ -250,7 +250,7 @@ class Run {
   }
 
   @computed get outputNameNotice() {
-    return this.outputNameOk ? '' : `New run will use output id '${this.outputNameSafe}'`;
+    return this.outputNameOk ? '' : `Output with that id already exists. New run will use output id '${this.outputNameSafe}'`;
   }
 
   @computed get outputFilenameSafe() {
