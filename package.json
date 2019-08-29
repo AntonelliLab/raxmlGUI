@@ -31,12 +31,18 @@
     "electron-dev": "electron-webpack dev",
     "electron-start": "cross-env DEV=true run-s wait-dev electron-dev",
     "electron-build": "electron-builder",
+    "electron-build-win": "electron-builder -w",
+    "electron-build-linux": "electron-builder -l",
+    "electron-build-all": "electron-builder -mwl",
     "electron-pack": "electron-builder --dir -c.compression=store -c.mac.identity=null",
+    "electron-pack-win": "electron-builder -w --dir -c.compression=store",
     "electron-compile": "electron-webpack",
     "electron-copy": "cp dist/main/main.js build/electron.js",
     "compile": "run-s electron-compile electron-copy",
     "build": "run-s react-build compile electron-build",
+    "build-all": "run-s react-build compile electron-build-all",
     "dist-pack": "run-s react-build compile electron-pack",
+    "dist-pack-win": "run-s react-build compile electron-pack-win",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
