@@ -20,9 +20,11 @@ function initDev(exampleFiles) {
   const useFiles = [
     // 'dna.txt',
     // 'aminoacid.txt',
-    'binary.txt',
+    // 'binary.txt',
+    'bin1.txt',
+    'bin2.txt',
     // 'mixed_data.txt',
-    'multistate.txt',
+    // 'multistate.txt',
     // 'nucleotide.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, filename) }));
   store.activeRun.addAlignments(useFiles);

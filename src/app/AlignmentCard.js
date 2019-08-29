@@ -1,21 +1,38 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import classNames from 'classnames';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
+import Switch from '@material-ui/core/Switch';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 import Partition from './Partition';
+
+const InputSwitch = withStyles(theme => ({
+  switchBase: {
+    color: theme.palette.input.light,
+    '&$checked': {
+      color: theme.palette.input.main,
+    },
+    '&$checked + $track': {
+      backgroundColor: theme.palette.input.main,
+    },
+  },
+  checked: {},
+  track: {},
+}))(Switch);
 
 const useStyles = makeStyles(theme => ({
   AlignmentCard: {
@@ -268,8 +285,20 @@ function FinalAlignmentCard({ className, alignment }) {
         }
         title={ alignment.filename }
         subheader={ Size }
+        style={{ paddingBottom: 4 }}
       />
-      <CardContent>
+      <CardContent style={{ paddingTop: 0 }}>
+        <FormControlLabel
+          title="Use union (on) or intersection (off) of taxons from all alignments"
+          control={
+            <InputSwitch
+              checked={alignment.fillTaxonGapsWithEmptySeqeunces}
+              onChange={(event) => {alignment.setFillTaxonGapsWithEmptySeqeunces(event.target.checked)}}
+              value="fillTaxonGapsWithEmptySeqeunces"
+            />
+          }
+          label={<Typography variant="body2">Fill taxon gaps with empty seqeunces</Typography>}
+        />
         <div className={classes.partitionFileContainer}>
           <code className={classes.partitionFileContent}>
             { alignment.partitionFileContent }

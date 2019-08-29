@@ -88,8 +88,8 @@ export const parseAlignment = async (filePath) => {
         if (match) {
           isPhylip = true;
           alignment.fileFormat = 'PHYLIP';
-          alignment.numSequences = match[1];
-          alignment.length = match[2];
+          alignment.numSequences = +match[1];
+          alignment.length = +match[2];
           parseLine = parsePhylipLine;
           if (match[3] === 'i') {
             isInterleaved = true;

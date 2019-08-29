@@ -6,6 +6,8 @@ import { runSettings } from '../../settings/run';
 import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
+import union from 'lodash/union';
+import intersection from 'lodash/intersection';
 
 const modelOptions = {
   'protein': runSettings.aminoAcidSubstitutionModelOptions,
@@ -36,7 +38,13 @@ class Alignment {
   @observable fileFormat = undefined;
   @observable length = 0;
   @observable numSequences = 0;
-  @observable sequences = undefined;
+  @observable sequences = [];
+
+  @computed get taxons() {
+    return this.sequences.map(seq => seq.taxon);
+  }
+
+
   @observable parsingComplete = false;
   @observable typecheckingComplete = false;
   @observable loading = true;
@@ -161,10 +169,6 @@ class Alignment {
       default:
         return null;
     }
-  }
-
-  @computed get taxons() {
-    return (this.sequences || []).map(seq => seq.id);
   }
 
 
@@ -314,6 +318,15 @@ class Alignment {
     console.log('onChangeMultistateModel');
     this.multistateModel = event.target.value;
   }
+
+  getSequenceCode = (taxon) => {
+    // TODO: Sort sequences on taxon for quicker search, intersection and union
+    const seq = this.sequences.find(seq => seq.taxon === taxon);
+    if (seq !== undefined) {
+      return seq.code;
+    }
+    return '-'.repeat(this.length);
+  }
 }
 
 
@@ -343,12 +356,25 @@ class FinalAlignment {
     return this.run.alignments.length;
   }
 
+  // By default add empty sequences to fill gaps up to the union of taxons
+  // else drop taxons that doesn't exist in all alignments by taking the intersection
+  @observable fillTaxonGapsWithEmptySeqeunces = true;
+
+  @action setFillTaxonGapsWithEmptySeqeunces = (checked) => {
+    this.fillTaxonGapsWithEmptySeqeunces = checked;
+  }
+
+  @computed get taxons() {
+    const setMethod = this.fillTaxonGapsWithEmptySeqeunces ? union : intersection;
+    return setMethod.apply(setMethod, this.run.alignments.map(({ taxons }) => taxons));
+  }
+
   @computed get numSequences() {
-    return this.run.alignments.reduce((a, b) => Math.max(a.numSequences, b.numSequences));
+    return this.taxons.length;
   }
 
   @computed get length() {
-    return this.run.alignments.reduce((a, b) => a.length + b.length);
+    return this.run.alignments.reduce((sumLength, alignment) => sumLength + alignment.length, 0);
   }
 
   // @observable dataType = 'mixed';
@@ -427,8 +453,7 @@ class FinalAlignment {
 
   @action
   writeConcatenatedAlignmentAndPartition = async () => {
-    const { numSequences } = this;
-    const taxons = this.run.alignments[0].sequences.map(({ taxon }) => taxon);
+    const { taxons, numSequences } = this;
     console.log(`Write concatenated alignment in FASTA format to ${this.path}..`);
     try {
       const writeStream = fs.createWriteStream(this.path);
@@ -440,7 +465,7 @@ class FinalAlignment {
             const prefix = i === 0 ? '>' : '\n>';
             await write.call(writeStream, `${prefix}${taxons[i]}\n`);
           }
-          await write.call(writeStream, this.run.alignments[j].sequences[i].code);
+          await write.call(writeStream, this.run.alignments[j].getSequenceCode(taxons[i]));
         }
       }
       await end.call(writeStream);
