@@ -22,7 +22,7 @@ function initDev(exampleFiles) {
     // 'aminoacid.txt',
     'binary.txt',
     // 'mixed_data.txt',
-    // 'multistate.txt',
+    'multistate.txt',
     // 'nucleotide.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, filename) }));
   store.activeRun.addAlignments(useFiles);

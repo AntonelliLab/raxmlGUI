@@ -4,6 +4,8 @@ import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
 import { runSettings } from '../../settings/run';
 import { join } from 'path';
+import fs from 'fs';
+import util from 'util';
 
 const modelOptions = {
   'protein': runSettings.aminoAcidSubstitutionModelOptions,
@@ -421,6 +423,41 @@ class FinalAlignment {
   @action
   openFolder = () => {
     ipcRenderer.send(ipc.FOLDER_OPEN, this.dir);
+  };
+
+  @action
+  writeConcatenatedAlignmentAndPartition = async () => {
+    const { numSequences } = this;
+    const taxons = this.run.alignments[0].sequences.map(({ taxon }) => taxon);
+    console.log(`Write concatenated alignment in FASTA format to ${this.path}..`);
+    try {
+      const writeStream = fs.createWriteStream(this.path);
+      const write = util.promisify(writeStream.write);
+      const end = util.promisify(writeStream.end);
+      for (let i = 0; i < numSequences; ++i) {
+        for (let j = 0; j < this.numAlignments; ++j) {
+          if (j === 0) {
+            const prefix = i === 0 ? '>' : '\n>';
+            await write.call(writeStream, `${prefix}${taxons[i]}\n`);
+          }
+          await write.call(writeStream, this.run.alignments[j].sequences[i].code);
+        }
+      }
+      await end.call(writeStream);
+    }
+    catch (err) {
+      console.error('Error writing concatenated alignment:', err);
+      throw err;
+    }
+    try {
+      console.log(`Writing partition to ${this.partitionFilePath}...`);
+      const writeFile = util.promisify(fs.writeFile);
+      await writeFile(this.partitionFilePath, this.partitionFileContent);
+    }
+    catch (err) {
+      console.error('Error writing partition:', err);
+      throw err;
+    }
   };
 
 }

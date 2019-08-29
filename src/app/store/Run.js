@@ -592,12 +592,15 @@ class Run {
   }
 
   @action
-  start = () => {
+  start = async () => {
     const { id, args, binary, outputDir, outputFilenameSafe: outputFilename } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
       this.outputName = this.outputNameSafe;
+    }
+    if (this.finalAlignment.numAlignments > 1) {
+      await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
     ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename });
   };

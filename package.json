@@ -149,7 +149,8 @@
     "win": {
       "target": [
         "nsis",
-        "msi"
+        "msi",
+        "portable"
       ],
       "extraResources": [
         {
