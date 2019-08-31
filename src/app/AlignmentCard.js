@@ -297,7 +297,7 @@ function FinalAlignmentCard({ className, alignment }) {
               value="fillTaxonGapsWithEmptySeqeunces"
             />
           }
-          label={<Typography variant="body2">Fill taxon gaps with empty seqeunces</Typography>}
+          label={<Typography variant="body2">Fill taxon gaps with empty sequences</Typography>}
         />
         <div className={classes.partitionFileContainer}>
           <code className={classes.partitionFileContent}>

@@ -5,9 +5,9 @@ import path from 'path';
 
 console.log('\n========= Bootstrapping initial state... =========\n');
 
-ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_IPC);
+ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST);
 
-ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GOT_IPC, (event, exampleFiles) => {
+ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, (event, exampleFiles) => {
   initDev(exampleFiles);
 });
 

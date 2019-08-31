@@ -1,5 +1,5 @@
 import { observable, computed, action, createAtom } from 'mobx';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, shell } from 'electron';
 import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
@@ -157,10 +157,10 @@ class Tree extends Option {
   @computed get dir() { return parsePath(this.filePath).dir; }
   @action setFilePath = (filePath) => { this.filePath = filePath; }
   @action openFolder = () => {
-    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.filePath);
+    shell.showItemInFolder(this.filePath);
   };
   @action openFile = () => {
-    ipcRenderer.send(ipc.FILE_OPEN_IPC, this.filePath);
+    shell.openItem(this.filePath);
   };
   @action remove = () => {
     this.setFilePath('');
@@ -268,7 +268,7 @@ class Run {
   };
 
   @action openOutputDir = () => {
-    ipcRenderer.send(ipc.FOLDER_OPEN_IPC, this.outputDir);
+    shell.showItemInFolder(this.outputDir);
   };
 
   // Result
@@ -660,7 +660,7 @@ class Run {
 
   @action
   loadAlignmentFiles = () => {
-    ipcRenderer.send(ipc.ALIGNMENT_SELECT_IPC);
+    ipcRenderer.send(ipc.ALIGNMENT_SELECT);
   };
 
   haveAlignment = (id) => {
@@ -721,7 +721,7 @@ class Run {
 
     this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
 
-    this.listenTo(ipc.ALIGNMENT_SELECTED_IPC, this.onAlignmentAdded);
+    this.listenTo(ipc.ALIGNMENT_SELECTED, this.onAlignmentAdded);
 
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
 

@@ -10,7 +10,7 @@ const OFF = false;
 */
 
 // -A
-const secondaryStructureOptions = [
+export const secondaryStructureOptions = [
   'S6A',
   'S6B',
   'S6C',
@@ -28,7 +28,7 @@ const secondaryStructureOptions = [
 ];
 
 // -f
-const algorithmOptions = [
+export const algorithmOptions = [
   'a',
   'A',
   'b',
@@ -72,20 +72,20 @@ const algorithmOptions = [
 ];
 
 // -I
-const bootstoppingOptions = ['autoFC', 'autoMR', 'autoMRE', 'autoMRE_IGN'];
+export const bootstoppingOptions = ['autoFC', 'autoMR', 'autoMRE', 'autoMRE_IGN'];
 
 // -J
-const consensusTreeOptions = ['MR', 'MRE', 'STRICT', 'T_'];
+export const consensusTreeOptions = ['MR', 'MRE', 'STRICT', 'T_'];
 
 // -K
-const kMultistateSubstitutionModelOptions = {
+export const kMultistateSubstitutionModelOptions = {
   argument: 'K',
   default: 'GTR',
   options: ['ORDERED', 'MK', 'GTR']
 };
 
 // -m
-const mixedSubstitutionModelOptions = {
+export const mixedSubstitutionModelOptions = {
   argument: 'm',
   default: 'GTRGAMMA',
   options: [
@@ -105,7 +105,7 @@ const mixedSubstitutionModelOptions = {
 };
 
 // -m
-const binarySubstitutionModelOptions = {
+export const binarySubstitutionModelOptions = {
   argument: 'm',
   default: 'BINGAMMA',
   options: [
@@ -119,7 +119,7 @@ const binarySubstitutionModelOptions = {
 };
 
 // -m
-const nucleotideSubstitutionModelOptions = {
+export const nucleotideSubstitutionModelOptions = {
   argument: 'm',
   default: 'GTRGAMMA',
   options: [
@@ -133,7 +133,7 @@ const nucleotideSubstitutionModelOptions = {
 };
 
 // -m
-const multistateSubstitutionModelOptions = {
+export const multistateSubstitutionModelOptions = {
   argument: 'm',
   default: 'MULTIGAMMA',
   options: [
@@ -147,7 +147,7 @@ const multistateSubstitutionModelOptions = {
 };
 
 // -m
-const aminoAcidSubstitutionModelOptions = {
+export const aminoAcidSubstitutionModelOptions = {
   argument: 'm',
   default: 'PROTGAMMA',
   options: [
@@ -161,7 +161,7 @@ const aminoAcidSubstitutionModelOptions = {
 };
 
 // -m
-const aminoAcidSubstitutionMatrixOptions = {
+export const aminoAcidSubstitutionMatrixOptions = {
   argument: 'm',
   default: 'BLOSUM62',
   options: [
@@ -196,14 +196,14 @@ const aminoAcidSubstitutionMatrixOptions = {
 };
 
 // -N
-const numberRunsOptions = {
+export const numberRunsOptions = {
   argument: 'N',
   default: 1,
   options: [1, 10, 20, 50, 100, 500]
 };
 
 // -N
-const numberRepsOptions = {
+export const numberRepsOptions = {
   argument: 'N',
   default: 100,
   options: [
@@ -220,14 +220,14 @@ const numberRepsOptions = {
 };
 
 // --asc-corr
-const asscertainmentBiasCorrectionOptions = [
+export const asscertainmentBiasCorrectionOptions = [
   'lewis',
   'felsenstein',
   'stamatakis'
 ];
 
 // --auto-prot
-const automaticProteinModelSelectionOptions = ['ml', 'bic', 'aic', 'aicc'];
+export const automaticProteinModelSelectionOptions = ['ml', 'bic', 'aic', 'aicc'];
 
 /*
     Boolean settings
@@ -235,101 +235,101 @@ const automaticProteinModelSelectionOptions = ['ml', 'bic', 'aic', 'aicc'];
 
 // -C
 // default OFF
-const verboseOutputOption = OFF;
+export const verboseOutputOption = OFF;
 
 // -d
 // default OFF
-const randomMLStartingTreeOption = OFF;
+export const randomMLStartingTreeOption = OFF;
 
 // -D
 // default OFF
-const convergenceCriterionMLOption = OFF;
+export const convergenceCriterionMLOption = OFF;
 
 // -F
 // default OFF
-const enableCATLargeTreesOption = OFF;
+export const enableCATLargeTreesOption = OFF;
 
 // -H
 // default ON
-const disablePatternCompressionOption = ON;
+export const disablePatternCompressionOption = ON;
 
 // -j
 // default OFF
-const intermediateTreesToFileOption = OFF;
+export const intermediateTreesToFileOption = OFF;
 
 // -k
 // default OFF
-const printBranchLengthsBootstrapOption = {
+export const printBranchLengthsBootstrapOption = {
   argument: 'k',
   default: OFF
 };
 
 // -M
 // default OFF
-const estimationPerPartitionBranchLengthsOption = OFF;
+export const estimationPerPartitionBranchLengthsOption = OFF;
 
 // -O
 // default OFF
-const disableUndeterminedSequenceCheckOption = OFF;
+export const disableUndeterminedSequenceCheckOption = OFF;
 
 // -u
 // default OFF
-const medianDiscreteApproximationOption = OFF;
+export const medianDiscreteApproximationOption = OFF;
 
 // -V
 // default OFF
-const disableRateHeterogeneityOption = OFF;
+export const disableRateHeterogeneityOption = OFF;
 
 // -X
 // default OFF
-const computeSuperficialStartingTreeOnlyOption = OFF;
+export const computeSuperficialStartingTreeOnlyOption = OFF;
 
 // -y
 // default OFF
-const computeStartingTreeOnlyOption = OFF;
+export const computeStartingTreeOnlyOption = OFF;
 
 // --mesquite
 // default OFF
-const printMesquiteOutputOption = OFF;
+export const printMesquiteOutputOption = OFF;
 
 // --silent
 // default OFF
 // TODO not sure if this should be exposed
-const disablePrintoutOption = OFF;
+export const disablePrintoutOption = OFF;
 
 // --no-seq-check
 // default OFF
-const disableSequenceChecksOption = OFF;
+export const disableSequenceChecksOption = OFF;
 
 // --no-bfgs
 // default OFF
-const disableBFGSOption = OFF;
+export const disableBFGSOption = OFF;
 
 // --flag-check
 // default OFF
-const flagCheckOption = OFF;
+export const flagCheckOption = OFF;
 
 // --JC69
 // default OFF
-const jukesCantorOption = OFF;
+export const jukesCantorOption = OFF;
 
 // --K80
 // default OFF
-const kimuraOption = OFF;
+export const kimuraOption = OFF;
 
 /*
     Integer settings
 */
 
 // -b
-const randomSeedBootstrapOption = {
+export const randomSeedBootstrapOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
   max: 256
 };
 
 // -c
-const distinctRateCatgeoriesOption = {
+export const distinctRateCatgeoriesOption = {
   min: 0,
   // TODO calc max (FF - FFFFFF)
   max: 256,
@@ -337,7 +337,7 @@ const distinctRateCatgeoriesOption = {
 };
 
 // -p
-const randomSeedParsimonyOption = {
+export const randomSeedParsimonyOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
   max: 256,
@@ -345,7 +345,7 @@ const randomSeedParsimonyOption = {
 };
 
 // -T
-const numberThreadsOption = {
+export const numberThreadsOption = {
   argument: 'T',
   min: 1,
   // TODO does a max and default value make sense?
@@ -354,7 +354,7 @@ const numberThreadsOption = {
 };
 
 // -x
-const randomSeedRapidBootstrapOption = {
+export const randomSeedRapidBootstrapOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
   max: 256,
@@ -362,7 +362,7 @@ const randomSeedRapidBootstrapOption = {
 };
 
 // --epa-keep-placements
-const epaKeepPlacementsOption = {
+export const epaKeepPlacementsOption = {
   min: 1,
   // TODO what is max
   defaultValue: 7
@@ -373,14 +373,14 @@ const epaKeepPlacementsOption = {
 */
 
 // -B
-const bootstopCutoffOption = {
+export const bootstopCutoffOption = {
   min: 0,
   max: 1,
   defaultValue: 0.03
 };
 
 // -e
-const modelOptimizationPrecisionOption = {
+export const modelOptimizationPrecisionOption = {
   // TODO check min max
   min: 0.0,
   max: 0.1,
@@ -389,13 +389,13 @@ const modelOptimizationPrecisionOption = {
 
 // TODO not sure if this is a double setting, not specified in help
 // -G
-const evolutionaryPlacementAlgorithmOption = {
+export const evolutionaryPlacementAlgorithmOption = {
   min: 0.0,
   max: 1.0
 };
 
 // --epa-prob-threshold
-const epaPropThresholdOption = {
+export const epaPropThresholdOption = {
   min: 0.0,
   max: 1.0,
   defaultValue: 0.01
@@ -406,45 +406,45 @@ const epaPropThresholdOption = {
 */
 
 // -E
-const excludeFileNameOption = { defaultValue: '' };
+export const excludeFileNameOption = { defaultValue: '' };
 
 // -g
-const multifurcatingConstraintTreeFileNameOption = { defaultValue: '' };
+export const multifurcatingConstraintTreeFileNameOption = { defaultValue: '' };
 
 // -n
 // Can not be empty per default
-const outputFileNameOption = { defaultValue: 'output' };
+export const outputFileNameOption = { defaultValue: 'output' };
 
 // -o
-const outgroupNameOption = { defaultValue: '' };
+export const outgroupNameOption = { defaultValue: '' };
 
 // -P
-const aminoAcidSubstitutionModelFileNameOption = { defaultValue: '' };
+export const aminoAcidSubstitutionModelFileNameOption = { defaultValue: '' };
 
 // -q
-const multipleModelsFileNameOption = { defaultValue: '' };
+export const multipleModelsFileNameOption = { defaultValue: '' };
 
 // -r
-const binaryConstraintTreeFileNameOption = { defaultValue: '' };
+export const binaryConstraintTreeFileNameOption = { defaultValue: '' };
 
 // -R
-const binaryModelParamFileNameOption = { defaultValue: '' };
+export const binaryModelParamFileNameOption = { defaultValue: '' };
 
 // -s
 // Can not be empty per default
-const alignmentFileNameOption = { defaultValue: 'input' };
+export const alignmentFileNameOption = { defaultValue: 'input' };
 
 // -S
-const secondaryStructureFileNameOption = { defaultValue: '' };
+export const secondaryStructureFileNameOption = { defaultValue: '' };
 
 // -t
-const startingTreeFileNameOption = { defaultValue: '' };
+export const startingTreeFileNameOption = { defaultValue: '' };
 
 // -Y
-const quartetGroupingFileNameOption = { defaultValue: '' };
+export const quartetGroupingFileNameOption = { defaultValue: '' };
 
 // -z
-const multipleTreeFileNameOption = { defaultValue: '' };
+export const multipleTreeFileNameOption = { defaultValue: '' };
 
 /*
     TODO unclear settings
@@ -455,70 +455,3 @@ const multipleTreeFileNameOption = { defaultValue: '' };
 // -w String setting, unclear yet how to handle the default that is used when the arg is not given
 // -W Integer?
 // --epa-accumulated-threshold Integer or Double (unclear to me)
-
-const runSettings = {
-  secondaryStructureOptions,
-  algorithmOptions,
-  bootstoppingOptions,
-  consensusTreeOptions,
-  kMultistateSubstitutionModelOptions,
-  mixedSubstitutionModelOptions,
-  binarySubstitutionModelOptions,
-  nucleotideSubstitutionModelOptions,
-  multistateSubstitutionModelOptions,
-  aminoAcidSubstitutionModelOptions,
-  aminoAcidSubstitutionMatrixOptions,
-  numberRunsOptions,
-  numberRepsOptions,
-  asscertainmentBiasCorrectionOptions,
-  automaticProteinModelSelectionOptions,
-  // Booleans
-  verboseOutputOption,
-  randomMLStartingTreeOption,
-  convergenceCriterionMLOption,
-  enableCATLargeTreesOption,
-  disablePatternCompressionOption,
-  intermediateTreesToFileOption,
-  printBranchLengthsBootstrapOption,
-  estimationPerPartitionBranchLengthsOption,
-  disableUndeterminedSequenceCheckOption,
-  medianDiscreteApproximationOption,
-  disableRateHeterogeneityOption,
-  computeSuperficialStartingTreeOnlyOption,
-  computeStartingTreeOnlyOption,
-  printMesquiteOutputOption,
-  disablePrintoutOption,
-  disableSequenceChecksOption,
-  disableBFGSOption,
-  flagCheckOption,
-  jukesCantorOption,
-  kimuraOption,
-  // Integers
-  randomSeedBootstrapOption,
-  distinctRateCatgeoriesOption,
-  randomSeedParsimonyOption,
-  numberThreadsOption,
-  randomSeedRapidBootstrapOption,
-  epaKeepPlacementsOption,
-  // Doubles
-  bootstopCutoffOption,
-  modelOptimizationPrecisionOption,
-  evolutionaryPlacementAlgorithmOption,
-  epaPropThresholdOption,
-  // Strings
-  excludeFileNameOption,
-  multifurcatingConstraintTreeFileNameOption,
-  outputFileNameOption,
-  outgroupNameOption,
-  aminoAcidSubstitutionModelFileNameOption,
-  multipleModelsFileNameOption,
-  binaryConstraintTreeFileNameOption,
-  binaryModelParamFileNameOption,
-  alignmentFileNameOption,
-  secondaryStructureFileNameOption,
-  startingTreeFileNameOption,
-  quartetGroupingFileNameOption,
-  multipleTreeFileNameOption
-};
-
-export { runSettings };

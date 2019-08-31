@@ -2,7 +2,7 @@ import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
-import { runSettings } from '../../settings/run';
+import * as runSettings from '../../settings/run';
 import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
@@ -23,6 +23,8 @@ const modelOptions = {
 class Alignment {
   run = null;
   @observable path = '';
+  @observable error = null;
+
   @observable dataType = undefined;
   @observable model = '';
   @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
@@ -174,11 +176,10 @@ class Alignment {
 
   listen = () => {
     // Send alignments to main process for processing
-    // ipcRenderer.send(ipc.ALIGNMENT_ADDED_IPC, this.path);
-    ipcRenderer.send(ipc.ALIGNMENT_PARSE, { id: this.id, filePath: this.path });
+    ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, { id: this.id, filePath: this.path });
     // Listener taken from processAlignments()
     // Receive a progress update for one of the alignments being parsed
-    ipcRenderer.on(ipc.ALIGNMENT_PARSED, (event, { id, alignment }) => {
+    ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
         if (id === this.id) {
           runInAction(() => {
             this.sequences = alignment.sequences;
@@ -194,80 +195,12 @@ class Alignment {
           });
         };
     });
-
-    ipcRenderer.on(ipc.PARSING_PROGRESS_IPC, (event, { alignment, numSequencesParsed }) => {
-        if (alignment.path === this.path) {
-          this.numSequencesParsed = numSequencesParsed;
-        };
-      }
-    );
-
-    // Receive update that one alignment has completed parsing
-    ipcRenderer.on(ipc.PARSING_END_IPC, (event, { alignment }) => {
-      if (alignment.path === this.path) {
-        runInAction(() => {
-          this.sequences = alignment.sequences;
-          this.fileFormat = alignment.fileFormat;
-          this.numSequences = alignment.numSequences;
-          this.length = alignment.length;
-          this.parsingComplete = alignment.parsingComplete;
-        });
-      };
-    });
-
-    // Receive update that the parsing of one alignment has failed
-    ipcRenderer.on(ipc.PARSING_ERROR_IPC, (event, { alignment, error }) => {
-      if (alignment.path === this.path) {
-        this.error = error;
-        this.parsingComplete = alignment.parsingComplete;
-      };
-    });
-
-    // Receive a progress update for one of the alignments being typechecked
-    ipcRenderer.on(ipc.TYPECHECKING_PROGRESS_IPC, (event, { alignment, numSequencesTypechecked }) => {
-        if (alignment.path === this.path) {
+    ipcRenderer.on(ipc.ALIGNMENT_PARSE_FAILURE, (event, { id, error }) => {
+        if (id === this.id) {
           runInAction(() => {
-            this.numSequencesTypechecked = numSequencesTypechecked;
+            this.error = error;
           });
         };
-      }
-    );
-
-    // Receive update that one alignment has completed typechecking
-    ipcRenderer.on(ipc.TYPECHECKING_END_IPC, (event, { alignment }) => {
-      if (alignment.path === this.path) {
-        runInAction(() => {
-          this.dataType = alignment.dataType;
-          this.typecheckingComplete = alignment.typecheckingComplete;
-          this.model = modelOptions[alignment.dataType].default;
-        });
-      };
-    });
-
-    // Receive update that the typechecking of one alignment has failed
-    ipcRenderer.on(ipc.TYPECHECKING_ERROR_IPC, (event, { alignment, error }) => {
-      if (alignment.path === this.path) {
-        this.error = error;
-        this.typecheckingComplete = alignment.typecheckingComplete;
-      };
-    });
-
-    // Receive update that one alignment has completed the checkrun
-    ipcRenderer.on(ipc.CHECKRUN_END_IPC, (event, { alignment }) => {
-      if (alignment.path === this.path) {
-        runInAction(() => {
-          this.checkRunComplete = alignment.checkRunComplete;
-          this.checkRunSuccess = alignment.checkRunSuccess;
-        })
-      };
-    });
-
-    // Receive update that the checkrun of one alignment has failed
-    ipcRenderer.on(ipc.CHECKRUN_ERROR_IPC, (event, { alignment, error }) => {
-      if (alignment.path === this.path) {
-        this.error = error;
-        this.checkRunComplete = alignment.checkRunComplete;
-      };
     });
   };
 
@@ -339,7 +272,7 @@ class FinalAlignment {
     if (this.numAlignments === 1) {
       return this.run.alignments[0].filename;
     }
-    return `${this.run.outputNameSafe}_concat.txt`;
+    return `RAxML_${this.run.outputNameSafe}_concat.txt`;
   }
 
   @computed get dir() {
@@ -412,7 +345,7 @@ class FinalAlignment {
     if (numAlignments <= 1) {
       return '';
     }
-    return join(`${this.dir}`, `${this.run.outputNameSafe}_concat.part.txt`);
+    return join(`${this.dir}`, `RAxML_${this.run.outputNameSafe}_concat.part.txt`);
   }
 
   @computed get partitionFileContent() {
