@@ -7,7 +7,7 @@ import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
-import { parseAlignment } from './utils/parser';
+import { parseAlignment } from '../common/parser';
 
 import * as ipc from "../constants/ipc";
 

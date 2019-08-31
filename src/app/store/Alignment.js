@@ -2,7 +2,7 @@ import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
-import * as runSettings from '../../settings/run';
+import * as raxmlSettings from '../../settings/raxml';
 import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
@@ -10,14 +10,14 @@ import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 
 const modelOptions = {
-  'protein': runSettings.aminoAcidSubstitutionModelOptions,
-  'binary': runSettings.binarySubstitutionModelOptions,
-  'mixed': runSettings.mixedSubstitutionModelOptions,
-  'multistate': runSettings.multistateSubstitutionModelOptions,
-  'dna': runSettings.nucleotideSubstitutionModelOptions,
-  'rna': runSettings.nucleotideSubstitutionModelOptions,
-  'ambiguousDna': runSettings.nucleotideSubstitutionModelOptions,
-  'ambiguousRna': runSettings.nucleotideSubstitutionModelOptions,
+  'protein': raxmlSettings.aminoAcidSubstitutionModelOptions,
+  'binary': raxmlSettings.binarySubstitutionModelOptions,
+  'mixed': raxmlSettings.mixedSubstitutionModelOptions,
+  'multistate': raxmlSettings.multistateSubstitutionModelOptions,
+  'dna': raxmlSettings.nucleotideSubstitutionModelOptions,
+  'rna': raxmlSettings.nucleotideSubstitutionModelOptions,
+  'ambiguousDna': raxmlSettings.nucleotideSubstitutionModelOptions,
+  'ambiguousRna': raxmlSettings.nucleotideSubstitutionModelOptions,
 };
 
 class Alignment {
@@ -27,7 +27,7 @@ class Alignment {
 
   @observable dataType = undefined;
   @observable model = '';
-  @observable aaMatrixName = runSettings.aminoAcidSubstitutionMatrixOptions.default;
+  @observable aaMatrixName = raxmlSettings.aminoAcidSubstitutionMatrixOptions.default;
   @computed get modelFlagName() {
     let name = this.model;
     if (this.dataType === 'protein')  {
@@ -60,7 +60,7 @@ class Alignment {
 
   // TODO: This should change all other multistate models if available, according to documentation:
   // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
-  @observable multistateModel = runSettings.kMultistateSubstitutionModelOptions.default;
+  @observable multistateModel = raxmlSettings.kMultistateSubstitutionModelOptions.default;
 
   // Partition stuff
   @observable showPartition = false;
@@ -157,14 +157,14 @@ class Alignment {
       case 'protein':
         return {
           label: 'Matrix name',
-          options: runSettings.aminoAcidSubstitutionMatrixOptions.options,
+          options: raxmlSettings.aminoAcidSubstitutionMatrixOptions.options,
           value: this.aaMatrixName,
           onChange: this.onChangeAAMatrixName,
         };
       case 'multistate':
         return {
           label: 'Multistate model',
-          options: runSettings.kMultistateSubstitutionModelOptions.options,
+          options: raxmlSettings.kMultistateSubstitutionModelOptions.options,
           value: this.multistateModel,
           onChange: this.onChangeMultistateModel,
         };
