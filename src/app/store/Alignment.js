@@ -276,10 +276,16 @@ class FinalAlignment {
   }
 
   @computed get dir() {
+    if (this.numAlignments === 1) {
+      return this.run.alignments[0].dir;
+    }
     return this.run.outputDir;
   }
 
   @computed get path() {
+    if (this.numAlignments === 1) {
+      return this.run.alignments[0].path;
+    }
     return join(`${this.dir}`, `${this.filename}`);
   }
 
