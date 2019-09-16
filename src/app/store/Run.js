@@ -18,7 +18,14 @@ const raxmlBinarySuffix = util.platform({
   linux: '-Linux',
 })
 
-const binaries = [
+const winBinaries = [
+  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
+  // { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
+  { name: `raxmlHPC-PTHREADS-AVX2${raxmlBinarySuffix}`, multithreaded: true },
+  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+];
+
+const binaries = util.is.windows ? winBinaries : [
   { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
   { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
   { name: `raxmlHPC-PTHREADS-AVX${raxmlBinarySuffix}`, multithreaded: true },
@@ -87,7 +94,7 @@ class Option {
 }
 
 class Binary extends Option {
-  constructor(run) { super(run, binaries[3].name, 'Binary', 'Name of binary'); }
+  constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
   options = binaries.map(({ name }) => ({ value: name, title: name }));
 }
 

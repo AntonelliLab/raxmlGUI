@@ -10,7 +10,7 @@ import serializeError from 'serialize-error';
 import { parseAlignment } from '../common/parser';
 
 import * as ipc from "../constants/ipc";
-
+import electronUtil from 'electron-util';
 import unhandled from 'electron-unhandled';
 import { reportIssue } from "../common/utils";
 
@@ -114,11 +114,13 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
   // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
-  const checkFlags = isDev;
+  const checkFlags = isDev && !electronUtil.is.windows;
   if (checkFlags) {
     for (const arg of args) {
       try {
-        const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`);
+        const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`, {
+          shell: electronUtil.is.windows,
+        });
         console.log(stdout, stderr);
       }
       catch (err) {
@@ -175,10 +177,11 @@ function spawnProcess(binaryPath, args) {
   // const binaryDir = path.dirname(binaryPath);
   // const binaryName = path.basename(binaryPath);
 
-  const proc = childProcess.spawn(binaryPath, args, {
-    stdio: 'pipe',
-    cwd: os.homedir(),
+  const proc = childProcess.execFile(binaryPath, args, {
+    // stdio: 'pipe',
+    // cwd: os.homedir(),
     // env: { PATH: `${process.env.path}:${binaryDir}` },
+    shell: electronUtil.is.windows,
   });
   return proc;
 }
@@ -212,6 +215,7 @@ async function runProcess(id, event, binaryPath, args) {
       const onQuit = message => (code, signal) => {
         if (exited) { return; }
         exited = true;
+        console.log('Exited with error (or code or signal):', code || signal);
         delete state.processes[id];
         if (message === 'error') {
           return reject(code); // code is an error object on 'error' event

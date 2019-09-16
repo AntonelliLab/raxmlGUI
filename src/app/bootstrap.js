@@ -22,7 +22,7 @@ function initDev(exampleFiles) {
     // 'aminoacid.txt',
     // 'binary.txt',
     'bin1.txt',
-    'bin2.txt',
+    // 'bin2.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
     // 'nucleotide.txt',
