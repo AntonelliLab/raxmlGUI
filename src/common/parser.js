@@ -25,6 +25,7 @@ export const parseAlignment = async (filePath) => {
     let isPhylip = false; // assume FASTA format by default
     let isInterleaved = false;
     let isRelaxedPhylipDecided = false;
+    let isRelaxedPhylip = false;
     let rePhylipLine = reStrictPhylipLine;
     let isFastaStarted = false;
     let isFastaTaxon = true;
@@ -39,11 +40,64 @@ export const parseAlignment = async (filePath) => {
       code = [];
     }
 
+    const checkIsRelaxedPhylipFormat = (line) => {
+      try {
+        const reSpace = /\s+/;
+        const match = reSpace.exec(line);
+        if (!match) {
+          // Relaxed format requires space after name
+          return false;
+        }
+        // Strict phylip have 10 first characters for name, sequence starts at index 10
+        // Only strict format can have spaces within sequence?
+        // Example lines
+        // # Strict example with and without space(s) before 10:
+        // StrictnameAAGCCTTGGC AGTGCAGGGT
+        // Strict namAAGCCTTGGC AGTGCAGGGT
+        // Strct nm  AAGCCTTGGC AGTGCAGGGT
+        // TAXON_1   VPPYRWVAGVFITQYMNNIVYDDRISDLCKPVFLINPCHCAPFSGKTIGQ
+        // # Relaxed example with sequence starting after 10:
+        // Relaxedname       AAGCCTTGGC AGTGCAGGGT
+        // Anotherlongername AAGCCTTGGC AGTGCAGGGT
+        // # Relaxed example with sequence starting before 10:
+        // Taxon_0 ATAATTATAATAA
+        // Taxon_1 ATAATTATAATAA
+        const firstSpaceStartIndex = match.index;
+        const sequenceStartIndex = firstSpaceStartIndex + match[0].length;
+        console.log(`firstSpaceStartIndex: ${firstSpaceStartIndex}, match[0].length: ${match[0].length} -> seq start pos: ${sequenceStartIndex}`);
+        if (firstSpaceStartIndex <= 10) {
+          if (sequenceStartIndex !== 10) {
+            return true;
+          }
+          else {
+            // Can by coincidence be the same as strict?
+            return false;
+          }
+        }
+        const seqIfStrict = line.substring(10).replace(/\s/g, "");
+        // console.log(`Seq if strict:`, seqIfStrict);
+        if (seqIfStrict.length > alignment.length) {
+          // Must include part of the name for relaxed format
+          return true;
+        }
+        const seqIfRelaxed = line.substring(sequenceStartIndex).replace(/\s/g, "");
+        if (seqIfRelaxed.length !== alignment.length) {
+          console.log(`Relaxed alignment length for first line (${seqIfRelaxed.length}) differ from specified length (${alignment.length})`);
+          console.log(seqIfRelaxed);
+        }
+        // TODO: Can it end up here, strict interleaved?
+        return true; // TODO: Sure relaxed format here?
+      } catch (err) {
+        console.error('Error checking strict/relaxed phylip format:', err);
+        return true;
+      }
+    }
+
     const parsePhylipLine = (line) => {
       if (!isRelaxedPhylipDecided) {
-        const strictCharacterCount = line.substring(11).replace(/\s/g, "").length;
-        if (strictCharacterCount > alignment.length) {
-          isRelaxedPhylipDecided = true;
+        isRelaxedPhylipDecided = true;
+        isRelaxedPhylip = checkIsRelaxedPhylipFormat(line);
+        if (isRelaxedPhylip) {
           rePhylipLine = reRelaxedPhylipLine;
           console.log('Parsing relaxed phylip format...');
         }
@@ -54,6 +108,7 @@ export const parseAlignment = async (filePath) => {
       }
       let [ _, taxon, code ] = match;
       //delete whitespaces
+      taxon = taxon.trim();
       code = code.replace(/\s/g, "");
       const sequence = { taxon, code };
       alignment.sequences.push(sequence);
@@ -87,7 +142,7 @@ export const parseAlignment = async (filePath) => {
         const match = rePhylipHeader.exec(line);
         if (match) {
           isPhylip = true;
-          alignment.fileFormat = 'PHYLIP';
+          alignment.fileFormat = isRelaxedPhylip ? 'PHYLIP (relaxed)' : 'PHYLIP (strict)';
           alignment.numSequences = +match[1];
           alignment.length = +match[2];
           parseLine = parsePhylipLine;

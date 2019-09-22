@@ -12,21 +12,23 @@ ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, (event, exampleFiles) =>
 });
 
 function initDev(exampleFiles) {
-  if (exampleFiles.length === 0) {
-    return;
-  }
-  const exampleFilesDir = path.dirname(exampleFiles[0].path);
+  // if (exampleFiles.length === 0) {
+  //   return;
+  // }
+  // const exampleFilesDir = path.dirname(exampleFiles[0].path);
+  const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFiles = [
     // 'dna.txt',
     // 'aminoacid.txt',
     // 'binary.txt',
-    'bin1.txt',
+    // 'bin1.txt',
     // 'bin2.txt',
+    'align.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
     // 'nucleotide.txt',
-  ].map(filename => ({ path: path.join(exampleFilesDir, filename) }));
+  ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   store.activeRun.addAlignments(useFiles);
   // store.activeRun.alignments[0].setShowPartition();
 }

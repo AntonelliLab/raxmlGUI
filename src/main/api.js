@@ -278,18 +278,17 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event) => {
 
 
 // Open a folder with native file explorer in given path
-ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, (event) => {
+ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   // __static is defined by electron-webpack
-  const dir = path.join(__static, 'example-files', 'fasta');
+  // const dir = path.join(__static, 'example-files', 'fasta');
+  const dir = path.join(__static, 'example-files');
   // const dir = path.join(__static, 'example-files', 'phylip');
-
-  fs.readdir(dir, (err, files) => {
-    const filePaths = files.map(filename => ({
-      dir: dir,
-      path: path.join(dir, filename),
-      name: filename,
-    }));
-    send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, filePaths);
+  const fastaFiles = await readdir(path.join(dir, 'fasta'));
+  const phylipFiles = await readdir(path.join(dir, 'phylip'));
+  send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
+    fasta: fastaFiles,
+    phylip: phylipFiles,
+    dir,
   });
 });
 
