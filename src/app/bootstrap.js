@@ -22,13 +22,13 @@ function initDev(exampleFiles) {
     // 'dna.txt',
     // 'aminoacid.txt',
     // 'binary.txt',
-    // 'bin1.txt',
-    // 'bin2.txt',
-    'align.txt',
+    'bin1.txt',
+    'bin2.txt',
+    // 'align.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
     // 'nucleotide.txt',
-  ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
+  ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
   store.activeRun.addAlignments(useFiles);
   // store.activeRun.alignments[0].setShowPartition();
 }
