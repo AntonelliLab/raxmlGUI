@@ -346,6 +346,9 @@ class Run {
         first.push('-f', 'E');
         first.push('-p', this.seedParsimony);
         first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -366,6 +369,9 @@ class Run {
           }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
+          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
           next.push('-t', `${treeFile1}`);
           next.push('-n', `brL.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -385,6 +391,9 @@ class Run {
           }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
+          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
           next.push('-t', `${treeFile2}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -405,6 +414,9 @@ class Run {
         }
         first.push('-f', 'd');
         first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
         first.push('-N', this.numRepetitions.value);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
@@ -427,6 +439,9 @@ class Run {
           }
           next.push('-f', 'e');
           next.push('-m', this.finalAlignment.modelFlagName);
+          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
           next.push('-t', `${treeFile}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -457,6 +472,9 @@ class Run {
         first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
         first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -497,6 +515,9 @@ class Run {
         }
         first.push('-b', this.seedBootstrap);
         first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
         if (this.branchLength.value) {
           first.push('-k');
         }
@@ -520,6 +541,9 @@ class Run {
         }
         second.push('-f', 'd');
         second.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          second.push('--asc-corr=lewis');
+        }
         second.push('-p', this.seedParsimony);
         second.push('-N', this.numRuns.value);
         second.push('-n', outputFilenameSafe2);
@@ -542,6 +566,9 @@ class Run {
         third.push('-t', treeFile);
         third.push('-z', treesFile);
         third.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          third.push('--asc-corr=lewis');
+        }
         third.push('-n', this.outputFilenameSafe);
         third.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -575,6 +602,9 @@ class Run {
         first.push('-t', this.tree.filePath);
         first.push('-s', this.finalAlignment.path);
         first.push('-m', this.finalAlignment.modelFlagName);
+        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
         first.push('-n', `${this.outputFilenameSafe}`);
         first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
