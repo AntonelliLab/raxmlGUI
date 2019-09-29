@@ -1,13 +1,21 @@
 import React from 'react';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 
 import theme from './theme';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const Index = () => (
-  <MuiThemeProvider theme={theme}>
-    <App />
-  </MuiThemeProvider>
+  <ThemeProvider theme={theme}>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </ThemeProvider>
 );
 
 export default Index;
+
+
+if (process.env.NODE_ENV === 'development') {
+  import('./bootstrap');
+}
