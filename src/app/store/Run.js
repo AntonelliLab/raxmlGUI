@@ -460,6 +460,9 @@ class Run {
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
         first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
           first.push('-q', `${this.finalAlignment.partitionFilePath}`);
