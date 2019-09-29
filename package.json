@@ -1,51 +1,102 @@
 {
-  "name": "raxmlgui2",
-  "version": "0.2.0",
+  "name": "raxmlGUI2",
+  "productName": "raxmlGUI2",
+  "version": "2.0.0-beta.1",
   "private": true,
-  "author": "Captain Electron",
+  "author": "AntonelliLab",
+  "license": "ISC",
+  "description": "raxmlGUI2 - A new graphical front-end for RAxML",
   "homepage": "./",
-  "main": "public/electron.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonelliLab/raxmlGUI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AntonelliLab/raxmlGUI2/issues"
+  },
+  "keywords": [
+    "Electron",
+    "RAxML",
+    "GUI",
+    "Phylogenetics"
+  ],
+  "main": "build/electron.js",
   "scripts": {
     "start": "cross-env ELECTRON_START_URL=http://localhost:3000/ run-p react-start electron-dev",
-    "react-start": "cross-env BROWSER=none react-scripts start",
-    "react-build": "react-scripts build",
-    "react-test": "react-scripts test --env=jsdom",
+    "react-start": "cross-env BROWSER=none craco start",
+    "react-build": "craco build",
+    "react-test": "craco test --env=jsdom",
     "react-eject": "react-scripts eject",
     "wait-dev": "wait-on $ELECTRON_START_URL",
-    "electron-start": "nodemon --watch src/electron src/electron.js .",
-    "electron-dev": "cross-env DEV=true run-s wait-dev electron-start",
+    "electron-dev": "electron-webpack dev",
+    "electron-start": "cross-env DEV=true run-s wait-dev electron-dev",
     "electron-build": "electron-builder",
-    "electron-pack": "electron-builder --dir",
-    "release": "yarn react-build && electron-builder --publish=always",
-    "build": "yarn react-build && yarn electron-build"
+    "electron-build-win": "electron-builder -w",
+    "electron-build-linux": "electron-builder -l",
+    "electron-build-all": "electron-builder -mwl",
+    "electron-pack": "electron-builder --dir -c.compression=store -c.mac.identity=null",
+    "electron-pack-win": "electron-builder -w --dir -c.compression=store",
+    "electron-compile": "electron-webpack",
+    "electron-copy": "shx cp dist/main/main.js build/electron.js",
+    "compile": "run-s electron-compile electron-copy",
+    "build": "run-s react-build compile electron-build",
+    "build-win": "run-s react-build compile electron-build-win",
+    "build-all": "run-s react-build compile electron-build-all",
+    "dist-pack": "run-s react-build compile electron-pack",
+    "dist-pack-win": "run-s react-build compile electron-pack-win",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
-    "@material-ui/icons": "^3.0.2",
-    "classnames": "^2.2.5",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@craco/craco": "^5.3.0",
+    "@material-ui/core": "^4.3.2",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/styles": "^4.3.0",
+    "bionode-fasta": "^0.5.6",
+    "bionode-seq": "^0.1.1",
+    "classnames": "^2.2.6",
+    "clean-stack": "^2.2.0",
+    "clsx": "^1.0.4",
+    "computed-async-mobx": "^4.2.0",
     "cpus": "^1.0.2",
-    "crypto-random-string": "^1.0.0",
-    "d3-array": "^2.0.3",
+    "d3-array": "^2.2.0",
     "d3-format": "^1.3.2",
-    "electron-is-dev": "^1.0.1",
-    "mobx": "^5.9.0",
-    "mobx-react": "^5.4.3",
+    "electron-better-ipc": "^0.4.0",
+    "electron-is-dev": "^1.1.0",
+    "electron-unhandled": "^3.0.0",
+    "electron-util": "^0.12.1",
+    "filenamify": "^4.1.0",
+    "lodash": "^4.17.15",
+    "mobx": "^5.13.0",
+    "mobx-react": "^6.1.3",
+    "mobx-utils": "^5.4.1",
     "parse-filepath": "^1.0.2",
-    "prop-types": "^15.6.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-dropzone": "^10.0.4",
-    "react-scripts": "2.1.8"
+    "prop-types": "^15.7.2",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-dropzone": "^10.1.7",
+    "react-msa-viewer": "^1.0.1",
+    "react-scripts": "3.1.1",
+    "react-split-pane": "^0.1.87",
+    "serialize-error": "^4.1.0",
+    "source-map-support": "^0.5.13"
   },
   "devDependencies": {
-    "cross-env": "^5.1.3",
-    "electron": "^4.1.0",
-    "electron-builder": "^20.39.0",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "cross-env": "^5.2.0",
+    "devtron": "^1.4.0",
+    "electron": "^6.0.2",
+    "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
-    "nodemon": "^1.14.11",
-    "npm-run-all": "^4.1.2",
-    "typescript": "^3.3.3333",
-    "wait-on": "^3.2.0"
+    "electron-webpack": "^2.7.4",
+    "nodemon": "^1.19.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.18.2",
+    "shx": "^0.3.2",
+    "typescript": "^3.5.3",
+    "wait-on": "^3.3.0"
   },
   "browserslist": [
     ">0.2%",
@@ -53,23 +104,44 @@
     "not ie <= 11",
     "not op_mini all"
   ],
+  "electronWebpack": {
+    "commonSourceDirectory": "src/common",
+    "staticSourceDirectory": "static",
+    "main": {
+      "sourceDirectory": "src/main"
+    },
+    "renderer": {
+      "sourceDirectory": null
+    }
+  },
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI2",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
     "files": [
-      "src/electron/*"
+      "src/main/*"
     ],
     "extraResources": [
       "assets/"
     ],
     "mac": {
       "category": "public.app-category.education",
-      "extraFiles": [
+      "extraResources": [
         {
-          "from": "bin/raxml",
-          "to": "bin",
+          "from": "static/bin",
+          "to": "static/bin",
           "filter": [
             "**/*-Mac"
+          ]
+        },
+        {
+          "from": "static/example-files/fasta",
+          "to": "static/example-files",
+          "filter": [
+            "*.txt"
           ]
         }
       ]
@@ -77,14 +149,15 @@
     "win": {
       "target": [
         "nsis",
-        "msi"
+        "msi",
+        "portable"
       ],
-      "extraFiles": [
+      "extraResources": [
         {
-          "from": "bin/raxml",
-          "to": "bin",
+          "from": "static/bin",
+          "to": "static/bin",
           "filter": [
-            "**/*-Windows.exe"
+            "**/*.exe"
           ]
         }
       ]
@@ -97,10 +170,10 @@
         "AppImage"
       ],
       "category": "Education",
-      "extraFiles": [
+      "extraResources": [
         {
-          "from": "bin/raxml",
-          "to": "bin",
+          "from": "static/bin",
+          "to": "static/bin",
           "filter": [
             "**/*-Linux"
           ]

@@ -9,6 +9,7 @@
 # production
 /build
 /dist
+/release
 
 # misc
 .DS_Store
@@ -22,4 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # external dependencies
-/bin/raxml
+/static/bin
+
+# output
+RAxML_*
+*.reduced
+*_concat.*

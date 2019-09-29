@@ -1,31 +1,58 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
-import { format } from 'd3-format';
-import FolderIcon from '@material-ui/icons/Folder';
-import classNames from 'classnames';
+import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
+import Box from '@material-ui/core/Box';
+import TreeCard from './TreeCard';
+import { Typography } from '@material-ui/core';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   Input: {
-    // flexGrow: 1,
-    minHeight: '300px',
+    width: '100%',
+  },
+  alignmentList: {
+    display: 'flex',
+    width: '100%',
+    flexWrap: 'nowrap',
+    overflowX: 'scroll',
+    // borderLeft: `5px solid ${theme.palette.primary.main}`,
+    // paddingLeft: 10,
+    marginBottom: 0,
     padding: '10px',
   },
-  files: {
-    marginTop: '10px',
-    // border: '1px solid #999',
-    // padding: '10px',
+  treeList: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    overflowX: 'scroll',
+    // borderLeft: `5px solid ${theme.palette.secondary.main}`,
+    // paddingLeft: 10,
   },
-  input: {
-    // borderLeft: `3px solid ${theme.palette.primary.main}`,
-    // paddingLeft: '5px',
+  alignments: {
+    display: 'flex',
+  },
+  addAlignment: {
+    width: '200px',
+    height: '200px',
+  },
+  treeCard: {
+    width: '350px',
+    height: '100px',
+  },
+  finalInput: {
+    padding: '10px',
+  },
+  concatenatedAlignment: {
+    width: '350px',
+    height: '150px',
+  },
+  resultingPartitionCard: {
+    width: '350px',
+    height: '150px',
   },
   output: {
     marginTop: '20px',
-    // borderLeft: `3px solid ${theme.palette.primary.main}`,
-    // paddingLeft: '5px',
   },
   fileInfo: {
     fontSize: '0.75em',
@@ -38,76 +65,80 @@ const styles = theme => ({
     marginLeft: 4,
   },
   button: {
-    margin: theme.spacing.unit,
-  },
-  changeOutDir: {
-    marginTop: 4,
+    margin: theme.spacing(1),
   },
   rightIcon: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,
   },
   outputButton: {
-    marginLeft: theme.spacing.unit,
-  }
+    marginLeft: theme.spacing(1),
+  },
+  outputDir: {
+    // flex: 'flex-grow',
+  },
+  gridList: {
+    flexWrap: 'nowrap',
+    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)',
+    width: 500,
+  },
 
-});
+}));
 
-const Input = withStyles(styles)(observer(({ classes, input }) => {
+const Input = ({ run }) => {
 
-  const FileInfo = input.ok ? (
-    <div className={classes.files}>
-      <div className={classes.input}>
-        Input
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={input.openInputFile}>
-              { input.filename }
-            </span>
-          </div>
-          <div>
-            Size: { format(',')(input.size) } bytes
-          </div>
-          <div>
-            Type: Not detected yet
-          </div>
-        </div>
-      </div>
-      <div className={classes.output}>
-        Output
-        <div className={classes.fileInfo}>
-          <div>
-            Path: 
-            <span className={classes.path} onClick={input.openOutDir}>
-              { input.outDir }
-            </span>
-          </div>
-          <Button size="small" variant="outlined" className={classes.changeOutDir} onClick={input.selectOutDir}>
-            Change
-            <FolderIcon className={classNames(classes.rightIcon, classes.iconSmall)} />
-          </Button>
-        </div>
-      </div>
-    </div>
-  ) : null;
+  const classes = useStyles();
+
+  // const SelectNumRuns = run.
 
   return (
     <div className={classes.Input}>
-      <Button variant="contained" color="primary" onClick={input.selectFile}>
-        Open file
-      </Button>
-      { FileInfo }
+      <Box mb={1} className={classes.alignmentList}>
+        <div className={classes.alignments}>
+        { run.alignments.map(alignment => (
+          <AlignmentCard key={alignment.path} alignment={alignment} className="alignment" />
+        )) }
+        <Button variant="outlined" className={`alignment ${classes.addAlignment}`}
+          onClick={run.loadAlignmentFiles}
+          title={ run.haveAlignments ? "Concatenate new alignments and create partition" : "" }>
+          { run.haveAlignments ? 'Add alignment' : 'Load alignment' }
+        </Button>
+        </div>
+      </Box>
+
+      { run.tree.notAvailable ? null :
+        <Box className={classes.treeList}>
+          <div className={classes.alignments}>
+          { run.tree.haveFile ?
+            <TreeCard tree={run.tree} className={classes.treeCard} /> :
+            <Button variant="outlined" className={classes.treeCard} onClick={run.loadTreeFile}>
+              Add Tree
+            </Button>
+          }
+          </div>
+        </Box>
+      }
+
+      { run.alignments.length <= 1 ? null :
+        <Box className={classes.finalInput}>
+          <Typography variant="h5">Concatenated alignment</Typography>
+          <FinalAlignmentCard alignment={run.finalAlignment} className={classes.concatenatedAlignment} />
+        </Box>
+      }
+
     </div>
   );
-}));
-    
+};
+// <Box mt={1} display="flex">
+// { run.ok ? null : run.missing }
+// </Box>
+
 
 Input.propTypes = {
-  classes: PropTypes.object.isRequired,
-  input: PropTypes.object.isRequired,
+  run: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(observer(Input));
+export default observer(Input);
