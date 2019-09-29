@@ -9,6 +9,8 @@ import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 
+const writeFile = util.promisify(fs.writeFile);
+
 const modelOptions = {
   'protein': raxmlSettings.aminoAcidSubstitutionModelOptions,
   'binary': raxmlSettings.binarySubstitutionModelOptions,
@@ -376,25 +378,40 @@ class FinalAlignment {
   }
 
   @action
-  openFile = () => {
+  openFile = async () => {
+    await this.writeConcatenatedAlignment();
     ipcRenderer.send(ipc.FILE_OPEN, this.path);
   };
 
   @action
-  showFileInFolder = () => {
+  openPartition = async () => {
+    await this.writeConcatenatedAlignmentAndPartition();
+    ipcRenderer.send(ipc.FILE_OPEN, this.partitionFilePath);
+  };
+
+  @action
+  showFileInFolder = async () => {
+    await this.writeConcatenatedAlignment();
     ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
   };
 
   @action
-  openFolder = () => {
+  openFolder = async () => {
+    await this.writeConcatenatedAlignmentAndPartition();
     ipcRenderer.send(ipc.FOLDER_OPEN, this.dir);
   };
 
   @action
   writeConcatenatedAlignmentAndPartition = async () => {
+    await this.writeConcatenatedAlignment();
+    await this.writePartition();
+  };
+
+  @action
+  writeConcatenatedAlignment = async () => {
     const { taxons, numSequences } = this;
-    console.log(`Write concatenated alignment in FASTA format to ${this.path}..`);
     try {
+      console.log(`Write concatenated alignment in FASTA format to ${this.path}..`);
       const writeStream = fs.createWriteStream(this.path);
       const write = util.promisify(writeStream.write);
       const end = util.promisify(writeStream.end);
@@ -413,16 +430,19 @@ class FinalAlignment {
       console.error('Error writing concatenated alignment:', err);
       throw err;
     }
+  };
+
+  @action
+  writePartition = async () => {
     try {
       console.log(`Writing partition to ${this.partitionFilePath}...`);
-      const writeFile = util.promisify(fs.writeFile);
       await writeFile(this.partitionFilePath, this.partitionFileContent);
     }
     catch (err) {
       console.error('Error writing partition:', err);
       throw err;
     }
-  };
+  }
 
 }
 

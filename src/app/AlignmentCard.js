@@ -279,6 +279,7 @@ function FinalAlignmentCard({ className, alignment }) {
 
             <Menu id="alignment-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
               <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>Open aligment</MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.openPartition)}>Open partition</MenuItem>
               <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>Open folder</MenuItem>
             </Menu>
           </div>
