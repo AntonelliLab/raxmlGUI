@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
 import Box from '@material-ui/core/Box';
+import LoadingButton from './components/LoadingButton';
 
 const styles = theme => ({
   Raxml: {
@@ -49,7 +50,8 @@ class Raxml extends React.Component {
               Cancel
             </Button>
           ) : null}
-          <Button
+          <LoadingButton
+            loading={run.running}
             size="small"
             variant="contained"
             color="default"
@@ -57,7 +59,7 @@ class Raxml extends React.Component {
             onClick={run.start}
           >
             Run
-          </Button>
+          </LoadingButton>
         </Box>
       </div>
     );
