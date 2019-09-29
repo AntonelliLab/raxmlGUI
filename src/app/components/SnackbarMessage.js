@@ -21,14 +21,14 @@ const variantIcon = {
 
 const useStyles = makeStyles(theme => ({
   success: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.output.main,
   },
   error: {
     // backgroundColor: theme.palette.error.main,
     backgroundColor: '#f2401b',
   },
   info: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.input.main,
   },
   warning: {
     backgroundColor: amber[700],

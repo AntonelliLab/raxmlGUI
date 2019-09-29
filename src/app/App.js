@@ -228,8 +228,8 @@ const App = () => {
           >
             <SnackbarMessage
               onClose={run.clearFinished}
-              variant="success"
-              message="RAxML finished!"
+              variant={run.exitCode === 0 ? "success" : "info"}
+              message={run.exitCode === 0 ? "RAxML finished!" : `RAxML cancelled!`}
             />
           </Snackbar>
           <ErrorDialog error={run.error} onClose={run.clearError} />

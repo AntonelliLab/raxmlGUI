@@ -40,7 +40,7 @@ function LoadingButton(props) {
 
 LoadingButton.propTypes = {
   className: PropTypes.string,
-  children: PropTypes.element,
+  children: PropTypes.node,
   loading: PropTypes.bool,
   buttonClassName: PropTypes.string,
   progressProps: PropTypes.object

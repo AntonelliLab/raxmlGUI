@@ -311,8 +311,10 @@ class Run {
 
   @observable running = false;
   @observable finished = false;
+  @observable exitCode = 0;
   @action clearFinished = () => {
     this.finished = false;
+    this.exitCode = 0;
   }
   atomFinished;
 
@@ -795,12 +797,13 @@ class Run {
   };
 
   @action
-  onRunFinished = (event, { id, resultDir, resultFilenames }) => {
+  onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
     if (id === this.id) {
-      console.log(`Process ${id} finished with result filenames ${resultFilenames} in dir ${resultDir}.`);
+      console.log(`Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`);
       this.resultDir = resultDir;
       this.atomFinished.reportChanged();
       this.finished = true;
+      this.exitCode = exitCode;
       this.afterRun();
     }
   };
