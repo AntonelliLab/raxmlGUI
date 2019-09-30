@@ -195,6 +195,18 @@ export const aminoAcidSubstitutionMatrixOptions = {
   ]
 };
 
+export const modelOptions = {
+  'protein': aminoAcidSubstitutionModelOptions,
+  'binary': binarySubstitutionModelOptions,
+  'mixed': mixedSubstitutionModelOptions,
+  'multistate': multistateSubstitutionModelOptions,
+  'dna': nucleotideSubstitutionModelOptions,
+  'rna': nucleotideSubstitutionModelOptions,
+  'ambiguousDna': nucleotideSubstitutionModelOptions,
+  'ambiguousRna': nucleotideSubstitutionModelOptions,
+};
+
+
 // -N
 export const numberRunsOptions = {
   argument: 'N',

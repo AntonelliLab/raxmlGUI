@@ -152,23 +152,27 @@ function AlignmentCard({ className, alignment }) {
   //   <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
 
+  const individualSubstitutionModel = false;
+
   const Content = alignment.showPartition ? (
     <Partition alignment={alignment} />
   ) : (
     <div className={classes.content}>
       <div>
-        <FormControl>
-          <Select value={alignment.model} onChange={alignment.onChangeModel}>
-            {
-              (alignment.modelOptions || []).map(model => (
-                <MenuItem key={model} value={model}>
-                  { model }
-                </MenuItem>
-              ))
-            }
-          </Select>
-          <FormHelperText>Substitution model</FormHelperText>
-        </FormControl>
+        { individualSubstitutionModel ? (
+          <FormControl>
+            <Select value={alignment.model} onChange={alignment.onChangeModel}>
+              {
+                (alignment.modelOptions || []).map(model => (
+                  <MenuItem key={model} value={model}>
+                    { model }
+                  </MenuItem>
+                ))
+              }
+            </Select>
+            <FormHelperText>Substitution model</FormHelperText>
+          </FormControl>
+        ) : null }
         { alignment.modelExtra ? (
           <FormControl>
           <Select value={alignment.modelExtra.value} onChange={alignment.modelExtra.onChange}>

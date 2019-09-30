@@ -2,25 +2,14 @@ import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
-import * as raxmlSettings from '../../settings/raxml';
 import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
-
+import * as raxmlSettings from '../../settings/raxml';
+const { modelOptions } = raxmlSettings;
 const writeFile = util.promisify(fs.writeFile);
-
-const modelOptions = {
-  'protein': raxmlSettings.aminoAcidSubstitutionModelOptions,
-  'binary': raxmlSettings.binarySubstitutionModelOptions,
-  'mixed': raxmlSettings.mixedSubstitutionModelOptions,
-  'multistate': raxmlSettings.multistateSubstitutionModelOptions,
-  'dna': raxmlSettings.nucleotideSubstitutionModelOptions,
-  'rna': raxmlSettings.nucleotideSubstitutionModelOptions,
-  'ambiguousDna': raxmlSettings.nucleotideSubstitutionModelOptions,
-  'ambiguousRna': raxmlSettings.nucleotideSubstitutionModelOptions,
-};
 
 class Alignment {
   run = null;
@@ -28,15 +17,7 @@ class Alignment {
   @observable error = null;
 
   @observable dataType = undefined;
-  @observable model = '';
   @observable aaMatrixName = raxmlSettings.aminoAcidSubstitutionMatrixOptions.default;
-  @computed get modelFlagName() {
-    let name = this.model;
-    if (this.dataType === 'protein')  {
-      name += this.aaMatrixName;
-    }
-    return name;
-  }
 
   @observable size = 0;
   @observable fileFormat = undefined;
@@ -59,10 +40,6 @@ class Alignment {
   @observable checkRunSuccess = false;
   // @observable taxons = [];
 
-
-  // TODO: This should change all other multistate models if available, according to documentation:
-  // If you have several partitions that consist of multi-state characters the model specified via -K will be applied to all models. Thus, it is not possible to assign different models to distinct multi-state partitions!
-  @observable multistateModel = raxmlSettings.kMultistateSubstitutionModelOptions.default;
 
   // Partition stuff
   @observable showPartition = false;
@@ -140,19 +117,6 @@ class Alignment {
     return 'ok';
   }
 
-  // @computed
-  // get loading() {
-  //   return !this.checkRunComplete;
-  // }
-
-  @computed
-  get modelOptions() {
-    if (!this.dataType) {
-      return [];
-    }
-    return modelOptions[this.dataType].options;
-  }
-
   @computed
   get modelExtra() {
     switch (this.dataType) {
@@ -162,13 +126,6 @@ class Alignment {
           options: raxmlSettings.aminoAcidSubstitutionMatrixOptions.options,
           value: this.aaMatrixName,
           onChange: this.onChangeAAMatrixName,
-        };
-      case 'multistate':
-        return {
-          label: 'Multistate model',
-          options: raxmlSettings.kMultistateSubstitutionModelOptions.options,
-          value: this.multistateModel,
-          onChange: this.onChangeMultistateModel,
         };
       default:
         return null;
@@ -183,6 +140,9 @@ class Alignment {
     // Receive a progress update for one of the alignments being parsed
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
         if (id === this.id) {
+          if (alignment.dataType !== this.run.dataType) {
+            this.run.substitutionModel.value = modelOptions[alignment.dataType].default;
+          }
           runInAction(() => {
             this.sequences = alignment.sequences;
             this.fileFormat = alignment.fileFormat;
@@ -192,7 +152,6 @@ class Alignment {
             this.numSequencesParsed = this.numSequences;
             this.dataType = alignment.dataType;
             this.typecheckingComplete = alignment.typecheckingComplete;
-            this.model = modelOptions[alignment.dataType].default;
             this.loading = false;
           });
         };
@@ -246,12 +205,6 @@ class Alignment {
   onChangeAAMatrixName = (event) => {
     console.log('onChangeAAMatrixName');
     this.aaMatrixName = event.target.value;
-  }
-
-  @action
-  onChangeMultistateModel = (event) => {
-    console.log('onChangeMultistateModel');
-    this.multistateModel = event.target.value;
   }
 
   getSequenceCode = (taxon) => {

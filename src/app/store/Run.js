@@ -9,8 +9,11 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
+import * as raxmlSettings from '../../settings/raxml';
+const { modelOptions } = raxmlSettings;
 
 export const MAX_NUM_CPUS = cpus().length;
+
 
 const raxmlBinarySuffix = util.platform({
   macos: '-Mac',
@@ -151,6 +154,41 @@ class OutGroup extends Option {
   //TODO: Allow multiple selections
 }
 
+class SubstitutionModel extends Option {
+  constructor(run) { super(run, 'GTRGAMMA', 'Substitution model'); }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = modelOptions[this.run.dataType];
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map(value => ({ value, title: value }));
+  }
+  @computed get notAvailable() { return !this.run.haveAlignments; }
+  @computed get cmdValue() {
+    let model = this.value;
+    if (this.run.dataType === 'protein')  {
+      // model += this.aaMatrixName.value;
+      model += this.run.alignments[0].aaMatrixName;
+    }
+    return model;
+  }
+}
+
+class AAMatrixName extends Option {
+  constructor(run) { super(run, 'BLOSUM62', 'Matrix name', 'Amino Acid Substitution Matrix name'); }
+  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(value => ({ value, title: value }));
+  @computed get notAvailable() { return this.run.dataType !== 'protein'; }
+}
+
+class MultistateModel extends Option {
+  constructor(run) { super(run, 'GTR', 'Multistate model'); }
+  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
+  @computed get notAvailable() { return this.run.dataType !== 'multistate'; }
+}
+
 class Tree extends Option {
   constructor(run) { super(run, '', 'Tree', ''); }
   @computed get notAvailable() {
@@ -218,6 +256,9 @@ class Run {
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
+  substitutionModel = new SubstitutionModel(this);
+  aaMatrixName = new AAMatrixName(this);
+  multistateModel = new MultistateModel(this);
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
@@ -300,6 +341,24 @@ class Run {
 
   finalAlignment = new FinalAlignment(this);
 
+  // @observable dataType = 'mixed';
+  @computed get dataType() {
+    const numAlignments = this.alignments.length;
+    if (numAlignments === 0) {
+      return 'none';
+    }
+    const firstType = this.alignments[0].dataType;
+    if (numAlignments === 1) {
+      return firstType;
+    }
+    for (let i = 1; i < numAlignments; ++i) {
+      if (this.alignments[i].dataType !== firstType) {
+        return 'mixed';
+      }
+    }
+    return firstType;
+  }
+
   @observable error = null;
 
   @computed get missing() {
@@ -345,9 +404,12 @@ class Run {
         }
         first.push('-f', 'E');
         first.push('-p', this.seedParsimony);
-        first.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
         }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
@@ -368,9 +430,12 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
-          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
           }
           next.push('-t', `${treeFile1}`);
           next.push('-n', `brL.${this.outputFilenameSafe}`);
@@ -390,9 +455,12 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
-          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
           }
           next.push('-t', `${treeFile2}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
@@ -413,9 +481,12 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-f', 'd');
-        first.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
         }
         first.push('-N', this.numRepetitions.value);
         if (this.disableCheckUndeterminedSequence) {
@@ -438,9 +509,12 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
-          if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
           }
           next.push('-t', `${treeFile}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
@@ -471,9 +545,12 @@ class Run {
         first.push('-x', this.seedRapidBootstrap);
         first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
-        first.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
         }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
@@ -514,9 +591,12 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-b', this.seedBootstrap);
-        first.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
         }
         if (this.branchLength.value) {
           first.push('-k');
@@ -540,9 +620,12 @@ class Run {
           second.push('-T', this.numThreads.value);
         }
         second.push('-f', 'd');
-        second.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        second.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           second.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          second.push('-K', this.multistateModel.value);
         }
         second.push('-p', this.seedParsimony);
         second.push('-N', this.numRuns.value);
@@ -565,9 +648,12 @@ class Run {
         third.push('-f', 'b');
         third.push('-t', treeFile);
         third.push('-z', treesFile);
-        third.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        third.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           third.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          third.push('-K', this.multistateModel.value);
         }
         third.push('-n', this.outputFilenameSafe);
         third.push('-s', this.finalAlignment.path);
@@ -601,9 +687,12 @@ class Run {
         first.push('-f', 'A');
         first.push('-t', this.tree.filePath);
         first.push('-s', this.finalAlignment.path);
-        first.push('-m', this.finalAlignment.modelFlagName);
-        if (this.finalAlignment.modelFlagName.startsWith('ASC_')) {
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
         }
         first.push('-n', `${this.outputFilenameSafe}`);
         first.push('-w', `${this.outputDir}`);
@@ -667,7 +756,7 @@ class Run {
   @observable code = undefined;
   @observable createdAt = undefined;
   @observable data = '';
-  @observable dataType = undefined;
+  // @observable dataType = undefined;
   @observable flagsrunCode = undefined;
   @observable flagsrunData = undefined;
   @observable globalArgs = {};
