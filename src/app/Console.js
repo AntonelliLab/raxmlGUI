@@ -20,7 +20,7 @@ const styles = theme => ({
   code: {
     color: 'white',
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-    fontSize: '10px',
+    fontSize: '12px',
     height: '100%',
     overflowWrap: 'break-word',
     whiteSpace: 'pre-wrap',

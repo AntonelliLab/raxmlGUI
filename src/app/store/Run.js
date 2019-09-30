@@ -9,8 +9,11 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
+import * as raxmlSettings from '../../settings/raxml';
+const { modelOptions } = raxmlSettings;
 
 export const MAX_NUM_CPUS = cpus().length;
+
 
 const raxmlBinarySuffix = util.platform({
   macos: '-Mac',
@@ -121,9 +124,9 @@ class NumRepetitions extends Option {
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
 }
 
-//TODO: Another branch length option for FT? ('compute brL' vs 'BS brL' for the rest)
+//TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
 class BranchLength extends Option {
-  constructor(run) { super(run, false, 'BS brL', 'Compute branch length', 'Optimize model parameters and branch lengths for the given input tree'); }
+  constructor(run) { super(run, false, 'BS brL', 'Compute branch lengths', 'Optimize model parameters and branch lengths for the given input tree'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.brL); }
 }
 
@@ -149,6 +152,41 @@ class OutGroup extends Option {
   @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
   @computed get cmdValue() { return this.value === '<none>' ? '' : this.value }
   //TODO: Allow multiple selections
+}
+
+class SubstitutionModel extends Option {
+  constructor(run) { super(run, 'GTRGAMMA', 'Substitution model'); }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = modelOptions[this.run.dataType];
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map(value => ({ value, title: value }));
+  }
+  @computed get notAvailable() { return !this.run.haveAlignments; }
+  @computed get cmdValue() {
+    let model = this.value;
+    if (this.run.dataType === 'protein')  {
+      // model += this.aaMatrixName.value;
+      model += this.run.alignments[0].aaMatrixName;
+    }
+    return model;
+  }
+}
+
+class AAMatrixName extends Option {
+  constructor(run) { super(run, 'BLOSUM62', 'Matrix name', 'Amino Acid Substitution Matrix name'); }
+  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(value => ({ value, title: value }));
+  @computed get notAvailable() { return this.run.dataType !== 'protein'; }
+}
+
+class MultistateModel extends Option {
+  constructor(run) { super(run, 'GTR', 'Multistate model'); }
+  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
+  @computed get notAvailable() { return this.run.dataType !== 'multistate'; }
 }
 
 class Tree extends Option {
@@ -218,6 +256,9 @@ class Run {
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
+  substitutionModel = new SubstitutionModel(this);
+  aaMatrixName = new AAMatrixName(this);
+  multistateModel = new MultistateModel(this);
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
@@ -300,10 +341,28 @@ class Run {
 
   finalAlignment = new FinalAlignment(this);
 
+  // @observable dataType = 'mixed';
+  @computed get dataType() {
+    const numAlignments = this.alignments.length;
+    if (numAlignments === 0) {
+      return 'none';
+    }
+    const firstType = this.alignments[0].dataType;
+    if (numAlignments === 1) {
+      return firstType;
+    }
+    for (let i = 1; i < numAlignments; ++i) {
+      if (this.alignments[i].dataType !== firstType) {
+        return 'mixed';
+      }
+    }
+    return firstType;
+  }
+
   @observable error = null;
 
   @computed get missing() {
-    if (!this.tree.notAvailable && !this.tree.value) {
+    if (!this.tree.notAvailable && !this.tree.filePath) {
       return 'Missing tree, please load one.';
     }
     return '';
@@ -311,8 +370,10 @@ class Run {
 
   @observable running = false;
   @observable finished = false;
+  @observable exitCode = 0;
   @action clearFinished = () => {
     this.finished = false;
+    this.exitCode = 0;
   }
   atomFinished;
 
@@ -343,7 +404,13 @@ class Run {
         }
         first.push('-f', 'E');
         first.push('-p', this.seedParsimony);
-        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -363,7 +430,13 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
+          }
           next.push('-t', `${treeFile1}`);
           next.push('-n', `brL.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -382,7 +455,13 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
+          }
           next.push('-t', `${treeFile2}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -402,7 +481,13 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-f', 'd');
-        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
         first.push('-N', this.numRepetitions.value);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
@@ -424,7 +509,13 @@ class Run {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.finalAlignment.modelFlagName);
+          next.push('-m', this.substitutionModel.cmdValue);
+          if (this.substitutionModel.value.startsWith('ASC_')) {
+            next.push('--asc-corr=lewis');
+          }
+          if (!this.multistateModel.notAvailable) {
+            next.push('-K', this.multistateModel.value);
+          }
           next.push('-t', `${treeFile}`);
           next.push('-n', `sh.${this.outputFilenameSafe}`);
           next.push('-s', `${this.finalAlignment.path}`);
@@ -454,11 +545,20 @@ class Run {
         first.push('-x', this.seedRapidBootstrap);
         first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
-        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
         }
         first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
@@ -491,7 +591,13 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-b', this.seedBootstrap);
-        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
         if (this.branchLength.value) {
           first.push('-k');
         }
@@ -514,7 +620,13 @@ class Run {
           second.push('-T', this.numThreads.value);
         }
         second.push('-f', 'd');
-        second.push('-m', this.finalAlignment.modelFlagName);
+        second.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          second.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          second.push('-K', this.multistateModel.value);
+        }
         second.push('-p', this.seedParsimony);
         second.push('-N', this.numRuns.value);
         second.push('-n', outputFilenameSafe2);
@@ -536,7 +648,13 @@ class Run {
         third.push('-f', 'b');
         third.push('-t', treeFile);
         third.push('-z', treesFile);
-        third.push('-m', this.finalAlignment.modelFlagName);
+        third.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          third.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          third.push('-K', this.multistateModel.value);
+        }
         third.push('-n', this.outputFilenameSafe);
         third.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -569,7 +687,13 @@ class Run {
         first.push('-f', 'A');
         first.push('-t', this.tree.filePath);
         first.push('-s', this.finalAlignment.path);
-        first.push('-m', this.finalAlignment.modelFlagName);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
         first.push('-n', `${this.outputFilenameSafe}`);
         first.push('-w', `${this.outputDir}`);
         if (this.alignments.length > 1) {
@@ -632,7 +756,7 @@ class Run {
   @observable code = undefined;
   @observable createdAt = undefined;
   @observable data = '';
-  @observable dataType = undefined;
+  // @observable dataType = undefined;
   @observable flagsrunCode = undefined;
   @observable flagsrunData = undefined;
   @observable globalArgs = {};
@@ -792,12 +916,13 @@ class Run {
   };
 
   @action
-  onRunFinished = (event, { id, resultDir, resultFilenames }) => {
+  onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
     if (id === this.id) {
-      console.log(`Process ${id} finished with result filenames ${resultFilenames} in dir ${resultDir}.`);
+      console.log(`Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`);
       this.resultDir = resultDir;
       this.atomFinished.reportChanged();
       this.finished = true;
+      this.exitCode = exitCode;
       this.afterRun();
     }
   };

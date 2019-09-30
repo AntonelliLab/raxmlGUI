@@ -131,10 +131,14 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
   }
 
+  let exitCode = 0;
   for (const arg of args) {
     try {
       console.log(`Run ${binaryName} with args:`, arg)
-      await runProcess(id, event, binaryPath, arg);
+      exitCode = await runProcess(id, event, binaryPath, arg);
+      if (exitCode !== 0) {
+        break;
+      }
     }
     catch (err) {
       console.error('Run error:', err);
@@ -147,8 +151,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   const resultFilenames = filenames.filter(filename =>
     filename.endsWith(outputFilename));
 
-  send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames });
-
+  send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames, exitCode });
 
 });
 
@@ -214,16 +217,16 @@ async function runProcess(id, event, binaryPath, args) {
 
       const onQuit = message => (code, signal) => {
         if (exited) { return; }
+        console.log(`Process finished with event '${message}' and error/code/signal:`, signal || code);
         exited = true;
-        console.log('Exited with error (or code or signal):', code || signal);
         delete state.processes[id];
         if (message === 'error') {
           return reject(code); // code is an error object on 'error' event
         }
-        if (code === 0) {
-          return resolve(code);
+        if (!code) {
+          return resolve(signal || code); // Add code last to get through code 0
         }
-        return reject(new Error(`Exited with code ${code || signal}. Check console output for more information.`));
+        return reject(new Error(`Exited with code ${signal || code}. Check console output for more information.`));
       }
 
       ['error', 'exit', 'close'].forEach(message => {

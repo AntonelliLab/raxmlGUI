@@ -9,9 +9,8 @@ import OptionCheck from './components/OptionCheck';
 const useStyles = makeStyles(theme => ({
   Model: {
     padding: '10px',
-    // flexGrow: 1,
-    // height: '100%',
-    // maxWidth: '800px',
+    display: 'flex',
+    flexDirection: 'column',
   },
   form: {
     '& > *': {
@@ -35,6 +34,10 @@ const Model = ({ run }) => {
         <OptionCheck option={run.combinedOutput} />
         <OptionSelect option={run.startingTree} />
         <OptionSelect option={run.outGroup} />
+      </Box>
+      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
+        <OptionSelect option={run.substitutionModel} />
+        <OptionSelect option={run.multistateModel} />
       </Box>
 
     </div>

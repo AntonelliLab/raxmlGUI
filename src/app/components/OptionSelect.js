@@ -13,7 +13,7 @@ const OptionSelect = observer(({ option, className }) => {
   }
   return (
     <FormControl className={className} title={option.hoverInfo}>
-      <InputLabel htmlFor={option.title}>{option.title}</InputLabel>
+      <InputLabel style={{ whiteSpace: 'nowrap' }} htmlFor={option.title}>{option.title}</InputLabel>
       <Select
         value={option.value}
         onChange={e => option.setValue(e.target.value) }
