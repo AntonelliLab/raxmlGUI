@@ -15,15 +15,7 @@ import CardContent from '@material-ui/core/CardContent';
 
 const useStyles = makeStyles(theme => ({
   TreeCard: {
-    padding: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '10px',
-    backgroundColor: '#393939',
-    border: `1px solid #999`
-  },
-  card: {
-    // width: '350px',
+    border: `1px solid #999`,
   },
   heading: {
     display: 'flex',
@@ -38,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
   chip: {
     height: '30px',
+    backgroundColor: theme.palette.input.main,
   },
   link: {
     cursor: 'pointer',
@@ -101,10 +94,10 @@ function TreeCard({ className, tree }) {
   }
 
   return (
-    <Card className={classNames(className, classes.card)} raised>
+    <Card className={classNames(className, classes.TreeCard)} raised>
       <CardHeader
         avatar={
-          <Chip className={classes.chip} label=".tree" color="secondary" />
+          <Chip classes={{ colorSecondary: classes.chip }} label="tree" color="secondary" />
         }
         action={
           <div>

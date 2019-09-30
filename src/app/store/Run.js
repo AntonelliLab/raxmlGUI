@@ -362,7 +362,7 @@ class Run {
   @observable error = null;
 
   @computed get missing() {
-    if (!this.tree.notAvailable && !this.tree.value) {
+    if (!this.tree.notAvailable && !this.tree.filePath) {
       return 'Missing tree, please load one.';
     }
     return '';

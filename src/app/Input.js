@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'nowrap',
     overflowX: 'scroll',
     // borderLeft: `5px solid ${theme.palette.secondary.main}`,
-    // paddingLeft: 10,
+    padding: '10px',
   },
   alignments: {
     display: 'flex',
