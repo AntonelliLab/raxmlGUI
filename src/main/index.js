@@ -4,6 +4,7 @@ import url from 'url';
 import isDev from 'electron-is-dev';
 
 import './api';
+import MenuBuilder from './menu';
 
 // Module to control application life.
 const app = electron.app
@@ -107,8 +108,8 @@ function initialize() {
     });
 
     // Set the main window menu
-    // const menuBuilder = new MenuBuilder(mainWindow);
-    // menuBuilder.buildMenu();
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
 
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
