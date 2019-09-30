@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
   addAlignment: {
     width: '200px',
     height: '200px',
+    marginRight: '10px',
   },
   treeCard: {
     width: '350px',

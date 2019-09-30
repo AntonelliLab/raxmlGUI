@@ -59,6 +59,7 @@ const useStyles = makeStyles(theme => ({
   ioItem: {
     width: '100%',
     height: '100%',
+    overflowX: 'hidden',
   },
   model: {
   },

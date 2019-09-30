@@ -20,10 +20,10 @@ function initDev(exampleFiles) {
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFiles = [
     // 'dna.txt',
-    'aminoacid.txt',
+    // 'aminoacid.txt',
     // 'binary.txt',
-    // 'bin1.txt',
-    // 'bin2.txt',
+    'bin1.txt',
+    'bin2.txt',
     // 'align.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
