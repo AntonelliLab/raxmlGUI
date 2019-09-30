@@ -1,3 +1,5 @@
+import path from 'path';
+import { app } from 'electron';
 import { openNewGitHubIssue, debugInfo, activeWindow, is } from 'electron-util';
 import serializeError from 'serialize-error';
 import cleanStack from 'clean-stack';
@@ -51,3 +53,11 @@ export const reportIssue = async (error) => {
     body: createReportBody(error, activeState),
   });
 }
+
+const IS_PROD = process.env.NODE_ENV === 'production';
+const root = process.cwd();
+
+export const assetsDir =
+  IS_PROD && app.isPackaged
+    ? path.join(path.dirname(app.getAppPath()), '..', './resources', './assets')
+    : path.join(root, './assets');
