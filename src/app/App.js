@@ -158,7 +158,7 @@ const App = () => {
               <Typography
                 className={`${classes.verticalHeading} ${classes.modelHeading}`}
               >
-                Model
+                Analysis
               </Typography>
               <div className={classes.ioItem}>
                 <Model run={run} />

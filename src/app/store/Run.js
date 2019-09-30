@@ -124,9 +124,9 @@ class NumRepetitions extends Option {
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
 }
 
-//TODO: Another branch length option for FT? ('compute brL' vs 'BS brL' for the rest)
+//TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
 class BranchLength extends Option {
-  constructor(run) { super(run, false, 'BS brL', 'Compute branch length', 'Optimize model parameters and branch lengths for the given input tree'); }
+  constructor(run) { super(run, false, 'BS brL', 'Compute branch lengths', 'Optimize model parameters and branch lengths for the given input tree'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.brL); }
 }
 
