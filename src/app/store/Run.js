@@ -316,7 +316,7 @@ class Run {
   };
 
   @action openOutputDir = () => {
-    shell.showItemInFolder(this.outputDir);
+    shell.openItem(this.outputDir);
   };
 
   // Result
