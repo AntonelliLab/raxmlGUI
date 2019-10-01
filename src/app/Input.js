@@ -33,8 +33,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   addAlignment: {
-    width: '200px',
-    height: '200px',
+    width: '150px',
+    height: '150px',
     marginRight: '10px',
   },
   treeCard: {
@@ -46,11 +46,11 @@ const useStyles = makeStyles(theme => ({
   },
   concatenatedAlignment: {
     width: '350px',
-    height: '150px',
+    height: '200px',
   },
   resultingPartitionCard: {
     width: '350px',
-    height: '150px',
+    height: '200px',
   },
   output: {
     marginTop: '20px',
