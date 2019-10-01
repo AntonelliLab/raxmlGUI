@@ -3,8 +3,8 @@
   "productName": "raxmlGUI2",
   "version": "2.0.0-beta.1",
   "private": true,
-  "author": "AntonelliLab",
-  "license": "ISC",
+  "author": "AntonelliLab <raxmlgui.help@gmail.com>",
+  "license": "AGPL-3.0",
   "description": "raxmlGUI2 - A new graphical front-end for RAxML",
   "homepage": "./",
   "repository": {
@@ -41,6 +41,7 @@
     "compile": "run-s electron-compile electron-copy",
     "build": "run-s react-build compile electron-build",
     "build-win": "run-s react-build compile electron-build-win",
+    "build-linux": "run-s react-build compile electron-build-linux",
     "build-all": "run-s react-build compile electron-build-all",
     "dist-pack": "run-s react-build compile electron-pack",
     "dist-pack-win": "run-s react-build compile electron-pack-win",
