@@ -142,7 +142,7 @@ function AlignmentCard({ className, alignment }) {
   //   <span>{ alignment.parsingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
 
-  const Type = alignment.typecheckingComplete ? (
+  const Type = dataType ? (
     <Chip
       classes={{ colorSecondary: classes.chip }}
       label={dataType}

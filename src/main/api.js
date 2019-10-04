@@ -7,7 +7,7 @@ import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
-import { parseAlignment } from '../common/parser';
+import io from '../common/io';
 
 import * as ipc from "../constants/ipc";
 import electronUtil from 'electron-util';
@@ -252,7 +252,7 @@ async function execProcess(binaryPath, args) {
 ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   console.log('Parse alignment', filePath);
   try {
-    const alignment = await parseAlignment(filePath);
+    const alignment = await io.parseAlignment(filePath);
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
   }
   catch (error) {

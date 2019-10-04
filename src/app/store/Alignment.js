@@ -159,7 +159,11 @@ class Alignment {
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_FAILURE, (event, { id, error }) => {
         if (id === this.id) {
           runInAction(() => {
+            console.error(`Error loading file '${this.path}':`, error);
             this.error = error;
+            this.loading = false;
+            this.run.error = error;
+            this.remove();
           });
         };
     });
