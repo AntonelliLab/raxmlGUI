@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     width: '100%',
     flexWrap: 'nowrap',
-    overflowX: 'scroll',
+    overflowX: 'auto',
     // borderLeft: `5px solid ${theme.palette.primary.main}`,
     // paddingLeft: 10,
     marginBottom: 0,
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   treeList: {
     display: 'flex',
     flexWrap: 'nowrap',
-    overflowX: 'scroll',
+    overflowX: 'auto',
     // borderLeft: `5px solid ${theme.palette.secondary.main}`,
     padding: '10px',
   },

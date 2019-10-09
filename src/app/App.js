@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   leftPanel: {
   },
   rightPanel: {
-    borderLeft: '1px solid #999',
+    borderLeft: '2px solid #999',
   },
   ioWrapper: {
     width: '100%',
@@ -62,10 +62,10 @@ const useStyles = makeStyles(theme => ({
     overflowX: 'hidden',
   },
   model: {
+    borderTop: '2px solid hsl(0, 0%, 25%)',
+    borderBottom: '2px solid hsl(0, 0%, 25%)',
   },
   input: {
-    borderTop: '1px solid rgba(255,255,255,0.3)',
-    borderBottom: '1px solid rgba(255,255,255,0.3)',
   },
   output: {
     flexGrow: 1,
@@ -82,20 +82,32 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'uppercase',
     borderRight: '1px solid #666',
   },
-  modelHeading: {
-    backgroundColor: theme.palette.model.main,
-  },
   inputHeading: {
     backgroundColor: theme.palette.input.main,
+    borderRight: `1px solid ${theme.palette.input.light}`,
+  },
+  modelHeading: {
+    backgroundColor: theme.palette.model.main,
+    borderRight: `1px solid ${theme.palette.model.light}`,
   },
   outputHeading: {
     backgroundColor: theme.palette.output.main,
+    borderRight: `1px solid ${theme.palette.output.light}`,
   },
   raxmlHeading: {
     backgroundColor: '#333',
   },
   consoleHeading: {
     backgroundColor: '#333',
+  },
+  inputContainer: {
+    // backgroundColor: theme.palette.input.dark,
+  },
+  modelContainer: {
+    // backgroundColor: theme.palette.model.dark,
+  },
+  outputContainer: {
+    // backgroundColor: theme.palette.output.dark,
   },
   raxml: {
   },
@@ -155,24 +167,24 @@ const App = () => {
 
         <SplitPane split="vertical" size={640} minSize={100}>
           <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.leftPanel)}>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.model}`}>
-              <Typography
-                className={`${classes.verticalHeading} ${classes.modelHeading}`}
-              >
-                Analysis
-              </Typography>
-              <div className={classes.ioItem}>
-                <Model run={run} />
-              </div>
-            </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.input}`}>
               <Typography
                 className={`${classes.verticalHeading} ${classes.inputHeading}`}
               >
                 Input
               </Typography>
-              <div className={classes.ioItem}>
+              <div className={clsx(classes.ioItem, classes.inputContainer)}>
                 <Input run={run} />
+              </div>
+            </Box>
+            <Box display="flex" className={`${classes.ioWrapper} ${classes.model}`}>
+              <Typography
+                className={`${classes.verticalHeading} ${classes.modelHeading}`}
+              >
+                Analysis
+              </Typography>
+              <div className={clsx(classes.ioItem, classes.modelContainer)}>
+                <Model run={run} />
               </div>
             </Box>
             <Box display="flex" className={`${classes.ioWrapper} ${classes.output}`}>
@@ -183,7 +195,7 @@ const App = () => {
               >
                 Output
               </Typography>
-              <div className={classes.ioItem}>
+              <div className={clsx(classes.ioItem, classes.outputContainer)}>
                 <Output run={run} />
               </div>
             </Box>
