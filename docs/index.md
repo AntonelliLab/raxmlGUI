@@ -1,3 +1,18 @@
-# RaxmlGUI 2.0
+# raxmlGUI
 
-A desktop GUI for RAxML.
+raxmlGUI<sup>1,2</sup> is a graphical user interface to RAxML<sup>3</sup>, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. This is the first public beta of raxmlGUI v2.0, featuring:
+
+*	Intuitive graphical front-end to set up and run phylogenetic analyses
+*	Seamless integration with RAxML available on all major operating systems
+*	Automated pipelines for analyses that require multiple successive calls of RAxML 
+*	Built-in functions to concatenate alignment files with automatic partition settings
+
+While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). raxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML.
+
+------------------------
+
+<sup>1</sup> Edler, D., Klein, J., Antonelli, A., and Silvestro, D. 2019. **raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML.** _biorXiv, doi: XXXX_
+
+<sup>2</sup> Silvestro, D. and I. Michalak. 2012. **raxmlGUI: a graphical front-end for RAxML.** _Organisms Diversity and Evolution_ 12:335–337.
+
+<sup>3</sup> Stamatakis, A. 2014. **Raxml version 8:  a tool for phylogenetic analysis andpost-analysis of large phylogenies.** _Bioinformatics_ 30:1312–1313.
