@@ -14,25 +14,18 @@ const { modelOptions } = raxmlSettings;
 
 export const MAX_NUM_CPUS = cpus().length;
 
-
-const raxmlBinarySuffix = util.platform({
-  macos: '-Mac',
-  windows: '-Windows.exe',
-  linux: '-Linux',
-})
-
 const winBinaries = [
-  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
-  // { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-PTHREADS-AVX2${raxmlBinarySuffix}`, multithreaded: true },
-  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+  { name: 'raxmlHPC.exe', multithreaded: false },
+  // { name: 'raxmlHPC-SSE3.exe', multithreaded: false },
+  { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true },
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true },
 ];
 
 const binaries = util.is.windows ? winBinaries : [
-  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-PTHREADS-AVX${raxmlBinarySuffix}`, multithreaded: true },
-  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+  { name: 'raxmlHPC', multithreaded: false },
+  { name: 'raxmlHPC-SSE3', multithreaded: false },
+  { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true },
+  { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true },
 ];
 
 // Available parameters for different analysis

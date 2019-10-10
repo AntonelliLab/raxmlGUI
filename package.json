@@ -132,11 +132,8 @@
       "category": "public.app-category.education",
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*-Mac"
-          ]
+          "from": "static/bin/Mac",
+          "to": "static/bin"
         },
         {
           "from": "static/example-files/fasta",
@@ -159,11 +156,8 @@
       ],
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*.exe"
-          ]
+          "from": "static/bin/Windows",
+          "to": "static/bin"
         }
       ]
     },
@@ -177,11 +171,8 @@
       "category": "Education",
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*-Linux"
-          ]
+          "from": "static/bin/Linux",
+          "to": "static/bin"
         }
       ]
     }
