@@ -47,6 +47,7 @@ class Alignment {
   @computed get partitionType() {
     switch (this.dataType) {
       case 'dna':
+      case 'nucleotide':
         return 'DNA';
       case 'protein':
         return this.aaMatrixName;

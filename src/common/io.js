@@ -44,7 +44,12 @@ export const parseAlignment = async (filePath) => {
           return reject(new Error(`Couldn't parse any sequences from file ${filePath}`))
         }
 
-        typecheckAlignment(alignment);
+        try {
+          typecheckAlignment(alignment);
+        } catch (err) {
+          console.error('Error checking data type:', err);
+          return reject(err);
+        }
 
         const alignmentRestricted = Object.assign({}, alignment, { sequences: alignment.sequences.slice(0,2) });
         console.log('Alignment with first two sequences:', alignmentRestricted);

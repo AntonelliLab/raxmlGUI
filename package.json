@@ -128,6 +128,9 @@
     "extraResources": [
       "assets/"
     ],
+    "dmg": {
+      "icon": "build/disk-image.icns"
+    },
     "mac": {
       "category": "public.app-category.education",
       "extraResources": [
@@ -143,10 +146,6 @@
           ]
         }
       ]
-    },
-    "dmg": {
-      "icon": "build/disk-image.icns",
-      "backgroundColor": "orange"
     },
     "win": {
       "target": [

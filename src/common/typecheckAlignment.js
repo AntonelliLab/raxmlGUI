@@ -5,6 +5,7 @@ export default function typecheckAlignment(alignment) {
   const binaryMatch = /[01]/i;
   const multistateMatch = /2/i;
   const sequenceDataTypes = [];
+  const dataTypes = new Set();
   let numSequencesTypechecked = 0;
   for (const sequence of alignment.sequences) {
     const { code } = sequence;
@@ -12,13 +13,14 @@ export default function typecheckAlignment(alignment) {
     if (proteinMatch.test(code)) {
       dataType = 'protein';
     } else if (acgMatch.test(code)) {
-      const numT = (code.match(/T/ig) || []).length;
-      const numU = (code.match(/U/ig) || []).length;
-      if (numT > numU) {
-        dataType = 'dna';
-      } else {
-        dataType = 'rna';
-      }
+      // const numT = (code.match(/T/ig) || []).length;
+      // const numU = (code.match(/U/ig) || []).length;
+      // if (numT > numU) {
+      //   dataType = 'dna';
+      // } else {
+      //   dataType = 'rna';
+      // }
+      dataType = 'nucleotide';
     }
 
     const isBinary = binaryMatch.test(code);
@@ -28,6 +30,7 @@ export default function typecheckAlignment(alignment) {
     } else if (isBinary || isMultistate) {
       dataType = 'mixed';
     }
+    dataTypes.add(dataType);
     sequence.dataType = dataType;
     ++numSequencesTypechecked;
     sequenceDataTypes.push(sequence.dataType);
@@ -38,6 +41,9 @@ export default function typecheckAlignment(alignment) {
   if (differentTypes.length > 0) {
     // Only valid case with different types is binary and multistate as [01] is a subset of [012].
     const isInvalid = sequenceDataTypes.find(type => type !== 'binary' && type !== 'multistate');
+    if (isInvalid) {
+      throw new Error(`Invalid alignment: sequences must be of same data type, but found [${Array.from(dataTypes.keys())}].`);
+    }
     dataType = isInvalid ? 'invalid' : 'multistate';
   }
   alignment.dataType = dataType;
