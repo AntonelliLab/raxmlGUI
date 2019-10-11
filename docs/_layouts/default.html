@@ -30,9 +30,9 @@
         </div>
       {% endif %}
       {% if site.show_downloads %}
-        <a onclick="ga('send', 'event', 'Downloads', 'Download', 'Mac');" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.dmg" class="btn">Download v2.0.0-beta.1 for Mac</a>
-        <a onclick="ga('send', 'event', 'Downloads', 'Download', 'Windows');" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.exe" class="btn">Download v2.0.0-beta.1 for Windows</a>
-        <a onclick="ga('send', 'event', 'Downloads', 'Download', 'Linux');" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.AppImage" class="btn">Download v2.0.0-beta.1 for Linux</a>
+        <a onclick="gtag('event', 'Download', { 'event_label': 'Mac', 'event_category': 'Downloads' });" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.dmg" class="btn">Download v2.0.0-beta.1 for Mac</a>
+        <a onclick="gtag('event', 'Download', { 'event_label': 'Windows', 'event_category': 'Downloads' });" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.exe" class="btn">Download v2.0.0-beta.1 for Windows</a>
+        <a onclick="gtag('event', 'Download', { 'event_label': 'Linux', 'event_category': 'Downloads' });" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0-beta.1/raxmlGUI-2.0.0-beta.1.AppImage" class="btn">Download v2.0.0-beta.1 for Linux</a>
       {% endif %}
     </header>
 
