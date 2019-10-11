@@ -11,7 +11,7 @@ While the program presented here is a beta version, the most important functions
 
 ------------------------
 
-<sup>1</sup> Edler, D., Klein, J., Antonelli, A., and Silvestro, D. 2019. **raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML.** _biorXiv, doi: XXXX_
+<sup>1</sup> Edler, D., Klein, J., Antonelli, A., and Silvestro, D. 2019. **raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML.** _biorXiv, doi: https://doi.org/10.1101/800912.
 
 <sup>2</sup> Silvestro, D. and I. Michalak. 2012. **raxmlGUI: a graphical front-end for RAxML.** _Organisms Diversity and Evolution_ 12:335–337.
 
