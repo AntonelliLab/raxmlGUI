@@ -107,7 +107,12 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
 ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
   cancelProcess(id);
 
-  const binaryDir = path.join(__static, 'bin');
+  const binParentDir = app.isPackaged ? '' : electronUtil.platform({
+    macos: 'Mac',
+    windows: 'Windows',
+    linux: 'Linux',
+  });
+  const binaryDir = path.join(__static, 'bin', binParentDir);
   const binaryPath = path.resolve(binaryDir, binaryName);
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
