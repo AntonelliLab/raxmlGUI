@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: '10px',
   },
   treeCard: {
-    width: '350px',
+    width: '380px',
     height: '100px',
   },
   finalInput: {
