@@ -777,6 +777,36 @@ class Run {
         // # "./raxmlHPC -f x -m GTRGAMMA[I] -n NAME -s INPUT -p RANDOMNR [-q PARTFILE -o OUTGROUP]"
         // 	cmd = """cd %s %s &&%s %s -f D -p %s %s -s %s %s -n %s %s -O -w %s %s %s""" \
         // 	% (winD, raxml_path, K[0], pro, seed_1, const_f, seq_file, mod, out_file, o, path_dir, part_f, winEx)
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
+        first.push('-f', 'D');
+        first.push('-p', this.seedParsimony);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        // if (!this.tree.notAvailable) {
+        //   first.push('-t', this.tree.filePath);
+        // }
+        first.push('-w', `${this.outputDir}`);
+        if (this.alignments.length > 1) {
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
         break;
       default:
     }
