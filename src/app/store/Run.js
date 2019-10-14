@@ -384,7 +384,9 @@ class Run {
 
   @computed get args() {
     const first = [];
-    const cmdArgs = [first];
+    const second = [];
+    const third = [];
+    const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
 
     switch (this.analysis.value) {
       case 'FT': // Fast tree search
@@ -545,6 +547,9 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
         first.push('-n', this.outputFilenameSafe);
         first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
@@ -570,9 +575,6 @@ class Run {
         // try:
         // 	remove="RAxML_info.%s.tre" % (only_name)
         // ...
-        const second = [];
-        const third = [];
-        cmdArgs.push(second, third);
         const outputFilenameSafe1 = `${this.outputNameSafe}R.tre`;
         const outputFilenameSafe2 = `${this.outputNameSafe}B.tre`;
         const treeFile = join(this.outputDir, `RAxML_bestTree.${outputFilenameSafe2}`); // MLtreeR
@@ -669,6 +671,53 @@ class Run {
         // % (winD, raxml_path, \
         // K[0], pro, mod, save_brL.get(), out_file, seq_file, o, seed_1, BSrep.get(), path_dir, part_f, const_f, random.randrange(1, 1000, 1), raxml_path, \
         // K[0], pro, mod, out_file, BStrees_file, path_dir, winEx)
+
+        const bsTreeFile = join(this.outputDir, `RAxML_bootstrap.${this.outputFilenameSafe}`);
+        const consensusOutput = `consensus.${this.outputFilenameSafe}`;
+
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
+        first.push('-x', this.seedRapidBootstrap);
+        first.push('-p', this.seedParsimony);
+        first.push('-N', this.numRepetitions.value);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', this.finalAlignment.path);
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        first.push('-w', `${this.outputDir}`);
+        if (this.alignments.length > 1) {
+          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+        }
+
+        if (!this.numThreads.notAvailable) {
+          second.push('-T', this.numThreads.value);
+        }
+        second.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          second.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          second.push('-K', this.multistateModel.value);
+        }
+        second.push('-J', 'MR');
+        second.push('-w', `${this.outputDir}`);
+        second.push('-z', bsTreeFile);
+        second.push('-n', consensusOutput);
         break;
       case 'AS': // Ancestral states
         // params: [params.tree],
@@ -708,7 +757,7 @@ class Run {
       default:
     }
 
-    return cmdArgs;
+    return cmdArgs.filter(args => args.length > 0);
   }
 
   @computed get command() {

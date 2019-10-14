@@ -21,7 +21,7 @@ function initDev(exampleFiles) {
   const useFiles = [
     // 'dna.txt',
     // 'aminoacid.txt',
-    // 'binary.txt',
+    'binary.txt',
     // 'bin1.txt',
     // 'bin2.txt',
     // 'AA.txt',
@@ -31,7 +31,7 @@ function initDev(exampleFiles) {
     // 'dna_sequential_relaxed.txt',
     // 'dna_sequential.txt',
     // 'align.txt',
-    'align_allvariant.txt',
+    // 'align_allvariant.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
     // 'nucleotide.txt',
