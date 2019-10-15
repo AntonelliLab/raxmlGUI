@@ -1,4 +1,4 @@
-import { app, Menu, BrowserWindow } from 'electron';
+import { app, Menu } from 'electron';
 
 import subMenuFile from './subMenuFile';
 import subMenuAnalysis from './subMenuAnalysis';
