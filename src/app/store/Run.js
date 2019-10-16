@@ -71,7 +71,7 @@ const analysisOptions = [
   {
     title: 'RELL bootstraps',
     value: 'RBS',
-    params: [params.reps, params.brL, params.outGroup],
+    params: [],
   }
 ];
 
