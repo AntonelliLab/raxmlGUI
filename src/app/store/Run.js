@@ -40,7 +40,7 @@ const analysisOptions = [
   {
     title: 'ML search',
     value: 'ML',
-    params: [params.SHlike, params.combinedOutput, params.outGroup],
+    params: [params.runs, params.SHlike, params.combinedOutput, params.outGroup],
   },
   {
     title: 'ML + rapid bootstrap',
@@ -483,7 +483,7 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-N', this.numRepetitions.value);
+        first.push('-N', this.numRuns.value);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
