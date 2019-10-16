@@ -498,7 +498,7 @@ class Run {
           first.push('-q', `${this.finalAlignment.partitionFilePath}`);
         }
         if (this.sHlike.value) {
-          const treeFile = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
+          const treeFile = join(this.outputDir, `RAxML_bestTree.${this.outputFilenameSafe}`);
           const next = [];
           if (!this.numThreads.notAvailable) {
             next.push('-T', this.numThreads.value);
