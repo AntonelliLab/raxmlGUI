@@ -522,7 +522,6 @@ class Run {
         }
         if (this.combinedOutput.value) {
           // TODO: Add binary to the above commands to not assume raxml
-          // TODO: Use 'type' instead of 'cat' for windows
           // const cmd = [];
           // cmd.push('cat', `RAxML_*.${this.outputFilenameSafe}`);
           // cmdArgs.push(cmd);

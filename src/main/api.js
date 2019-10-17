@@ -105,6 +105,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
 });
 
 async function combineOutput(outputDir, outputFilename) {
+  // TODO: Use 'type' instead of 'cat' for windows
   const childCmd = `cat RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, { cwd: outputDir });
   console.log(stdout, stderr);
