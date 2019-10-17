@@ -820,7 +820,7 @@ class Run {
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, combinedOutput } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -829,7 +829,7 @@ class Run {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, combinedOutput: combinedOutput.value });
   };
 
   @action
