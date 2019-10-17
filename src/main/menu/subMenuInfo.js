@@ -3,13 +3,21 @@ import path from 'path';
 
 import { assetsDir } from '../../common/utils';
 
-function showCitation(fileEnding) {
-  const p = path.join(assetsDir, `citations/citation${fileEnding}`);
+function showCitation(filename, fileEnding) {
+  const p = path.join(assetsDir, `citations/${filename}${fileEnding}`);
   const opened = shell.openItem(p);
   if (!opened) {
     // TODO Error handling for file not opened, should be sent to renderer process, but how received
     console.log('File not opened', p);
   }
+}
+
+function showGUICitation(fileEnding) {
+  showCitation('citation', fileEnding);
+}
+
+function showRAxMLCitation(fileEnding) {
+  showCitation('raxml', fileEnding);
 }
 
 const subMenuInfo = {
@@ -55,29 +63,59 @@ const subMenuInfo = {
         {
           label: 'Text file',
           click() {
-            showCitation('.txt');
+            showGUICitation('.txt');
           }
         },
         {
           label: 'EndNote (XML)',
           click() {
-            showCitation('.xml');
+            showGUICitation('.xml');
           }
         },
         {
           label: 'Reference manager (RIS)',
           click() {
-            showCitation('.ris');
+            showGUICitation('.ris');
           }
         },
         {
           label: 'BibTeX library',
           click() {
-            showCitation('.bib');
+            showGUICitation('.bib');
+          }
+        }
+      ]
+    },
+        {
+      label: 'Export RAxML citation',
+      submenu: [
+        {
+          label: 'Text file',
+          click() {
+            showRAxMLCitation('.txt');
+          }
+        },
+        {
+          label: 'EndNote',
+          click() {
+            showRAxMLCitation('.enw');
+          }
+        },
+        {
+          label: 'Reference manager (RIS)',
+          click() {
+            showRAxMLCitation('.ris');
+          }
+        },
+        {
+          label: 'BibTeX library',
+          click() {
+            showRAxMLCitation('.bib');
           }
         }
       ]
     }
+
   ]
 };
 
