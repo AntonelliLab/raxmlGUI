@@ -104,6 +104,12 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   }
 });
 
+async function combineOutput(outputDir, outputFilename) {
+  const childCmd = `cat RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
+  const { stdout, stderr } = await exec(childCmd, { cwd: outputDir });
+  console.log(stdout, stderr);
+}
+
 ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, combinedOutput }) => {
   cancelProcess(id);
 
@@ -153,6 +159,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   }
 
   if (combinedOutput) {
+    await combineOutput(outputDir, outputFilename);
   }
 
   const filenames = await readdir(outputDir);
