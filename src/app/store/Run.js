@@ -520,13 +520,6 @@ class Run {
           }
           cmdArgs.push(next);
         }
-        if (this.combinedOutput.value) {
-          // TODO: Add binary to the above commands to not assume raxml
-          // TODO: Use 'type' instead of 'cat' for windows
-          // const cmd = [];
-          // cmd.push('cat', `RAxML_*.${this.outputFilenameSafe}`);
-          // cmdArgs.push(cmd);
-        }
         break;
       case 'ML+rBS': // ML + rapid bootstrap
         // params: [params.reps, params.brL, params.outGroup],
@@ -820,7 +813,7 @@ class Run {
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, combinedOutput } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -829,7 +822,7 @@ class Run {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, combinedOutput: combinedOutput.value });
   };
 
   @action

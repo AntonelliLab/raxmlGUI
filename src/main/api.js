@@ -104,7 +104,17 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   }
 });
 
-ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
+async function combineOutput(outputDir, outputFilename) {
+  const command = electronUtil.is.windows ? 'type' : 'cat';
+  const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
+  const { stdout, stderr } = await exec(childCmd, {
+    cwd: outputDir,
+    shell: electronUtil.is.windows
+  });
+  console.log(stdout, stderr);
+}
+
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, combinedOutput }) => {
   cancelProcess(id);
 
   const binParentDir = app.isPackaged ? '' : electronUtil.platform({
@@ -150,6 +160,10 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
       send(event, ipc.RUN_ERROR, { id, error: err });
       return;
     }
+  }
+
+  if (combinedOutput) {
+    await combineOutput(outputDir, outputFilename);
   }
 
   const filenames = await readdir(outputDir);
