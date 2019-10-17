@@ -23,6 +23,7 @@ function showRAxMLCitation(fileEnding) {
 const subMenuInfo = {
   label: 'Info',
   submenu: [
+    { role: 'about'},
     {
       label: 'Help raxmlGUI2',
       accelerator: process.platform === 'darwin' ? 'Command+?' : 'Ctrl+H',
@@ -115,7 +116,6 @@ const subMenuInfo = {
         }
       ]
     }
-
   ]
 };
 
