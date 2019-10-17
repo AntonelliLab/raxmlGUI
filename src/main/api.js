@@ -104,7 +104,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   }
 });
 
-ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, combinedOutput }) => {
   cancelProcess(id);
 
   const binParentDir = app.isPackaged ? '' : electronUtil.platform({
@@ -150,6 +150,9 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
       send(event, ipc.RUN_ERROR, { id, error: err });
       return;
     }
+  }
+
+  if (combinedOutput) {
   }
 
   const filenames = await readdir(outputDir);
