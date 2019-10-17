@@ -1,0 +1,1 @@
+Daniel Edler, Johannes Klein, Alexandre Antonelli, Daniele Silvestro (2019) raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML. bioRxiv, doi: https://doi.org/10.1101/800912
