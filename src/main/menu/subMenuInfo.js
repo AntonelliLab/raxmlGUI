@@ -61,7 +61,7 @@ const subMenuInfo = {
         {
           label: 'EndNote (XML)',
           click() {
-            showCitation('.enl');
+            showCitation('.xml');
           }
         },
         {
