@@ -520,12 +520,6 @@ class Run {
           }
           cmdArgs.push(next);
         }
-        if (this.combinedOutput.value) {
-          // TODO: Add binary to the above commands to not assume raxml
-          // const cmd = [];
-          // cmd.push('cat', `RAxML_*.${this.outputFilenameSafe}`);
-          // cmdArgs.push(cmd);
-        }
         break;
       case 'ML+rBS': // ML + rapid bootstrap
         // params: [params.reps, params.brL, params.outGroup],
