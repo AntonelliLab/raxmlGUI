@@ -75,6 +75,8 @@ const analysisOptions = [
   }
 ];
 
+const quote = dir => util.is.windows ? `"${dir}"` : dir;
+
 class Option {
   constructor(run, defaultValue, title, description, hoverInfo) {
     this.run = run;
@@ -264,7 +266,7 @@ class Run {
 
   @observable outputName = 'output';
   @action setOutputName = (value) => {
-    this.outputName = filenamify(value.replace(' ', '_').trim());
+    this.outputName = filenamify(value.replace(/\s+/g, '_').trim());
   }
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
@@ -406,17 +408,17 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
-        first.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.branchLength.value) {
           const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
@@ -432,12 +434,12 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile1}`);
+          next.push('-t', quote(treeFile1));
           next.push('-n', `brL.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
         }
@@ -457,12 +459,12 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile2}`);
+          next.push('-t', quote(treeFile2));
           next.push('-n', `sh.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
         }
@@ -489,13 +491,13 @@ class Run {
         }
         first.push('-p', this.seedParsimony);
         first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
-        first.push('-w', `${this.outputDir}`);
-        if (this.outGroup.cmdValue) {
-          first.push('-o', this.outGroup.cmdValue);
-        }
+          if (this.outGroup.cmdValue) {
+            first.push('-o', this.outGroup.cmdValue);
+          }
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.sHlike.value) {
           const treeFile = join(this.outputDir, `RAxML_bestTree.${this.outputFilenameSafe}`);
@@ -511,12 +513,12 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile}`);
+          next.push('-t', quote(treeFile));
           next.push('-n', `sh.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
         }
@@ -543,17 +545,17 @@ class Run {
         if (this.branchLength.value) {
           first.push('-k');
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       case 'ML+tBS': // ML + thorough bootstrap
@@ -594,14 +596,14 @@ class Run {
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
-        first.push('-n', outputFilenameSafe1);
-        first.push('-s', this.finalAlignment.path);
-        first.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
+        first.push('-n', outputFilenameSafe1);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -617,25 +619,25 @@ class Run {
         }
         second.push('-p', this.seedParsimony);
         second.push('-N', this.numRuns.value);
-        second.push('-n', outputFilenameSafe2);
-        second.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           second.push('-O');
         }
-        second.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           second.push('-o', this.outGroup.cmdValue);
         }
+        second.push('-n', outputFilenameSafe2);
+        second.push('-s', quote(this.finalAlignment.path));
+        second.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          second.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          second.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
 
         if (!this.numThreads.notAvailable) {
           third.push('-T', this.numThreads.value);
         }
         third.push('-f', 'b');
-        third.push('-t', treeFile);
-        third.push('-z', treesFile);
+        third.push('-t', quote(treeFile));
+        third.push('-z', quote(treesFile));
         third.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           third.push('--asc-corr=lewis');
@@ -643,12 +645,12 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           third.push('-K', this.multistateModel.value);
         }
-        third.push('-n', this.outputFilenameSafe);
-        third.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           third.push('-O');
         }
-        third.push('-w', `${this.outputDir}`);
+        third.push('-n', this.outputFilenameSafe);
+        third.push('-s', quote(this.finalAlignment.path));
+        third.push('-w', quote(this.outputDir));
         // if (this.alignments.length > 1) {
         //   third.push('-q', `${this.finalAlignment.partitionFilePath}`);
         // }
@@ -684,17 +686,17 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -708,8 +710,8 @@ class Run {
           second.push('-K', this.multistateModel.value);
         }
         second.push('-J', 'MR');
-        second.push('-w', `${this.outputDir}`);
-        second.push('-z', bsTreeFile);
+        second.push('-w', quote(this.outputDir));
+        second.push('-z', quote(bsTreeFile));
         second.push('-n', consensusOutput);
         break;
       case 'AS': // Ancestral states
@@ -720,8 +722,7 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-f', 'A');
-        first.push('-t', this.tree.filePath);
-        first.push('-s', this.finalAlignment.path);
+        first.push('-t', quote(this.tree.filePath));
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
@@ -729,10 +730,11 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', `${this.outputFilenameSafe}`);
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       case 'PD': // Pairwise distances
@@ -752,17 +754,17 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
         if (!this.tree.notAvailable) {
-          first.push('-t', this.tree.filePath);
+          first.push('-t', quote(this.tree.filePath));
         }
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       case 'RBS': // Rell bootstraps
@@ -788,17 +790,17 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
         // if (!this.tree.notAvailable) {
         //   first.push('-t', this.tree.filePath);
         // }
-        first.push('-w', `${this.outputDir}`);
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       default:
