@@ -3,7 +3,6 @@ import _ from "lodash";
 import path from "path";
 import util from "util";
 import fs from "fs";
-import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
@@ -32,6 +31,7 @@ function send(event, channel, data) {
   }
   return event.sender.send(channel, Object.assign({}, data, { error: serializeError(data.error) }));
 }
+
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   dialog.showOpenDialog({
@@ -104,7 +104,9 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   }
 });
 
+// Function to combine multiple output trees into one file
 async function combineOutput(outputDir, outputFilename) {
+  // Use type command on windows, cat on Mac or Linux
   const command = electronUtil.is.windows ? 'type' : 'cat';
   const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, {
@@ -179,11 +181,6 @@ ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   console.log(`Cancel raxml process ${id}...`);
   cancelProcess(id);
   // send(event, ipc.RUN_CLOSED, { id });
-});
-
-ipcMain.on('open-item', (event, arg) => {
-  console.log('Open item:', arg);
-  shell.openItem(arg);
 });
 
 function cancelProcess(id) {
