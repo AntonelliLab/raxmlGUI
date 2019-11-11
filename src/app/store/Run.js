@@ -26,6 +26,7 @@ const binaries = util.is.windows ? winBinaries : [
   { name: 'raxmlHPC-SSE3', multithreaded: false },
   { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true },
   { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true },
+  { name: 'raxml-ng', multithreaded: true },
 ];
 
 // Available parameters for different analysis
