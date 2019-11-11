@@ -202,8 +202,7 @@ export const modelOptions = {
   'multistate': multistateSubstitutionModelOptions,
   'dna': nucleotideSubstitutionModelOptions,
   'rna': nucleotideSubstitutionModelOptions,
-  'ambiguousDna': nucleotideSubstitutionModelOptions,
-  'ambiguousRna': nucleotideSubstitutionModelOptions,
+  'nucleotide': nucleotideSubstitutionModelOptions,
 };
 
 

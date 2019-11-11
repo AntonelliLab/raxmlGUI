@@ -3,11 +3,10 @@ import _ from "lodash";
 import path from "path";
 import util from "util";
 import fs from "fs";
-import os from "os";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
-import { parseAlignment } from '../common/parser';
+import io from '../common/io';
 
 import * as ipc from "../constants/ipc";
 import electronUtil from 'electron-util';
@@ -32,6 +31,7 @@ function send(event, channel, data) {
   }
   return event.sender.send(channel, Object.assign({}, data, { error: serializeError(data.error) }));
 }
+
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   dialog.showOpenDialog({
@@ -104,10 +104,27 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   }
 });
 
-ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename }) => {
+// Function to combine multiple output trees into one file
+async function combineOutput(outputDir, outputFilename) {
+  // Use type command on windows, cat on Mac or Linux
+  const command = electronUtil.is.windows ? 'type' : 'cat';
+  const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
+  const { stdout, stderr } = await exec(childCmd, {
+    cwd: outputDir,
+    shell: electronUtil.is.windows
+  });
+  console.log(stdout, stderr);
+}
+
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, combinedOutput }) => {
   cancelProcess(id);
 
-  const binaryDir = path.join(__static, 'bin');
+  const binParentDir = app.isPackaged ? '' : electronUtil.platform({
+    macos: 'Mac',
+    windows: 'Windows',
+    linux: 'Linux',
+  });
+  const binaryDir = path.join(__static, 'bin', binParentDir);
   const binaryPath = path.resolve(binaryDir, binaryName);
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
@@ -147,6 +164,10 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
   }
 
+  if (combinedOutput) {
+    await combineOutput(outputDir, outputFilename);
+  }
+
   const filenames = await readdir(outputDir);
   const resultFilenames = filenames.filter(filename =>
     filename.endsWith(outputFilename));
@@ -160,11 +181,6 @@ ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   console.log(`Cancel raxml process ${id}...`);
   cancelProcess(id);
   // send(event, ipc.RUN_CLOSED, { id });
-});
-
-ipcMain.on('open-item', (event, arg) => {
-  console.log('Open item:', arg);
-  shell.openItem(arg);
 });
 
 function cancelProcess(id) {
@@ -252,7 +268,7 @@ async function execProcess(binaryPath, args) {
 ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   console.log('Parse alignment', filePath);
   try {
-    const alignment = await parseAlignment(filePath);
+    const alignment = await io.parseAlignment(filePath);
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
   }
   catch (error) {

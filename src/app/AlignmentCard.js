@@ -23,22 +23,22 @@ import Partition from './Partition';
 
 const InputSwitch = withStyles(theme => ({
   switchBase: {
-    color: theme.palette.input.light,
+    color: theme.palette.input.secondaryText,
     '&$checked': {
-      color: theme.palette.input.main
+      color: theme.palette.input.dark,
     },
     '&$checked + $track': {
-      backgroundColor: theme.palette.input.main
-    }
+      backgroundColor: theme.palette.input.dark,
+    },
   },
   checked: {},
-  track: {}
+  track: {},
 }))(Switch);
 
 const useStyles = makeStyles(theme => ({
   AlignmentCard: {
-    // backgroundColor: theme.palette.secondary.main,
-    border: `1px solid #999`
+    backgroundColor: theme.palette.input.main,
+    border: `1px solid ${theme.palette.input.light}`
   },
   heading: {
     display: 'flex',
@@ -53,11 +53,15 @@ const useStyles = makeStyles(theme => ({
   },
   chip: {
     height: '30px',
-    backgroundColor: theme.palette.input.main
+    backgroundColor: theme.palette.input.dark,
+    border: `1px solid ${theme.palette.input.light}`,
   },
   link: {
     cursor: 'pointer',
     color: theme.palette.secondary.main
+  },
+  secondaryText: {
+    color: theme.palette.input.secondaryText,
   },
   divider: {
     margin: '0 4px'
@@ -129,11 +133,11 @@ function AlignmentCard({ className, alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span>
+    <span className={classes.secondaryText}>
       {numSequences} sequences of length {length}
     </span>
   ) : (
-    <span>Parsing... {alignment.numSequencesParsed} </span>
+    <span className={classes.secondaryText}>Parsing... {alignment.numSequencesParsed} </span>
   );
 
   // const Type = alignment.typecheckingComplete ? (
@@ -142,7 +146,7 @@ function AlignmentCard({ className, alignment }) {
   //   <span>{ alignment.parsingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
 
-  const Type = alignment.typecheckingComplete ? (
+  const Type = dataType ? (
     <Chip
       classes={{ colorSecondary: classes.chip }}
       label={dataType}
@@ -179,7 +183,7 @@ function AlignmentCard({ className, alignment }) {
         ) : null}
         {alignment.modelExtra ? (
           <FormControl>
-            <InputLabel style={{ whiteSpace: 'nowrap' }} htmlFor={alignment.modelExtra.label}>{alignment.modelExtra.label}</InputLabel>
+            <InputLabel className={classes.secondaryText} style={{ whiteSpace: 'nowrap' }} htmlFor={alignment.modelExtra.label}>{alignment.modelExtra.label}</InputLabel>
             <Select
               value={alignment.modelExtra.value}
               onChange={alignment.modelExtra.onChange}
@@ -274,11 +278,11 @@ function FinalAlignmentCard({ className, alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span>
+    <span className={classes.secondaryText}>
       {alignment.numSequences} sequences of length {alignment.length}
     </span>
   ) : (
-    <span>Parsing... {alignment.numSequencesParsed} </span>
+    <span className={classes.secondaryText}>Parsing... {alignment.numSequencesParsed} </span>
   );
 
   return (

@@ -21,14 +21,23 @@ function initDev(exampleFiles) {
   const useFiles = [
     // 'dna.txt',
     // 'aminoacid.txt',
-    // 'binary.txt',
-    'bin1.txt',
-    'bin2.txt',
+    'binary.txt',
+    // 'bin1.txt',
+    // 'bin2.txt',
+    // 'AA.txt',
+    // 'AA2.txt',
+    // 'dna_interleaved_relaxed.txt',
+    // 'dna_interleaved.txt',
+    // 'dna_sequential_relaxed.txt',
+    // 'dna_sequential.txt',
     // 'align.txt',
+    // 'align_allvariant.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
     // 'nucleotide.txt',
-  ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
+    // 'test_interleaved.txt',
+  ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
+  // ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
   store.activeRun.addAlignments(useFiles);
   // store.activeRun.alignments[0].setShowPartition();
 }

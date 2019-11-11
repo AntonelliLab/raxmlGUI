@@ -12,6 +12,7 @@ const styles = theme => ({
     // flexGrow: 1,
     // padding: '0 4px',
     padding: '10px',
+    width: '100%',
   },
   stdoutContainer: {
     overflowY: 'auto',
@@ -22,8 +23,10 @@ const styles = theme => ({
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
     fontSize: '12px',
     height: '100%',
-    overflowWrap: 'break-word',
+    width: '100%',
+    // overflowWrap: 'anywhere', // currently not available in Chrome
     whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
   }
 });
 

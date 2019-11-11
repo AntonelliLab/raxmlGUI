@@ -1,18 +1,18 @@
 {
-  "name": "raxmlGUI2",
-  "productName": "raxmlGUI2",
-  "version": "2.0.0-beta.1",
+  "name": "raxmlGUI",
+  "productName": "raxmlGUI",
+  "version": "2.0.0-beta.2",
   "private": true,
   "author": "AntonelliLab <raxmlgui.help@gmail.com>",
   "license": "AGPL-3.0",
-  "description": "raxmlGUI2 - A new graphical front-end for RAxML",
+  "description": "raxmlGUI - A new graphical front-end for RAxML",
   "homepage": "./",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AntonelliLab/raxmlGUI.git"
   },
   "bugs": {
-    "url": "https://github.com/AntonelliLab/raxmlGUI2/issues"
+    "url": "https://github.com/AntonelliLab/raxmlGUI/issues"
   },
   "keywords": [
     "Electron",
@@ -117,7 +117,7 @@
   },
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
-    "productName": "raxmlGUI2",
+    "productName": "raxmlGUI",
     "directories": {
       "buildResources": "build",
       "output": "dist"
@@ -128,15 +128,15 @@
     "extraResources": [
       "assets/"
     ],
+    "dmg": {
+      "icon": "build/disk-image.icns"
+    },
     "mac": {
       "category": "public.app-category.education",
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*-Mac"
-          ]
+          "from": "static/bin/Mac",
+          "to": "static/bin"
         },
         {
           "from": "static/example-files/fasta",
@@ -155,11 +155,8 @@
       ],
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*.exe"
-          ]
+          "from": "static/bin/Windows",
+          "to": "static/bin"
         }
       ]
     },
@@ -173,11 +170,8 @@
       "category": "Education",
       "extraResources": [
         {
-          "from": "static/bin",
-          "to": "static/bin",
-          "filter": [
-            "**/*-Linux"
-          ]
+          "from": "static/bin/Linux",
+          "to": "static/bin"
         }
       ]
     }

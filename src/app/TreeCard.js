@@ -15,7 +15,8 @@ import CardContent from '@material-ui/core/CardContent';
 
 const useStyles = makeStyles(theme => ({
   TreeCard: {
-    border: `1px solid #999`,
+    backgroundColor: theme.palette.input.main,
+    border: `1px solid ${theme.palette.input.light}`,
   },
   heading: {
     display: 'flex',
@@ -30,11 +31,15 @@ const useStyles = makeStyles(theme => ({
   },
   chip: {
     height: '30px',
-    backgroundColor: theme.palette.input.main,
+    backgroundColor: theme.palette.input.dark,
+    border: `1px solid ${theme.palette.input.light}`,
   },
   link: {
     cursor: 'pointer',
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.main
+  },
+  secondaryText: {
+    color: theme.palette.input.secondaryText,
   },
   divider: {
     margin: '0 4px',

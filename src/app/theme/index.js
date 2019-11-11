@@ -1,27 +1,51 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import amber from '@material-ui/core/colors/amber';
-import pink from '@material-ui/core/colors/pink';
-import teal from '@material-ui/core/colors/teal';
+import grey from '@material-ui/core/colors/grey';
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
-    // primary: {
-    //   main: '#7b3352',
-    // },
-    // secondary: {
-    //   main: '#2d547d',
-    // },
-    primary: teal,
-    secondary: pink,
+    primary: {
+      main: amber[500],
+      contrastText: '#fff',
+    },
+    secondary: {
+      main: grey[500],
+      // main: '#4E293A',
+      contrastText: '#fff',
+    },
+    // primary: amber,
+    // secondary: teal,
     model: {
-      main: '#3B4E2D',
+      // light: '#6E495A',
+      light: 'hsla(332, 31%, 29%, 1)',
+      main: 'hsla(332, 31%, 23%, 1)',
+      // dark: '#2C0718',
+      dark: 'hsla(332, 31%, 17%, 1)',
+      // darker: '#1C0008',
+      darker: 'hsla(332, 31%, 11%, 1)',
+      secondaryText: 'hsla(332, 9%, 54%, 1)',
     },
     input: {
-      main: '#4E293A',
+      // light: '#5B6E4D',
+      light: 'hsla(95, 27%, 29%, 1)',
+      // main: '#3B4E2D',
+      main: 'hsla(95, 27%, 23%, 1)',
+      // dark: '#192C0B',
+      dark: 'hsla(95, 27%, 17%, 1)',
+      // darker: '#091C00',
+      darker: 'hsla(95, 27%, 11%, 1)',
+      secondaryText: 'hsla(95, 9%, 54%, 1)',
     },
     output: {
-      main: '#233242',
+      // light: '#435262',
+      light: 'hsla(211, 31%, 29%, 1)',
+      // main: '#233242',
+      main: 'hsla(211, 31%, 23%, 1)',
+      // dark: '#011020',
+      dark: 'hsla(211, 31%, 17%, 1)',
+      // darker: '#000010',
+      darker: 'hsla(211, 31%, 11%, 1)',
     },
     error: amber,
     // error: {

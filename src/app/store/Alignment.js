@@ -47,6 +47,7 @@ class Alignment {
   @computed get partitionType() {
     switch (this.dataType) {
       case 'dna':
+      case 'nucleotide':
         return 'DNA';
       case 'protein':
         return this.aaMatrixName;
@@ -159,7 +160,11 @@ class Alignment {
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_FAILURE, (event, { id, error }) => {
         if (id === this.id) {
           runInAction(() => {
+            console.error(`Error loading file '${this.path}':`, error);
             this.error = error;
+            this.loading = false;
+            this.run.error = error;
+            this.remove();
           });
         };
     });

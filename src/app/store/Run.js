@@ -14,25 +14,18 @@ const { modelOptions } = raxmlSettings;
 
 export const MAX_NUM_CPUS = cpus().length;
 
-
-const raxmlBinarySuffix = util.platform({
-  macos: '-Mac',
-  windows: '-Windows.exe',
-  linux: '-Linux',
-})
-
 const winBinaries = [
-  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
-  // { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-PTHREADS-AVX2${raxmlBinarySuffix}`, multithreaded: true },
-  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+  { name: 'raxmlHPC.exe', multithreaded: false },
+  // { name: 'raxmlHPC-SSE3.exe', multithreaded: false },
+  { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true },
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true },
 ];
 
 const binaries = util.is.windows ? winBinaries : [
-  { name: `raxmlHPC${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-SSE3${raxmlBinarySuffix}`, multithreaded: false },
-  { name: `raxmlHPC-PTHREADS-AVX${raxmlBinarySuffix}`, multithreaded: true },
-  { name: `raxmlHPC-PTHREADS-SSE3${raxmlBinarySuffix}`, multithreaded: true },
+  { name: 'raxmlHPC', multithreaded: false },
+  { name: 'raxmlHPC-SSE3', multithreaded: false },
+  { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true },
+  { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true },
 ];
 
 // Available parameters for different analysis
@@ -47,7 +40,7 @@ const analysisOptions = [
   {
     title: 'ML search',
     value: 'ML',
-    params: [params.SHlike, params.combinedOutput, params.outGroup],
+    params: [params.runs, params.SHlike, params.combinedOutput, params.outGroup],
   },
   {
     title: 'ML + rapid bootstrap',
@@ -78,9 +71,11 @@ const analysisOptions = [
   {
     title: 'RELL bootstraps',
     value: 'RBS',
-    params: [params.reps, params.brL, params.outGroup],
+    params: [],
   }
 ];
+
+const quote = dir => util.is.windows ? `"${dir}"` : dir;
 
 class Option {
   constructor(run, defaultValue, title, description, hoverInfo) {
@@ -271,7 +266,7 @@ class Run {
 
   @observable outputName = 'output';
   @action setOutputName = (value) => {
-    this.outputName = filenamify(value.replace(' ', '_').trim());
+    this.outputName = filenamify(value.replace(/\s+/g, '_').trim());
   }
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
@@ -316,7 +311,7 @@ class Run {
   };
 
   @action openOutputDir = () => {
-    shell.showItemInFolder(this.outputDir);
+    shell.openItem(this.outputDir);
   };
 
   // Result
@@ -391,7 +386,9 @@ class Run {
 
   @computed get args() {
     const first = [];
-    const cmdArgs = [first];
+    const second = [];
+    const third = [];
+    const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
 
     switch (this.analysis.value) {
       case 'FT': // Fast tree search
@@ -411,17 +408,17 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
-        first.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.branchLength.value) {
           const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
@@ -437,12 +434,12 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile1}`);
+          next.push('-t', quote(treeFile1));
           next.push('-n', `brL.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
         }
@@ -462,12 +459,12 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile2}`);
+          next.push('-t', quote(treeFile2));
           next.push('-n', `sh.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
         }
@@ -488,22 +485,22 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-N', this.numRepetitions.value);
+        first.push('-N', this.numRuns.value);
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
         first.push('-p', this.seedParsimony);
         first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
-        first.push('-w', `${this.outputDir}`);
-        if (this.outGroup.cmdValue) {
-          first.push('-o', this.outGroup.cmdValue);
-        }
+          if (this.outGroup.cmdValue) {
+            first.push('-o', this.outGroup.cmdValue);
+          }
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.sHlike.value) {
-          const treeFile = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
+          const treeFile = join(this.outputDir, `RAxML_bestTree.${this.outputFilenameSafe}`);
           const next = [];
           if (!this.numThreads.notAvailable) {
             next.push('-T', this.numThreads.value);
@@ -516,21 +513,14 @@ class Run {
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
-          next.push('-t', `${treeFile}`);
+          next.push('-t', quote(treeFile));
           next.push('-n', `sh.${this.outputFilenameSafe}`);
-          next.push('-s', `${this.finalAlignment.path}`);
-          next.push('-w', `${this.outputDir}`);
+          next.push('-s', quote(this.finalAlignment.path));
+          next.push('-w', quote(this.outputDir));
           if (this.alignments.length > 1) {
-            next.push('-q', `${this.finalAlignment.partitionFilePath}`);
+            next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
-        }
-        if (this.combinedOutput.value) {
-          // TODO: Add binary to the above commands to not assume raxml
-          // TODO: Use 'type' instead of 'cat' for windows
-          // const cmd = [];
-          // cmd.push('cat', `RAxML_*.${this.outputFilenameSafe}`);
-          // cmdArgs.push(cmd);
         }
         break;
       case 'ML+rBS': // ML + rapid bootstrap
@@ -552,17 +542,20 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', this.outputFilenameSafe);
-        first.push('-s', this.finalAlignment.path);
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       case 'ML+tBS': // ML + thorough bootstrap
@@ -577,9 +570,6 @@ class Run {
         // try:
         // 	remove="RAxML_info.%s.tre" % (only_name)
         // ...
-        const second = [];
-        const third = [];
-        cmdArgs.push(second, third);
         const outputFilenameSafe1 = `${this.outputNameSafe}R.tre`;
         const outputFilenameSafe2 = `${this.outputNameSafe}B.tre`;
         const treeFile = join(this.outputDir, `RAxML_bestTree.${outputFilenameSafe2}`); // MLtreeR
@@ -606,14 +596,14 @@ class Run {
         if (this.disableCheckUndeterminedSequence) {
           first.push('-O');
         }
-        first.push('-n', outputFilenameSafe1);
-        first.push('-s', this.finalAlignment.path);
-        first.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           first.push('-o', this.outGroup.cmdValue);
         }
+        first.push('-n', outputFilenameSafe1);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -629,25 +619,25 @@ class Run {
         }
         second.push('-p', this.seedParsimony);
         second.push('-N', this.numRuns.value);
-        second.push('-n', outputFilenameSafe2);
-        second.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           second.push('-O');
         }
-        second.push('-w', `${this.outputDir}`);
         if (this.outGroup.cmdValue) {
           second.push('-o', this.outGroup.cmdValue);
         }
+        second.push('-n', outputFilenameSafe2);
+        second.push('-s', quote(this.finalAlignment.path));
+        second.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          second.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          second.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
 
         if (!this.numThreads.notAvailable) {
           third.push('-T', this.numThreads.value);
         }
         third.push('-f', 'b');
-        third.push('-t', treeFile);
-        third.push('-z', treesFile);
+        third.push('-t', quote(treeFile));
+        third.push('-z', quote(treesFile));
         third.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           third.push('--asc-corr=lewis');
@@ -655,12 +645,12 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           third.push('-K', this.multistateModel.value);
         }
-        third.push('-n', this.outputFilenameSafe);
-        third.push('-s', this.finalAlignment.path);
         if (this.disableCheckUndeterminedSequence) {
           third.push('-O');
         }
-        third.push('-w', `${this.outputDir}`);
+        third.push('-n', this.outputFilenameSafe);
+        third.push('-s', quote(this.finalAlignment.path));
+        third.push('-w', quote(this.outputDir));
         // if (this.alignments.length > 1) {
         //   third.push('-q', `${this.finalAlignment.partitionFilePath}`);
         // }
@@ -676,6 +666,53 @@ class Run {
         // % (winD, raxml_path, \
         // K[0], pro, mod, save_brL.get(), out_file, seq_file, o, seed_1, BSrep.get(), path_dir, part_f, const_f, random.randrange(1, 1000, 1), raxml_path, \
         // K[0], pro, mod, out_file, BStrees_file, path_dir, winEx)
+
+        const bsTreeFile = join(this.outputDir, `RAxML_bootstrap.${this.outputFilenameSafe}`);
+        const consensusOutput = `consensus.${this.outputFilenameSafe}`;
+
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
+        first.push('-x', this.seedRapidBootstrap);
+        first.push('-p', this.seedParsimony);
+        first.push('-N', this.numRepetitions.value);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
+        if (this.alignments.length > 1) {
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
+
+        if (!this.numThreads.notAvailable) {
+          second.push('-T', this.numThreads.value);
+        }
+        second.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          second.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          second.push('-K', this.multistateModel.value);
+        }
+        second.push('-J', 'MR');
+        second.push('-w', quote(this.outputDir));
+        second.push('-z', quote(bsTreeFile));
+        second.push('-n', consensusOutput);
         break;
       case 'AS': // Ancestral states
         // params: [params.tree],
@@ -685,8 +722,7 @@ class Run {
           first.push('-T', this.numThreads.value);
         }
         first.push('-f', 'A');
-        first.push('-t', this.tree.filePath);
-        first.push('-s', this.finalAlignment.path);
+        first.push('-t', quote(this.tree.filePath));
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
@@ -694,10 +730,11 @@ class Run {
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
-        first.push('-n', `${this.outputFilenameSafe}`);
-        first.push('-w', `${this.outputDir}`);
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
-          first.push('-q', `${this.finalAlignment.partitionFilePath}`);
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
       case 'PD': // Pairwise distances
@@ -705,17 +742,71 @@ class Run {
         // # "./raxmlHPC -f x -m GTRGAMMA[I] -n NAME -s INPUT -p RANDOMNR [-q PARTFILE -o OUTGROUP]"
         // cmd = """cd %s %s &&%s %s -f x -p %s %s -s %s %s -n %s %s -O -w %s %s %s""" \
         // % (winD, raxml_path, K[0], pro, seed_1, const_f, seq_file, mod, out_file, o, path_dir, part_f, winEx)
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
+        first.push('-f', 'x');
+        first.push('-p', this.seedParsimony);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        if (!this.tree.notAvailable) {
+          first.push('-t', quote(this.tree.filePath));
+        }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        first.push('-w', quote(this.outputDir));
+        if (this.alignments.length > 1) {
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
         break;
       case 'RBS': // Rell bootstraps
         // params: [params.reps, params.brL, params.outGroup],
         // # "./raxmlHPC -f x -m GTRGAMMA[I] -n NAME -s INPUT -p RANDOMNR [-q PARTFILE -o OUTGROUP]"
         // 	cmd = """cd %s %s &&%s %s -f D -p %s %s -s %s %s -n %s %s -O -w %s %s %s""" \
         // 	% (winD, raxml_path, K[0], pro, seed_1, const_f, seq_file, mod, out_file, o, path_dir, part_f, winEx)
+        if (!this.numThreads.notAvailable) {
+          first.push('-T', this.numThreads.value);
+        }
+        first.push('-f', 'D');
+        first.push('-p', this.seedParsimony);
+        first.push('-m', this.substitutionModel.cmdValue);
+        if (this.substitutionModel.value.startsWith('ASC_')) {
+          first.push('--asc-corr=lewis');
+        }
+        if (this.branchLength.value) {
+          first.push('-k');
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
+        if (!this.multistateModel.notAvailable) {
+          first.push('-K', this.multistateModel.value);
+        }
+        if (this.disableCheckUndeterminedSequence) {
+          first.push('-O');
+        }
+        first.push('-n', this.outputFilenameSafe);
+        first.push('-s', quote(this.finalAlignment.path));
+        // if (!this.tree.notAvailable) {
+        //   first.push('-t', this.tree.filePath);
+        // }
+        first.push('-w', quote(this.outputDir));
+        if (this.alignments.length > 1) {
+          first.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
         break;
       default:
     }
 
-    return cmdArgs;
+    return cmdArgs.filter(args => args.length > 0);
   }
 
   @computed get command() {
@@ -724,7 +815,7 @@ class Run {
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, combinedOutput } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -733,7 +824,7 @@ class Run {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, combinedOutput: combinedOutput.value });
   };
 
   @action
