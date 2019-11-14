@@ -7,6 +7,9 @@ raxmlGUI<sup>1,2</sup> is a graphical user interface to RAxML<sup>3</sup>, one o
 
 While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). raxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML. Read more in the [bioRxiv paper](https://www.biorxiv.org/content/10.1101/800912v1).
 
+##### Notice for macOS Catalina
+Currently, if you use macOS Catalina you have to right-click on the application and click open to let it open.
+
 ------------------------
 
 <small>
