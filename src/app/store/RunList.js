@@ -1,13 +1,23 @@
 import { observable, computed, action } from 'mobx';
 import Run from './Run';
+import * as ipc from '../../constants/ipc';
+import StoreBase from './StoreBase';
 
-class RunList {
+class RunList extends StoreBase {
   @observable runs = [];
   @observable activeIndex = 0;
 
   constructor() {
+    super();
     this.addRun();
+    this.listen();
   }
+
+  @observable error = null;
+  @action
+  clearError = () => {
+    this.error = null;
+  };
 
   @computed
   get activeRun() {
@@ -42,6 +52,16 @@ class RunList {
   deleteActive = () => {
     this.deleteRun(this.activeRun);
   };
+
+  @action
+  onError = (event, { error }) => {
+    console.log(`Unhandled error:`, error);
+    this.error = error;
+  };
+
+  listen = () => {
+    this.listenTo(ipc.UNHANDLED_ERROR, this.onError);
+  }
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {
     return this.activeRun.generateReport({ maxStdoutLength });
