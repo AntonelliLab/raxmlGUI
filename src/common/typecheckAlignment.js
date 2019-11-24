@@ -4,6 +4,7 @@ export default function typecheckAlignment(alignment) {
   const proteinMatch = /[EFIJLOPQZX\*]/i;
   const binaryMatch = /[01]/i;
   const multistateMatch = /2/i;
+  const unknownMatch = /^\?+$/;
   const sequenceDataTypes = [];
   const dataTypes = new Set();
   let numSequencesTypechecked = 0;
@@ -23,11 +24,16 @@ export default function typecheckAlignment(alignment) {
       dataType = 'nucleotide';
     }
 
-    const isBinary = binaryMatch.test(code);
-    const isMultistate = multistateMatch.test(code);
     if (!dataType) {
-      dataType = isMultistate ? 'multistate' : (isBinary ? 'binary' : undefined);
-    } else if (isBinary || isMultistate) {
+      if (multistateMatch.test(code)) {
+        dataType = 'multistate';
+      }
+      else if (binaryMatch.test(code)) {
+        dataType = 'binary';
+      } else if (unknownMatch.test(code)) {
+        dataType = 'unknown';
+      }
+    } else if (binaryMatch.test(code) || multistateMatch.test(code)) {
       dataType = 'mixed';
     }
     dataTypes.add(dataType);
@@ -36,15 +42,24 @@ export default function typecheckAlignment(alignment) {
     sequenceDataTypes.push(sequence.dataType);
   }
 
-  let dataType = sequenceDataTypes[0];
-  const differentTypes = sequenceDataTypes.filter(type => type !== dataType);
-  if (differentTypes.length > 0) {
+  if (dataTypes.delete('unknown')) {
+    console.log('At least one sequence have only unknown characters');
+    if (dataTypes.size === 0) {
+      throw new Error(`Invalid alignment: cannot determine data type because all sequences are of type unknown`);
+    }
+  }
+  let dataType = dataTypes.values().next().value;
+  if (dataTypes.size > 1) {
     // Only valid case with different types is binary and multistate as [01] is a subset of [012].
-    const isInvalid = sequenceDataTypes.find(type => type !== 'binary' && type !== 'multistate');
-    if (isInvalid) {
+    const isMultistate = !sequenceDataTypes.find(type => type !== 'binary' && type !== 'multistate');
+    if (isMultistate) {
+      dataType = 'multistate';
+    }
+    else {
+      dataType = 'invalid';
+      console.log('Illegal mix of data types among sequences:', sequenceDataTypes);
       throw new Error(`Invalid alignment: sequences must be of same data type, but found [${Array.from(dataTypes.keys())}].`);
     }
-    dataType = isInvalid ? 'invalid' : 'multistate';
   }
   alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
