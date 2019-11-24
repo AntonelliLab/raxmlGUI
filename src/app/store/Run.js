@@ -9,6 +9,7 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
+import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 const { modelOptions } = raxmlSettings;
 
@@ -208,8 +209,9 @@ class Tree extends Option {
 }
 
 
-class Run {
+class Run extends StoreBase {
   constructor(parent, id) {
+    super();
     this.parent = parent;
     this.id = id;
     this.listen();
@@ -930,13 +932,7 @@ class Run {
 
   dispose = () => {
     this.cancel();
-    this.unlisten();
-  }
-
-  listeners = []
-  listenTo = (channel, listener) => {
-    ipcRenderer.on(channel, listener);
-    this.listeners.push([channel, listener]);
+    super.dispose();
   }
 
   listen = () => {
@@ -952,13 +948,6 @@ class Run {
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
-  }
-
-  unlisten = () => {
-    while (!this.listeners.length > 0) {
-      const [channel, listener] = this.listeners.pop();
-      ipcRenderer.removeListener(channel, listener);
-    }
   }
 
   // -----------------------------------------------------------

@@ -247,6 +247,7 @@ const App = () => {
           </Snackbar>
           <ErrorDialog error={run.error} onClose={run.clearError} />
         </ErrorBoundary>
+        <ErrorDialog error={store.error} onClose={store.clearError} />
       </div>
     </React.Fragment>
   );

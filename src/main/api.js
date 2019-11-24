@@ -6,16 +6,34 @@ import fs from "fs";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import serializeError from 'serialize-error';
+import { activeWindow } from 'electron-util';
 import io from '../common/io';
 
 import * as ipc from "../constants/ipc";
 import electronUtil from 'electron-util';
 import unhandled from 'electron-unhandled';
-import { reportIssue } from "../common/utils";
+import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
 
-unhandled({
-  showDialog: true,
-	reportButton: reportIssue,
+// unhandled({
+//   showDialog: true,
+// 	reportButton: reportIssue,
+// });
+
+function handleError(title, error) {
+  // send error to renderer
+  console.log(`${title}:`, error);
+  const win = activeWindow();
+  if (win) {
+    win.webContents.send(ipc.UNHANDLED_ERROR, { title, error: serializeError(error) });
+  }
+}
+
+process.on('uncaughtException', error => {
+  handleError('Unhandled Error', error);
+});
+
+process.on('unhandledRejection', error => {
+  handleError('Unhandled Promise Rejection', error);
 });
 
 const exec = util.promisify(childProcess.exec);

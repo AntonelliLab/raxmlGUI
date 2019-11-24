@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import { remote } from 'electron';
 import SnackbarMessage from './SnackbarMessage';
-import { reportIssue } from '../../common/utils';
+import { reportIssueToGitHub, getMailtoLinkToReportError } from '../../common/utils';
 
 const handleReload = () => {
   remote.getCurrentWindow().reload();
@@ -27,10 +27,16 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
     return null;
   }
 
-  const handleReport = () => {
-    reportIssue(error);
+  const handleReportToGithub = () => {
+    reportIssueToGitHub(error);
     setReported(true);
   }
+
+  const handleReportToMail = () => {
+    setReported(true);
+  }
+
+  const mailtoContent = getMailtoLinkToReportError(error);
 
   const closeMessage = needReload ? (
     reported ? 'Reload' : 'Ignore and reload'
@@ -48,8 +54,11 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
       <Button onClick={closeHandler} color="secondary">
         { closeMessage }
       </Button>
-      <Button onClick={handleReport} variant="contained" color="primary" autoFocus>
-        Report
+      <Button href={mailtoContent} onClick={handleReportToMail} variant="contained" color="primary" autoFocus>
+        Report issue on mail
+      </Button>
+      <Button onClick={handleReportToGithub} variant="contained" color="primary" autoFocus>
+        Report issue on GitHub
       </Button>
     </DialogActions>
   );
