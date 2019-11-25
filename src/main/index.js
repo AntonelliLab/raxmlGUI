@@ -47,7 +47,7 @@ function initialize() {
     const mainWindowOptions = {
       width: 1280,
       minWidth: 960,
-      height: 760,
+      height: 790,
       title: app.getName(),
       resizable: true,
       webPreferences: {

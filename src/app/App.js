@@ -25,8 +25,47 @@ import './App.css';
 import store from './store';
 import SplitPane from 'react-split-pane';
 import { Typography } from '@material-ui/core';
+import { version } from '../../package.json';
 
 const useStyles = makeStyles(theme => ({
+  App: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+  },
+  splitPane: {
+  },
+  ioContainer: {
+    height: 'calc(100vh - 20px)',
+    overflowY: 'auto',
+  },
+  statusBar: {
+    top: 'auto',
+    bottom: 0,
+    height: 20,
+    minHeight: 20,
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    backgroundColor: '#333',
+    borderTop: '1px solid #444',
+    color: '#aaa',
+    fontSize: 12,
+  },
+  statusToolbar: {
+    minHeight: 20,
+    margin: 0,
+    padding: '0 8px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  statusVersion: {
+    flexGrow: 1,
+  },
+  statusFeedback: {
+    color: '#fff',
+    marginLeft: 20,
+  },
   AppBar: {
     display: 'flex',
     flexDirection: 'row'
@@ -43,10 +82,6 @@ const useStyles = makeStyles(theme => ({
   tabIcon: {
     left: 10,
     position: 'absolute'
-  },
-  ioContainer: {
-    height: '100vh',
-    overflowY: 'auto',
   },
   leftPanel: {
   },
@@ -148,7 +183,7 @@ const App = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className="App">
+      <div className={classes.App}>
         {store.runs.length === 1 ? null : (
           <AppBar position="static" className={classes.AppBar}>
             <Tabs
@@ -229,6 +264,14 @@ const App = () => {
             </Box>
           </Box>
         </SplitPane>
+        <AppBar position="fixed" color="primary" className={classes.statusBar}>
+          <Toolbar className={classes.statusToolbar}>
+            <div className={classes.statusVersion}>raxmlGUI {version}</div>
+            <a className={classes.statusFeedback} href="mailto:raxmlgui.help@googlemail.com?subject=Feedback">
+              Please send as feedback!
+            </a>
+          </Toolbar>
+        </AppBar>
         <ErrorBoundary>
           <Snackbar
             anchorOrigin={{
