@@ -83,7 +83,8 @@ export const getMailtoLinkToReportError = (error) => {
 const IS_PROD = process.env.NODE_ENV === 'production';
 const root = process.cwd();
 
-export const assetsDir =
-  IS_PROD && app.isPackaged
-    ? path.join(path.dirname(app.getAppPath()), '..', './resources', './assets')
-    : path.join(root, './assets');
+// TODO: app now gets undefined in production!
+// export const assetsDir =
+//   IS_PROD && app.isPackaged
+//     ? path.join(path.dirname(app.getAppPath()), '..', './resources', './assets')
+//     : path.join(root, './assets');
