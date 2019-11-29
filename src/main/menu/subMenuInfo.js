@@ -1,15 +1,15 @@
 import { shell } from 'electron';
 import path from 'path';
 
-import { assetsDir } from '../../common/utils';
+// import { assetsDir } from '../../common/utils';
 
 function showCitation(filename, fileEnding) {
-  const p = path.join(assetsDir, `citations/${filename}${fileEnding}`);
-  const opened = shell.openItem(p);
-  if (!opened) {
-    // TODO Error handling for file not opened, should be sent to renderer process, but how received
-    console.log('File not opened', p);
-  }
+  // const p = path.join(assetsDir, `citations/${filename}${fileEnding}`);
+  // const opened = shell.openItem(p);
+  // if (!opened) {
+  //   // TODO Error handling for file not opened, should be sent to renderer process, but how received
+  //   console.log('File not opened', p);
+  // }
 }
 
 function showGUICitation(fileEnding) {

@@ -2,9 +2,14 @@ import electron from 'electron';
 import path from 'path';
 import url from 'url';
 import isDev from 'electron-is-dev';
+const debug = require('electron-debug');
 
 import './api';
 import MenuBuilder from './menu';
+
+debug({
+  // isEnabled: true, // override default disabled in production
+});
 
 // Module to control application life.
 const app = electron.app
@@ -49,6 +54,7 @@ function initialize() {
       minWidth: 960,
       height: 790,
       title: app.getName(),
+      backgroundColor: '#333',
       resizable: true,
       webPreferences: {
         backgroundThrottling: false, //TODO: Skip this if it doesn't affect raxml performance
