@@ -149,6 +149,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
   // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
+  // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
   const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg;
   if (checkFlags) {
     for (const arg of args) {
@@ -187,6 +188,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   }
 
   const filenames = await readdir(outputDir);
+  // TODO: this is not working for raxml-ng
   const resultFilenames = filenames.filter(filename => filename.includes(outputName));
 
   send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames, exitCode });

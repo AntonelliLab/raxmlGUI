@@ -85,6 +85,16 @@ const raxmlNgAnalysisOptions = [
     value: 'SC',
     params: [],
   },
+  {
+    title: 'Compression and conversion to binary format',
+    value: 'CC',
+    params: [],
+  },
+  {
+    title: 'Default tree inference',
+    value: 'TI',
+    params: [],
+  },
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
@@ -466,6 +476,23 @@ class Run extends StoreBase {
         first.push('--model', this.substitutionModel.cmdValue);
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         first.push('--msa', quote(this.finalAlignment.path));
+        break;
+      case 'CC':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
+        first.push('--parse');
+        first.push('--model', this.substitutionModel.cmdValue);
+        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--msa', quote(this.finalAlignment.path));
+        break;
+      case 'TI':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
+        first.push('--msa', quote(this.finalAlignment.path));
+        first.push('--model', this.substitutionModel.cmdValue);
+        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        first.push('--seed', this.seedParsimony);
         break;
       default:
     }
