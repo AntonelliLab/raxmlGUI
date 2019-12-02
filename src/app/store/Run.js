@@ -103,7 +103,7 @@ class Binary extends Option {
 class NumThreads extends Option {
   constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
   options = range(2, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value); }
+  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value) && this.run.binary.value != 'raxml-ng'; }
 }
 
 class Analysis extends Option {
