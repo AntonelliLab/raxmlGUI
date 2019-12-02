@@ -80,6 +80,11 @@ const analysisOptions = [
 ];
 
 const raxmlNgAnalysisOptions = [
+  {
+    title: 'Sanity check',
+    value: 'SC',
+    params: [],
+  },
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
@@ -301,7 +306,6 @@ class Run extends StoreBase {
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
-  substitutionModel = new SubstitutionModel(this);
   aaMatrixName = new AAMatrixName(this);
   multistateModel = new MultistateModel(this);
   startingTree = new StartingTree(this);
@@ -451,6 +455,21 @@ class Run extends StoreBase {
   }
 
   raxmlNgArgs = () => {
+    const first = [];
+    const second = [];
+    const third = [];
+    const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
+    switch (this.analysis.value) {
+      case 'SC':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
+        first.push('--check');
+        first.push('--model', this.substitutionModel.cmdValue);
+        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--msa', quote(this.finalAlignment.path));
+        break;
+      default:
+    }
+    return cmdArgs.filter(args => args.length > 0);
   }
 
   raxmlArgs = () => {
