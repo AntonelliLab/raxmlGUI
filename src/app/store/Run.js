@@ -11,7 +11,9 @@ import filenamify from 'filenamify';
 import util from 'electron-util';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
-const { modelOptions } = raxmlSettings;
+import * as raxmlNgSettings from '../../settings/raxmlng';
+const raxmlModelOptions = raxmlSettings.modelOptions;
+const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
@@ -157,7 +159,29 @@ class SubstitutionModel extends Option {
     if (!this.run.haveAlignments) {
       return [];
     }
-    const modelSettings = modelOptions[this.run.dataType];
+    const modelSettings = raxmlModelOptions[this.run.dataType];
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map(value => ({ value, title: value }));
+  }
+  @computed get notAvailable() { return !this.run.haveAlignments; }
+  @computed get cmdValue() {
+    let model = this.value;
+    if (this.run.dataType === 'protein')  {
+      model += this.run.alignments[0].aaMatrixName;
+    }
+    return model;
+  }
+}
+
+class RaxmlNgSubstitutionModel extends Option {
+  constructor(run) { super(run, 'GTR+G', 'Substitution model'); }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlNgModelOptions[this.run.dataType];
     if (!modelSettings) {
       return [];
     }
