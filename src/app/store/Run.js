@@ -903,7 +903,7 @@ class Run extends StoreBase {
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, combinedOutput } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, outputNameSafe: outputName, combinedOutput, usesRaxmlNg } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -912,7 +912,7 @@ class Run extends StoreBase {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, combinedOutput: combinedOutput.value });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, outputName, combinedOutput: combinedOutput.value, usesRaxmlNg });
   };
 
   @action
