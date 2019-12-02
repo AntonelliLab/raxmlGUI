@@ -95,6 +95,17 @@ const raxmlNgAnalysisOptions = [
     value: 'TI',
     params: [],
   },
+  {
+    title: 'Fast tree search',
+    value: 'FT',
+    params: [params.outGroup],
+  },
+  {
+    title: 'ML + thorough bootstrap + consensus',
+    value: 'ML+tBS+con',
+    params: [params.outGroup],
+  },
+
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
@@ -493,6 +504,36 @@ class Run extends StoreBase {
           first.push('--threads', this.numThreads.value);
         }
         first.push('--seed', this.seedParsimony);
+        break;
+      case 'FT':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
+        first.push('--search1');
+        first.push('--msa', quote(this.finalAlignment.path));
+        first.push('--model', this.substitutionModel.cmdValue);
+        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        first.push('--seed', this.seedParsimony);
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        break;
+      case 'ML+tBS+con':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--all');
+        first.push('--msa', quote(this.finalAlignment.path));
+        first.push('--model', this.substitutionModel.cmdValue);
+        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--seed', this.seedParsimony);
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        first.push('--bs-metric', 'fbp,tbe');
         break;
       default:
     }
