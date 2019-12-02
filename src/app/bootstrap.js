@@ -21,7 +21,7 @@ function initDev(exampleFiles) {
   const useFiles = [
     // 'dna.txt',
     // 'aminoacid.txt',
-    'binary.txt',
+    // 'binary.txt',
     // 'bin1.txt',
     // 'bin2.txt',
     // 'AA.txt',
@@ -34,7 +34,7 @@ function initDev(exampleFiles) {
     // 'align_allvariant.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    // 'nucleotide.txt',
+    'nucleotide.txt',
     // 'test_interleaved.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   // ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
