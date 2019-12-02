@@ -79,6 +79,9 @@ const analysisOptions = [
   }
 ];
 
+const raxmlNgAnalysisOptions = [
+];
+
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
 
 class Option {
@@ -109,6 +112,11 @@ class NumThreads extends Option {
 class Analysis extends Option {
   constructor(run) { super(run, 'ML+rBS', 'Analysis', 'Type of analysis'); }
   options = analysisOptions.map(({ value, title }) => ({ value, title }));
+}
+
+class RaxmlNgAnalysis extends Option {
+  constructor(run) { super(run, 'FT', 'Analysis', 'Type of analysis'); }
+  options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
 class NumRuns extends Option {
@@ -191,7 +199,6 @@ class RaxmlNgSubstitutionModel extends Option {
   @computed get cmdValue() {
     let model = this.value;
     if (this.run.dataType === 'protein')  {
-      // model += this.aaMatrixName.value;
       model += this.run.alignments[0].aaMatrixName;
     }
     return model;
@@ -265,10 +272,21 @@ class Run extends StoreBase {
   binary = new Binary(this);
   numThreads = new NumThreads(this);
 
-  analysis = new Analysis(this);
+  raxmlNgSwitch = (raxmlNgParam, raxmlParam) => {
+    if (this.usesRaxmlNg) {
+      return raxmlNgParam;
+    }
+    return raxmlParam;
+  }
+
+  @computed
+  get analysis() {
+    return this.raxmlNgSwitch(new RaxmlNgAnalysis(this), new Analysis(this))
+  }
+
   @computed
   get analysisOption() {
-    return analysisOptions.find(opt => opt.value === this.analysis.value);
+    return this.raxmlNgSwitch(raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value), analysisOptions.find(opt => opt.value === this.analysis.value));
   }
 
   // Analysis params
@@ -410,6 +428,15 @@ class Run extends StoreBase {
   @observable seedParsimony = Math.floor(Math.random() * 1000 + 1);
   @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
   @observable seedBootstrap = Math.floor(Math.random() * 1000 + 1);
+
+  @computed get usesRaxmlNg() {
+    switch (this.binary.value) {
+      case 'raxml-ng':
+        return true;
+      default:
+        return false;
+    }
+  }
 
   @computed get args() {
     const first = [];
