@@ -289,6 +289,11 @@ class Run extends StoreBase {
     return this.raxmlNgSwitch(raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value), analysisOptions.find(opt => opt.value === this.analysis.value));
   }
 
+  @computed
+  get substitutionModel() {
+    return this.raxmlNgSwitch(new RaxmlNgSubstitutionModel(this), new SubstitutionModel(this));
+  }
+
   // Analysis params
   numRuns = new NumRuns(this);
   numRepetitions = new NumRepetitions(this);
@@ -439,6 +444,16 @@ class Run extends StoreBase {
   }
 
   @computed get args() {
+    if (this.usesRaxmlNg) {
+      return this.raxmlNgArgs();
+    }
+    return this.raxmlArgs();
+  }
+
+  raxmlNgArgs = () => {
+  }
+
+  raxmlArgs = () => {
     const first = [];
     const second = [];
     const third = [];
