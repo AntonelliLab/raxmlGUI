@@ -4,6 +4,7 @@ import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import Alignment, { FinalAlignment } from './Alignment';
+import Option from './Option';
 import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
@@ -109,20 +110,6 @@ const raxmlNgAnalysisOptions = [
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
-
-class Option {
-  constructor(run, defaultValue, title, description, hoverInfo) {
-    this.run = run;
-    this.defaultValue = defaultValue;
-    this.title = title;
-    this.description = description;
-    this.hoverInfo = hoverInfo;
-  }
-  @observable value = this.defaultValue;
-  @action setValue = (value) => { this.value = value; }
-  @action reset() { this.value = this.defaultValue; }
-  @computed get isDefault() { return this.value === this.defaultValue; }
-}
 
 class Binary extends Option {
   constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
