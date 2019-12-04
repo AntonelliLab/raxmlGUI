@@ -481,21 +481,33 @@ class Run extends StoreBase {
       case 'SC':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
         first.push('--check');
-        first.push('--model', this.substitutionModel.cmdValue);
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'CC':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
         first.push('--parse');
-        first.push('--model', this.substitutionModel.cmdValue);
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'TI':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
         first.push('--msa', quote(this.finalAlignment.path));
-        first.push('--model', this.substitutionModel.cmdValue);
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
@@ -506,7 +518,11 @@ class Run extends StoreBase {
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
         first.push('--search1');
         first.push('--msa', quote(this.finalAlignment.path));
-        first.push('--model', this.substitutionModel.cmdValue);
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
@@ -521,7 +537,11 @@ class Run extends StoreBase {
         // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
         first.push('--all');
         first.push('--msa', quote(this.finalAlignment.path));
-        first.push('--model', this.substitutionModel.cmdValue);
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
         first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
         first.push('--seed', this.seedParsimony);
         if (!this.numThreads.notAvailable) {
