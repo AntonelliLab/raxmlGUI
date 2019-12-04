@@ -12,6 +12,7 @@ class Option {
   @action setValue = (value) => { this.value = value; }
   @action reset() { this.value = this.defaultValue; }
   @computed get isDefault() { return this.value === this.defaultValue; }
+  @computed get error() { return this.value === null || this.value === undefined || this.value === ''; }
 }
 
 export { Option as default };
