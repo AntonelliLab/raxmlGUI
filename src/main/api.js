@@ -98,6 +98,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     const filenames = await readdir(outputDir);
     let outputNameUnused = outputName;
     const filterResultFilenames = filename =>
+      filename.includes(`${outputNameUnused}.raxml.`) ||
       filename.endsWith(outputNameUnused) ||
       filename.endsWith(`${outputNameUnused}.tre`);
     const resultFilenames = filenames.filter(filterResultFilenames)
