@@ -207,11 +207,11 @@ class RaxmlNgSubstitutionModel extends Option {
     }
     return modelSettings.options.map(value => ({ value, title: value }));
   }
-  @computed get notAvailable() { return !this.run.haveAlignments; }
+  @computed get notAvailable() { return !this.run.haveAlignments || this.run.alignments.length > 1; }
   @computed get cmdValue() {
     let model = this.value;
-    if (this.run.dataType === 'protein')  {
-      model += this.run.alignments[0].aaMatrixName;
+    if (this.run.dataType === 'multistate') {
+      model = model.replace('x', this.run.multistateNumber.value);
     }
     return model;
   }
@@ -226,7 +226,17 @@ class AAMatrixName extends Option {
 class MultistateModel extends Option {
   constructor(run) { super(run, 'GTR', 'Multistate model'); }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
-  @computed get notAvailable() { return this.run.dataType !== 'multistate'; }
+  @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
+}
+
+class MultistateNumber extends Option {
+  constructor(run) {
+    super(run, '', 'Number of states');
+    this.placeholder = 'Integer';
+  }
+  @computed get notAvailable() { return this.run.dataType !== 'multistate' || !this.run.usesRaxmlNg; }
+  @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
+  @computed get helperText() { return this.error && 'You need to give the number of states.' }
 }
 
 class Tree extends Option {
@@ -315,6 +325,7 @@ class Run extends StoreBase {
   outGroup = new OutGroup(this);
   aaMatrixName = new AAMatrixName(this);
   multistateModel = new MultistateModel(this);
+  multistateNumber = new MultistateNumber(this);
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
