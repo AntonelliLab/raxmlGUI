@@ -486,7 +486,7 @@ class Run extends StoreBase {
         } else {
           first.push('--model', this.substitutionModel.cmdValue);
         }
-        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'CC':
@@ -497,7 +497,7 @@ class Run extends StoreBase {
         } else {
           first.push('--model', this.substitutionModel.cmdValue);
         }
-        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'TI':
@@ -508,7 +508,7 @@ class Run extends StoreBase {
         } else {
           first.push('--model', this.substitutionModel.cmdValue);
         }
-        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
         }
@@ -523,7 +523,7 @@ class Run extends StoreBase {
         } else {
           first.push('--model', this.substitutionModel.cmdValue);
         }
-        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
         }
@@ -542,7 +542,7 @@ class Run extends StoreBase {
         } else {
           first.push('--model', this.substitutionModel.cmdValue);
         }
-        first.push('--prefix', quote(this.outputDir + '/' + this.outputNameSafe));
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
         first.push('--seed', this.seedParsimony);
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
