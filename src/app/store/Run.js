@@ -92,13 +92,13 @@ const raxmlNgAnalysisOptions = [
     params: [],
   },
   {
-    title: 'Default tree inference',
-    value: 'TI',
-    params: [],
-  },
-  {
     title: 'Fast tree search',
     value: 'FT',
+    params: [params.outGroup],
+  },
+  {
+    title: 'Default tree inference',
+    value: 'TI',
     params: [params.outGroup],
   },
   {
@@ -106,7 +106,6 @@ const raxmlNgAnalysisOptions = [
     value: 'ML+tBS+con',
     params: [params.outGroup],
   },
-
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
