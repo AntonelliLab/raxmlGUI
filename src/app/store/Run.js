@@ -513,6 +513,9 @@ class Run extends StoreBase {
           first.push('--threads', this.numThreads.value);
         }
         first.push('--seed', this.seedParsimony);
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
         break;
       case 'FT':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
