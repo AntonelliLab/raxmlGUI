@@ -194,6 +194,8 @@ class Alignment {
         if (id === this.id) {
           if (alignment.dataType !== this.run.dataType) {
             this.run.substitutionModel.value = this.run.usesRaxmlNg ? raxmlNgModelOptions[alignment.dataType].default : raxmlModelOptions[alignment.dataType].default;
+            // When the alignment has finished processing take the default ubstitution model for this datatype
+            this.substitutionModel.value = raxmlNgModelOptions[alignment.dataType].default;
           }
           runInAction(() => {
             this.sequences = alignment.sequences;
