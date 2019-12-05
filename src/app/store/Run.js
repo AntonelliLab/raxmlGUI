@@ -157,6 +157,7 @@ class SHlike extends Option {
 class CombinedOutput extends Option {
   constructor(run) { super(run, false, 'Combined output', 'Concatenate output trees'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.combinedOutput); }
+  @computed get isUsed() { return this.value && !this.notAvailable }
 }
 
 class StartingTree extends Option {
@@ -1002,7 +1003,7 @@ class Run extends StoreBase {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, outputName, combinedOutput: combinedOutput.value, usesRaxmlNg });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, outputName, combinedOutput: combinedOutput.isUsed, usesRaxmlNg });
   };
 
   @action
