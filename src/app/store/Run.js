@@ -19,6 +19,7 @@ const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 export const MAX_NUM_CPUS = cpus().length;
 
 const winBinaries = [
+  // TODO: add raxml ng windows exe
   { name: 'raxmlHPC.exe', multithreaded: false },
   // { name: 'raxmlHPC-SSE3.exe', multithreaded: false },
   { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true },
