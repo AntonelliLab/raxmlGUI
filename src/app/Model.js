@@ -11,6 +11,7 @@ import ShuffleIcon from '@material-ui/icons/Shuffle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { FormControl, FormHelperText } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
+import OptionTextField from './components/OptionTextField';
 
 const useStyles = makeStyles(theme => ({
   Model: {
@@ -58,6 +59,7 @@ const Model = ({ run }) => {
       <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.substitutionModel} />
         <OptionSelect option={run.multistateModel} />
+        <OptionTextField option={run.multistateNumber} />
       </Box>
 
     </div>

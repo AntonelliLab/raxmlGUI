@@ -4,6 +4,7 @@ import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import Alignment, { FinalAlignment } from './Alignment';
+import Option from './Option';
 import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
@@ -11,11 +12,14 @@ import filenamify from 'filenamify';
 import util from 'electron-util';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
-const { modelOptions } = raxmlSettings;
+import * as raxmlNgSettings from '../../settings/raxmlng';
+const raxmlModelOptions = raxmlSettings.modelOptions;
+const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
 const winBinaries = [
+  // TODO: add raxml ng windows exe
   { name: 'raxmlHPC.exe', multithreaded: false },
   // { name: 'raxmlHPC-SSE3.exe', multithreaded: false },
   { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true },
@@ -23,6 +27,7 @@ const winBinaries = [
 ];
 
 const binaries = util.is.windows ? winBinaries : [
+  { name: 'raxml-ng', multithreaded: true },
   { name: 'raxmlHPC', multithreaded: false },
   { name: 'raxmlHPC-SSE3', multithreaded: false },
   { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true },
@@ -76,21 +81,35 @@ const analysisOptions = [
   }
 ];
 
-const quote = dir => util.is.windows ? `"${dir}"` : dir;
+const raxmlNgAnalysisOptions = [
+  {
+    title: 'Sanity check',
+    value: 'SC',
+    params: [],
+  },
+  {
+    title: 'Compression and conversion to binary format',
+    value: 'CC',
+    params: [],
+  },
+  {
+    title: 'Fast tree search',
+    value: 'FT',
+    params: [params.outGroup],
+  },
+  {
+    title: 'Default tree inference',
+    value: 'TI',
+    params: [params.outGroup],
+  },
+  {
+    title: 'ML + thorough bootstrap + consensus',
+    value: 'ML+tBS+con',
+    params: [params.outGroup],
+  },
+];
 
-class Option {
-  constructor(run, defaultValue, title, description, hoverInfo) {
-    this.run = run;
-    this.defaultValue = defaultValue;
-    this.title = title;
-    this.description = description;
-    this.hoverInfo = hoverInfo;
-  }
-  @observable value = this.defaultValue;
-  @action setValue = (value) => { this.value = value; }
-  @action reset() { this.value = this.defaultValue; }
-  @computed get isDefault() { return this.value === this.defaultValue; }
-}
+const quote = dir => util.is.windows ? `"${dir}"` : dir;
 
 class Binary extends Option {
   constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
@@ -99,13 +118,18 @@ class Binary extends Option {
 
 class NumThreads extends Option {
   constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
-  options = range(2, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value); }
+  options = range(1, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value) && this.run.binary.value !== 'raxml-ng'; }
 }
 
 class Analysis extends Option {
   constructor(run) { super(run, 'ML+rBS', 'Analysis', 'Type of analysis'); }
   options = analysisOptions.map(({ value, title }) => ({ value, title }));
+}
+
+class RaxmlNgAnalysis extends Option {
+  constructor(run) { super(run, 'FT', 'Analysis', 'Type of analysis'); }
+  options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
 class NumRuns extends Option {
@@ -134,6 +158,7 @@ class SHlike extends Option {
 class CombinedOutput extends Option {
   constructor(run) { super(run, false, 'Combined output', 'Concatenate output trees'); }
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.combinedOutput); }
+  @computed get isUsed() { return this.value && !this.notAvailable }
 }
 
 class StartingTree extends Option {
@@ -143,11 +168,13 @@ class StartingTree extends Option {
 }
 
 class OutGroup extends Option {
-  constructor(run) { super(run, '<none>', 'Outgroup', ''); }
+  constructor(run) {
+    super(run, ['<none>'], 'Outgroup', '');
+    this.multiple = true;
+  }
   @computed get options() { return ['<none>', ...this.run.taxons].map(value => ({ value, title: value })); }
   @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
-  @computed get cmdValue() { return this.value === '<none>' ? '' : this.value }
-  //TODO: Allow multiple selections
+  @computed get cmdValue() { return this.value.includes('<none>') ? '' : this.value.join(',') }
 }
 
 class SubstitutionModel extends Option {
@@ -156,7 +183,7 @@ class SubstitutionModel extends Option {
     if (!this.run.haveAlignments) {
       return [];
     }
-    const modelSettings = modelOptions[this.run.dataType];
+    const modelSettings = raxmlModelOptions[this.run.dataType];
     if (!modelSettings) {
       return [];
     }
@@ -166,8 +193,29 @@ class SubstitutionModel extends Option {
   @computed get cmdValue() {
     let model = this.value;
     if (this.run.dataType === 'protein')  {
-      // model += this.aaMatrixName.value;
       model += this.run.alignments[0].aaMatrixName;
+    }
+    return model;
+  }
+}
+
+class RaxmlNgSubstitutionModel extends Option {
+  constructor(run) { super(run, 'GTR+G', 'Substitution model'); }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlNgModelOptions[this.run.dataType];
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map(value => ({ value, title: value }));
+  }
+  @computed get notAvailable() { return !this.run.haveAlignments || this.run.alignments.length > 1; }
+  @computed get cmdValue() {
+    let model = this.value;
+    if (this.run.dataType === 'multistate') {
+      model = model.replace('x', this.run.multistateNumber.value);
     }
     return model;
   }
@@ -182,7 +230,17 @@ class AAMatrixName extends Option {
 class MultistateModel extends Option {
   constructor(run) { super(run, 'GTR', 'Multistate model'); }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
-  @computed get notAvailable() { return this.run.dataType !== 'multistate'; }
+  @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
+}
+
+class MultistateNumber extends Option {
+  constructor(run) {
+    super(run, '', 'Number of states');
+    this.placeholder = 'Integer';
+  }
+  @computed get notAvailable() { return this.run.dataType !== 'multistate' || !this.run.usesRaxmlNg; }
+  @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
+  @computed get helperText() { return this.error && 'You need to give the number of states.' }
 }
 
 class Tree extends Option {
@@ -240,10 +298,26 @@ class Run extends StoreBase {
   binary = new Binary(this);
   numThreads = new NumThreads(this);
 
-  analysis = new Analysis(this);
+  raxmlNgSwitch = (raxmlNgParam, raxmlParam) => {
+    if (this.usesRaxmlNg) {
+      return raxmlNgParam;
+    }
+    return raxmlParam;
+  }
+
+  @computed
+  get analysis() {
+    return this.raxmlNgSwitch(new RaxmlNgAnalysis(this), new Analysis(this))
+  }
+
   @computed
   get analysisOption() {
-    return analysisOptions.find(opt => opt.value === this.analysis.value);
+    return this.raxmlNgSwitch(raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value), analysisOptions.find(opt => opt.value === this.analysis.value));
+  }
+
+  @computed
+  get substitutionModel() {
+    return this.raxmlNgSwitch(new RaxmlNgSubstitutionModel(this), new SubstitutionModel(this));
   }
 
   // Analysis params
@@ -253,9 +327,9 @@ class Run extends StoreBase {
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
-  substitutionModel = new SubstitutionModel(this);
   aaMatrixName = new AAMatrixName(this);
   multistateModel = new MultistateModel(this);
+  multistateNumber = new MultistateNumber(this);
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
@@ -396,7 +470,111 @@ class Run extends StoreBase {
     this.seedBootstrap = Math.floor(Math.random() * 1000 + 1);
   }
 
+  @computed get usesRaxmlNg() {
+    switch (this.binary.value) {
+      case 'raxml-ng':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   @computed get args() {
+    if (this.usesRaxmlNg) {
+      return this.raxmlNgArgs();
+    }
+    return this.raxmlArgs();
+  }
+
+  raxmlNgArgs = () => {
+    const first = [];
+    const second = [];
+    const third = [];
+    const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
+    switch (this.analysis.value) {
+      case 'SC':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
+        first.push('--check');
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push('--msa', quote(this.finalAlignment.path));
+        break;
+      case 'CC':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
+        first.push('--parse');
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push('--msa', quote(this.finalAlignment.path));
+        break;
+      case 'TI':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        first.push('--seed', this.seedParsimony);
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        break;
+      case 'FT':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
+        first.push('--search1');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        first.push('--seed', this.seedParsimony);
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        break;
+      case 'ML+tBS+con':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--all');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.substitutionModel.cmdValue);
+        }
+        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push('--seed', this.seedParsimony);
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        first.push('--bs-metric', 'fbp,tbe');
+        break;
+      default:
+    }
+    return cmdArgs.filter(args => args.length > 0);
+  }
+
+  raxmlArgs = () => {
     const first = [];
     const second = [];
     const third = [];
@@ -827,7 +1005,7 @@ class Run extends StoreBase {
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, combinedOutput } = this;
+    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, outputNameSafe: outputName, combinedOutput, usesRaxmlNg } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -836,7 +1014,7 @@ class Run extends StoreBase {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, combinedOutput: combinedOutput.value });
+    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, outputName, combinedOutput: combinedOutput.isUsed, usesRaxmlNg });
   };
 
   @action

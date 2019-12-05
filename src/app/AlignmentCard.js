@@ -14,12 +14,13 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Partition from './Partition';
+import OptionSelect from './components/OptionSelect';
+import OptionTextField from './components/OptionTextField';
 
 const InputSwitch = withStyles(theme => ({
   switchBase: {
@@ -162,24 +163,16 @@ function AlignmentCard({ className, alignment }) {
   //   <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
 
-  const individualSubstitutionModel = false;
-
   const Content = alignment.showPartition ? (
     <Partition alignment={alignment} />
   ) : (
     <div className={classes.content}>
       <div>
-        {individualSubstitutionModel ? (
-          <FormControl>
-            <Select value={alignment.model} onChange={alignment.onChangeModel}>
-              {(alignment.modelOptions || []).map(model => (
-                <MenuItem key={model} value={model}>
-                  {model}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>Substitution model</FormHelperText>
-          </FormControl>
+        {alignment.run.usesRaxmlNg ? (
+          <OptionSelect option={alignment.substitutionModel} />
+        ) : null}
+        {alignment.run.usesRaxmlNg ? (
+          <OptionTextField option={alignment.multistateNumber} />
         ) : null}
         {alignment.modelExtra ? (
           <FormControl>

@@ -21,6 +21,8 @@ const OptionSelect = observer(({ option, className }) => {
           name: option.title,
           id: option.title,
         }}
+        error={option.error}
+        multiple={option.multiple}
       >
         {
           option.options.map(({value, title}, index) => <MenuItem key={index} value={value}>{title}</MenuItem>)

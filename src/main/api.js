@@ -98,6 +98,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     const filenames = await readdir(outputDir);
     let outputNameUnused = outputName;
     const filterResultFilenames = filename =>
+      filename.includes(`${outputNameUnused}.raxml.`) ||
       filename.endsWith(outputNameUnused) ||
       filename.endsWith(`${outputNameUnused}.tre`);
     const resultFilenames = filenames.filter(filterResultFilenames)
@@ -134,7 +135,7 @@ async function combineOutput(outputDir, outputFilename) {
   console.log(stdout, stderr);
 }
 
-ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, combinedOutput }) => {
+ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg }) => {
   cancelProcess(id);
 
   const binParentDir = app.isPackaged ? '' : electronUtil.platform({
@@ -149,7 +150,8 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
   // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
-  const checkFlags = isDev && !electronUtil.is.windows;
+  // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
+  const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg;
   if (checkFlags) {
     for (const arg of args) {
       try {
@@ -187,8 +189,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   }
 
   const filenames = await readdir(outputDir);
-  const resultFilenames = filenames.filter(filename =>
-    filename.endsWith(outputFilename));
+  const resultFilenames = filenames.filter(filename => filename.includes(outputName));
 
   send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames, exitCode });
 

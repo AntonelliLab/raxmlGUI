@@ -7,12 +7,56 @@ import fs from 'fs';
 import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
+import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
-const { modelOptions } = raxmlSettings;
+import * as raxmlNgSettings from '../../settings/raxmlng';
+
+const raxmlModelOptions = raxmlSettings.modelOptions;
+const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
+
 const writeFile = util.promisify(fs.writeFile);
+
+class RaxmlNgAlignmentSubstitutionModel extends Option {
+  constructor(alignment) {
+    super(alignment.run, '', 'Substitution model');
+    this.alignment = alignment;
+  }
+  @computed get options() {
+    if (!this.alignment.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlNgModelOptions[this.alignment.dataType];
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map(value => ({ value, title: value }));
+  }
+  @computed get notAvailable() { return !this.alignment.run.haveAlignments || this.alignment.run.alignments.length === 1; }
+  @computed get cmdValue() {
+    let model = this.value;
+    if (this.alignment.dataType === 'multistate') {
+      model = model.replace('x', this.alignment.multistateNumber.value);
+    }
+    return model;
+  }
+}
+
+class MultistateNumber extends Option {
+  constructor(alignment) {
+    super(alignment.run, '', 'Number of states');
+    this.alignment = alignment;
+    this.placeholder = 'Integer';
+  }
+  @computed get notAvailable() { return this.alignment.run.alignments.length === 1 || this.alignment.dataType !== 'multistate' || !this.alignment.run.usesRaxmlNg; }
+  @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
+}
 
 class Alignment {
   run = null;
+
+  substitutionModel = new RaxmlNgAlignmentSubstitutionModel(this);
+  multistateNumber = new MultistateNumber(this);
+
   @observable path = '';
   @observable error = null;
 
@@ -45,6 +89,9 @@ class Alignment {
   @observable showPartition = false;
   @observable partitionText = "";
   @computed get partitionType() {
+    if (this.run.usesRaxmlNg) {
+      return this.substitutionModel.cmdValue;
+    }
     switch (this.dataType) {
       case 'dna':
       case 'nucleotide':
@@ -122,6 +169,10 @@ class Alignment {
   get modelExtra() {
     switch (this.dataType) {
       case 'protein':
+        // Raxml-ng does not have the aa substitution matrix parameter
+        if (this.run.usesRaxmlNg) {
+          return null;
+        }
         return {
           label: 'Matrix name',
           options: raxmlSettings.aminoAcidSubstitutionMatrixOptions.options,
@@ -142,7 +193,9 @@ class Alignment {
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
         if (id === this.id) {
           if (alignment.dataType !== this.run.dataType) {
-            this.run.substitutionModel.value = modelOptions[alignment.dataType].default;
+            this.run.substitutionModel.value = this.run.usesRaxmlNg ? raxmlNgModelOptions[alignment.dataType].default : raxmlModelOptions[alignment.dataType].default;
+            // When the alignment has finished processing take the default ubstitution model for this datatype
+            this.substitutionModel.value = raxmlNgModelOptions[alignment.dataType].default;
           }
           runInAction(() => {
             this.sequences = alignment.sequences;
