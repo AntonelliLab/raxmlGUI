@@ -184,7 +184,6 @@ class Alignment {
     }
   }
 
-
   listen = () => {
     // Send alignments to main process for processing
     ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, { id: this.id, filePath: this.path });
@@ -193,7 +192,11 @@ class Alignment {
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
         if (id === this.id) {
           if (alignment.dataType !== this.run.dataType) {
-            this.run.substitutionModel.value = this.run.usesRaxmlNg ? raxmlNgModelOptions[alignment.dataType].default : raxmlModelOptions[alignment.dataType].default;
+            if (this.run.alignments.length > 1) {
+              this.run.substitutionModel.value = raxmlModelOptions[this.run.dataType].default;
+            } else {
+              this.run.substitutionModel.value = this.run.usesRaxmlNg ? raxmlNgModelOptions[alignment.dataType].default : raxmlModelOptions[alignment.dataType].default;
+            }
             // When the alignment has finished processing take the default ubstitution model for this datatype
             this.substitutionModel.value = raxmlNgModelOptions[alignment.dataType].default;
           }
