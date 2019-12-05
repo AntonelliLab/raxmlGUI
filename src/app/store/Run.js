@@ -166,11 +166,13 @@ class StartingTree extends Option {
 }
 
 class OutGroup extends Option {
-  constructor(run) { super(run, '<none>', 'Outgroup', ''); }
+  constructor(run) {
+    super(run, ['<none>'], 'Outgroup', '');
+    this.multiple = true;
+  }
   @computed get options() { return ['<none>', ...this.run.taxons].map(value => ({ value, title: value })); }
   @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
-  @computed get cmdValue() { return this.value === '<none>' ? '' : this.value }
-  //TODO: Allow multiple selections
+  @computed get cmdValue() { return this.value.includes('<none>') ? '' : this.value.join(',') }
 }
 
 class SubstitutionModel extends Option {
