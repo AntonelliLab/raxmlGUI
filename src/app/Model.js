@@ -5,6 +5,12 @@ import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
 import OptionSelect from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import ShuffleIcon from '@material-ui/icons/Shuffle';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { FormControl, FormHelperText } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles(theme => ({
   Model: {
@@ -23,9 +29,10 @@ const Model = ({ run }) => {
 
   const classes = useStyles();
 
+  // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top
   return (
     <div className={classes.Model}>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
+      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.analysis} />
         <OptionSelect option={run.numRuns} />
         <OptionSelect option={run.numRepetitions} />
@@ -34,6 +41,19 @@ const Model = ({ run }) => {
         <OptionCheck option={run.combinedOutput} />
         <OptionSelect option={run.startingTree} />
         <OptionSelect option={run.outGroup} />
+        { run.haveRandomSeed ? (
+          <FormControl title="Randomize seed">
+            <FormHelperText style={{ marginTop: 2 }}>Randomize</FormHelperText>
+            <FormControlLabel
+              control={
+                <IconButton label="Randomize seed" color="default" onClick={run.randomizeSeed}>
+                  <ShuffleIcon />
+                </IconButton>
+              }
+              label=""
+            />
+          </FormControl>
+        ) : null}
       </Box>
       <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.substitutionModel} />

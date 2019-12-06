@@ -268,7 +268,7 @@ const App = () => {
           <Toolbar className={classes.statusToolbar}>
             <div className={classes.statusVersion}>raxmlGUI {version}</div>
             <a className={classes.statusFeedback} href="mailto:raxmlgui.help@googlemail.com?subject=Feedback">
-              Please send as feedback!
+              Please send us feedback!
             </a>
           </Toolbar>
         </AppBar>

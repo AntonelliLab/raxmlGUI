@@ -12,7 +12,7 @@ const OptionCheck = observer(({ option, className }) => {
   }
   return (
     <FormControl title={option.hoverInfo}>
-      <FormHelperText>{option.description}</FormHelperText>
+      <FormHelperText style={{ marginTop: 2 }}>{option.description}</FormHelperText>
       <FormControlLabel className={className}
         control={
           <Checkbox checked={option.value} onChange={e => option.setValue(e.target.checked)} value={option.title} color="primary" />

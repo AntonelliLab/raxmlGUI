@@ -382,9 +382,19 @@ class Run extends StoreBase {
     return this.alignments.length === 0 || !this.ok || this.running;
   }
 
-  @observable seedParsimony = Math.floor(Math.random() * 1000 + 1);
-  @observable seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
-  @observable seedBootstrap = Math.floor(Math.random() * 1000 + 1);
+  @observable seedParsimony = 123;
+  @observable seedRapidBootstrap = 123;
+  @observable seedBootstrap = 123;
+
+  @computed get haveRandomSeed() {
+    return this.analysis.value !== 'AS';
+  }
+
+  @action randomizeSeed = () => {
+    this.seedParsimony = Math.floor(Math.random() * 1000 + 1);
+    this.seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
+    this.seedBootstrap = Math.floor(Math.random() * 1000 + 1);
+  }
 
   @computed get args() {
     const first = [];
