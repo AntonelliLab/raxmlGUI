@@ -179,7 +179,7 @@ const App = () => {
   ));
 
   const run = store.activeRun;
-
+  const { binary } = run;
   return (
     <React.Fragment>
       <CssBaseline />
@@ -267,6 +267,7 @@ const App = () => {
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
             <div className={classes.statusVersion}>raxmlGUI {version}</div>
+            <div className={classes.statusVersion}>{binary.value} {binary.version}</div>
             <a className={classes.statusFeedback} href="mailto:raxmlgui.help@googlemail.com?subject=Feedback">
               Please send us feedback!
             </a>
