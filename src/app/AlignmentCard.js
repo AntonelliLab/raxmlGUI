@@ -169,20 +169,30 @@ function AlignmentCard({ className, alignment }) {
     <div className={classes.content}>
       <div>
         {alignment.run.usesRaxmlNg ? (
-          <OptionSelect option={alignment.substitutionModel} />
-        ) : null}
-        {alignment.run.usesRaxmlNg ? (
-          <OptionTextField option={alignment.multistateNumber} />
+          <div>
+            <OptionSelect option={alignment.substitutionModel} />
+            <OptionSelect option={alignment.ngStationaryFrequencies} />
+            <OptionSelect option={alignment.ngInvariantSites} />
+            <OptionSelect option={alignment.ngRateHeterogeneity} />
+            <OptionSelect option={alignment.ngAscertainmentBias} />
+            <OptionTextField option={alignment.multistateNumber} />
+          </div>
         ) : null}
         {alignment.modelExtra ? (
           <FormControl>
-            <InputLabel className={classes.secondaryText} style={{ whiteSpace: 'nowrap' }} htmlFor={alignment.modelExtra.label}>{alignment.modelExtra.label}</InputLabel>
+            <InputLabel
+              className={classes.secondaryText}
+              style={{ whiteSpace: 'nowrap' }}
+              htmlFor={alignment.modelExtra.label}
+            >
+              {alignment.modelExtra.label}
+            </InputLabel>
             <Select
               value={alignment.modelExtra.value}
               onChange={alignment.modelExtra.onChange}
               inputProps={{
                 name: alignment.modelExtra.label,
-                id: alignment.modelExtra.label,
+                id: alignment.modelExtra.label
               }}
             >
               {alignment.modelExtra.options.map(model => (

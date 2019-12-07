@@ -12,9 +12,7 @@ import filenamify from 'filenamify';
 import util from 'electron-util';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
-import * as raxmlNgSettings from '../../settings/raxmlng';
 const raxmlModelOptions = raxmlSettings.modelOptions;
-const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
@@ -192,33 +190,11 @@ class SubstitutionModel extends Option {
     }
     return modelSettings.options.map(value => ({ value, title: value }));
   }
-  @computed get notAvailable() { return !this.run.haveAlignments; }
+  @computed get notAvailable() { return !this.run.haveAlignments || this.run.usesRaxmlNg; }
   @computed get cmdValue() {
     let model = this.value;
     if (this.run.dataType === 'protein')  {
       model += this.run.alignments[0].aaMatrixName;
-    }
-    return model;
-  }
-}
-
-class RaxmlNgSubstitutionModel extends Option {
-  constructor(run) { super(run, 'GTR+G', 'Substitution model'); }
-  @computed get options() {
-    if (!this.run.haveAlignments) {
-      return [];
-    }
-    const modelSettings = raxmlNgModelOptions[this.run.dataType];
-    if (!modelSettings) {
-      return [];
-    }
-    return modelSettings.options.map(value => ({ value, title: value }));
-  }
-  @computed get notAvailable() { return !this.run.haveAlignments || this.run.alignments.length > 1; }
-  @computed get cmdValue() {
-    let model = this.value;
-    if (this.run.dataType === 'multistate') {
-      model = model.replace('x', this.run.multistateNumber.value);
     }
     return model;
   }
@@ -234,16 +210,6 @@ class MultistateModel extends Option {
   constructor(run) { super(run, 'GTR', 'Multistate model'); }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
   @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
-}
-
-class MultistateNumber extends Option {
-  constructor(run) {
-    super(run, '', 'Number of states');
-    this.placeholder = 'Integer';
-  }
-  @computed get notAvailable() { return this.run.dataType !== 'multistate' || !this.run.usesRaxmlNg; }
-  @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
-  @computed get helperText() { return this.error && 'You need to give the number of states.' }
 }
 
 class Tree extends Option {
@@ -269,7 +235,6 @@ class Tree extends Option {
   }
 }
 
-
 class Run extends StoreBase {
   constructor(parent, id) {
     super();
@@ -292,11 +257,11 @@ class Run extends StoreBase {
           ipcRenderer.removeListener(onChannel, listener);
           resolve(result);
         }
-      }
+      };
       ipcRenderer.on(onChannel, listener);
       ipcRenderer.send(channel, Object.assign({ id }, payload));
     });
-  }
+  };
 
   binary = new Binary(this);
   numThreads = new NumThreads(this);
@@ -306,24 +271,23 @@ class Run extends StoreBase {
       return raxmlNgParam;
     }
     return raxmlParam;
-  }
+  };
 
   @computed
   get analysis() {
-    return this.raxmlNgSwitch(new RaxmlNgAnalysis(this), new Analysis(this))
+    return this.raxmlNgSwitch(new RaxmlNgAnalysis(this), new Analysis(this));
   }
 
   @computed
   get analysisOption() {
-    return this.raxmlNgSwitch(raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value), analysisOptions.find(opt => opt.value === this.analysis.value));
-  }
-
-  @computed
-  get substitutionModel() {
-    return this.raxmlNgSwitch(new RaxmlNgSubstitutionModel(this), new SubstitutionModel(this));
+    return this.raxmlNgSwitch(
+      raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value),
+      analysisOptions.find(opt => opt.value === this.analysis.value)
+    );
   }
 
   // Analysis params
+  substitutionModel = new SubstitutionModel(this);
   numRuns = new NumRuns(this);
   numRepetitions = new NumRepetitions(this);
   branchLength = new BranchLength(this);
@@ -332,7 +296,6 @@ class Run extends StoreBase {
   outGroup = new OutGroup(this);
   aaMatrixName = new AAMatrixName(this);
   multistateModel = new MultistateModel(this);
-  multistateNumber = new MultistateNumber(this);
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
@@ -344,22 +307,34 @@ class Run extends StoreBase {
   @observable disableCheckUndeterminedSequence = true;
 
   @observable outputName = 'output';
-  @action setOutputName = (value) => {
+  @action setOutputName = value => {
     this.outputName = filenamify(value.replace(/\s+/g, '_').trim());
-  }
+  };
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
 
   outputNameAvailable = promisedComputed(true, async () => {
-    const { id, outputDir, outputName, outputNamePlaceholder, atomAfterRun } = this;
+    const {
+      id,
+      outputDir,
+      outputName,
+      outputNamePlaceholder,
+      atomAfterRun
+    } = this;
     const outputNameToCheck = outputName || outputNamePlaceholder;
     const check = atomAfterRun.reportObserved() || outputNameToCheck;
     if (!check) {
       return;
     }
-    const result = await this.sendAsync(ipc.OUTPUT_CHECK, {
-      id, outputDir, outputName: outputNameToCheck
-    }, ipc.OUTPUT_CHECKED);
+    const result = await this.sendAsync(
+      ipc.OUTPUT_CHECK,
+      {
+        id,
+        outputDir,
+        outputName: outputNameToCheck
+      },
+      ipc.OUTPUT_CHECKED
+    );
     return result;
   });
 
@@ -368,11 +343,16 @@ class Run extends StoreBase {
   }
 
   @computed get outputNameSafe() {
-    return this.outputNameAvailable.get().outputNameUnused || this.outputNamePlaceholder;
+    return (
+      this.outputNameAvailable.get().outputNameUnused ||
+      this.outputNamePlaceholder
+    );
   }
 
   @computed get outputNameNotice() {
-    return this.outputNameOk ? '' : `Output with that id already exists. New run will use output id '${this.outputNameSafe}'`;
+    return this.outputNameOk
+      ? ''
+      : `Output with that id already exists. New run will use output id '${this.outputNameSafe}'`;
   }
 
   @computed get outputFilenameSafe() {
@@ -394,7 +374,7 @@ class Run extends StoreBase {
   };
 
   // Result
-  @observable resultDir = ''
+  @observable resultDir = '';
   @computed get resultFilenames() {
     return this.outputNameAvailable.get().resultFilenames || [];
   }
@@ -403,11 +383,13 @@ class Run extends StoreBase {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  @action openFile = (filePath) => {
+  @action openFile = filePath => {
     ipcRenderer.send(ipc.FILE_OPEN, filePath);
-  }
+  };
 
-  @computed get haveAlignments() { return this.alignments.length > 0; }
+  @computed get haveAlignments() {
+    return this.alignments.length > 0;
+  }
 
   @computed get taxons() {
     return this.haveAlignments ? this.alignments[0].taxons : [];
@@ -448,7 +430,7 @@ class Run extends StoreBase {
   @action clearFinished = () => {
     this.finished = false;
     this.exitCode = 0;
-  }
+  };
   atomFinished;
 
   @computed get ok() {
@@ -464,7 +446,18 @@ class Run extends StoreBase {
   @observable seedBootstrap = 123;
 
   @computed get haveRandomSeed() {
-    const analysisWithSeed = ['FT', 'ML', 'ML+rBS', 'ML+tBS', 'BS+con', 'PD', 'RBS','FT', 'TI', 'ML+tBS+con'];
+    const analysisWithSeed = [
+      'FT',
+      'ML',
+      'ML+rBS',
+      'ML+tBS',
+      'BS+con',
+      'PD',
+      'RBS',
+      'FT',
+      'TI',
+      'ML+tBS+con'
+    ];
     return analysisWithSeed.includes(this.analysis.value);
   }
 
@@ -472,7 +465,7 @@ class Run extends StoreBase {
     this.seedParsimony = Math.floor(Math.random() * 1000 + 1);
     this.seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
     this.seedBootstrap = Math.floor(Math.random() * 1000 + 1);
-  }
+  };
 
   @computed get usesRaxmlNg() {
     switch (this.binary.value) {
@@ -502,9 +495,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.substitutionModel.cmdValue);
+          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
         }
-        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'CC':
@@ -513,9 +509,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.substitutionModel.cmdValue);
+          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
         }
-        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
         first.push('--msa', quote(this.finalAlignment.path));
         break;
       case 'TI':
@@ -524,9 +523,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.substitutionModel.cmdValue);
+          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
         }
-        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
         }
@@ -542,9 +544,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.substitutionModel.cmdValue);
+          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
         }
-        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
         }
@@ -561,9 +566,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.substitutionModel.cmdValue);
+          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
         }
-        first.push('--prefix', quote(join(this.outputDir, this.outputNameSafe)));
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
         first.push('--seed', this.seedParsimony);
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
@@ -576,7 +584,7 @@ class Run extends StoreBase {
       default:
     }
     return cmdArgs.filter(args => args.length > 0);
-  }
+  };
 
   raxmlArgs = () => {
     const first = [];
@@ -615,7 +623,10 @@ class Run extends StoreBase {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.branchLength.value) {
-          const treeFile1 = join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
+          const treeFile1 = join(
+            this.outputDir,
+            `RAxML_fastTree.${this.outputFilenameSafe}`
+          );
           const next = [];
           if (!this.numThreads.notAvailable) {
             next.push('-T', this.numThreads.value);
@@ -638,9 +649,12 @@ class Run extends StoreBase {
           cmdArgs.push(next);
         }
         if (this.sHlike.value) {
-          const treeFile2 = this.branchLength.value ?
-          join(this.outputDir, `RAxML_result.brL.${this.outputFilenameSafe}`) :
-          join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
+          const treeFile2 = this.branchLength.value
+            ? join(
+                this.outputDir,
+                `RAxML_result.brL.${this.outputFilenameSafe}`
+              )
+            : join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
           if (!this.numThreads.notAvailable) {
             next.push('-T', this.numThreads.value);
@@ -685,16 +699,19 @@ class Run extends StoreBase {
         }
         first.push('-p', this.seedParsimony);
         first.push('-n', this.outputFilenameSafe);
-          if (this.outGroup.cmdValue) {
-            first.push('-o', this.outGroup.cmdValue);
-          }
+        if (this.outGroup.cmdValue) {
+          first.push('-o', this.outGroup.cmdValue);
+        }
         first.push('-s', quote(this.finalAlignment.path));
         first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.sHlike.value) {
-          const treeFile = join(this.outputDir, `RAxML_bestTree.${this.outputFilenameSafe}`);
+          const treeFile = join(
+            this.outputDir,
+            `RAxML_bestTree.${this.outputFilenameSafe}`
+          );
           const next = [];
           if (!this.numThreads.notAvailable) {
             next.push('-T', this.numThreads.value);
@@ -766,8 +783,14 @@ class Run extends StoreBase {
         // ...
         const outputFilenameSafe1 = `${this.outputNameSafe}R.tre`;
         const outputFilenameSafe2 = `${this.outputNameSafe}B.tre`;
-        const treeFile = join(this.outputDir, `RAxML_bestTree.${outputFilenameSafe2}`); // MLtreeR
-        const treesFile = join(this.outputDir, `RAxML_bootstrap.${outputFilenameSafe1}`); // trees
+        const treeFile = join(
+          this.outputDir,
+          `RAxML_bestTree.${outputFilenameSafe2}`
+        ); // MLtreeR
+        const treesFile = join(
+          this.outputDir,
+          `RAxML_bootstrap.${outputFilenameSafe1}`
+        ); // trees
         // first wrote RAxML_bootstrap.binary_8R.tre
         // second wrote RAxML_bootstrap.binary_8B.tre
 
@@ -861,7 +884,10 @@ class Run extends StoreBase {
         // K[0], pro, mod, save_brL.get(), out_file, seq_file, o, seed_1, BSrep.get(), path_dir, part_f, const_f, random.randrange(1, 1000, 1), raxml_path, \
         // K[0], pro, mod, out_file, BStrees_file, path_dir, winEx)
 
-        const bsTreeFile = join(this.outputDir, `RAxML_bootstrap.${this.outputFilenameSafe}`);
+        const bsTreeFile = join(
+          this.outputDir,
+          `RAxML_bootstrap.${this.outputFilenameSafe}`
+        );
         const consensusOutput = `consensus.${this.outputFilenameSafe}`;
 
         if (!this.numThreads.notAvailable) {
@@ -1001,15 +1027,26 @@ class Run extends StoreBase {
     }
 
     return cmdArgs.filter(args => args.length > 0);
-  }
+  };
 
   @computed get command() {
-    return this.args.map(cmdArgs => `${this.binary.value} ${cmdArgs.join(' ')}`).join(' &&\\\n');
+    return this.args
+      .map(cmdArgs => `${this.binary.value} ${cmdArgs.join(' ')}`)
+      .join(' &&\\\n');
   }
 
   @action
   start = async () => {
-    const { id, args, binary, outputDir, outputFilenameSafe: outputFilename, outputNameSafe: outputName, combinedOutput, usesRaxmlNg } = this;
+    const {
+      id,
+      args,
+      binary,
+      outputDir,
+      outputFilenameSafe: outputFilename,
+      outputNameSafe: outputName,
+      combinedOutput,
+      usesRaxmlNg
+    } = this;
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
@@ -1018,23 +1055,31 @@ class Run extends StoreBase {
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     }
-    ipcRenderer.send(ipc.RUN_START, { id, args, binaryName: binary.value, outputDir, outputFilename, outputName, combinedOutput: combinedOutput.isUsed, usesRaxmlNg });
+    ipcRenderer.send(ipc.RUN_START, {
+      id,
+      args,
+      binaryName: binary.value,
+      outputDir,
+      outputFilename,
+      outputName,
+      combinedOutput: combinedOutput.isUsed,
+      usesRaxmlNg
+    });
   };
 
   @action
   cancel = () => {
     ipcRenderer.send(ipc.RUN_CANCEL, this.id);
     this.afterRun();
-  }
+  };
 
   @action
   afterRun = () => {
     this.running = false;
     this.atomAfterRun.reportChanged();
-  }
+  };
 
-
-  @observable repetitions = 100;//settings.numberRepsOptions.default;
+  @observable repetitions = 100; //settings.numberRepsOptions.default;
   @observable alignments = [];
   @observable analysisType = 'ML+rBS';
   @observable argsList = [];
@@ -1068,7 +1113,6 @@ class Run extends StoreBase {
     return true;
   }
 
-
   @action
   removeRun = () => {
     this.parent.deleteRun(this);
@@ -1079,9 +1123,9 @@ class Run extends StoreBase {
     ipcRenderer.send(ipc.ALIGNMENT_SELECT);
   };
 
-  haveAlignment = (id) => {
+  haveAlignment = id => {
     return this.alignments.findIndex(alignment => alignment.id === id) >= 0;
-  }
+  };
 
   @action
   addAlignments = alignments => {
@@ -1094,7 +1138,7 @@ class Run extends StoreBase {
         }
       }
     });
-  }
+  };
 
   @action
   removeAlignment = alignment => {
@@ -1105,7 +1149,7 @@ class Run extends StoreBase {
     if (!this.haveAlignments) {
       this.reset();
     }
-  }
+  };
 
   @action
   clearStdout = () => {
@@ -1120,15 +1164,14 @@ class Run extends StoreBase {
   @action
   reset = () => {
     this.outGroup.reset();
-  }
+  };
 
   dispose = () => {
     this.cancel();
     super.dispose();
-  }
+  };
 
   listen = () => {
-
     this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
 
     this.listenTo(ipc.ALIGNMENT_SELECTED, this.onAlignmentAdded);
@@ -1140,7 +1183,7 @@ class Run extends StoreBase {
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
-  }
+  };
 
   // -----------------------------------------------------------
   // Listeners
@@ -1151,17 +1194,17 @@ class Run extends StoreBase {
     if (id === this.id) {
       this.tree.setFilePath(filePath);
     }
-  }
+  };
 
   @action
   onAlignmentAdded = (event, data) => {
     this.addAlignments(data);
-  }
+  };
 
   @action
   onOutputDirSelected = (event, { id, outputDir }) => {
     this.setOutputDir(outputDir);
-  }
+  };
 
   @action
   onRunStdout = (event, { id, content }) => {
@@ -1190,7 +1233,9 @@ class Run extends StoreBase {
   @action
   onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
     if (id === this.id) {
-      console.log(`Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`);
+      console.log(
+        `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`
+      );
       this.resultDir = resultDir;
       this.atomFinished.reportChanged();
       this.finished = true;
@@ -1212,9 +1257,15 @@ class Run extends StoreBase {
     const { command, stdout } = this;
     return {
       command,
-      stdout: stdout.length > maxStdoutLength ? `[${stdout.length - maxStdoutLength} more characters]...${stdout.slice(-maxStdoutLength)}` : stdout,
-    }
-  }
+      stdout:
+        stdout.length > maxStdoutLength
+          ? `[${stdout.length -
+              maxStdoutLength} more characters]...${stdout.slice(
+              -maxStdoutLength
+            )}`
+          : stdout
+    };
+  };
 }
 
 export default Run;
