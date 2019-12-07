@@ -464,7 +464,8 @@ class Run extends StoreBase {
   @observable seedBootstrap = 123;
 
   @computed get haveRandomSeed() {
-    return this.analysis.value !== 'AS';
+    const analysisWithSeed = ['FT', 'ML', 'ML+rBS', 'ML+tBS', 'BS+con', 'PD', 'RBS','FT', 'TI', 'ML+tBS+con'];
+    return analysisWithSeed.includes(this.analysis.value);
   }
 
   @action randomizeSeed = () => {
