@@ -100,6 +100,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     const filterResultFilenames = filename =>
       filename.includes(`${outputNameUnused}.raxml.`) ||
       filename.endsWith(outputNameUnused) ||
+      filename.endsWith(`.${outputNameUnused}.txt`) ||
       filename.endsWith(`${outputNameUnused}.tre`);
     const resultFilenames = filenames.filter(filterResultFilenames)
     let counter = 1;
@@ -188,8 +189,18 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     await combineOutput(outputDir, outputFilename);
   }
 
+  // Rename the RAxML_info.\*.tre into RAxML_info.\*.txt
+  const anyMatch = new RegExp(`RAxML_info.+${outputName}.+tre`);
   const filenames = await readdir(outputDir);
-  const resultFilenames = filenames.filter(filename => filename.includes(outputName));
+  const infoFiles = filenames.filter(filename => anyMatch.test(filename));
+  for (let i = 0; i < infoFiles.length; i++) {
+    const infoPath = path.join(outputDir, infoFiles[i]);
+    const newPath = path.join(outputDir, infoFiles[i].replace('.tre','.txt'));
+    await fs.renameSync(infoPath, newPath);
+  }
+
+  const nextFilenames = await readdir(outputDir);
+  const resultFilenames = nextFilenames.filter(filename => filename.includes(outputName));
 
   send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames, exitCode });
 
@@ -303,7 +314,7 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event) => {
   }, filePaths => {
     if (filePaths.length === 0) { return; }
     const alignments = filePaths.map(filePath => {
-    return {
+      return {
         path: filePath,
         name: path.basename(filePath)
       };
@@ -311,9 +322,6 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event) => {
     send(event, ipc.ALIGNMENT_SELECTED, alignments);
   });
 });
-
-
-
 
 // Open a folder with native file explorer in given path
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {

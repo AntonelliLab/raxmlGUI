@@ -22,7 +22,6 @@ export const parseAlignment = async (filePath) => {
       lines.push(line);
 
     }).on('close', () => {
-
       try {
         if (phylipParser.isPhylip(lines)) {
           alignment = phylipParser.parse(lines);
