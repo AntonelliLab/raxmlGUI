@@ -483,6 +483,10 @@ class Run extends StoreBase {
     return this.raxmlArgs();
   }
 
+  @computed get ngSubstitutionModelCmd() {
+    return this.haveAlignments ? this.alignments[0].ngSubstitutionModelCmd : '';
+  }
+
   raxmlNgArgs = () => {
     const first = [];
     const second = [];
@@ -495,7 +499,7 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
+          first.push('--model', this.ngSubstitutionModelCmd);
         }
         first.push(
           '--prefix',
@@ -509,7 +513,7 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
+          first.push('--model', this.ngSubstitutionModelCmd);
         }
         first.push(
           '--prefix',
@@ -523,7 +527,7 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
+          first.push('--model', this.ngSubstitutionModelCmd);
         }
         first.push(
           '--prefix',
@@ -544,7 +548,7 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
+          first.push('--model', this.ngSubstitutionModelCmd);
         }
         first.push(
           '--prefix',
@@ -566,7 +570,7 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
-          first.push('--model', this.alignments[0].ngSubstitutionModelCmd);
+          first.push('--model', this.ngSubstitutionModelCmd);
         }
         first.push(
           '--prefix',
