@@ -355,7 +355,6 @@ class Alignment {
   };
 }
 
-
 class FinalAlignment {
   constructor(run) {
     this.run = run;
@@ -409,7 +408,6 @@ class FinalAlignment {
     return this.run.alignments.reduce((sumLength, alignment) => sumLength + alignment.length, 0);
   }
 
-  // @observable dataType = 'mixed';
   @computed get dataType() {
     const numAlignments = this.numAlignments;
     if (numAlignments === 0) {

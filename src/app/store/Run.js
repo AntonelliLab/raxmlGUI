@@ -1083,27 +1083,10 @@ class Run extends StoreBase {
     this.atomAfterRun.reportChanged();
   };
 
-  @observable repetitions = 100; //settings.numberRepsOptions.default;
   @observable alignments = [];
-  @observable analysisType = 'ML+rBS';
-  @observable argsList = [];
   @observable code = undefined;
-  @observable createdAt = undefined;
   @observable data = '';
-  // @observable dataType = undefined;
-  @observable flagsrunCode = undefined;
-  @observable flagsrunData = undefined;
-  @observable globalArgs = {};
-  @observable inFile = undefined;
-  @observable inFileFolder = undefined;
-  @observable isPartitioned = false;
-  @observable partitionFile = undefined;
-  @observable partitions = undefined;
   @observable path = undefined;
-  @observable sequences = [];
-  @observable calculationComplete = false;
-  @observable isCalculating = false;
-  @observable combineOutput = false;
   @observable stdout = '';
   @observable stderr = '';
 
@@ -1177,11 +1160,8 @@ class Run extends StoreBase {
 
   listen = () => {
     this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
-
     this.listenTo(ipc.ALIGNMENT_SELECTED, this.onAlignmentAdded);
-
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
-
     this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
     this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);

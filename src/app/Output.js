@@ -42,7 +42,6 @@ const Output = ({ run }) => {
   const classes = useStyles();
 
   const { resultFilenames } = run;
-  // const resultFilenames = ['RAxML_info.asdf.txt', 'asdf.tre', 'RAxML_fastTree.asdf.tre'];
   const haveResult = resultFilenames.length > 0;
 
   return (
