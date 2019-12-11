@@ -201,8 +201,15 @@ const App = () => {
         )}
 
         <SplitPane split="vertical" size={640} minSize={100}>
-          <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.leftPanel)}>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.input}`}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            className={clsx(classes.ioContainer, classes.leftPanel)}
+          >
+            <Box
+              display="flex"
+              className={`${classes.ioWrapper} ${classes.input}`}
+            >
               <Typography
                 className={`${classes.verticalHeading} ${classes.inputHeading}`}
               >
@@ -212,7 +219,10 @@ const App = () => {
                 <Input run={run} />
               </div>
             </Box>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.model}`}>
+            <Box
+              display="flex"
+              className={`${classes.ioWrapper} ${classes.model}`}
+            >
               <Typography
                 className={`${classes.verticalHeading} ${classes.modelHeading}`}
               >
@@ -222,11 +232,12 @@ const App = () => {
                 <Model run={run} />
               </div>
             </Box>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.output}`}>
+            <Box
+              display="flex"
+              className={`${classes.ioWrapper} ${classes.output}`}
+            >
               <Typography
-                className={`${classes.verticalHeading} ${
-                  classes.outputHeading
-                }`}
+                className={`${classes.verticalHeading} ${classes.outputHeading}`}
               >
                 Output
               </Typography>
@@ -236,8 +247,15 @@ const App = () => {
             </Box>
           </Box>
 
-          <Box display="flex" flexDirection="column" className={clsx(classes.ioContainer, classes.rightPanel)}>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.raxml}`}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            className={clsx(classes.ioContainer, classes.rightPanel)}
+          >
+            <Box
+              display="flex"
+              className={`${classes.ioWrapper} ${classes.raxml}`}
+            >
               <Typography
                 className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
               >
@@ -247,15 +265,20 @@ const App = () => {
                 <Raxml run={run} />
               </div>
             </Box>
-            <Box display="flex" className={`${classes.ioWrapper} ${classes.console}`}>
+            <Box
+              display="flex"
+              className={`${classes.ioWrapper} ${classes.console}`}
+            >
               <Typography
-                className={`${classes.verticalHeading} ${
-                  classes.consoleHeading
-                }`}
+                className={`${classes.verticalHeading} ${classes.consoleHeading}`}
               >
                 Console
                 {run.stdout === '' ? null : (
-                  <DeleteIcon onClick={run.clearStdout} className={classes.deleteIcon} title="Clear console"/>
+                  <DeleteIcon
+                    onClick={run.clearStdout}
+                    className={classes.deleteIcon}
+                    title="Clear console"
+                  />
                 )}
               </Typography>
               <div className={classes.ioItem}>
@@ -267,8 +290,13 @@ const App = () => {
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
             <div className={classes.statusVersion}>raxmlGUI {version}</div>
-            <div className={classes.statusVersion}>{binary.value} {binary.version}</div>
-            <a className={classes.statusFeedback} href="mailto:raxmlgui.help@googlemail.com?subject=Feedback">
+            <div className={classes.statusVersion}>
+              {binary.value} {binary.version}
+            </div>
+            <a
+              className={classes.statusFeedback}
+              href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
+            >
               Please send us feedback!
             </a>
           </Toolbar>
@@ -285,8 +313,24 @@ const App = () => {
           >
             <SnackbarMessage
               onClose={run.clearFinished}
-              variant={run.exitCode === 0 ? "success" : "info"}
-              message={run.exitCode === 0 ? "RAxML finished!" : `RAxML cancelled!`}
+              variant={run.exitCode === 0 ? 'success' : 'info'}
+              message={
+                run.exitCode === 0 ? 'RAxML finished!' : `RAxML cancelled!`
+              }
+            />
+          </Snackbar>
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            open={run.showConverted}
+            onClose={run.clearShowConverted}
+          >
+            <SnackbarMessage
+              onClose={run.clearShowConverted}
+              variant={'info'}
+              message={`Converted your ${run.convertedAlignmentFrom} alignment into fasta!`}
             />
           </Snackbar>
           <ErrorDialog error={run.error} onClose={run.clearError} />

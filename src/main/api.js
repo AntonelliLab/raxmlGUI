@@ -331,10 +331,11 @@ async function convertAlignment(alignmentPath) {
 // // Receive a new batch of alignments dropped into the app
 ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   console.log('Parse alignment', filePath);
+  let format;
   let newFilePath;
   // Use readal to check the alignment file format
   try {
-    const format = await readalGetFormat(filePath);
+    format = await readalGetFormat(filePath);
     if (format !== 'fasta' && format !== 'phylip') {
       newFilePath = await convertAlignment(filePath);
     }
@@ -347,7 +348,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
     const alignment = await io.parseAlignment(newFilePath ? newFilePath : filePath);
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
     if (newFilePath) {
-      send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, { id, newFilePath });
+      send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, { id, newFilePath, format });
     }
   }
   catch (error) {

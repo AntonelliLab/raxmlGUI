@@ -130,6 +130,9 @@ class Alignment {
 
   @observable size = 0;
   @observable fileFormat = undefined;
+  @observable convertedFrom = undefined;
+  @observable converted = false;
+  @observable showConverted = false;
   @observable length = 0;
   @observable numSequences = 0;
   @observable sequences = [];
@@ -271,7 +274,8 @@ class Alignment {
             this.run.substitutionModel.value =
               raxmlModelOptions[this.run.dataType].default;
           } else {
-            this.run.substitutionModel.value = raxmlModelOptions[alignment.dataType].default;
+            this.run.substitutionModel.value =
+              raxmlModelOptions[alignment.dataType].default;
           }
           // When the alignment has finished processing take the default ubstitution model for this datatype
           this.substitutionModel.value =
@@ -302,13 +306,23 @@ class Alignment {
       }
     });
     // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
-    ipcRenderer.on(ipc.ALIGNMENT_PARSE_CHANGED_PATH, (event, { id, newFilePath }) => {
-      if (id === this.id) {
-        runInAction(() => {
-          this.path = newFilePath;
-        });
+    ipcRenderer.on(
+      ipc.ALIGNMENT_PARSE_CHANGED_PATH,
+      (event, { id, newFilePath, format }) => {
+        if (id === this.id) {
+          runInAction(() => {
+            this.path = newFilePath;
+            this.convertedFrom = format;
+            this.converted = true;
+            this.showConverted = true;
+          });
+        }
       }
-    });
+    );
+  };
+
+  @action clearConverted = () => {
+    this.showConverted = false;
   };
 
   @action

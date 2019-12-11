@@ -487,6 +487,25 @@ class Run extends StoreBase {
     return this.haveAlignments ? this.alignments[0].ngSubstitutionModelCmd : '';
   }
 
+  @computed get showConverted() {
+    const shouldShow = this.alignments.map(a => a.showConverted).some(e => e);
+    return this.haveAlignments && shouldShow;
+  }
+
+  @computed get convertedAlignmentFrom() {
+    if (!this.haveAlignments || !this.showConverted) {
+      return null;
+    }
+    const converted = this.alignments.filter(a => a.showConverted);
+    return converted[0].convertedFrom;
+  }
+
+  @action clearShowConverted = () => {
+    for (let i = 0; i < this.alignments.length; i++) {
+      this.alignments[i].clearConverted();
+    }
+  }
+
   raxmlNgArgs = () => {
     const first = [];
     const second = [];
