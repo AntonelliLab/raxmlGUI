@@ -136,15 +136,18 @@ async function combineOutput(outputDir, outputFilename) {
   console.log(stdout, stderr);
 }
 
+  const binParentDir = app.isPackaged
+    ? ''
+    : electronUtil.platform({
+        macos: 'Mac',
+        windows: 'Windows',
+        linux: 'Linux'
+      });
+  const binaryDir = path.join(__static, 'bin', binParentDir);
+
 ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg }) => {
   cancelProcess(id);
 
-  const binParentDir = app.isPackaged ? '' : electronUtil.platform({
-    macos: 'Mac',
-    windows: 'Windows',
-    linux: 'Linux',
-  });
-  const binaryDir = path.join(__static, 'bin', binParentDir);
   const binaryPath = path.resolve(binaryDir, binaryName);
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
@@ -294,12 +297,58 @@ async function execProcess(binaryPath, args) {
   return exec(`${binaryPath} ${args.join(' ')}`);
 }
 
+// Function to get an alignment format with readal
+async function readalGetFormat(alignmentPath) {
+  const readalPath = path.resolve(binaryDir, 'readal');
+  const childCmd = `${readalPath} -in ${alignmentPath} -type -format`;
+  const { stdout, stderr } = await exec(childCmd, {
+    shell: electronUtil.is.windows
+  });
+  console.log('stderr', stderr);
+  const replaced = stdout.replace(alignmentPath,'');
+  const formats = ['clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip']
+  for (let i = 0; i < formats.length; i++) {
+    const f = formats[i];
+    if (replaced.includes(f)) {
+      return f;
+    }
+  }
+  return;
+}
+
+// Function to convert an alignment to fasta with readal
+async function convertAlignment(alignmentPath) {
+  const readalPath = path.resolve(binaryDir, 'readal');
+  const newPath = alignmentPath.replace(path.extname(alignmentPath), '.fas');
+  const childCmd = `${readalPath} -in ${alignmentPath} -out ${newPath} -fasta`;
+  const { stdout, stderr } = await exec(childCmd, {
+    shell: electronUtil.is.windows
+  });
+  console.log(stdout, stderr);
+  return newPath;
+}
+
 // // Receive a new batch of alignments dropped into the app
 ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   console.log('Parse alignment', filePath);
+  let newFilePath;
+  // Use readal to check the alignment file format
   try {
-    const alignment = await io.parseAlignment(filePath);
+    const format = await readalGetFormat(filePath);
+    if (format !== 'fasta' && format !== 'phylip') {
+      newFilePath = await convertAlignment(filePath);
+    }
+  }
+  catch (error) {
+    console.log('error', error);
+  }
+
+  try {
+    const alignment = await io.parseAlignment(newFilePath ? newFilePath : filePath);
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
+    if (newFilePath) {
+      send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, { id, newFilePath });
+    }
   }
   catch (error) {
     send(event, ipc.ALIGNMENT_PARSE_FAILURE, { id, error });

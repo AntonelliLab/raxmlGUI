@@ -301,6 +301,14 @@ class Alignment {
         });
       }
     });
+    // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
+    ipcRenderer.on(ipc.ALIGNMENT_PARSE_CHANGED_PATH, (event, { id, newFilePath }) => {
+      if (id === this.id) {
+        runInAction(() => {
+          this.path = newFilePath;
+        });
+      }
+    });
   };
 
   @action
