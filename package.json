@@ -117,6 +117,7 @@
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI",
+    "afterSign": "./scripts/notarize.js",
     "directories": {
       "buildResources": "build",
       "output": "dist"
@@ -132,6 +133,9 @@
     },
     "mac": {
       "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "entitlements": "public/entitlements.mac.inherit.plist",
+      "entitlementsInherit": "public/entitlements.mac.inherit.plist",
       "extraResources": [
         {
           "from": "static/bin/Mac",
