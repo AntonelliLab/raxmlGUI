@@ -85,6 +85,7 @@
     "@babel/preset-env": "^7.5.5",
     "cross-env": "^6.0.3",
     "devtron": "^1.4.0",
+    "dotenv": "^8.2.0",
     "electron": "^7.1.7",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
