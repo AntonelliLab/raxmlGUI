@@ -79,3 +79,9 @@ AAACCGAGGC CGGGACACTC AT
 Gorilla    AAACCCTTGC CGGTACGCTT
 AAACCATTGC CGGTACGCTT AA
 ```
+
+#### MacOS code-signing and notarizing
+https://medium.com/@TwitterArchiveEraser/notarize-electron-apps-7a5f988406db
+https://github.com/electron/electron-notarize
+https://stackoverflow.com/questions/53112078/how-to-upload-dmg-file-for-notarization-in-xcode/53121755#53121755
+
