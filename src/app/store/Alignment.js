@@ -114,7 +114,7 @@ class MultistateNumber extends Option {
     this.alignment = alignment;
     this.placeholder = 'Integer';
   }
-  @computed get notAvailable() { return this.alignment.run.alignments.length === 1 || this.alignment.dataType !== 'multistate' || !this.alignment.run.usesRaxmlNg; }
+  @computed get notAvailable() { return this.alignment.dataType !== 'multistate' || !this.alignment.run.usesRaxmlNg; }
   @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
 }
 
