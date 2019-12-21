@@ -55,14 +55,14 @@ const useStyles = makeStyles(theme => ({
   chip: {
     height: '30px',
     backgroundColor: theme.palette.input.dark,
-    border: `1px solid ${theme.palette.input.light}`,
+    border: `1px solid ${theme.palette.input.light}`
   },
   link: {
     cursor: 'pointer',
     color: theme.palette.secondary.main
   },
   secondaryText: {
-    color: theme.palette.input.secondaryText,
+    color: theme.palette.input.secondaryText
   },
   divider: {
     margin: '0 4px'
@@ -109,6 +109,10 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'flex-end'
+  },
+  select: {
+    marginLeft: '10px',
+    minWidth: '130px'
   }
 }));
 
@@ -170,12 +174,30 @@ function AlignmentCard({ className, alignment }) {
       <div>
         {alignment.run.usesRaxmlNg ? (
           <div>
-            <OptionSelect option={alignment.substitutionModel} />
-            <OptionSelect option={alignment.ngStationaryFrequencies} />
-            <OptionSelect option={alignment.ngInvariantSites} />
-            <OptionSelect option={alignment.ngRateHeterogeneity} />
-            <OptionSelect option={alignment.ngAscertainmentBias} />
-            <OptionTextField option={alignment.multistateNumber} />
+            <OptionSelect
+              className={classes.select}
+              option={alignment.substitutionModel}
+            />
+            <OptionTextField
+              className={classes.select}
+              option={alignment.multistateNumber}
+            />
+            <OptionSelect
+              className={classes.select}
+              option={alignment.ngStationaryFrequencies}
+            />
+            <OptionSelect
+              className={classes.select}
+              option={alignment.ngInvariantSites}
+            />
+            <OptionSelect
+              className={classes.select}
+              option={alignment.ngRateHeterogeneity}
+            />
+            <OptionSelect
+              className={classes.select}
+              option={alignment.ngAscertainmentBias}
+            />
           </div>
         ) : null}
         {alignment.modelExtra ? (

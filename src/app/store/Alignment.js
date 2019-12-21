@@ -43,7 +43,7 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
 
 class RaxmlNgModelExtraParam extends Option {
   constructor(alignment, label, options) {
-    super(alignment.run, '', label);
+    super(alignment.run, '<none>', label);
     this.optionsSource = options;
   }
   @computed get options() {
