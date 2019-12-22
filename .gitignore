@@ -27,5 +27,6 @@ yarn-error.log*
 
 # output
 RAxML_*
+*.raxml.*
 *.reduced
 *_concat.*
