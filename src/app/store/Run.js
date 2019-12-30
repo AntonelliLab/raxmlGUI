@@ -18,20 +18,20 @@ export const MAX_NUM_CPUS = cpus().length;
 
 const winBinaries = [
   // TODO: add raxml ng windows exe
-  { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
+  { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
   // { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.12' },
+  { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true, version: '8.2.12' },
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.12' }
 ];
 
 const binaries = util.is.windows
   ? winBinaries
   : [
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
-      { name: 'raxmlHPC', multithreaded: false, version: '8.2.9' },
-      { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.9' },
-      { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.9' },
-      { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.9' }
+      { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
+      { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
+      { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
+      { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
     ];
 
 // Available parameters for different analysis
