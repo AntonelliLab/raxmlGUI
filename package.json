@@ -89,7 +89,7 @@
     "@babel/preset-env": "^7.5.5",
     "cross-env": "^5.2.0",
     "devtron": "^1.4.0",
-    "electron": "^6.0.2",
+    "electron": "^7.1.7",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-webpack": "^2.7.4",

@@ -53,7 +53,7 @@ function initialize() {
       width: 1280,
       minWidth: 960,
       height: 790,
-      title: app.getName(),
+      title: app.name,
       backgroundColor: '#333',
       resizable: true,
       webPreferences: {

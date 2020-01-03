@@ -32,7 +32,7 @@ export default class MenuBuilder {
 
     if (process.platform === 'darwin') {
       menuTemplate.unshift({
-        label: app.getName(),
+        label: app.name,
         submenu: [
           { role: 'about' },
           { type: 'separator' },
