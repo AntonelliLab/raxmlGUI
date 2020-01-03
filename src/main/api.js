@@ -52,15 +52,21 @@ function send(event, channel, data) {
 
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
-  dialog.showOpenDialog({
-    title: 'Select a directory for RAxML output',
-    properties: ['openDirectory', 'createDirectory'],
-  }, paths => {
-    if (paths.length === 0) { // On cancel
-      return;
-    }
-    send(event, ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: paths[0] });
-  });
+  dialog
+    .showOpenDialog({
+      title: 'Select a directory for RAxML output',
+      properties: ['openFile', 'openDirectory'],
+    })
+    .then(result => {
+      console.debug(ipc.OUTPUT_DIR_SELECT, result);
+      if (result.canceled) {
+        return;
+      }
+      send(event, ipc.OUTPUT_DIR_SELECTED, { id: runId, outputDir: result.filePaths[0] });
+    })
+    .catch(err => {
+      console.debug(ipc.OUTPUT_DIR_SELECT, err);
+    });
 });
 
 // Open a file with the OS's default file handler
@@ -361,19 +367,26 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event) => {
   dialog.showOpenDialog({
     title: 'Select an alignment',
     properties: ['openFile', 'multiSelections']
-  }, filePaths => {
-    if (filePaths.length === 0) { return; }
-    const alignments = filePaths.map(filePath => {
-      return {
-        path: filePath,
-        name: path.basename(filePath)
-      };
+  })
+    .then(result => {
+      console.debug(ipc.ALIGNMENT_SELECTED, result);
+      if (result.canceled) {
+        return;
+      }
+      const alignments = result.filePaths.map(filePath => {
+        return {
+          path: filePath,
+          name: path.basename(filePath)
+        };
+      });
+      send(event, ipc.ALIGNMENT_SELECTED, alignments);
+    })
+    .catch(err => {
+      console.debug(ipc.ALIGNMENT_SELECTED, err);
     });
-    send(event, ipc.ALIGNMENT_SELECTED, alignments);
-  });
+
 });
 
-// Open a folder with native file explorer in given path
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   // __static is defined by electron-webpack
   // const dir = path.join(__static, 'example-files', 'fasta');
@@ -391,12 +404,26 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
 
 // Open a dialog to select a file
 ipcMain.on(ipc.TREE_SELECT, (event, runId) => {
-  console.log('api', ipc.TREE_SELECT);
-  dialog.showOpenDialog({
-    title: 'Select a tree file',
-    properties: ['openFile']
-  }, filePaths => {
-    if (filePaths.length === 0) { return; }
-    send(event, ipc.TREE_SELECTED, { id: runId, filePath: filePaths[0] });
-  });
+  dialog
+    .showOpenDialog(
+      {
+        title: 'Select a tree file',
+        properties: ['openFile']
+      },
+      filePaths => {
+        if (filePaths.length === 0) {
+          return;
+        }
+      }
+    )
+    .then(result => {
+      console.debug(ipc.TREE_SELECT, result);
+      if (result.canceled) {
+        return;
+      }
+      send(event, ipc.TREE_SELECTED, { id: runId, filePath: result.filePaths[0] });
+    })
+    .catch(err => {
+      console.debug(ipc.TREE_SELECT, err);
+    });
 });
