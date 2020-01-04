@@ -1,7 +1,7 @@
 import path from 'path';
 import { app } from 'electron';
 import { openNewGitHubIssue, debugInfo, activeWindow, is } from 'electron-util';
-import serializeError from 'serialize-error';
+import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
 import * as ipc from 'electron-better-ipc';
 

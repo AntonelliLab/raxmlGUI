@@ -5,7 +5,7 @@ import util from "util";
 import fs from "fs";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
-import serializeError from 'serialize-error';
+import { serializeError } from 'serialize-error';
 import { activeWindow } from 'electron-util';
 import io from '../common/io';
 
