@@ -94,7 +94,8 @@
     "prettier": "^1.19.1",
     "shx": "^0.3.2",
     "typescript": "^3.7.4",
-    "wait-on": "^3.3.0"
+    "wait-on": "^3.3.0",
+    "webpack": "^4.41.5"
   },
   "browserslist": [
     ">0.2%",
