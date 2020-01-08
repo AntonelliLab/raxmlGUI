@@ -24,7 +24,7 @@ const winBinaries = [
   { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
 ];
 
-const binaries = util.is.windows
+const allBinaries = util.is.windows
   ? winBinaries
   : [
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
@@ -33,6 +33,10 @@ const binaries = util.is.windows
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
     ];
+
+const binaries = allBinaries.filter(({ multithreaded }) =>
+  MAX_NUM_CPUS === 1 ? !multithreaded : true
+);
 
 // Available parameters for different analysis
 const params = { brL: 'brL', SHlike: 'SHlike', combinedOutput: 'combinedOutput', reps: 'reps', runs: 'runs', tree: 'tree', startingTree: 'startingTree', outGroup: 'outGroup' };
