@@ -1,4 +1,4 @@
-import { app, ipcMain, shell, dialog } from "electron";
+import { app, ipcMain, shell, dialog, Notification } from "electron";
 import _ from "lodash";
 import path from "path";
 import util from "util";
@@ -275,6 +275,16 @@ async function runProcess(id, event, binaryPath, args) {
         console.log(`Process finished with event '${message}' and error/code/signal:`, signal || code);
         exited = true;
         delete state.processes[id];
+
+        const win = activeWindow();
+        if (!win || !win.isFocused()) {
+          const notification = new Notification({
+            title: app.name,
+            body: 'Calculation finished'
+          });
+          notification.show();
+        }
+
         if (message === 'error') {
           return reject(code); // code is an error object on 'error' event
         }
