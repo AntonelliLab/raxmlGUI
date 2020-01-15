@@ -10,6 +10,7 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
+
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 const raxmlModelOptions = raxmlSettings.modelOptions;
@@ -216,12 +217,8 @@ class MultistateModel extends Option {
   @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
 }
 
-class Tree extends Option {
+class TreeFile extends Option {
   constructor(run) { super(run, '', 'Tree', ''); }
-  @computed get notAvailable() {
-    return !(this.run.analysisOption.params.includes(params.tree) ||
-    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
-  }
   @observable filePath = '';
   @computed get haveFile() { return !!this.filePath; }
   @computed get filename() { return parsePath(this.filePath).filename; }
@@ -236,6 +233,28 @@ class Tree extends Option {
   };
   @action remove = () => {
     this.setFilePath('');
+  }
+}
+
+class Tree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get notAvailable() {
+    return !(this.run.analysisOption.params.includes(params.tree) ||
+    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
+  }
+}
+
+class BackboneConstraintTree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get notAvailable() {
+    return !this.useBackboneConstraint;
+  }
+}
+
+class MultifurcatingConstraintTree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get notAvailable() {
+    return !this.useMultifurcatingConstraint;
   }
 }
 

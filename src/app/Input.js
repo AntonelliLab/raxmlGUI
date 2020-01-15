@@ -122,6 +122,30 @@ const Input = ({ run }) => {
           </div>
         </Box>
       }
+      { !run.useBackboneConstraint ? null :
+        <Box className={classes.treeList}>
+          <div className={classes.alignments}>
+          { run.backboneConstraint.haveFile ?
+            <TreeCard tree={run.backboneConstraint} className={classes.treeCard} /> :
+            <Button variant="outlined" className={classes.treeCard} onClick={run.loadBackboneConstraintFile}>
+              Add Backbone Constraint
+            </Button>
+          }
+          </div>
+        </Box>
+      }
+      { !run.useMultifurcatingConstraint ? null :
+        <Box className={classes.treeList}>
+          <div className={classes.alignments}>
+          { run.multifurcatingConstraint.haveFile ?
+            <TreeCard tree={run.multifurcatingConstraint} className={classes.treeCard} /> :
+            <Button variant="outlined" className={classes.treeCard} onClick={run.loadMultifurcatingConstraintFile}>
+              Add Multifurcating Constraint
+            </Button>
+          }
+          </div>
+        </Box>
+      }
 
       { run.alignments.length <= 1 ? null :
         <Box className={classes.finalInput}>
