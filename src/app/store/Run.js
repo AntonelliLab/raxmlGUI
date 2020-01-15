@@ -322,9 +322,22 @@ class Run extends StoreBase {
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
+  backboneConstraint = new BackboneConstraintTree(this);
+  multifurcatingConstraint = new MultifurcatingConstraintTree(this);
+
   @action
   loadTreeFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, this.id);
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'tree' });
+  };
+
+  @action
+  loadBackboneConstraintFile = () => {
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'backboneConstraint' });
+  };
+
+  @action
+  loadMultifurcatingConstraintFile = () => {
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'multifurcatingConstraint' });
   };
 
   @observable disableCheckUndeterminedSequence = true;
@@ -1134,6 +1147,7 @@ class Run extends StoreBase {
 
   @observable useBackboneConstraint = false;
   @observable useMultifurcatingConstraint = false;
+
   @computed
   get numSites() {
     return this.alignments.reduce((sum, n) => sum + n, 0);
@@ -1220,9 +1234,21 @@ class Run extends StoreBase {
   // -----------------------------------------------------------
 
   @action
-  onTreeSelected = (event, { id, filePath }) => {
+  onTreeSelected = (event, { id, type, filePath }) => {
     if (id === this.id) {
-      this.tree.setFilePath(filePath);
+      switch (type) {
+        case 'tree':
+          this.tree.setFilePath(filePath);
+          break;
+        case 'backboneConstraint':
+          this.backboneConstraint.setFilePath(filePath);
+          break;
+        case 'multifurcatingConstraint':
+          this.multifurcatingConstraint.setFilePath(filePath);
+          break;
+        default:
+          break;
+      }
     }
   };
 

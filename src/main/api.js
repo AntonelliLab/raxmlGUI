@@ -412,8 +412,9 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
 });
 
 
-// Open a dialog to select a file
-ipcMain.on(ipc.TREE_SELECT, (event, runId) => {
+// Open a dialog to select a tree file
+ipcMain.on(ipc.TREE_SELECT, (event, params) => {
+  const { id, type } = params;
   dialog
     .showOpenDialog(
       {
@@ -431,7 +432,7 @@ ipcMain.on(ipc.TREE_SELECT, (event, runId) => {
       if (result.canceled) {
         return;
       }
-      send(event, ipc.TREE_SELECTED, { id: runId, filePath: result.filePaths[0] });
+      send(event, ipc.TREE_SELECTED, { id, type, filePath: result.filePaths[0] });
     })
     .catch(err => {
       console.debug(ipc.TREE_SELECT, err);
