@@ -1113,6 +1113,8 @@ class Run extends StoreBase {
   @observable stdout = '';
   @observable stderr = '';
 
+  @observable useBackboneConstraint = false;
+  @observable useMultifurcatingConstraint = false;
   @computed
   get numSites() {
     return this.alignments.reduce((sum, n) => sum + n, 0);
@@ -1190,6 +1192,8 @@ class Run extends StoreBase {
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
+    this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
+    this.listenTo(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT, this.onMultifurcatingConstraint);
   };
 
   // -----------------------------------------------------------
@@ -1258,6 +1262,16 @@ class Run extends StoreBase {
       this.error = error;
       this.afterRun();
     }
+  };
+
+  @action
+  onBackboneConstraint = (event, params) => {
+    this.useBackboneConstraint = !this.useBackboneConstraint;
+  };
+
+  @action
+  onMultifurcatingConstraint = (event, params) => {
+    this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {

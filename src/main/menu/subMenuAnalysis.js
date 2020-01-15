@@ -13,6 +13,7 @@ const subMenuAnalysis = {
             type: 'checkbox',
             checked: false,
             click() {
+              BrowserWindow.getFocusedWindow().webContents.send(ipc.TOGGLE_BACKBONE_CONSTRAINT);
             }
           },
           {
@@ -20,6 +21,7 @@ const subMenuAnalysis = {
             type: 'checkbox',
             checked: false,
             click() {
+              BrowserWindow.getFocusedWindow().webContents.send(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT);
             }
           }
         ]
