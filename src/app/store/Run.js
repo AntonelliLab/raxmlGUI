@@ -1287,7 +1287,9 @@ class Run extends StoreBase {
         this.alignments.push(new Alignment(this, path));
         if (this.alignments.length === 1) {
           this.setOutputName(this.alignments[0].name);
-          this.setOutputDir(this.alignments[0].dir);
+          if (!this.outputDir) {
+            this.setOutputDir(this.alignments[0].dir);
+          }
         }
       }
     });
