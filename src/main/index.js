@@ -130,7 +130,7 @@ function initialize() {
       await installExtensions();
       require("devtron").install();
     }
-    createMainWindow()
+    createMainWindow();
   })
 
   // Quit when all windows are closed.

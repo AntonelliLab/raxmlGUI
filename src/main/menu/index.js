@@ -1,11 +1,11 @@
 import { app, Menu } from 'electron';
 
-// import subMenuAnalysis from './subMenuAnalysis';
+import subMenuAnalysis from './subMenuAnalysis';
 // import subMenuInfo from './subMenuInfo';
 import subMenuDeveloper from './subMenuDeveloper';
 
 const menuTemplate = [
-  // subMenuAnalysis,
+  subMenuAnalysis,
   // subMenuInfo,
   {
     role: 'window',

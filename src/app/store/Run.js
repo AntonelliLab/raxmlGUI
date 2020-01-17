@@ -10,6 +10,7 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
+
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 const raxmlModelOptions = raxmlSettings.modelOptions;
@@ -98,7 +99,7 @@ const raxmlNgAnalysisOptions = [
   },
   {
     title: 'Fast tree search',
-    value: 'FT',
+    value: 'FTng',
     params: [params.outGroup],
   },
   {
@@ -133,7 +134,7 @@ class Analysis extends Option {
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'FT', 'Analysis', 'Type of analysis'); }
+  constructor(run) { super(run, 'FTng', 'Analysis', 'Type of analysis'); }
   options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
@@ -216,12 +217,8 @@ class MultistateModel extends Option {
   @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
 }
 
-class Tree extends Option {
+class TreeFile extends Option {
   constructor(run) { super(run, '', 'Tree', ''); }
-  @computed get notAvailable() {
-    return !(this.run.analysisOption.params.includes(params.tree) ||
-    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
-  }
   @observable filePath = '';
   @computed get haveFile() { return !!this.filePath; }
   @computed get filename() { return parsePath(this.filePath).filename; }
@@ -236,6 +233,64 @@ class Tree extends Option {
   };
   @action remove = () => {
     this.setFilePath('');
+  }
+}
+
+class Tree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get notAvailable() {
+    return !(this.run.analysisOption.params.includes(params.tree) ||
+    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
+  }
+}
+
+class BackboneConstraintTree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get isSet() {
+    return this.run.useBackboneConstraint && this.haveFile;
+  }
+  @computed get canConstraint() {
+    const analysisWithConstraint = [
+      'ML',
+      'ML+rBS',
+      'ML+tBS',
+      'BS+con',
+      'RBS',
+      'SC',
+      'CC',
+      'FTng',
+      'TI',
+      'ML+tBS+con'
+    ];
+    return analysisWithConstraint.includes(this.run.analysis.value);
+  }
+  @computed get notAvailable() {
+    return !this.run.useBackboneConstraint || !this.canConstraint;
+  }
+}
+
+class MultifurcatingConstraintTree extends TreeFile {
+  constructor(run) { super(run); }
+  @computed get isSet() {
+    return this.run.useMultifurcatingConstraint && this.haveFile;
+  }
+  @computed get canConstraint() {
+    const analysisWithConstraint = [
+      'ML',
+      'ML+rBS',
+      'ML+tBS',
+      'BS+con',
+      'RBS',
+      'SC',
+      'CC',
+      'FTng',
+      'TI',
+      'ML+tBS+con'
+    ];
+    return analysisWithConstraint.includes(this.run.analysis.value);
+  }
+  @computed get notAvailable() {
+    return !this.run.useMultifurcatingConstraint || !this.canConstraint;
   }
 }
 
@@ -303,9 +358,22 @@ class Run extends StoreBase {
   startingTree = new StartingTree(this);
 
   tree = new Tree(this);
+  backboneConstraint = new BackboneConstraintTree(this);
+  multifurcatingConstraint = new MultifurcatingConstraintTree(this);
+
   @action
   loadTreeFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, this.id);
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'tree' });
+  };
+
+  @action
+  loadBackboneConstraintFile = () => {
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'backboneConstraint' });
+  };
+
+  @action
+  loadMultifurcatingConstraintFile = () => {
+    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'multifurcatingConstraint' });
   };
 
   @observable disableCheckUndeterminedSequence = true;
@@ -458,7 +526,7 @@ class Run extends StoreBase {
       'BS+con',
       'PD',
       'RBS',
-      'FT',
+      'FTng',
       'TI',
       'ML+tBS+con'
     ];
@@ -529,6 +597,12 @@ class Run extends StoreBase {
           quote(join(this.outputDir, this.outputNameSafe))
         );
         first.push('--msa', quote(this.finalAlignment.path));
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'CC':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
@@ -543,6 +617,12 @@ class Run extends StoreBase {
           quote(join(this.outputDir, this.outputNameSafe))
         );
         first.push('--msa', quote(this.finalAlignment.path));
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'TI':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
@@ -563,8 +643,14 @@ class Run extends StoreBase {
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
-      case 'FT':
+      case 'FTng':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
         first.push('--search1');
         first.push('--msa', quote(this.finalAlignment.path));
@@ -583,6 +669,12 @@ class Run extends StoreBase {
         first.push('--seed', this.seedParsimony);
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
         break;
       case 'ML+tBS+con':
@@ -607,6 +699,12 @@ class Run extends StoreBase {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
         first.push('--bs-metric', 'fbp,tbe');
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       default:
     }
@@ -734,6 +832,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         if (this.sHlike.value) {
           const treeFile = join(
             this.outputDir,
@@ -795,6 +899,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'ML+tBS': // ML + thorough bootstrap
         // params: [params.runs, params.reps, params.brL, params.outGroup],
@@ -849,6 +959,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
 
         if (!this.numThreads.notAvailable) {
           second.push('-T', this.numThreads.value);
@@ -874,6 +990,12 @@ class Run extends StoreBase {
         second.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
           second.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
+        if (this.backboneConstraint.isSet) {
+          second.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          second.push('-g', quote(this.multifurcatingConstraint.filePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -945,6 +1067,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
 
         if (!this.numThreads.notAvailable) {
           second.push('-T', this.numThreads.value);
@@ -960,6 +1088,12 @@ class Run extends StoreBase {
         second.push('-w', quote(this.outputDir));
         second.push('-z', quote(bsTreeFile));
         second.push('-n', consensusOutput);
+        if (this.backboneConstraint.isSet) {
+          second.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          second.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'AS': // Ancestral states
         // params: [params.tree],
@@ -1049,6 +1183,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       default:
     }
@@ -1112,6 +1252,9 @@ class Run extends StoreBase {
   @observable path = undefined;
   @observable stdout = '';
   @observable stderr = '';
+
+  @observable useBackboneConstraint = false;
+  @observable useMultifurcatingConstraint = false;
 
   @computed
   get numSites() {
@@ -1190,6 +1333,8 @@ class Run extends StoreBase {
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
+    this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
+    this.listenTo(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT, this.onMultifurcatingConstraint);
   };
 
   // -----------------------------------------------------------
@@ -1197,9 +1342,21 @@ class Run extends StoreBase {
   // -----------------------------------------------------------
 
   @action
-  onTreeSelected = (event, { id, filePath }) => {
+  onTreeSelected = (event, { id, type, filePath }) => {
     if (id === this.id) {
-      this.tree.setFilePath(filePath);
+      switch (type) {
+        case 'tree':
+          this.tree.setFilePath(filePath);
+          break;
+        case 'backboneConstraint':
+          this.backboneConstraint.setFilePath(filePath);
+          break;
+        case 'multifurcatingConstraint':
+          this.multifurcatingConstraint.setFilePath(filePath);
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -1258,6 +1415,16 @@ class Run extends StoreBase {
       this.error = error;
       this.afterRun();
     }
+  };
+
+  @action
+  onBackboneConstraint = (event, params) => {
+    this.useBackboneConstraint = !this.useBackboneConstraint;
+  };
+
+  @action
+  onMultifurcatingConstraint = (event, params) => {
+    this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {
