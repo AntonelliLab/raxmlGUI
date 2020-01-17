@@ -99,7 +99,7 @@ const raxmlNgAnalysisOptions = [
   },
   {
     title: 'Fast tree search',
-    value: 'FT',
+    value: 'FTng',
     params: [params.outGroup],
   },
   {
@@ -134,7 +134,7 @@ class Analysis extends Option {
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'FT', 'Analysis', 'Type of analysis'); }
+  constructor(run) { super(run, 'FTng', 'Analysis', 'Type of analysis'); }
   options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
@@ -256,7 +256,9 @@ class BackboneConstraintTree extends TreeFile {
       'ML+tBS',
       'BS+con',
       'RBS',
-      'FT',
+      'SC',
+      'CC',
+      'FTng',
       'TI',
       'ML+tBS+con'
     ];
@@ -279,7 +281,9 @@ class MultifurcatingConstraintTree extends TreeFile {
       'ML+tBS',
       'BS+con',
       'RBS',
-      'FT',
+      'SC',
+      'CC',
+      'FTng',
       'TI',
       'ML+tBS+con'
     ];
@@ -522,7 +526,7 @@ class Run extends StoreBase {
       'BS+con',
       'PD',
       'RBS',
-      'FT',
+      'FTng',
       'TI',
       'ML+tBS+con'
     ];
@@ -646,7 +650,7 @@ class Run extends StoreBase {
           first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
         break;
-      case 'FT':
+      case 'FTng':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
         first.push('--search1');
         first.push('--msa', quote(this.finalAlignment.path));
