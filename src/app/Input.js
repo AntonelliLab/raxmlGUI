@@ -122,7 +122,7 @@ const Input = ({ run }) => {
           </div>
         </Box>
       }
-      { !run.useBackboneConstraint ? null :
+      { run.backboneConstraint.notAvailable ? null :
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
           { run.backboneConstraint.haveFile ?
@@ -134,7 +134,7 @@ const Input = ({ run }) => {
           </div>
         </Box>
       }
-      { !run.useMultifurcatingConstraint ? null :
+      { run.multifurcatingConstraint.notAvailable ? null :
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
           { run.multifurcatingConstraint.haveFile ?

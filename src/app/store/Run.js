@@ -246,15 +246,47 @@ class Tree extends TreeFile {
 
 class BackboneConstraintTree extends TreeFile {
   constructor(run) { super(run); }
+  @computed get isSet() {
+    return this.run.useBackboneConstraint && this.haveFile;
+  }
+  @computed get canConstraint() {
+    const analysisWithConstraint = [
+      'ML',
+      'ML+rBS',
+      'ML+tBS',
+      'BS+con',
+      'RBS',
+      'FT',
+      'TI',
+      'ML+tBS+con'
+    ];
+    return analysisWithConstraint.includes(this.run.analysis.value);
+  }
   @computed get notAvailable() {
-    return !this.useBackboneConstraint;
+    return !this.run.useBackboneConstraint || !this.canConstraint;
   }
 }
 
 class MultifurcatingConstraintTree extends TreeFile {
   constructor(run) { super(run); }
+  @computed get isSet() {
+    return this.run.useMultifurcatingConstraint && this.haveFile;
+  }
+  @computed get canConstraint() {
+    const analysisWithConstraint = [
+      'ML',
+      'ML+rBS',
+      'ML+tBS',
+      'BS+con',
+      'RBS',
+      'FT',
+      'TI',
+      'ML+tBS+con'
+    ];
+    return analysisWithConstraint.includes(this.run.analysis.value);
+  }
   @computed get notAvailable() {
-    return !this.useMultifurcatingConstraint;
+    return !this.run.useMultifurcatingConstraint || !this.canConstraint;
   }
 }
 
@@ -561,6 +593,12 @@ class Run extends StoreBase {
           quote(join(this.outputDir, this.outputNameSafe))
         );
         first.push('--msa', quote(this.finalAlignment.path));
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'CC':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#preparing-the-alignment
@@ -575,6 +613,12 @@ class Run extends StoreBase {
           quote(join(this.outputDir, this.outputNameSafe))
         );
         first.push('--msa', quote(this.finalAlignment.path));
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'TI':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
@@ -594,6 +638,12 @@ class Run extends StoreBase {
         first.push('--seed', this.seedParsimony);
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
         break;
       case 'FT':
@@ -615,6 +665,12 @@ class Run extends StoreBase {
         first.push('--seed', this.seedParsimony);
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
         break;
       case 'ML+tBS+con':
@@ -639,6 +695,12 @@ class Run extends StoreBase {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
         first.push('--bs-metric', 'fbp,tbe');
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       default:
     }
@@ -766,6 +828,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         if (this.sHlike.value) {
           const treeFile = join(
             this.outputDir,
@@ -827,6 +895,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'ML+tBS': // ML + thorough bootstrap
         // params: [params.runs, params.reps, params.brL, params.outGroup],
@@ -880,6 +954,12 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -976,6 +1056,12 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
+        }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
         }
 
         if (!this.numThreads.notAvailable) {
@@ -1081,6 +1167,13 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          first.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
+
         break;
       default:
     }
