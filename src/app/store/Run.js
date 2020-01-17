@@ -991,6 +991,12 @@ class Run extends StoreBase {
         if (this.alignments.length > 1) {
           second.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
+        if (this.backboneConstraint.isSet) {
+          second.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          second.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
 
         if (!this.numThreads.notAvailable) {
           third.push('-T', this.numThreads.value);
@@ -1082,6 +1088,12 @@ class Run extends StoreBase {
         second.push('-w', quote(this.outputDir));
         second.push('-z', quote(bsTreeFile));
         second.push('-n', consensusOutput);
+        if (this.backboneConstraint.isSet) {
+          second.push('-r', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          second.push('-g', quote(this.multifurcatingConstraint.filePath));
+        }
         break;
       case 'AS': // Ancestral states
         // params: [params.tree],
@@ -1177,7 +1189,6 @@ class Run extends StoreBase {
         if (this.multifurcatingConstraint.isSet) {
           first.push('-g', quote(this.multifurcatingConstraint.filePath));
         }
-
         break;
       default:
     }
