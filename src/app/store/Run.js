@@ -98,12 +98,7 @@ const raxmlNgAnalysisOptions = [
     params: [],
   },
   {
-    title: 'Fast tree search',
-    value: 'FTng',
-    params: [params.outGroup],
-  },
-  {
-    title: 'Default tree inference',
+    title: 'ML tree inference',
     value: 'TI',
     params: [params.outGroup],
   },
@@ -139,7 +134,7 @@ class Analysis extends Option {
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'FTng', 'Analysis', 'Type of analysis'); }
+  constructor(run) { super(run, 'TI', 'Analysis', 'Type of analysis'); }
   options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
@@ -263,7 +258,6 @@ class BackboneConstraintTree extends TreeFile {
       'RBS',
       'SC',
       'CC',
-      'FTng',
       'TI',
       'ML+tBS+con',
       'ML+TBE+con',
@@ -289,7 +283,6 @@ class MultifurcatingConstraintTree extends TreeFile {
       'RBS',
       'SC',
       'CC',
-      'FTng',
       'TI',
       'ML+tBS+con',
       'ML+TBE+con',
@@ -533,7 +526,6 @@ class Run extends StoreBase {
       'BS+con',
       'PD',
       'RBS',
-      'FTng',
       'TI',
       'ML+tBS+con',
       'ML+TBE+con',
@@ -634,33 +626,6 @@ class Run extends StoreBase {
         break;
       case 'TI':
         // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
-        first.push('--msa', quote(this.finalAlignment.path));
-        if (this.alignments.length > 1) {
-          first.push('--model', quote(this.finalAlignment.partitionFilePath));
-        } else {
-          first.push('--model', this.ngSubstitutionModelCmd);
-        }
-        first.push(
-          '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
-        );
-        if (!this.numThreads.notAvailable) {
-          first.push('--threads', this.numThreads.value);
-        }
-        first.push('--seed', this.seedParsimony);
-        if (this.outGroup.cmdValue) {
-          first.push('--outgroup', this.outGroup.cmdValue);
-        }
-        if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
-        }
-        if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
-        }
-        break;
-      case 'FTng':
-        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
-        first.push('--search1');
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
