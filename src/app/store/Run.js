@@ -40,7 +40,17 @@ const binaries = allBinaries.filter(({ multithreaded }) =>
 );
 
 // Available parameters for different analysis
-const params = { brL: 'brL', SHlike: 'SHlike', combinedOutput: 'combinedOutput', reps: 'reps', runs: 'runs', tree: 'tree', startingTree: 'startingTree', outGroup: 'outGroup' };
+const params = {
+  brL: 'brL',
+  SHlike: 'SHlike',
+  combinedOutput: 'combinedOutput',
+  reps: 'reps',
+  repsNg: 'repsNg',
+  runs: 'runs',
+  tree: 'tree',
+  startingTree: 'startingTree',
+  outGroup: 'outGroup',
+};
 
 const analysisOptions = [
   {
@@ -100,17 +110,17 @@ const raxmlNgAnalysisOptions = [
   {
     title: 'ML tree inference',
     value: 'TI',
-    params: [params.outGroup],
+    params: [params.runs, params.outGroup],
   },
   {
     title: 'ML + thorough bootstrap + consensus',
     value: 'ML+tBS+con',
-    params: [params.outGroup],
+    params: [params.runs, params.repsNg, params.outGroup],
   },
   {
     title: 'ML + Transfer Bootstrap Expectation + consensus',
     value: 'ML+TBE+con',
-    params: [params.outGroup],
+    params: [params.runs, params.repsNg, params.outGroup],
   },
 ];
 
@@ -148,6 +158,12 @@ class NumRepetitions extends Option {
   constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
   options = [100, 200, 500, 1000, 10000, 'autoMR', 'autoMRE', 'autoMRE_IGN', 'autoFC'].map(value => ({ value, title: value }));
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
+}
+
+class NumRepetitionsNg extends Option {
+  constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
+  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.repsNg); }
 }
 
 //TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
@@ -349,6 +365,7 @@ class Run extends StoreBase {
   substitutionModel = new SubstitutionModel(this);
   numRuns = new NumRuns(this);
   numRepetitions = new NumRepetitions(this);
+  numRepetitionsNg = new NumRepetitionsNg(this);
   branchLength = new BranchLength(this);
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
@@ -643,6 +660,7 @@ class Run extends StoreBase {
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
+        first.push('--tree', `rand{${this.numRuns.value}}`);
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
@@ -672,6 +690,8 @@ class Run extends StoreBase {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
         first.push('--bs-metric', 'fbp');
+        first.push('--tree', `rand{${this.numRuns.value}}`);
+        first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
@@ -701,6 +721,8 @@ class Run extends StoreBase {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
         first.push('--bs-metric', 'tbe');
+        first.push('--tree', `rand{${this.numRuns.value}}`);
+        first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
