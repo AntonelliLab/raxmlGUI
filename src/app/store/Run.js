@@ -40,7 +40,17 @@ const binaries = allBinaries.filter(({ multithreaded }) =>
 );
 
 // Available parameters for different analysis
-const params = { brL: 'brL', SHlike: 'SHlike', combinedOutput: 'combinedOutput', reps: 'reps', runs: 'runs', tree: 'tree', startingTree: 'startingTree', outGroup: 'outGroup' };
+const params = {
+  brL: 'brL',
+  SHlike: 'SHlike',
+  combinedOutput: 'combinedOutput',
+  reps: 'reps',
+  repsNg: 'repsNg',
+  runs: 'runs',
+  tree: 'tree',
+  startingTree: 'startingTree',
+  outGroup: 'outGroup',
+};
 
 const analysisOptions = [
   {
@@ -98,19 +108,25 @@ const raxmlNgAnalysisOptions = [
     params: [],
   },
   {
-    title: 'Fast tree search',
-    value: 'FTng',
-    params: [params.outGroup],
-  },
-  {
-    title: 'Default tree inference',
+    title: 'ML tree inference',
     value: 'TI',
-    params: [params.outGroup],
+    params: [params.runs, params.outGroup],
   },
   {
     title: 'ML + thorough bootstrap + consensus',
     value: 'ML+tBS+con',
-    params: [params.outGroup],
+    params: [params.runs, params.repsNg, params.outGroup],
+  },
+  {
+    title: 'ML + Transfer Bootstrap Expectation + consensus',
+    value: 'ML+TBE+con',
+    params: [params.runs, params.repsNg, params.outGroup],
+  },
+  {
+    title: 'Ancestral state reconstruction',
+    value: 'AS',
+    needTree: true,
+    params: [params.tree],
   },
 ];
 
@@ -134,7 +150,7 @@ class Analysis extends Option {
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'FTng', 'Analysis', 'Type of analysis'); }
+  constructor(run) { super(run, 'TI', 'Analysis', 'Type of analysis'); }
   options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
@@ -148,6 +164,12 @@ class NumRepetitions extends Option {
   constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
   options = [100, 200, 500, 1000, 10000, 'autoMR', 'autoMRE', 'autoMRE_IGN', 'autoFC'].map(value => ({ value, title: value }));
   @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
+}
+
+class NumRepetitionsNg extends Option {
+  constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
+  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map(value => ({ value, title: value }));
+  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.repsNg); }
 }
 
 //TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
@@ -258,9 +280,9 @@ class BackboneConstraintTree extends TreeFile {
       'RBS',
       'SC',
       'CC',
-      'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithConstraint.includes(this.run.analysis.value);
   }
@@ -283,9 +305,9 @@ class MultifurcatingConstraintTree extends TreeFile {
       'RBS',
       'SC',
       'CC',
-      'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithConstraint.includes(this.run.analysis.value);
   }
@@ -349,6 +371,7 @@ class Run extends StoreBase {
   substitutionModel = new SubstitutionModel(this);
   numRuns = new NumRuns(this);
   numRepetitions = new NumRepetitions(this);
+  numRepetitionsNg = new NumRepetitionsNg(this);
   branchLength = new BranchLength(this);
   sHlike = new SHlike(this);
   combinedOutput = new CombinedOutput(this);
@@ -526,9 +549,9 @@ class Run extends StoreBase {
       'BS+con',
       'PD',
       'RBS',
-      'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithSeed.includes(this.analysis.value);
   }
@@ -643,33 +666,7 @@ class Run extends StoreBase {
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
-        if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
-        }
-        if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
-        }
-        break;
-      case 'FTng':
-        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#tree-inference
-        first.push('--search1');
-        first.push('--msa', quote(this.finalAlignment.path));
-        if (this.alignments.length > 1) {
-          first.push('--model', quote(this.finalAlignment.partitionFilePath));
-        } else {
-          first.push('--model', this.ngSubstitutionModelCmd);
-        }
-        first.push(
-          '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
-        );
-        if (!this.numThreads.notAvailable) {
-          first.push('--threads', this.numThreads.value);
-        }
-        first.push('--seed', this.seedParsimony);
-        if (this.outGroup.cmdValue) {
-          first.push('--outgroup', this.outGroup.cmdValue);
-        }
+        first.push('--tree', `rand{${this.numRuns.value}}`);
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
@@ -698,13 +695,62 @@ class Run extends StoreBase {
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
-        first.push('--bs-metric', 'fbp,tbe');
+        first.push('--bs-metric', 'fbp');
+        first.push('--tree', `rand{${this.numRuns.value}}`);
+        first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
+        break;
+      case 'ML+TBE+con':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--all');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.ngSubstitutionModelCmd);
+        }
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
+        first.push('--seed', this.seedParsimony);
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        first.push('--bs-metric', 'tbe');
+        first.push('--tree', `rand{${this.numRuns.value}}`);
+        first.push('--bs-trees', this.numRepetitionsNg.value);
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
+        break;
+      case 'AS':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--ancestral');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.ngSubstitutionModelCmd);
+        }
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
+        first.push('--tree', quote(this.tree.filePath));
         break;
       default:
     }

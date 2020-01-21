@@ -37,6 +37,7 @@ const Model = ({ run }) => {
         <OptionSelect option={run.analysis} />
         <OptionSelect option={run.numRuns} />
         <OptionSelect option={run.numRepetitions} />
+        <OptionSelect option={run.numRepetitionsNg} />
         <OptionCheck option={run.branchLength} />
         <OptionCheck option={run.sHlike} />
         <OptionCheck option={run.combinedOutput} />
