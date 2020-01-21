@@ -112,6 +112,11 @@ const raxmlNgAnalysisOptions = [
     value: 'ML+tBS+con',
     params: [params.outGroup],
   },
+  {
+    title: 'ML + Transfer Bootstrap Expectation + consensus',
+    value: 'ML+TBE+con',
+    params: [params.outGroup],
+  },
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
@@ -260,7 +265,8 @@ class BackboneConstraintTree extends TreeFile {
       'CC',
       'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithConstraint.includes(this.run.analysis.value);
   }
@@ -285,7 +291,8 @@ class MultifurcatingConstraintTree extends TreeFile {
       'CC',
       'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithConstraint.includes(this.run.analysis.value);
   }
@@ -528,7 +535,8 @@ class Run extends StoreBase {
       'RBS',
       'FTng',
       'TI',
-      'ML+tBS+con'
+      'ML+tBS+con',
+      'ML+TBE+con',
     ];
     return analysisWithSeed.includes(this.analysis.value);
   }
@@ -698,7 +706,36 @@ class Run extends StoreBase {
         if (this.outGroup.cmdValue) {
           first.push('--outgroup', this.outGroup.cmdValue);
         }
-        first.push('--bs-metric', 'fbp,tbe');
+        first.push('--bs-metric', 'fbp');
+        if (this.backboneConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+        }
+        if (this.multifurcatingConstraint.isSet) {
+          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+        }
+        break;
+      case 'ML+TBE+con':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--all');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.ngSubstitutionModelCmd);
+        }
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
+        first.push('--seed', this.seedParsimony);
+        if (!this.numThreads.notAvailable) {
+          first.push('--threads', this.numThreads.value);
+        }
+        if (this.outGroup.cmdValue) {
+          first.push('--outgroup', this.outGroup.cmdValue);
+        }
+        first.push('--bs-metric', 'tbe');
         if (this.backboneConstraint.isSet) {
           first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
         }
