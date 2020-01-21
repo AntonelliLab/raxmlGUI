@@ -122,6 +122,12 @@ const raxmlNgAnalysisOptions = [
     value: 'ML+TBE+con',
     params: [params.runs, params.repsNg, params.outGroup],
   },
+  {
+    title: 'Ancestral state reconstruction',
+    value: 'AS',
+    needTree: true,
+    params: [params.tree],
+  },
 ];
 
 const quote = dir => util.is.windows ? `"${dir}"` : dir;
@@ -729,6 +735,22 @@ class Run extends StoreBase {
         if (this.multifurcatingConstraint.isSet) {
           first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
         }
+        break;
+      case 'AS':
+        // https://github.com/amkozlov/raxml-ng/wiki/Tutorial#bootstrapping
+        // raxml-ng --all --msa prim.phy --model GTR+G --prefix T15 --seed 2 --threads 2 --bs-metric fbp,tbe
+        first.push('--ancestral');
+        first.push('--msa', quote(this.finalAlignment.path));
+        if (this.alignments.length > 1) {
+          first.push('--model', quote(this.finalAlignment.partitionFilePath));
+        } else {
+          first.push('--model', this.ngSubstitutionModelCmd);
+        }
+        first.push(
+          '--prefix',
+          quote(join(this.outputDir, this.outputNameSafe))
+        );
+        first.push('--tree', quote(this.tree.filePath));
         break;
       default:
     }
