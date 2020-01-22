@@ -289,7 +289,17 @@ const App = () => {
         </SplitPane>
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
-            <div className={classes.statusVersion}>raxmlGUI {version}</div>
+            <div className={classes.statusVersion}>
+              raxmlGUI {version}
+              <a
+                className={classes.statusFeedback}
+                href="https://github.com/AntonelliLab/raxmlGUI/releases/latest"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Check for new version
+              </a>
+            </div>
             <div className={classes.statusVersion}>
               {binary.value} {binary.version}
             </div>
