@@ -129,7 +129,8 @@
       "assets/"
     ],
     "dmg": {
-      "icon": "build/disk-image.icns"
+      "icon": "build/disk-image.icns",
+      "sign": false
     },
     "mac": {
       "category": "public.app-category.education",
