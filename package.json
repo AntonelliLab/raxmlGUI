@@ -85,9 +85,11 @@
     "@babel/preset-env": "^7.5.5",
     "cross-env": "^6.0.3",
     "devtron": "^1.4.0",
+    "dotenv": "^8.2.0",
     "electron": "^7.1.7",
-    "electron-builder": "^21.2.0",
+    "electron-builder": "^22.3.1",
     "electron-devtools-installer": "^2.2.4",
+    "electron-notarize": "^0.2.1",
     "electron-webpack": "^2.7.4",
     "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
@@ -115,6 +117,7 @@
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI",
+    "afterSign": "./scripts/notarize.js",
     "directories": {
       "buildResources": "build",
       "output": "dist"
@@ -126,10 +129,14 @@
       "assets/"
     ],
     "dmg": {
-      "icon": "build/disk-image.icns"
+      "icon": "build/disk-image.icns",
+      "sign": false
     },
     "mac": {
       "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "entitlements": "public/entitlements.mac.inherit.plist",
+      "entitlementsInherit": "public/entitlements.mac.inherit.plist",
       "extraResources": [
         {
           "from": "static/bin/Mac",
