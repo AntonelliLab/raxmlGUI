@@ -87,7 +87,7 @@
     "devtron": "^1.4.0",
     "dotenv": "^8.2.0",
     "electron": "^7.1.7",
-    "electron-builder": "^21.2.0",
+    "electron-builder": "^22.3.1",
     "electron-devtools-installer": "^2.2.4",
     "electron-notarize": "^0.2.1",
     "electron-webpack": "^2.7.4",
