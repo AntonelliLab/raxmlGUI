@@ -39,8 +39,8 @@ exports.default = async function notarizing(context) {
   return await notarize({
     appBundleId: 'org.jtklein.raxmlGUI2',
     appPath: `${appOutDir}/${appName}.app`,
-    appleId: process.env.APPLEID,
-    appleIdPassword: process.env.APPLEIDPASS,
-    ascProvider: process.env.APPLEIDTEAM,
+    appleId,
+    appleIdPassword,
+    ascProvider,
   });
 };
