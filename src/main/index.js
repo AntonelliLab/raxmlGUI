@@ -2,19 +2,35 @@ import electron from 'electron';
 import path from 'path';
 import url from 'url';
 import isDev from 'electron-is-dev';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+
 const debug = require('electron-debug');
 
 import './api';
 import MenuBuilder from './menu';
+
+//-------------------------------------------------------------------
+// From https://github.com/iffy/electron-updater-example/blob/master/main.js
+// Logging
+//
+// This logging setup is not required for auto-updates to work,
+// but it sure makes debugging easier :)
+//-------------------------------------------------------------------
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 debug({
   // isEnabled: true, // override default disabled in production
 });
 
 // Module to control application life.
-const app = electron.app
+const app = electron.app;
 // Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+const BrowserWindow = electron.BrowserWindow;
+// Module to show dialogs
+const dialog = electron.dialog;
 
 const installExtensions = async () => {
   const {
@@ -38,6 +54,64 @@ const isDevMode = isDev && process.argv.indexOf("--noDevServer") === -1;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for update...');
+});
+autoUpdater.on('update-available', info => {
+  dialog.showMessageBox(
+    {
+      type: 'info',
+      title: 'Found Updates',
+      message: 'Found updates, do you want update now?',
+      buttons: ['Sure', 'No']
+    },
+    buttonIndex => {
+      if (buttonIndex === 0) {
+        autoUpdater.downloadUpdate();
+      } else {
+        updater.enabled = true;
+        updater = null;
+      }
+    }
+  );
+  log.info('Update available.');
+});
+autoUpdater.on('update-not-available', info => {
+  dialog.showMessageBox({
+    title: 'No Updates',
+    message: 'Current version is up-to-date.'
+  });
+  log.info('Update not available.');
+});
+autoUpdater.on('error', error => {
+  log.info('Error in auto-updater. ' + error);
+  dialog.showErrorBox(
+    'Error: ',
+    error == null ? 'unknown' : (error.stack || error).toString()
+  );
+});
+autoUpdater.on('download-progress', progressObj => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message =
+    log_message +
+    ' (' +
+    progressObj.transferred +
+    '/' +
+    progressObj.total +
+    ')';
+  log.info(log_message);
+});
+autoUpdater.on('update-downloaded', info => {
+  dialog.showMessageBox({
+    title: 'Install Updates',
+    message: 'Updates downloaded, application will be quit for update...'
+  }, () => {
+    setImmediate(() => autoUpdater.quitAndInstall())
+  })
+  log.info('Update downloaded');
+});
 
 /**
  * Add event listeners...
@@ -131,6 +205,14 @@ function initialize() {
       require("devtron").install();
     }
     createMainWindow();
+    //-------------------------------------------------------------------
+    // Auto updates - Option 1 - Simplest version
+    //
+    // This will immediately download an update, then install when the
+    // app quits.
+    //-------------------------------------------------------------------
+    autoUpdater.autoDownload = false;
+    autoUpdater.checkForUpdates();
   })
 
   // Quit when all windows are closed.
