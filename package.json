@@ -1,7 +1,7 @@
 {
-  "name": "raxmlGUI",
+  "name": "raxmlgui",
   "productName": "raxmlGUI",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "private": true,
   "author": "AntonelliLab <raxmlgui.help@gmail.com>",
   "license": "AGPL-3.0",
@@ -34,6 +34,7 @@
     "electron-build-win": "electron-builder -w",
     "electron-build-linux": "electron-builder -l",
     "electron-build-all": "electron-builder -mwl",
+    "electron-build-publish-all": "electron-builder -mwl -p always",
     "electron-pack": "electron-builder --dir -c.compression=store -c.mac.identity=null",
     "electron-pack-win": "electron-builder -w --dir -c.compression=store",
     "electron-compile": "electron-webpack",
@@ -45,6 +46,7 @@
     "build-all": "run-s react-build compile electron-build-all",
     "dist-pack": "run-s react-build compile electron-pack",
     "dist-pack-win": "run-s react-build compile electron-pack-win",
+    "publish-all": "run-s react-build compile electron-build-publish-all",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -63,7 +65,9 @@
     "electron-better-ipc": "^0.7.0",
     "electron-debug": "^3.0.1",
     "electron-is-dev": "^1.1.0",
+    "electron-log": "^4.0.3",
     "electron-unhandled": "^3.0.1",
+    "electron-updater": "^4.2.0",
     "electron-util": "^0.13.1",
     "filenamify": "^4.1.0",
     "lodash": "^4.17.15",
@@ -86,7 +90,7 @@
     "cross-env": "^6.0.3",
     "devtron": "^1.4.0",
     "dotenv": "^8.2.0",
-    "electron": "^7.1.7",
+    "electron": "^7.1.10",
     "electron-builder": "^22.3.1",
     "electron-devtools-installer": "^2.2.4",
     "electron-notarize": "^0.2.1",
@@ -153,9 +157,7 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "msi",
-        "portable"
+        "nsis"
       ],
       "extraResources": [
         {
@@ -166,9 +168,6 @@
     },
     "linux": {
       "target": [
-        "deb",
-        "rpm",
-        "snap",
         "AppImage"
       ],
       "category": "Education",
@@ -178,6 +177,9 @@
           "to": "static/bin"
         }
       ]
+    },
+    "publish": {
+      "provider": "github"
     }
   }
 }
