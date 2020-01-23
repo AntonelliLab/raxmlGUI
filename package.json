@@ -157,9 +157,7 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "msi",
-        "portable"
+        "nsis"
       ],
       "extraResources": [
         {
@@ -170,9 +168,6 @@
     },
     "linux": {
       "target": [
-        "deb",
-        "rpm",
-        "snap",
         "AppImage"
       ],
       "category": "Education",
