@@ -34,6 +34,7 @@
     "electron-build-win": "electron-builder -w",
     "electron-build-linux": "electron-builder -l",
     "electron-build-all": "electron-builder -mwl",
+    "electron-build-publish-all": "electron-builder -mwl -p always",
     "electron-pack": "electron-builder --dir -c.compression=store -c.mac.identity=null",
     "electron-pack-win": "electron-builder -w --dir -c.compression=store",
     "electron-compile": "electron-webpack",
@@ -45,6 +46,7 @@
     "build-all": "run-s react-build compile electron-build-all",
     "dist-pack": "run-s react-build compile electron-pack",
     "dist-pack-win": "run-s react-build compile electron-pack-win",
+    "publish-all": "run-s react-build compile electron-build-publish-all",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -180,6 +182,9 @@
           "to": "static/bin"
         }
       ]
+    },
+    "publish": {
+      "provider": "github"
     }
   }
 }
