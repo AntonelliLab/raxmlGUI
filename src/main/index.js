@@ -59,22 +59,19 @@ autoUpdater.on('checking-for-update', () => {
   log.info('Checking for update...');
 });
 autoUpdater.on('update-available', info => {
-  dialog.showMessageBox(
-    {
-      type: 'info',
-      title: 'Found Updates',
-      message: 'Found updates, do you want update now?',
-      buttons: ['Sure', 'No']
-    },
-    buttonIndex => {
-      if (buttonIndex === 0) {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Found Updates',
+    message: 'Found updates, do you want update now?',
+    buttons: ['Yes', 'No'],
+    cancelId: 1
+  })
+    .then(r => {
+      // Button index
+      if (r.response === 0) {
         autoUpdater.downloadUpdate();
-      } else {
-        updater.enabled = true;
-        updater = null;
       }
-    }
-  );
+    });
   log.info('Update available.');
 });
 autoUpdater.on('update-not-available', info => {
@@ -107,9 +104,10 @@ autoUpdater.on('update-downloaded', info => {
   dialog.showMessageBox({
     title: 'Install Updates',
     message: 'Updates downloaded, application will be quit for update...'
-  }, () => {
-    setImmediate(() => autoUpdater.quitAndInstall())
   })
+    .then(() => {
+      setImmediate(() => autoUpdater.quitAndInstall())
+    })
   log.info('Update downloaded');
 });
 
