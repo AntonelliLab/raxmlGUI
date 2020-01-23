@@ -85,3 +85,6 @@ https://medium.com/@TwitterArchiveEraser/notarize-electron-apps-7a5f988406db
 https://github.com/electron/electron-notarize
 https://stackoverflow.com/questions/53112078/how-to-upload-dmg-file-for-notarization-in-xcode/53121755#53121755
 
+#### Publishing with electron-builder
+Need to have a GH_TOKEN in your shell env
+
