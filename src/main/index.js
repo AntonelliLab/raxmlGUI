@@ -75,10 +75,6 @@ autoUpdater.on('update-available', info => {
   log.info('Update available.');
 });
 autoUpdater.on('update-not-available', info => {
-  dialog.showMessageBox({
-    title: 'No Updates',
-    message: 'Current version is up-to-date.'
-  });
   log.info('Update not available.');
 });
 autoUpdater.on('error', error => {
