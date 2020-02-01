@@ -5,13 +5,10 @@ import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
 import OptionSelect from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { FormControl, FormHelperText } from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import OptionTextField from './components/OptionTextField';
 
 const useStyles = makeStyles(theme => ({
   Model: {
