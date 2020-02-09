@@ -20,8 +20,8 @@ function initDev(exampleFiles) {
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFastaFiles = [
     // 'aminoacid.txt',
-    // 'bin1.txt',
-    // 'bin2.txt',
+    'bin1.txt',
+    'bin2.txt',
     // 'binary.txt',
     // 'dna.txt',
     // 'mixed_data.txt',
@@ -31,7 +31,7 @@ function initDev(exampleFiles) {
   const usePhylipFiles = [
     // 'AA.txt',
     // 'align_allvariant.txt',
-    'aminoacid.txt',
+    // 'aminoacid.txt',
     // 'binary.txt',
     // 'dna_interleaved_relaxed.txt',
     // 'dna_interleaved.txt',

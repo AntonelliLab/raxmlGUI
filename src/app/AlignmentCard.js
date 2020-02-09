@@ -309,7 +309,7 @@ function FinalAlignmentCard({ className, alignment }) {
 
   const Size = alignment.parsingComplete ? (
     <span className={classes.secondaryText}>
-      {alignment.numSequences} sequences of length {alignment.length}
+      {alignment.numSequences} sequences of length {alignment.length} from {alignment.numAlignments} alignment{alignment.numAlignments > 1 ? 's' : ''}
     </span>
   ) : (
     <span className={classes.secondaryText}>Parsing... {alignment.numSequencesParsed} </span>

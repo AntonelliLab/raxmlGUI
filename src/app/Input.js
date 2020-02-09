@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     padding: '10px',
   },
   concatenatedAlignment: {
-    width: '350px',
+    width: '550px',
     height: '200px',
   },
   resultingPartitionCard: {

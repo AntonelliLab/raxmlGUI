@@ -306,7 +306,7 @@ class Alignment {
     // Receive a progress update for one of the alignments being parsed
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
       if (id === this.id) {
-        if (alignment.dataType !== this.run.dataType) {
+        if (this.run.dataType && alignment.dataType !== this.run.dataType) {
           if (this.run.alignments.length > 1) {
             this.run.substitutionModel.value =
               raxmlModelOptions[this.run.dataType].default;
