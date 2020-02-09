@@ -47,10 +47,10 @@ const theme = createMuiTheme({
       // darker: '#000010',
       darker: 'hsla(211, 31%, 11%, 1)',
     },
-    error: amber,
-    // error: {
-    //   main: '#f2401b',
-    // },
+    // error: amber,
+    error: {
+      main: '#f2401b',
+    },
     // Used by `getContrastText()` to maximize the contrast between the background and
     // the text.
     contrastThreshold: 3,

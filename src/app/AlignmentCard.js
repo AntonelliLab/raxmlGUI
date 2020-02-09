@@ -18,9 +18,10 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import Partition from './Partition';
 import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
+import TextField from '@material-ui/core/TextField';
+import CardActions from '@material-ui/core/CardActions';
 
 const InputSwitch = withStyles(theme => ({
   switchBase: {
@@ -167,9 +168,7 @@ function AlignmentCard({ className, alignment }) {
   //   <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
   // );
 
-  const Content = alignment.showPartition ? (
-    <Partition alignment={alignment} />
-  ) : (
+  const Content = (
     <div className={classes.content}>
       <div>
         {alignment.run.usesRaxmlNg ? (
@@ -234,8 +233,6 @@ function AlignmentCard({ className, alignment }) {
   //   </Button>
   // </div>
 
-  // <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>Show partition</MenuItem>
-
   return (
     <Card className={classNames(className, classes.AlignmentCard)} raised>
       <CardHeader
@@ -265,6 +262,9 @@ function AlignmentCard({ className, alignment }) {
               <MenuItem onClick={closeMenuAndRun(alignment.remove)}>
                 Remove alignment
               </MenuItem>
+              <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>
+                Edit partition
+              </MenuItem>
             </Menu>
           </div>
         }
@@ -279,6 +279,11 @@ function AlignmentCard({ className, alignment }) {
         ) : null}
       </div>
       <CardContent>{Content}</CardContent>
+      <CardActions>
+        { alignment.partition.isComplete || alignment.showPartition ? null : (
+          <Typography variant="caption" color="primary">Partition not complete, click <strong style={{ cursor: 'pointer' }} onClick={alignment.setShowPartition}>here</strong> to edit.</Typography>
+        )}
+      </CardActions>
     </Card>
   );
 }
@@ -374,7 +379,7 @@ function FinalAlignmentCard({ className, alignment }) {
         />
         <div className={classes.partitionFileContainer}>
           <code className={classes.partitionFileContent}>
-            {alignment.partitionFileContent}
+            {alignment.partition.text}
           </code>
         </div>
       </CardContent>

@@ -81,7 +81,8 @@
     "react-scripts": "^3.3.0",
     "react-split-pane": "^0.1.89",
     "serialize-error": "^5.0.0",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.16",
+    "yup": "^0.28.1"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",

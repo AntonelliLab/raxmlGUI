@@ -11,11 +11,13 @@ const OptionTextField = observer(({ option, className }) => {
     <TextField
       id={option.title}
       label={option.title}
+      title={option.hoverInfo}
+      disabled={option.disabled}
       className={className}
       value={option.value}
       placeholder={option.placeholder}
       onChange={e => option.setValue(e.target.value)}
-      error={option.error}
+      error={option.haveError}
       helperText={option.helperText}
     />
   );

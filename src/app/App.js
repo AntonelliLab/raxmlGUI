@@ -26,6 +26,8 @@ import store from './store';
 import SplitPane from 'react-split-pane';
 import { Typography } from '@material-ui/core';
 import { version } from '../../package.json';
+import Modal from '@material-ui/core/Modal';
+import PartitionEditor from './PartitionEditor';
 
 const useStyles = makeStyles(theme => ({
   App: {
@@ -154,6 +156,13 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       color: '#999',
     },
+  },
+  Modal: {
+    top: `50%`,
+    margin: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 }));
 
@@ -345,6 +354,19 @@ const App = () => {
           </Snackbar>
           <ErrorDialog error={run.error} onClose={run.clearError} />
         </ErrorBoundary>
+
+        { run.showPartitionFor === null ? null : (
+          <Modal
+            aria-labelledby="show-partition"
+            open={true}
+            onClose={run.hidePartition}
+            className={classes.Modal}
+          >
+            <div id="show-partition">
+              <PartitionEditor alignment={run.showPartitionFor} />
+            </div>
+          </Modal>
+        )}
         <ErrorDialog error={store.error} onClose={store.clearError} />
       </div>
     </React.Fragment>

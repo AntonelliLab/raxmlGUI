@@ -18,26 +18,32 @@ function initDev(exampleFiles) {
   // const exampleFilesDir = path.dirname(exampleFiles[0].path);
   const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
-  const useFiles = [
-    // 'dna.txt',
+  const useFastaFiles = [
     // 'aminoacid.txt',
-    // 'binary.txt',
     // 'bin1.txt',
     // 'bin2.txt',
+    // 'binary.txt',
+    // 'dna.txt',
+    // 'mixed_data.txt',
+    // 'multistate.txt',
+    // 'nucleotide.txt',
+  ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
+  const usePhylipFiles = [
     // 'AA.txt',
-    // 'AA2.txt',
+    // 'align_allvariant.txt',
+    'aminoacid.txt',
+    // 'binary.txt',
     // 'dna_interleaved_relaxed.txt',
     // 'dna_interleaved.txt',
     // 'dna_sequential_relaxed.txt',
     // 'dna_sequential.txt',
-    // 'align.txt',
-    // 'align_allvariant.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    'nucleotide.txt',
-    // 'test_interleaved.txt',
+    // 'nucleotide.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
-  // ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
+  const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
-  // store.activeRun.alignments[0].setShowPartition();
+  setTimeout(() => {
+    store.activeRun.alignments[0].setShowPartition();
+  }, 1000);
 }

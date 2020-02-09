@@ -10,6 +10,7 @@ import intersection from 'lodash/intersection';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
+import Partition, { FinalPartition } from './Partition';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -118,6 +119,7 @@ class MultistateNumber extends Option {
   @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
 }
 
+
 class Alignment {
   run = null;
 
@@ -151,7 +153,23 @@ class Alignment {
   // @observable taxons = [];
 
   // Partition stuff
-  @observable showPartition = false;
+  @computed get showPartition() {
+    return this.run.showPartitionFor === this;
+  };
+
+  @action
+  setShowPartition = (value = true) => {
+    this.run.showPartition(value ? this : null);
+  };
+  @action
+  hidePartition = () => {
+    this.setShowPartition(false);
+  };
+
+  @action
+  setPartitionText = value => {
+    this.partitionText = value;
+  };
   @observable partitionText = '';
   @computed get partitionType() {
     if (this.run.usesRaxmlNg) {
@@ -172,6 +190,23 @@ class Alignment {
     }
   }
 
+  @computed get partitionFileContent() {
+    /*
+      DNA, gene1 = 1-3676
+      BIN, morph = 3677-3851
+      asdf
+    */
+    let partitionFileText = '';
+    let site = 1;
+    let index = 0;
+    const total = this.length;
+    const name = `${this.dataType}_${index}`;
+    partitionFileText += `${this.partitionType}, ${name} = ${site}-${total}\n`;
+    // site += alignment.length;
+    // return { partitionType, dataType: alignment.dataType, length: alignment.length };
+    return partitionFileText;
+  }
+
   constructor(run, path) {
     this.run = run;
     this.path = path;
@@ -181,6 +216,8 @@ class Alignment {
     this.ngInvariantSites = new RaxmlNgModelI(this);
     this.ngRateHeterogeneity = new RaxmlNgModelG(this);
     this.ngAscertainmentBias = new RaxmlNgModelASC(this);
+    this.partition = new Partition(this);
+
     this.listen();
   }
 
@@ -336,16 +373,6 @@ class Alignment {
   };
 
   @action
-  setShowPartition = (value = true) => {
-    this.showPartition = value;
-  };
-
-  @action
-  setPartitionText = value => {
-    this.partitionText = value;
-  };
-
-  @action
   dispose = () => {
     //TODO: Remove listeners (make callbacks class methods to be able to remove them)
   };
@@ -380,6 +407,7 @@ class Alignment {
 class FinalAlignment {
   constructor(run) {
     this.run = run;
+    this.partition = new FinalPartition(run);
   }
 
   @computed get filename() {
@@ -460,32 +488,15 @@ class FinalAlignment {
   }
 
   @computed get partitionFilePath() {
-    const numAlignments = this.numAlignments;
-    if (numAlignments <= 1) {
+    if (this.partition.isDefault) {
       return '';
     }
-    return join(`${this.dir}`, `RAxML_${this.run.outputNameSafe}_concat.part.txt`);
+    const suffix = this.numAlignments > 1 ? '_concat' : '';
+    return join(`${this.dir}`, `RAxML_${this.run.outputNameSafe}${suffix}.part.txt`);
   }
 
   @computed get partitionFileContent() {
-    /*
-      DNA, gene1 = 1-3676
-      BIN, morph = 3677-3851
-    */
-    if (!this.run.haveAlignments) {
-      return '';
-    }
-    let partitionFileText = '';
-    let site = 1;
-    let total = 0;
-    this.run.alignments.map((alignment, index) => {
-      total += alignment.length;
-      const { partitionType } = alignment;
-      partitionFileText += `${partitionType}, ${alignment.dataType}_${index} = ${site}-${total}\n`;
-      site += alignment.length;
-      return { partitionType, dataType: alignment.dataType, length: alignment.length };
-    });
-    return partitionFileText;
+    return this.partition.text;
   }
 
   @action

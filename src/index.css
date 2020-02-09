@@ -7,3 +7,6 @@ html, body {
 body {
   font-family: Roboto, sans-serif;
 }
+pre, code, .pre, .code {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+}
