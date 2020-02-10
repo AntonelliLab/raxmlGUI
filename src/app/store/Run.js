@@ -9,7 +9,7 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
-import util from 'electron-util';
+import electronutil from 'electron-util';
 
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
@@ -25,7 +25,7 @@ const winBinaries = [
   { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
 ];
 
-const allBinaries = util.is.windows
+const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
@@ -130,7 +130,7 @@ const raxmlNgAnalysisOptions = [
   },
 ];
 
-const quote = dir => util.is.windows ? `"${dir}"` : dir;
+const quote = dir => electronutil.is.windows ? `"${dir}"` : dir;
 
 class Binary extends Option {
   constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
