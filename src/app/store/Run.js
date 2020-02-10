@@ -10,6 +10,7 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import electronutil from 'electron-util';
+import fs from 'fs';
 
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
@@ -1257,6 +1258,31 @@ class Run extends StoreBase {
       .join(' &&\\\n');
   }
 
+  @computed get settingsFileContent() {
+    return `Your analaysis was run as follows:
+    Analysis: ${this.analysisOption.title}
+    Binary: ${this.binary.value} version ${this.binary.version}
+    RAxML arguments: ${this.args}
+    Results saved to: ${this.outputDir}
+    `;
+  }
+
+  @computed get settingsFilePath() {
+    return join(`${this.outputDir}`, `settings_${this.outputNameSafe}.txt`);
+  }
+
+  @action
+  writeSettings = async () => {
+    try {
+      console.log(`Writing settings to ${this.settingsFilePath}...`);
+      await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
+    }
+    catch (err) {
+      console.error('Error writing settings:', err);
+      throw err;
+    }
+  }
+
   @action
   start = async () => {
     const {
@@ -1280,6 +1306,8 @@ class Run extends StoreBase {
     else if (!this.finalAlignment.partition.isDefault) {
       await this.finalAlignment.writePartition();
     }
+    await this.writeSettings();
+    return;
     ipcRenderer.send(ipc.RUN_START, {
       id,
       args,
