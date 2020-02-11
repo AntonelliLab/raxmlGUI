@@ -1259,12 +1259,17 @@ class Run extends StoreBase {
   }
 
   @computed get settingsFileContent() {
-    return `Your analaysis was run as follows:
-    Analysis: ${this.analysisOption.title}
-    Binary: ${this.binary.value} version ${this.binary.version}
-    RAxML arguments: ${this.args}
-    Results saved to: ${this.outputDir}
-    `;
+    let text = `Your analaysis was run as follows:
+Analysis: ${this.analysisOption.title}
+Binary: ${this.binary.value} version ${this.binary.version}
+Results saved to: ${this.outputDir}
+`;
+    let argumentext = 'RAxML was called with these arguments:\n'
+    this.args.map(
+      (arg, index) => argumentext += `${index + 1}.) ${arg.join(' ')}\n`
+    );
+    text += argumentext;
+    return text;
   }
 
   @computed get settingsFilePath() {
