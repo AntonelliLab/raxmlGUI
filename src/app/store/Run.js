@@ -1312,7 +1312,6 @@ Results saved to: ${this.outputDir}
       await this.finalAlignment.writePartition();
     }
     await this.writeSettings();
-    return;
     ipcRenderer.send(ipc.RUN_START, {
       id,
       args,
