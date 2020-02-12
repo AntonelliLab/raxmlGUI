@@ -1267,11 +1267,11 @@ Results saved to: ${this.outputDir}
   @computed get settingsFilePath() {
     const raxmlSettingsFilePath = join(
       `${this.outputDir}`,
-      `RAxML_${this.outputNameSafe}_settings.txt`
+      `RAxML_settings.${this.outputNameSafe}.txt`
     );
     const raxmlNgSettingsFilePath = join(
       `${this.outputDir}`,
-      `settings_${this.outputNameSafe}.txt`
+      `${this.outputNameSafe}.raxml.settings`
     );
     return this.raxmlNgSwitch(raxmlNgSettingsFilePath, raxmlSettingsFilePath);
   }
