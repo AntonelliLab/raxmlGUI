@@ -1269,11 +1269,23 @@ Results saved to: ${this.outputDir}
       (arg, index) => argumentext += `${index + 1}.) ${arg.join(' ')}\n`
     );
     text += argumentext;
+// TODO: should we be more precise about what the single params mean?
+//     text += `To repeat the analysis use the following seeds:
+// Bootstrap seed: ${this.seedBootstrap}
+// Parsimony seed: ${this.seedParsimony}`;
     return text;
   }
 
   @computed get settingsFilePath() {
-    return join(`${this.outputDir}`, `settings_${this.outputNameSafe}.txt`);
+    const raxmlSettingsFilePath = join(
+      `${this.outputDir}`,
+      `RAxML_${this.outputNameSafe}_settings.txt`
+    );
+    const raxmlNgSettingsFilePath = join(
+      `${this.outputDir}`,
+      `settings_${this.outputNameSafe}.txt`
+    );
+    return this.raxmlNgSwitch(raxmlNgSettingsFilePath, raxmlSettingsFilePath);
   }
 
   @action
