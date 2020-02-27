@@ -28,6 +28,7 @@ import { Typography } from '@material-ui/core';
 import { version } from '../../package.json';
 import Modal from '@material-ui/core/Modal';
 import PartitionEditor from './PartitionEditor';
+import CitationModal from './CitationModal';
 
 const useStyles = makeStyles(theme => ({
   App: {
@@ -60,9 +61,10 @@ const useStyles = makeStyles(theme => ({
     padding: '0 8px',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   statusVersion: {
-    flexGrow: 1,
+    marginRight: 20,
   },
   statusFeedback: {
     color: '#fff',
@@ -298,18 +300,29 @@ const App = () => {
         </SplitPane>
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
-            <div className={classes.statusVersion}>
-              raxmlGUI {version}
-            </div>
-            <div className={classes.statusVersion}>
-              {binary.value} {binary.version}
-            </div>
-            <a
-              className={classes.statusFeedback}
-              href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
-            >
-              Please send us feedback!
-            </a>
+            <Box display="flex">
+              <div className={classes.statusVersion}>
+                raxmlGUI {version}
+              </div>
+              <div className={classes.statusVersion}>
+                {binary.value} {binary.version}
+              </div>
+            </Box>
+            <Box css={{ flexGrow: 1 }} />
+            <Box display="flex">
+              <span
+                style={{ cursor: 'pointer', color: '#fff' }}
+                onClick={store.citation.show}
+              >
+                How to cite?
+              </span>
+              <a
+                className={classes.statusFeedback}
+                href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
+              >
+                Please send us feedback!
+              </a>
+            </Box>
           </Toolbar>
         </AppBar>
         <ErrorBoundary>
@@ -359,6 +372,18 @@ const App = () => {
             </div>
           </Modal>
         )}
+        { store.citation.visible ? (
+          <Modal
+            aria-labelledby="show-citation"
+            open={true}
+            onClose={store.citation.hide}
+            className={classes.Modal}
+          >
+            <div id="show-citation">
+              <CitationModal citation={store.citation} />
+            </div>
+          </Modal>
+        ) : null }
         <ErrorDialog error={store.error} onClose={store.clearError} />
       </div>
     </React.Fragment>

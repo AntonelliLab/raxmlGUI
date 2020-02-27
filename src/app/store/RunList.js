@@ -2,10 +2,13 @@ import { observable, computed, action } from 'mobx';
 import Run from './Run';
 import * as ipc from '../../constants/ipc';
 import StoreBase from './StoreBase';
+import Citation from './Citation';
 
 class RunList extends StoreBase {
   @observable runs = [];
   @observable activeIndex = 0;
+
+  citation = new Citation();
 
   constructor() {
     super();
