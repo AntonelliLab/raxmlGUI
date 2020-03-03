@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Chip from '@material-ui/core/Chip';
@@ -59,6 +60,14 @@ const useStyles = makeStyles(theme => {
     height: '30px',
     backgroundColor: theme.palette.input.dark,
     border: `1px solid ${theme.palette.input.light}`
+  },
+  deleteChip: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    marginRight: -5,
+  },
+  deleteChipIcon: {
+    opacity: 1,
   },
   link: {
     cursor: 'pointer',
@@ -156,9 +165,8 @@ function AlignmentCard({ className, alignment }) {
 
   const Type = dataType ? (
     <Chip
-      classes={{ colorSecondary: classes.chip }}
+      classes={{ root: classes.chip }}
       label={dataType}
-      color="secondary"
     />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
@@ -241,6 +249,12 @@ function AlignmentCard({ className, alignment }) {
         avatar={Type}
         action={
           <div>
+            <Chip
+              classes={{ root: classes.deleteChip, deleteIcon: classes.deleteChipIcon }}
+              deleteIcon={<DeleteForeverIcon />}
+              onDelete={alignment.remove}
+              title="Remove alignment"
+            />
             <IconButton
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
