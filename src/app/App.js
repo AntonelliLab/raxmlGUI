@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -74,7 +75,8 @@ const useStyles = makeStyles(theme => ({
   },
   AppBar: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    backgroundColor: '#444',
   },
   Toolbar: {
     minHeight: 0
@@ -85,9 +87,10 @@ const useStyles = makeStyles(theme => ({
     padding: '0 40px',
     position: 'relative'
   },
+  tabChip: {
+    border: 'none',
+  },
   tabIcon: {
-    left: 10,
-    position: 'absolute'
   },
   leftPanel: {
   },
@@ -178,14 +181,21 @@ const App = () => {
       key={run.id}
       icon={
         <span className={classes.tab}>
-          <CircularProgress
-            color="inherit"
-            size={20}
-            className={classes.tabIcon}
-            variant={run.running ? 'indeterminate' : 'static'}
-            value={0}
+          <Chip
+            classes={{ root: classes.tabChip }}
+            icon={
+              <CircularProgress
+                color="inherit"
+                size={20}
+                className={classes.tabIcon}
+                variant={run.running ? 'indeterminate' : 'static'}
+                value={0}
+              />
+            }
+            label={`Run ${run.id}`}
+            onDelete={() => { run.removeRun(); }}
+            variant="outlined"
           />
-          {`Run ${run.id}`}
         </span>
       }
     />
@@ -197,7 +207,7 @@ const App = () => {
     <React.Fragment>
       <CssBaseline />
       <div className={classes.App}>
-        {store.runs.length === 1 ? null : (
+        {store.runs.length <= 1 ? null : (
           <AppBar position="static" className={classes.AppBar}>
             <Tabs
               value={store.activeIndex}
@@ -213,7 +223,7 @@ const App = () => {
           </AppBar>
         )}
 
-        <SplitPane split="vertical" size={640} minSize={100}>
+        <SplitPane split="vertical" size={640} minSize={100} style={{ position: 'static' }}>
           <Box
             display="flex"
             flexDirection="column"

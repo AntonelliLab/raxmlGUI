@@ -1381,7 +1381,7 @@ class Run extends StoreBase {
 
   dispose = () => {
     this.cancel();
-    super.dispose();
+    this.unlisten();
   };
 
   listen = () => {

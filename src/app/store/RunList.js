@@ -64,6 +64,8 @@ class RunList extends StoreBase {
 
   listen = () => {
     this.listenTo(ipc.UNHANDLED_ERROR, this.onError);
+    this.listenTo(ipc.ADD_RUN, this.addRun);
+    this.listenTo(ipc.REMOVE_RUN, this.deleteActive);
   }
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {

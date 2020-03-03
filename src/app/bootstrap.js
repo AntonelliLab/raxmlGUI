@@ -45,6 +45,6 @@ function initDev(exampleFiles) {
   store.activeRun.addAlignments(useFiles);
   setTimeout(() => {
     // store.activeRun.alignments[0].setShowPartition();
-    store.citation.show();
+    // store.citation.show();
   }, 1000);
 }
