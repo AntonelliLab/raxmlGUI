@@ -6,7 +6,10 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
+import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import CodeHighlight from './components/CodeHighlight';
 
 const useStyles = makeStyles(theme => ({
@@ -15,27 +18,58 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    maxWidth: '700px',
+    maxWidth: '700px'
   },
   content: {
     maxHeight: '600px',
-    overflowY: 'auto',
+    overflowY: 'auto'
   },
-  bib: {
-    fontSize: 10,
-    overflowWrap: 'break-word',
-    whiteSpace: 'pre-wrap',
+  code: {
+    backgroundColor: '#333',
+    borderRadius: '4px',
+    padding: '4px'
   }
 }));
 
 function CitationModal({ citation }) {
   const classes = useStyles();
 
-  const code = citation.allText;
   return (
     <Card className={classes.CitationModal} elevation={0}>
       <CardContent className={classes.content}>
-        <CodeHighlight code={code} language="bib" className={classes.bib} />
+        <Typography variant="h4">How to cite?</Typography>
+        <Box>
+          Please include the following references in your preferred format:
+        </Box>
+        <Box mt={1}>
+          <ToggleButtonGroup
+            value={citation.format}
+            exclusive
+            onChange={(_, format) => citation.setFormat(format)}
+            aria-label="text format"
+            size="small"
+          >
+            {citation.formats.map(format => (
+              <ToggleButton
+                key={format.value}
+                value={format.value}
+                aria-label={format.name}
+              >
+                {format.name}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Box>
+        {citation.content.map(article => (
+          <Box key={article.name} mt={2}>
+            <Typography variant="subtitle2">{article.name}</Typography>
+            <CodeHighlight
+              code={article[citation.format]}
+              language={citation.format}
+              className={classes.code}
+            />
+          </Box>
+        ))}
       </CardContent>
       <CardActions style={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" css={{ width: '100%' }}>
@@ -44,9 +78,9 @@ function CitationModal({ citation }) {
             variant="contained"
             onClick={citation.copyToClipboard}
             style={{ marginRight: 10 }}
-            >
+          >
             Copy to clipboard
-            </Button>
+          </Button>
           <Button aria-label="Close" variant="outlined" onClick={citation.hide}>
             Close
           </Button>
@@ -57,7 +91,7 @@ function CitationModal({ citation }) {
 }
 
 CitationModal.propTypes = {
-  citation: PropTypes.object.isRequired,
+  citation: PropTypes.object.isRequired
 };
 
 export default observer(CitationModal);

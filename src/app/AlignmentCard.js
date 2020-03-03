@@ -37,7 +37,9 @@ const InputSwitch = withStyles(theme => ({
   track: {},
 }))(Switch);
 
-const useStyles = makeStyles(theme => ({
+// const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => {
+  return {
   AlignmentCard: {
     backgroundColor: theme.palette.input.main,
     border: `1px solid ${theme.palette.input.light}`
@@ -115,7 +117,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: '10px',
     minWidth: '130px'
   }
-}));
+}});
 
 function AlignmentCard({ className, alignment }) {
   const { dataType, numSequences, length } = alignment;

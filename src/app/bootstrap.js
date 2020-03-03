@@ -44,6 +44,7 @@ function initDev(exampleFiles) {
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
   setTimeout(() => {
-    store.activeRun.alignments[0].setShowPartition();
+    // store.activeRun.alignments[0].setShowPartition();
+    store.citation.show();
   }, 1000);
 }
