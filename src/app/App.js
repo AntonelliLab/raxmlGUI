@@ -39,8 +39,10 @@ const useStyles = makeStyles(theme => ({
   splitPane: {
   },
   ioContainer: {
-    height: 'calc(100vh - 20px)',
+    // height: 'calc(100vh - 20px)',
+    height: '100%',
     overflowY: 'auto',
+    paddingBottom: '20px',
   },
   statusBar: {
     top: 'auto',
