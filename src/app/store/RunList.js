@@ -62,10 +62,22 @@ class RunList extends StoreBase {
     this.error = error;
   };
 
+  @action
+  onBackboneConstraint = (event, params) => {
+    this.activeRun.useBackboneConstraint = !this.activeRun.useBackboneConstraint;
+  };
+
+  @action
+  onMultifurcatingConstraint = (event, params) => {
+    this.activeRun.useMultifurcatingConstraint = !this.activeRun.useMultifurcatingConstraint;
+  };
+
   listen = () => {
     this.listenTo(ipc.UNHANDLED_ERROR, this.onError);
     this.listenTo(ipc.ADD_RUN, this.addRun);
     this.listenTo(ipc.REMOVE_RUN, this.deleteActive);
+    this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
+    this.listenTo(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT, this.onMultifurcatingConstraint);
   }
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {

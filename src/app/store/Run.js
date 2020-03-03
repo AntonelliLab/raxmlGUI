@@ -1393,8 +1393,6 @@ class Run extends StoreBase {
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
-    this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
-    this.listenTo(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT, this.onMultifurcatingConstraint);
   };
 
   // -----------------------------------------------------------
