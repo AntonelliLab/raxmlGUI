@@ -11,6 +11,7 @@ import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
+import { getFinalDataType } from '../../common/typecheckAlignment';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -306,18 +307,13 @@ class Alignment {
     // Receive a progress update for one of the alignments being parsed
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
       if (id === this.id) {
-        if (this.run.dataType && alignment.dataType !== this.run.dataType) {
-          if (this.run.alignments.length > 1) {
-            this.run.substitutionModel.value =
-              raxmlModelOptions[this.run.dataType].default;
-          } else {
-            this.run.substitutionModel.value =
-              raxmlModelOptions[alignment.dataType].default;
-          }
-          // When the alignment has finished processing take the default ubstitution model for this datatype
-          this.substitutionModel.value =
-            raxmlNgModelOptions[alignment.dataType].default;
+        const newDataType = getFinalDataType(this.run.alignments.map(({ dataType }) => dataType).concat(alignment.dataType));
+        if (this.run.dataType !== newDataType) {
+          this.run.substitutionModel.value = raxmlModelOptions[newDataType].default;
         }
+        // When the alignment has finished processing take the default ubstitution model for this datatype
+        this.substitutionModel.value =
+          raxmlNgModelOptions[alignment.dataType].default;
         runInAction(() => {
           this.sequences = alignment.sequences;
           this.fileFormat = alignment.fileFormat;
@@ -458,22 +454,30 @@ class FinalAlignment {
     return this.run.alignments.reduce((sumLength, alignment) => sumLength + alignment.length, 0);
   }
 
+  // @computed get dataType() {
+  //   const numAlignments = this.numAlignments;
+  //   if (numAlignments === 0) {
+  //     return 'none';
+  //   }
+  //   const firstType = this.run.alignments[0].dataType;
+  //   if (numAlignments === 1) {
+  //     return firstType;
+  //   }
+  //   for (let i = 1; i < numAlignments; ++i) {
+  //     if (this.run.alignments[i].dataType !== firstType) {
+  //       return 'mixed';
+  //     }
+  //   }
+  //   return firstType;
+  // }
+
+
   @computed get dataType() {
-    const numAlignments = this.numAlignments;
-    if (numAlignments === 0) {
-      return 'none';
-    }
-    const firstType = this.run.alignments[0].dataType;
-    if (numAlignments === 1) {
-      return firstType;
-    }
-    for (let i = 1; i < numAlignments; ++i) {
-      if (this.run.alignments[i].dataType !== firstType) {
-        return 'mixed';
-      }
-    }
-    return firstType;
+    const { alignments } = this.run;
+    const dataTypes = alignments.map(({ dataType }) => dataType);
+    return getFinalDataType(dataTypes);
   }
+
 
   @computed get modelFlagName() {
     const numAlignments = this.numAlignments;

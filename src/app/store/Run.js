@@ -10,7 +10,7 @@ import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
 import util from 'electron-util';
-
+import { getFinalDataType } from '../../common/typecheckAlignment';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 const raxmlModelOptions = raxmlSettings.modelOptions;
@@ -503,20 +503,7 @@ class Run extends StoreBase {
 
   // @observable dataType = 'mixed';
   @computed get dataType() {
-    const numAlignments = this.alignments.length;
-    if (numAlignments === 0) {
-      return 'none';
-    }
-    const firstType = this.alignments[0].dataType;
-    if (numAlignments === 1) {
-      return firstType;
-    }
-    for (let i = 1; i < numAlignments; ++i) {
-      if (this.alignments[i].dataType !== firstType) {
-        return 'mixed';
-      }
-    }
-    return firstType;
+    return this.finalAlignment.dataType;
   }
 
   @observable error = null;
@@ -1355,11 +1342,17 @@ class Run extends StoreBase {
 
   @action
   removeAlignment = alignment => {
+    const oldDataType = this.dataType;
     const index = this.alignments.indexOf(alignment);
     if (index >= 0) {
       this.alignments.splice(index, 1);
     }
-    if (!this.haveAlignments) {
+    if (this.haveAlignments) {
+      // this.dataType is computed automatically with the reduced set, reset to default if changed (from mixed or multistate)
+      if (this.dataType !== oldDataType) {
+        this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
+      }
+    } else {
       this.reset();
     }
   };

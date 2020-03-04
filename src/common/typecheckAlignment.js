@@ -1,4 +1,23 @@
 
+export const getFinalDataType = (dataTypes) => {
+  const notUndefinedTypes = dataTypes.filter(d => d !== undefined);
+  if (notUndefinedTypes.length === 0) {
+    return undefined;
+  }
+  let firstType = notUndefinedTypes[0];
+  for (let i = 1; i < notUndefinedTypes.length; ++i) {
+    const type = notUndefinedTypes[i];
+    if (type !== firstType) {
+      if ((type === 'binary' && firstType === 'multistate') || (type === 'multistate' && firstType === 'binary')) {
+        firstType = 'multistate';
+      } else {
+        return 'mixed';
+      }
+    }
+  }
+  return firstType;
+}
+
 export default function typecheckAlignment(alignment) {
   const acgMatch = /[ACG]/i;
   const proteinMatch = /[EFIJLOPQZX\*]/i;
