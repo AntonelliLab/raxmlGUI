@@ -9,8 +9,10 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
-import util from 'electron-util';
+import electronutil from 'electron-util';
+import fs from 'fs';
 import { getFinalDataType } from '../../common/typecheckAlignment';
+
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 const raxmlModelOptions = raxmlSettings.modelOptions;
@@ -25,7 +27,7 @@ const winBinaries = [
   { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
 ];
 
-const allBinaries = util.is.windows
+const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
@@ -130,7 +132,7 @@ const raxmlNgAnalysisOptions = [
   },
 ];
 
-const quote = dir => util.is.windows ? `"${dir}"` : dir;
+const quote = dir => electronutil.is.windows ? `"${dir}"` : dir;
 
 class Binary extends Option {
   constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
@@ -1244,6 +1246,48 @@ class Run extends StoreBase {
       .join(' &&\\\n');
   }
 
+  @computed get settingsFileContent() {
+    let text = `Your analaysis was run as follows:
+Analysis: ${this.analysisOption.title}
+Binary: ${this.binary.value} version ${this.binary.version}
+Results saved to: ${this.outputDir}
+`;
+    let argumentext = 'RAxML was called with these arguments:\n'
+    this.args.map(
+      (arg, index) => argumentext += `${index + 1}.) ${arg.join(' ')}\n`
+    );
+    text += argumentext;
+// TODO: should we be more precise about what the single params mean?
+//     text += `To repeat the analysis use the following seeds:
+// Bootstrap seed: ${this.seedBootstrap}
+// Parsimony seed: ${this.seedParsimony}`;
+    return text;
+  }
+
+  @computed get settingsFilePath() {
+    const raxmlSettingsFilePath = join(
+      `${this.outputDir}`,
+      `RAxML_settings.${this.outputNameSafe}.txt`
+    );
+    const raxmlNgSettingsFilePath = join(
+      `${this.outputDir}`,
+      `${this.outputNameSafe}.raxml.settings`
+    );
+    return this.raxmlNgSwitch(raxmlNgSettingsFilePath, raxmlSettingsFilePath);
+  }
+
+  @action
+  writeSettings = async () => {
+    try {
+      console.log(`Writing settings to ${this.settingsFilePath}...`);
+      await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
+    }
+    catch (err) {
+      console.error('Error writing settings:', err);
+      throw err;
+    }
+  }
+
   @action
   start = async () => {
     const {
@@ -1267,6 +1311,7 @@ class Run extends StoreBase {
     else if (!this.finalAlignment.partition.isDefault) {
       await this.finalAlignment.writePartition();
     }
+    await this.writeSettings();
     ipcRenderer.send(ipc.RUN_START, {
       id,
       args,
