@@ -50,7 +50,7 @@ export const parse = (lines) => {
 
     // Interleaved format must have empty lines between interleaved sections
     let lastEmpty = false;
-    let firstSeqLineIndexInCurrentSection = firstSeqLineIndex;
+    let currentSectionStartLineIndex = firstSeqLineIndex;
     const assertCorrectNumberOfSeqLines = (startIndex, endIndex) => {
       const numSeq = endIndex + 1 - startIndex;
       if (numSeq !== numSequences) {
@@ -62,11 +62,12 @@ export const parse = (lines) => {
         if (lastEmpty) {
           continue;
         }
-        assertCorrectNumberOfSeqLines(firstSeqLineIndexInCurrentSection, i - 1);
+        assertCorrectNumberOfSeqLines(currentSectionStartLineIndex, i - 1);
         lastEmpty = true;
       } else {
         if (lastEmpty) {
           interleavedStartLineIndices.push(i);
+          currentSectionStartLineIndex = i;
         }
         lastEmpty = false;
       }
