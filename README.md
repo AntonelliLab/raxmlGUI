@@ -88,3 +88,6 @@ https://stackoverflow.com/questions/53112078/how-to-upload-dmg-file-for-notariza
 #### Publishing with electron-builder
 Need to have a GH_TOKEN in your shell env
 
+#### Binaries
+The binaries for RAxML on MacOS were compiled from this repository: https://github.com/jtklein/standard-RAxML
+
