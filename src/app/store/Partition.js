@@ -169,6 +169,8 @@ class Part {
         return [1,2,3].map(codon => this._transform(offset, namePrefix, codon)).join('\n');
       case CODON_THIRD:
         return [12,3].map(codon => this._transform(offset, namePrefix, codon)).join('\n');
+      default:
+        throw new Error(`Codon type ${this.codon.value} not recognized.`);
     }
   }
 
@@ -326,7 +328,7 @@ class FinalPartition {
   }
   @computed get isDefault() {
     return this.run.alignments.length === 0 ||
-      this.run.alignments.length === 1 && this.run.alignments[0].partition.isDefault;
+      (this.run.alignments.length === 1 && this.run.alignments[0].partition.isDefault);
   }
   @computed get isComplete() {
     return this.run.alignments.every(alignment => alignment.partition.isComplete);
