@@ -1,5 +1,3 @@
-import path from 'path';
-import { app } from 'electron';
 import { openNewGitHubIssue, debugInfo, activeWindow, is } from 'electron-util';
 import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
@@ -80,10 +78,10 @@ export const getMailtoLinkToReportError = (error) => {
   return mailtoLinkContent;
 }
 
-const IS_PROD = process.env.NODE_ENV === 'production';
-const root = process.cwd();
 
 // TODO: app now gets undefined in production!
+// const IS_PROD = process.env.NODE_ENV === 'production';
+// const root = process.cwd();
 // export const assetsDir =
 //   IS_PROD && app.isPackaged
 //     ? path.join(path.dirname(app.getAppPath()), '..', './resources', './assets')

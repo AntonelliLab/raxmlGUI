@@ -21,7 +21,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
-import TextField from '@material-ui/core/TextField';
 import CardActions from '@material-ui/core/CardActions';
 
 const InputSwitch = withStyles(theme => ({

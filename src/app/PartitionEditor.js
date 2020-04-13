@@ -7,12 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
 import OptionTextField from './components/OptionTextField';
 import OptionSelect from './components/OptionSelect';
 import Box from '@material-ui/core/Box';
@@ -65,29 +59,28 @@ const useStyles = makeStyles(theme => ({
 function PartitionEditor({ alignment }) {
   const classes = useStyles();
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
-  const [partitionText, setPartitionText] = React.useState(
-    alignment.partitionFileContent
-  );
-  const [dataType, setDataType] = React.useState('AA');
+  // const [partitionText, setPartitionText] = React.useState(
+  //   alignment.partitionFileContent
+  // );
 
-  function handleChange(event) {
-    setPartitionText(event.target.value);
-  }
+  // function handleChange(event) {
+  //   setPartitionText(event.target.value);
+  // }
 
   function handleAdd(event) {
     alignment.partition.addPart();
   }
 
-  function onClickCancel(event) {
-    alignment.setShowPartition(false);
-  }
+  // function onClickCancel(event) {
+  //   alignment.setShowPartition(false);
+  // }
 
-  function onClickSave(event) {
-    alignment.setPartitionText(partitionText);
-    alignment.setShowPartition(false);
-  }
+  // function onClickSave(event) {
+  //   alignment.setPartitionText(partitionText);
+  //   alignment.setShowPartition(false);
+  // }
 
-  const hasChange = partitionText !== alignment.partitionText;
+  // const hasChange = partitionText !== alignment.partitionText;
 
   if (!alignment.showPartition) {
     return null;

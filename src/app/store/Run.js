@@ -11,7 +11,6 @@ import { join } from 'path';
 import filenamify from 'filenamify';
 import electronutil from 'electron-util';
 import fs from 'fs';
-import { getFinalDataType } from '../../common/typecheckAlignment';
 
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
@@ -261,7 +260,6 @@ class TreeFile extends Option {
 }
 
 class Tree extends TreeFile {
-  constructor(run) { super(run); }
   @computed get notAvailable() {
     return !(this.run.analysisOption.params.includes(params.tree) ||
     (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
@@ -269,7 +267,6 @@ class Tree extends TreeFile {
 }
 
 class BackboneConstraintTree extends TreeFile {
-  constructor(run) { super(run); }
   @computed get isSet() {
     return this.run.useBackboneConstraint && this.haveFile;
   }
@@ -294,7 +291,6 @@ class BackboneConstraintTree extends TreeFile {
 }
 
 class MultifurcatingConstraintTree extends TreeFile {
-  constructor(run) { super(run); }
   @computed get isSet() {
     return this.run.useMultifurcatingConstraint && this.haveFile;
   }

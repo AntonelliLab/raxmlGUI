@@ -20,7 +20,8 @@ export const getFinalDataType = (dataTypes) => {
 
 export default function typecheckAlignment(alignment) {
   const acgMatch = /[ACG]/i;
-  const proteinMatch = /[EFIJLOPQZX\*]/i;
+  // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
+  const proteinMatch = /[EFJIJLOPQZX]/i;
   const binaryMatch = /[01]/i;
   const multistateMatch = /2/i;
   const unknownMatch = /^\?+$/;
@@ -64,7 +65,7 @@ export default function typecheckAlignment(alignment) {
   if (dataTypes.delete('unknown')) {
     console.log('At least one sequence have only unknown characters');
     if (dataTypes.size === 0) {
-      throw new Error(`Invalid alignment: cannot determine data type because all sequences are of type unknown`);
+      throw new Error(`Invalid alignment: cannot determine data type because all ${numSequencesTypechecked} sequences are of type unknown`);
     }
   }
   let dataType = dataTypes.values().next().value;
