@@ -179,6 +179,21 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
   }
 
+  console.log(`Try executing binary by running '${binaryPath} -v'...`);
+  try {
+    const { stdout, stderr } = await exec(`${binaryPath} -v`);
+    console.log(stdout);
+    if (stderr) {
+      console.error('Error:', stderr);
+    }
+  }
+  catch(err) {
+    console.error('Error executing binary:', err);
+    const error = new Error(`Error trying to execute raxml binary '${binaryPath}': ${err.message}`);
+    send(event, ipc.RUN_ERROR, { id, error });
+    return;
+  }
+
 
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
   // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
