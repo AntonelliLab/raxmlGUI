@@ -144,6 +144,7 @@
       "sign": false
     },
     "mac": {
+      "target": ["dmg"],
       "category": "public.app-category.education",
       "hardenedRuntime": true,
       "entitlements": "public/entitlements.mac.inherit.plist",
