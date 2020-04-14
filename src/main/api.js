@@ -2,7 +2,7 @@ import { app, ipcMain, shell, dialog, Notification } from "electron";
 import _ from "lodash";
 import path from "path";
 import util from "util";
-import fs from "fs";
+import _fs from "fs";
 import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import { serializeError } from 'serialize-error';
@@ -11,8 +11,10 @@ import io from '../common/io';
 
 import * as ipc from "../constants/ipc";
 import electronUtil from 'electron-util';
-import unhandled from 'electron-unhandled';
-import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
+// import unhandled from 'electron-unhandled';
+// import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
+
+const fs = _fs.promises;
 
 // unhandled({
 //   showDialog: true,
@@ -37,7 +39,6 @@ process.on('unhandledRejection', error => {
 });
 
 const exec = util.promisify(childProcess.exec);
-const readdir = util.promisify(fs.readdir);
 
 const state = {
   processes: {},
@@ -101,7 +102,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     return;
   }
   try {
-    const filenames = await readdir(outputDir);
+    const filenames = await fs.readdir(outputDir);
     let outputNameUnused = outputName;
     const filterResultFilenames = filename =>
       filename.includes(`${outputNameUnused}.raxml.`) ||
@@ -158,6 +159,27 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   console.log(`Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args);
 
+  const resultFilePath = path.join(outputDir, outputFilename);
+  console.log(`Try writing to output file '${resultFilePath}'...`);
+  try {
+    await fs.writeFile(resultFilePath, 'test');
+    console.log(` -> writing to output file ok!`);
+  }
+  catch(err) {
+    console.error('Error writing to output file:', err);
+    const error = new Error(`Error trying to write to output file '${resultFilePath}': ${err.message}`);
+    send(event, ipc.RUN_ERROR, { id, error });
+    return;
+  }
+  finally {
+    try {
+      fs.unlink(resultFilePath)
+    } catch(err) {
+      console.error(`Error trying to unlink temporary result file: ${err.message}`);
+    }
+  }
+
+
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
   // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
   // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
@@ -195,20 +217,22 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   }
 
   if (combinedOutput) {
+    console.log('Combining output...');
     await combineOutput(outputDir, outputFilename);
   }
 
   // Rename the RAxML_info.\*.tre into RAxML_info.\*.txt
-  const anyMatch = new RegExp(`RAxML_info.+${outputName}.+tre`);
-  const filenames = await readdir(outputDir);
+  console.log(`Renaming info file 'RAxML_info\.${outputName}\.tre' -> 'RAxML_info\.${outputName}\.txt'...`);
+  const anyMatch = new RegExp(`RAxML_info\.${outputName}\.tre`);
+  const filenames = await fs.readdir(outputDir);
   const infoFiles = filenames.filter(filename => anyMatch.test(filename));
   for (let i = 0; i < infoFiles.length; i++) {
     const infoPath = path.join(outputDir, infoFiles[i]);
     const newPath = path.join(outputDir, infoFiles[i].replace('.tre','.txt'));
-    await fs.renameSync(infoPath, newPath);
+    await fs.rename(infoPath, newPath);
   }
 
-  const nextFilenames = await readdir(outputDir);
+  const nextFilenames = await fs.readdir(outputDir);
   const resultFilenames = nextFilenames.filter(filename => filename.includes(outputName));
 
   send(event, ipc.RUN_FINISHED, { id, resultDir: outputDir, resultFilenames, exitCode });
@@ -402,8 +426,8 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   // const dir = path.join(__static, 'example-files', 'fasta');
   const dir = path.join(__static, 'example-files');
   // const dir = path.join(__static, 'example-files', 'phylip');
-  const fastaFiles = await readdir(path.join(dir, 'fasta'));
-  const phylipFiles = await readdir(path.join(dir, 'phylip'));
+  const fastaFiles = await fs.readdir(path.join(dir, 'fasta'));
+  const phylipFiles = await fs.readdir(path.join(dir, 'phylip'));
   send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
     fasta: fastaFiles,
     phylip: phylipFiles,
