@@ -37,3 +37,8 @@ jobs:
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          # macOS notarization API key
+          APPLEID: ${{ secrets.apple_id }}
+          APPLEIDPASS: ${{ secrets.apple_id_pass }}
+          APPLEIDTEAM: ${{ secrets.apple_id_team }}
