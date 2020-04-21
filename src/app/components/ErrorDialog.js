@@ -43,13 +43,15 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
   ) : 'Close';
   const closeHandler = needReload ? handleReload : onClose;
 
-  const Actions = reported ? (
+  const CloseAction = (
     <DialogActions>
       <Button onClick={closeHandler} variant="contained" color="primary">
-        { closeMessage }
+        {closeMessage}
       </Button>
     </DialogActions>
-  ) : (
+  );
+
+  const Actions = reported ? CloseAction : (
     <DialogActions>
       <Button onClick={closeHandler} color="secondary">
         { closeMessage }
@@ -71,9 +73,9 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
     <SnackbarMessage variant="success" message="Thanks for reporting the issue!"/>
   );
 
-  return (
+  const GenericErrorDialog = (
     <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
-      <DialogTitle id="error-dialog-title">{ title || 'Unexpected error'}</DialogTitle>
+      <DialogTitle id="error-dialog-title">{title || 'Unexpected error'}</DialogTitle>
       <DialogContent>
         <Box p={1}>
           <ExpansionPanel>
@@ -88,17 +90,39 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
               <Box>
                 <Typography variant="h6">{error.name}</Typography>
                 <Typography variant="body2" style={{ maxWidth: 400, wordBreak: 'break-all' }}>
-                { error.message }
+                  {error.message}
                 </Typography>
               </Box>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </Box>
-        { Message }
+        {Message}
       </DialogContent>
-      { Actions }
+      {Actions}
     </Dialog>
   );
+
+  const UserFixErrorDialog = (
+    <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
+      <DialogTitle id="error-dialog-title">{title || 'Error'}</DialogTitle>
+      <DialogContent>
+        {"RaxmlGUI2 encountered an error that you need to fix before you can continue."}
+        <Typography variant="body2" style={{ wordBreak: 'break-all' }}>
+          {error.message}
+        </Typography>
+      </DialogContent>
+      {CloseAction}
+    </Dialog>
+  );
+
+  console.log('error', error);
+
+  let returnDialog = GenericErrorDialog;
+  if (error.isUserFix) {
+    returnDialog = UserFixErrorDialog;
+  }
+
+  return returnDialog;
 }
 
 ErrorDialog.propTypes = {

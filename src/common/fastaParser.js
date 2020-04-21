@@ -1,3 +1,4 @@
+import UserFixError from "./errors";
 
 export const isFasta = (lines) => {
   for (let i = 0; i < lines.length; ++i) {
@@ -26,6 +27,15 @@ export const parse = (lines) => {
       throw new Error(`Expected a '>' to start a taxon line`);
     }
     const taxon = line.substring(1).split(' ')[0];
+    let hasExcluded = false;
+    const excludedCharacters = [' ', ':', ',', '(', ')', '[', ']', ';', "'"];
+    excludedCharacters.map(ex => {
+      hasExcluded = hasExcluded || taxon.includes(ex);
+      return true;
+    })
+    if (hasExcluded) {
+      throw new UserFixError(`Alignment contains illegal character in taxon names. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ":", ",", ")", "(", ";", "]", "[", "'". Please remove those characters from your alignment.`);
+    }
     if (!taxon) {
       throw new Error(`Empty taxon at line ${lineIndex + 1}`);
     }
