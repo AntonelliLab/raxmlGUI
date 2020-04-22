@@ -49,7 +49,7 @@ const Output = ({ run }) => {
       <Box component="form" mt={1} mb={2} display="flex" flexDirection="column" className={classes.form} noValidate autoComplete="off">
         <TextField
           id="output-dir"
-          label="Output dir"
+          label="Select output directory"
           fullWidth
           className={classes.formItem}
           value={run.outputDir}
@@ -60,7 +60,7 @@ const Output = ({ run }) => {
         />
         <TextField
           id="output-name"
-          label="Output name id"
+          label="Select output name"
           className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
