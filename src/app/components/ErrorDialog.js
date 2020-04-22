@@ -115,8 +115,6 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
     </Dialog>
   );
 
-  console.log('error', error);
-
   let returnDialog = GenericErrorDialog;
   if (error.isUserFix) {
     returnDialog = UserFixErrorDialog;

@@ -28,13 +28,13 @@ export const parse = (lines) => {
     }
     const taxon = line.substring(1).split(' ')[0];
     let hasExcluded = false;
-    const excludedCharacters = [' ', ':', ',', '(', ')', '[', ']', ';', "'"];
+    const excludedCharacters = [' ', ':', ',', '.', '(', ')', '[', ']', ';', "'"];
     excludedCharacters.map(ex => {
       hasExcluded = hasExcluded || taxon.includes(ex);
       return true;
     })
     if (hasExcluded) {
-      throw new UserFixError(`Alignment contains illegal character in taxon names. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ":", ",", ")", "(", ";", "]", "[", "'". Please remove those characters from your alignment.`);
+      throw new UserFixError(`Alignment contains illegal character in taxon names. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ":", ",", ".", ")", "(", ";", "]", "[", "'". Please remove those characters from your alignment.`);
     }
     if (!taxon) {
       throw new Error(`Empty taxon at line ${lineIndex + 1}`);
