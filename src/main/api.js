@@ -39,6 +39,7 @@ process.on('unhandledRejection', error => {
 });
 
 const exec = util.promisify(childProcess.exec);
+const execFile = util.promisify(childProcess.execFile);
 
 const state = {
   processes: {},
@@ -179,9 +180,11 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     }
   }
 
-  console.log(`Try executing binary by running '${binaryPath} -v'...`);
+  console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
   try {
-    const { stdout, stderr } = await exec(`${binaryPath} -v`);
+    const { stdout, stderr } = await execFile(binaryPath, ['-v'], {
+      shell: electronUtil.is.windows,
+    });
     console.log(stdout);
     if (stderr) {
       console.error('Error:', stderr);
