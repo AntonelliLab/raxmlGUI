@@ -182,7 +182,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
 
   console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
   try {
-    const { stdout, stderr } = await execFile(binaryPath, ['-v'], {
+    const { stdout, stderr } = await execFile(`"${binaryPath}"`, ['-v'], {
       shell: electronUtil.is.windows,
     });
     console.log(stdout);
@@ -205,7 +205,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   if (checkFlags) {
     for (const arg of args) {
       try {
-        const { stdout, stderr } = await exec(`${binaryPath} ${arg.join(' ')} --flag-check`, {
+        const { stdout, stderr } = await exec(`"${binaryPath}" ${arg.join(' ')} --flag-check`, {
           shell: electronUtil.is.windows,
         });
         console.log(stdout, stderr);
@@ -221,7 +221,7 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   let exitCode = 0;
   for (const arg of args) {
     try {
-      console.log(`Run ${binaryName} with args:`, arg)
+      console.log(`Run '${binaryName}' with args:`, arg)
       exitCode = await runProcess(id, event, binaryPath, arg);
       if (exitCode !== 0) {
         break;
@@ -277,7 +277,7 @@ function spawnProcess(binaryPath, args) {
   // const binaryDir = path.dirname(binaryPath);
   // const binaryName = path.basename(binaryPath);
 
-  const proc = childProcess.execFile(binaryPath, args, {
+  const proc = childProcess.execFile(`"${binaryPath}"`, args, {
     // stdio: 'pipe',
     // cwd: os.homedir(),
     // env: { PATH: `${process.env.path}:${binaryDir}` },
