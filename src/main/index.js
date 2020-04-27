@@ -99,7 +99,7 @@ autoUpdater.on('download-progress', progressObj => {
 autoUpdater.on('update-downloaded', info => {
   dialog.showMessageBox({
     title: 'Install Updates',
-    message: 'Updates downloaded, application will be quit for update...'
+    message: 'Updates downloaded, the application will now quit to update...'
   })
     .then(() => {
       setImmediate(() => autoUpdater.quitAndInstall())
