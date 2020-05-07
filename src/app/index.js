@@ -4,6 +4,8 @@ import { ThemeProvider } from '@material-ui/styles';
 import theme from './theme';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
+import './bootstrap';
+
 
 const Index = () => (
   <ThemeProvider theme={theme}>
@@ -14,8 +16,3 @@ const Index = () => (
 );
 
 export default Index;
-
-
-if (process.env.NODE_ENV === 'development') {
-  import('./bootstrap');
-}

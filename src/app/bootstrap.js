@@ -3,9 +3,10 @@ import * as ipc from '../constants/ipc';
 import store from './store';
 import path from 'path';
 
-console.log('\n========= Bootstrapping initial state... =========\n');
-
-ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST);
+if (process.env.NODE_ENV === 'development') {
+  console.log('\n========= Bootstrapping initial state... =========\n');
+  ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST);
+}
 
 ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, (event, exampleFiles) => {
   initDev(exampleFiles);
