@@ -341,7 +341,7 @@ function spawnProcess(binaryDir, binaryName, args) {
   const proc = childProcess.execFile(`${binaryPath}`, args, {
     // stdio: 'pipe',
     // cwd: os.homedir(),
-    env: { PATH: `${process.env.path}:${binaryDir}` },
+    env: { PATH: binaryDir },
     shell: electronUtil.is.windows
   });
   return proc;
