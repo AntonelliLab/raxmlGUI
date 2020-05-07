@@ -5,7 +5,7 @@ raxmlGUI<sup>1,2</sup> is a graphical user interface to RAxML<sup>3, 4</sup>, on
 *	Automated pipelines for analyses that require multiple successive calls of RAxML 
 *	Built-in functions to concatenate alignment files with automatic partition settings
 
-While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). Example data is available [here](https://github.com/AntonelliLab/raxmlGUI/raw/master/static/example-files/example_data_raxmlGUI.zip). raxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML. Read more in the [bioRxiv paper](https://www.biorxiv.org/content/10.1101/800912v1).
+While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). raxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML. Read more in the [bioRxiv paper](https://www.biorxiv.org/content/10.1101/800912v1).
 
 ------------------------
 
