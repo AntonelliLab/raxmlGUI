@@ -16,6 +16,11 @@ import electronUtil from 'electron-util';
 
 const fs = _fs.promises;
 
+const get_space_safe_binary_path = (bin_path) => {
+  // For Windows users with spaces in user dir
+  return electronUtil.is.windows ? `"${bin_path}"` : bin_path;
+}
+
 // unhandled({
 //   showDialog: true,
 // 	reportButton: reportIssue,
@@ -224,12 +229,8 @@ ipcMain.on(
 
     console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
     try {
-      // const { stdout, stderr } = await execFile(`"${binaryPath}"`, ['-v'], {
-      const { stdout, stderr } = await execFile(binaryName, ['-v'], {
-        // cwd: binaryDir,
-        env: {
-          PATH: binaryDir,
-        },
+      const { stdout, stderr } = await execFile(get_space_safe_binary_path(binaryPath), ['-v'], {
+        // env: { PATH: binaryDir },
         shell: electronUtil.is.windows
       });
       console.log(stdout);
@@ -338,10 +339,10 @@ function spawnProcess(binaryDir, binaryName, args) {
   // const binaryName = path.basename(binaryPath);
   const binaryPath = path.join(binaryDir, binaryName);
 
-  const proc = childProcess.execFile(`${binaryPath}`, args, {
+  const proc = childProcess.execFile(get_space_safe_binary_path(binaryPath), args, {
     // stdio: 'pipe',
     // cwd: os.homedir(),
-    env: { PATH: binaryDir },
+    // env: { PATH: binaryDir },
     shell: electronUtil.is.windows
   });
   return proc;
