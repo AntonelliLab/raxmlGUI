@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100vh',
+    backgroundColor: theme.palette.primary.background,
   },
   splitPane: {
   },
@@ -53,9 +54,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     margin: 0,
     padding: 0,
-    backgroundColor: '#333',
-    borderTop: '1px solid #444',
-    color: '#aaa',
+    backgroundColor: theme.palette.status.main,
+    borderTop: `1px solid ${theme.palette.status.border}`,
+    color: theme.palette.status.contrastText,
     fontSize: 12,
   },
   statusToolbar: {
@@ -69,8 +70,13 @@ const useStyles = makeStyles(theme => ({
   statusVersion: {
     marginRight: 20,
   },
+  statusCite: {
+    color: theme.palette.status.contrastText,
+    cursor: 'pointer',
+    marginLeft: 20,
+  },
   statusFeedback: {
-    color: '#fff',
+    color: theme.palette.status.contrastText,
     marginLeft: 20,
   },
   AppBar: {
@@ -95,7 +101,7 @@ const useStyles = makeStyles(theme => ({
   leftPanel: {
   },
   rightPanel: {
-    borderLeft: '2px solid #999',
+    borderLeft: '1px solid #ccc',
   },
   ioWrapper: {
     width: '100%',
@@ -106,13 +112,16 @@ const useStyles = makeStyles(theme => ({
     overflowX: 'hidden',
   },
   model: {
-    borderTop: '2px solid hsl(0, 0%, 25%)',
-    borderBottom: '2px solid hsl(0, 0%, 25%)',
+    borderTop: '2px solid #ccc',
+    borderBottom: '2px solid #ccc',
+    backgroundColor: theme.palette.model.background,
   },
   input: {
+    backgroundColor: theme.palette.input.background,
   },
   output: {
     flexGrow: 1,
+    backgroundColor: theme.palette.output.background,
   },
   verticalHeading: {
     writingMode: 'vertical-rl',
@@ -124,25 +133,31 @@ const useStyles = makeStyles(theme => ({
     // fontWeight: 'bold',
     letterSpacing: '0.25em',
     textTransform: 'uppercase',
-    borderRight: '1px solid #666',
+    borderRight: '1px solid #ccc',
   },
   inputHeading: {
     backgroundColor: theme.palette.input.main,
-    borderRight: `1px solid ${theme.palette.input.light}`,
+    borderRight: `1px solid ${theme.palette.input.border}`,
+    // boxShadow: `2px 0 5px ${theme.palette.input.shadow}`,
   },
   modelHeading: {
     backgroundColor: theme.palette.model.main,
-    borderRight: `1px solid ${theme.palette.model.light}`,
+    borderRight: `1px solid ${theme.palette.model.border}`,
+    // boxShadow: `2px 0 5px ${theme.palette.model.shadow}`,
   },
   outputHeading: {
     backgroundColor: theme.palette.output.main,
-    borderRight: `1px solid ${theme.palette.output.light}`,
+    borderRight: `1px solid ${theme.palette.output.border}`,
+    // boxShadow: `2px 0 5px ${theme.palette.output.shadow}`,
   },
   raxmlHeading: {
-    backgroundColor: '#333',
+    backgroundColor: theme.palette.raxml.main,
+    // boxShadow: `2px 0 5px ${theme.palette.raxml.shadow}`,
   },
   consoleHeading: {
-    backgroundColor: '#333',
+    backgroundColor: theme.palette.console.main,
+    // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
+    zIndex: 10,
   },
   inputContainer: {
     // backgroundColor: theme.palette.input.dark,
@@ -154,10 +169,12 @@ const useStyles = makeStyles(theme => ({
     // backgroundColor: theme.palette.output.dark,
   },
   raxml: {
+    backgroundColor: theme.palette.raxml.background,
   },
   console: {
+    backgroundColor: theme.palette.console.background,
     height: '100%',
-    borderTop: '1px solid rgba(255,255,255,0.3)',
+    borderTop: '1px solid #ccc',
   },
   deleteIcon: {
     '&:hover': {
@@ -323,7 +340,7 @@ const App = () => {
             <Box css={{ flexGrow: 1 }} />
             <Box display="flex">
               <span
-                style={{ cursor: 'pointer', color: '#fff' }}
+                className={classes.statusCite}
                 onClick={store.citation.show}
               >
                 How to cite?

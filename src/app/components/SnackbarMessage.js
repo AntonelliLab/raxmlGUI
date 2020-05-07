@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   message: {
     display: 'flex',
     alignItems: 'center',
-    color: 'white',
+    color: '#333',
   },
 }));
 

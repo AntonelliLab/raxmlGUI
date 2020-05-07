@@ -41,8 +41,8 @@ const InputSwitch = withStyles(theme => ({
 const useStyles = makeStyles(theme => {
   return {
   AlignmentCard: {
-    backgroundColor: theme.palette.input.main,
-    border: `1px solid ${theme.palette.input.light}`
+    backgroundColor: theme.palette.input.light,
+    border: `1px solid ${theme.palette.input.border}`
   },
   heading: {
     display: 'flex',
@@ -57,8 +57,9 @@ const useStyles = makeStyles(theme => {
   },
   chip: {
     height: '30px',
-    backgroundColor: theme.palette.input.dark,
-    border: `1px solid ${theme.palette.input.light}`
+    color: theme.palette.input.contrastText,
+    backgroundColor: theme.palette.input.main,
+    border: `1px solid ${theme.palette.input.darker}`
   },
   deleteChip: {
     backgroundColor: 'transparent',
@@ -73,7 +74,7 @@ const useStyles = makeStyles(theme => {
     color: theme.palette.secondary.main
   },
   secondaryText: {
-    color: theme.palette.input.secondaryText
+    color: theme.palette.primary.secondaryText
   },
   divider: {
     margin: '0 4px'
@@ -89,7 +90,7 @@ const useStyles = makeStyles(theme => {
     height: 50
   },
   partitionFileContent: {
-    color: 'white',
+    color: theme.palette.primary.contrastText,
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
     fontSize: '10px',
     height: '100%',
@@ -243,7 +244,7 @@ function AlignmentCard({ className, alignment }) {
   // </div>
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)} raised>
+    <Card className={classNames(className, classes.AlignmentCard)}>
       <CardHeader
         avatar={Type}
         action={
@@ -331,7 +332,7 @@ function FinalAlignmentCard({ className, alignment }) {
   );
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)} raised>
+    <Card className={classNames(className, classes.AlignmentCard)}>
       <CardHeader
         avatar={
           <Chip

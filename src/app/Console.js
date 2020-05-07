@@ -7,8 +7,8 @@ import clsx from 'clsx';
 
 const styles = theme => ({
   Console: {
-    color: '#fff',
-    background: 'black',
+    color: theme.palette.console.contrastText,
+    background: theme.palette.console.background,
     // flexGrow: 1,
     // padding: '0 4px',
     padding: '10px',
@@ -19,7 +19,7 @@ const styles = theme => ({
     height: '100%',
   },
   code: {
-    color: 'white',
+    color: theme.palette.console.contrastText,
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
     fontSize: '12px',
     height: '100%',
