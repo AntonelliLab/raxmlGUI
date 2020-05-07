@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   Partition: {
-    backgroundColor: '#444',
+    backgroundColor: theme.palette.input.background,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start'

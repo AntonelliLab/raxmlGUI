@@ -1,7 +1,7 @@
 {
   "name": "raxmlgui",
   "productName": "raxmlGUI",
-  "version": "2.0.0-beta.10",
+  "version": "2.0.0-beta.11",
   "private": true,
   "author": "AntonelliLab <raxmlgui.help@gmail.com>",
   "license": "AGPL-3.0",
@@ -69,6 +69,7 @@
     "electron-debug": "^3.0.1",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.0.3",
+    "electron-store": "^5.1.1",
     "electron-unhandled": "^3.0.1",
     "electron-updater": "^4.2.0",
     "electron-util": "^0.13.1",

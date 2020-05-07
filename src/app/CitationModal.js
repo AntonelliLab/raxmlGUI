@@ -14,7 +14,7 @@ import CodeHighlight from './components/CodeHighlight';
 
 const useStyles = makeStyles(theme => ({
   CitationModal: {
-    backgroundColor: '#444',
+    backgroundColor: theme.palette.output.background,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -25,7 +25,8 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto'
   },
   code: {
-    backgroundColor: '#333',
+    // backgroundColor: theme.palette.console.background,
+    backgroundColor: '#444',
     borderRadius: '4px',
     padding: '4px'
   }

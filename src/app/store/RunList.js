@@ -3,12 +3,14 @@ import Run from './Run';
 import * as ipc from '../../constants/ipc';
 import StoreBase from './StoreBase';
 import Citation from './Citation';
+import Config from './Config';
 
 class RunList extends StoreBase {
   @observable runs = [];
   @observable activeIndex = 0;
 
   citation = new Citation();
+  config = new Config();
 
   constructor() {
     super();
