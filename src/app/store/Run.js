@@ -14,7 +14,6 @@ import fs from 'fs';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
-import UserFixError from '../../common/errors';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 
