@@ -14,6 +14,8 @@ import fs from 'fs';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
+import UserFixError from '../../common/errors';
+
 const raxmlModelOptions = raxmlSettings.modelOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
@@ -1301,6 +1303,12 @@ Results saved to: ${this.outputDir}
       combinedOutput,
       usesRaxmlNg
     } = this;
+
+    if (this.finalAlignment.numSequences <= 3) {
+      // TODO: how to throw error here
+      // throw new UserFixError('To start a run with RAxML the final alignment needs to have at least three sequences.');
+    }
+
     console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
