@@ -1,6 +1,5 @@
 import { observable, computed, action, createAtom } from 'mobx';
 import { ipcRenderer, shell } from 'electron';
-import * as ipc from '../../constants/ipc';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import Alignment, { FinalAlignment } from './Alignment';
@@ -14,6 +13,7 @@ import fs from 'fs';
 
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
+import * as ipc from '../../constants/ipc';
 const raxmlModelOptions = raxmlSettings.modelOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
@@ -215,6 +215,11 @@ class SubstitutionModel extends Option {
     const modelSettings = raxmlModelOptions[this.run.dataType];
     if (!modelSettings) {
       return [];
+    }
+
+    // Remove options with ascertainment bias correction if the alignment has invariant sites
+    if (this.run.finalAlignment.hasInvariantSites) {
+      modelSettings.options = modelSettings.options.filter(value => !value.startsWith('ASC_'));;
     }
     return modelSettings.options.map(value => ({ value, title: value }));
   }

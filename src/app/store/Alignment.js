@@ -46,6 +46,7 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
 class RaxmlNgModelExtraParam extends Option {
   constructor(alignment, label, options) {
     super(alignment.run, '<none>', label);
+    this.alignment = alignment;
     this.optionsSource = options;
   }
   @computed get options() {
@@ -108,6 +109,13 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
       raxmlNgSettings.ascertainmentBiasCorrectionOptions.options
     );
   }
+  @computed get notAvailable() {
+    return (
+      !this.run.haveAlignments ||
+      !this.run.usesRaxmlNg ||
+      this.alignment.hasInvariantSites
+    );
+  }
 }
 
 class MultistateNumber extends Option {
@@ -162,6 +170,7 @@ class Alignment {
   setShowPartition = (value = true) => {
     this.run.showPartition(value ? this : null);
   };
+
   @action
   hidePartition = () => {
     this.setShowPartition(false);
@@ -171,7 +180,9 @@ class Alignment {
   setPartitionText = value => {
     this.partitionText = value;
   };
+
   @observable partitionText = '';
+
   @computed get partitionType() {
     if (this.run.usesRaxmlNg) {
       return this.ngSubstitutionModelCmd;
@@ -398,6 +409,24 @@ class Alignment {
     }
     return '-'.repeat(this.length);
   };
+
+  // Checks if the alignment has invariant sites, if true ascertainment bias correction option should not be available
+  @computed get hasInvariantSites() {
+    for (let i = 0; i < this.numSites; i++) {
+      const variantsAtPosition = [];
+      for (let j = 0; j < this.sequences.length; j++) {
+        const site = this.sequences[j].code[i];
+        if (!variantsAtPosition.includes(site)) {
+          variantsAtPosition.push(site)
+        }
+      }
+      if (variantsAtPosition.length <= 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
 
 class FinalAlignment {
@@ -452,6 +481,16 @@ class FinalAlignment {
 
   @computed get length() {
     return this.run.alignments.reduce((sumLength, alignment) => sumLength + alignment.length, 0);
+  }
+
+  @computed get hasInvariantSites() {
+    // If any one of the alignments has invariant sites return true
+    for (let i = 0; i < this.numAlignments; i++) {
+      if (this.run.alignments[i].hasInvariantSites) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // @computed get dataType() {
