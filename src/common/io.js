@@ -4,6 +4,7 @@ import readline from 'readline';
 import phylipParser from './phylipParser';
 import fastaParser from './fastaParser';
 import typecheckAlignment from './typecheckAlignment';
+import UserFixError from './errors';
 
 export const parseAlignment = async (filePath) => {
 
@@ -28,12 +29,12 @@ export const parseAlignment = async (filePath) => {
         } else if (fastaParser.isFasta(lines)) {
           alignment = fastaParser.parse(lines);
         } else {
-          throw new Error("Unrecognized input format");
+          throw new UserFixError("Unrecognized input format. RaxmlGUI2 supports the following input types at the moment: 'clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'.");
         }
       }
       catch (err) {
         error = err;
-        error.message = `Error parsing file ${filePath}: ` + error.message;
+        error.message = `Error parsing file ${filePath}: ${error.message}.`;
       }
       if (error) {
         reject(error);
