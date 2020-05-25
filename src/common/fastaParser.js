@@ -27,6 +27,10 @@ export const parse = (lines) => {
       throw new Error(`Expected a '>' to start a taxon line`);
     }
     const taxon = line.substring(1).split(' ')[0];
+    if (!taxon) {
+      throw new Error(`Empty taxon at line ${lineIndex + 1}`);
+    }
+    // If the taxon name has one of those characters raxml will error out
     let hasExcluded = false;
     const excludedCharacters = [' ', ':', ',', '.', '(', ')', '[', ']', ';', "'"];
     excludedCharacters.map(ex => {
@@ -36,9 +40,11 @@ export const parse = (lines) => {
     if (hasExcluded) {
       throw new UserFixError(`Alignment contains illegal character in taxon names. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ":", ",", ".", ")", "(", ";", "]", "[", "'". Please remove those characters from your alignment.`);
     }
-    if (!taxon) {
-      throw new Error(`Empty taxon at line ${lineIndex + 1}`);
+    // If the taxon name is longer than 256 characters raxml will error out
+    if (taxon.length > 256) {
+      throw new UserFixError(`The following taxon name is too long. RAxML only allows lengths up to 256 characters. ${taxon}`);
     }
+
     return taxon;
   }
   const parseCode = (line) => {
