@@ -39,6 +39,7 @@ export function findInvalidCharacter(code, dataType) {
       return reInvalidBinary.test(code) ? reInvalidBinary.lastIndex : -1;
     case 'unknown':
     case 'mixed':
+    default:
       return reInvalidMixed.test(code) ? reInvalidMixed.lastIndex : -1;
   }
 }
