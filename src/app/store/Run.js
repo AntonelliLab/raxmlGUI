@@ -420,7 +420,7 @@ class Run extends StoreBase {
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
 
-  outputNameAvailable = promisedComputed(true, async () => {
+  outputNameAvailable = promisedComputed({ ok: false, resultFilenames: [] }, async () => {
     const {
       id,
       outputDir,
@@ -428,10 +428,19 @@ class Run extends StoreBase {
       outputNamePlaceholder,
       atomAfterRun
     } = this;
+    const defaultValue = {
+      id,
+      outputDir,
+      outputName,
+      ok: false,
+      notice: 'Checking...',
+      outputNameUnused: outputName,
+      resultFilenames: []
+    };
     const outputNameToCheck = outputName || outputNamePlaceholder;
     const check = atomAfterRun.reportObserved() || outputNameToCheck;
     if (!check) {
-      return;
+      return defaultValue;
     }
     const result = await this.sendAsync(
       ipc.OUTPUT_CHECK,
