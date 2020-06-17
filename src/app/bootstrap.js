@@ -27,7 +27,7 @@ function initDev(exampleFiles) {
     // 'dna.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    'nucleotide.txt',
+    // 'nucleotide.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
   const usePhylipFiles = [
     // 'AA.txt',
@@ -40,7 +40,8 @@ function initDev(exampleFiles) {
     // 'dna_sequential.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    // 'nucleotide.txt',
+    'nucleotide.txt',
+    // 'fail_duplicate_taxon.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);

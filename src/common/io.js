@@ -51,6 +51,17 @@ export const parseAlignment = async (filePath) => {
           return reject(err);
         }
 
+        // Check if duplicate taxons
+        const taxons = new Map();
+        alignment.sequences.forEach(({ taxon }, index) => {
+          const ind = taxons.get(taxon);
+          if (ind !== undefined) {
+            return reject(new UserFixError(`Sequence names of taxon ${ind+1} and ${index+1} are identical, they are both called ${taxon}. Please make sure each sequence has a unique name.`));
+          }
+          taxons.set(taxon, index);
+        });
+
+
         const alignmentRestricted = Object.assign({}, alignment, { sequences: alignment.sequences.slice(0,2) });
         console.log('Alignment with first two sequences:', alignmentRestricted);
         resolve(alignment);
