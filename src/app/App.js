@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => ({
   AppBar: {
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: '#444',
+    backgroundColor: theme.palette.input.background,
   },
   Toolbar: {
     minHeight: 0
@@ -225,14 +225,14 @@ const App = () => {
       <CssBaseline />
       <div className={classes.App}>
         {store.runs.length <= 1 ? null : (
-          <AppBar position="static" className={classes.AppBar}>
+          <AppBar position="static" elevation={1} className={classes.AppBar}>
             <Tabs
               value={store.activeIndex}
               onChange={(event, value) => store.setActive(value)}
             >
               {TabItems}
             </Tabs>
-            <Toolbar className={classes.Toolbar}>
+            <Toolbar variant="dense" className={classes.Toolbar}>
               <IconButton onClick={store.addRun}>
                 <IconAdd />
               </IconButton>

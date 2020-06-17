@@ -42,10 +42,10 @@ const Model = ({ run }) => {
         <OptionSelect option={run.outGroup} />
         { run.haveRandomSeed ? (
           <FormControl title="Randomize seed">
-            <FormHelperText style={{ marginTop: 2 }}>Randomize</FormHelperText>
+            <FormHelperText style={{ marginTop: -1 }}>Randomize</FormHelperText>
             <FormControlLabel
               control={
-                <IconButton label="Randomize seed" color="default" onClick={run.randomizeSeed}>
+                <IconButton style={{ marginTop: -2 }} label="Randomize seed" color="default" onClick={run.randomizeSeed}>
                   <ShuffleIcon />
                 </IconButton>
               }
