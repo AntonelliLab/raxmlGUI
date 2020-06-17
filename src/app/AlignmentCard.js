@@ -125,6 +125,10 @@ const useStyles = makeStyles(theme => {
   select: {
     marginLeft: '10px',
     minWidth: '130px'
+  },
+  selectWide: {
+    marginLeft: '10px',
+    minWidth: '200px'
   }
 }});
 
@@ -200,11 +204,11 @@ function AlignmentCard({ className, alignment }) {
               option={alignment.ngInvariantSites}
             />
             <OptionSelect
-              className={classes.select}
+              className={classes.selectWide}
               option={alignment.ngRateHeterogeneity}
             />
             <OptionSelect
-              className={classes.select}
+              className={classes.selectWide}
               option={alignment.ngAscertainmentBias}
             />
           </div>
