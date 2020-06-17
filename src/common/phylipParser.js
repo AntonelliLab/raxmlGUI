@@ -133,8 +133,8 @@ export const parse = (lines) => {
   }
   const parseSeqAssumingRelaxedName = (seqIndex) => {
     const line = getSeqLines(seqIndex).join('');
-    let [taxon, ...code] = line.split(/\s+/);
-    code = code.join('');
+    const [taxon, ...codeChunks] = line.split(/\s+/);
+    const code = codeChunks.join('');
     return { taxon, code };
   }
   const checkIsRelaxed = () => {

@@ -18,17 +18,42 @@ export const getFinalDataType = (dataTypes) => {
   return firstType;
 }
 
+
+// Valid characters taken from Standard-RAxML (axml.c)
+const reInvalidBinary = /[^01-?]/g;
+const reInvalidDNA = /[^ABCDGHKMRSTUVWYNOX?-]/g;
+const reInvalidAA = /[^ARNDCQEGHILKMFPSTWYVBZX*?-]/g;
+const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/g;
+const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/g;
+
+export function findInvalidCharacter(code, dataType) {
+  // Returns the position of the invalid character if found, else -1
+  switch (dataType) {
+    case 'protein':
+      return reInvalidAA.test(code) ? reInvalidAA.lastIndex : -1;
+    case 'nucleotide':
+      return reInvalidDNA.test(code) ? reInvalidDNA.lastIndex : -1;
+    case 'multistate':
+      return reInvalidGeneric.test(code) ? reInvalidGeneric.lastIndex : -1;
+    case 'binary':
+      return reInvalidBinary.test(code) ? reInvalidBinary.lastIndex : -1;
+    case 'unknown':
+    case 'mixed':
+      return reInvalidMixed.test(code) ? reInvalidMixed.lastIndex : -1;
+  }
+}
+
 export default function typecheckAlignment(alignment) {
   const acgMatch = /[ACG]/i;
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
   const proteinMatch = /[EFJIJLOPQZX]/i;
-  const binaryMatch = /[01]/i;
-  const multistateMatch = /2/i;
+  const binaryMatch = /[01]/;
+  const multistateMatch = /2/;
   const unknownMatch = /^\?+$/;
   const sequenceDataTypes = [];
   const dataTypes = new Set();
   let numSequencesTypechecked = 0;
-  for (const sequence of alignment.sequences) {
+  alignment.sequences.forEach((sequence, index) => {
     const { code } = sequence;
     let dataType = undefined;
     if (proteinMatch.test(code)) {
@@ -56,11 +81,15 @@ export default function typecheckAlignment(alignment) {
     } else if (binaryMatch.test(code) || multistateMatch.test(code)) {
       dataType = 'mixed';
     }
+    const invalidSite = findInvalidCharacter(code, dataType);
+    if (invalidSite !== -1) {
+      throw new Error(`Invalid character in sequence ${index+1} at site ${invalidSite}`);
+    }
     dataTypes.add(dataType);
     sequence.dataType = dataType;
     ++numSequencesTypechecked;
     sequenceDataTypes.push(sequence.dataType);
-  }
+  })
 
   if (dataTypes.delete('unknown')) {
     console.log('At least one sequence have only unknown characters');
