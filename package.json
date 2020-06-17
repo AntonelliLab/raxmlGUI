@@ -1,7 +1,7 @@
 {
   "name": "raxmlgui",
   "productName": "raxmlGUI",
-  "version": "2.0.0-beta.11",
+  "version": "2.0.0-beta.12",
   "private": true,
   "author": "AntonelliLab <raxmlgui.help@gmail.com>",
   "license": "AGPL-3.0",
