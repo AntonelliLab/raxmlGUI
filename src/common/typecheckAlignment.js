@@ -43,6 +43,25 @@ export function findInvalidCharacter(code, dataType) {
   }
 }
 
+function isInvariant(code) {
+  const firstSite = code[0];
+  for (const site of code) {
+    if (site !== firstSite) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function hasInvariantSites(sequences) {
+  for (const seq of sequences) {
+    if (isInvariant(seq.code)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default function typecheckAlignment(alignment) {
   const acgMatch = /[ACG]/i;
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
@@ -110,6 +129,7 @@ export default function typecheckAlignment(alignment) {
       throw new Error(`Invalid alignment: sequences must be of same data type, but found [${Array.from(dataTypes.keys())}].`);
     }
   }
+  alignment.hasInvariantSites = hasInvariantSites(alignment.sequences);
   alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
   return alignment;

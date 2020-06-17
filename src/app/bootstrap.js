@@ -44,6 +44,7 @@ function initDev(exampleFiles) {
     // 'fail_duplicate_taxon.txt',
     // 'fail_bad_base_at_site.txt',
     // 'fail_bad_name.txt',
+    // 'test_invariant_sites.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);

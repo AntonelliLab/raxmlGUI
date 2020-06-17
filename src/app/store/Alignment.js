@@ -147,6 +147,7 @@ class Alignment {
   @observable length = 0;
   @observable numSequences = 0;
   @observable sequences = [];
+  @observable hasInvariantSites = false;
 
   @computed get taxons() {
     return this.sequences.map(seq => seq.taxon);
@@ -333,6 +334,7 @@ class Alignment {
           this.parsingComplete = true;
           this.numSequencesParsed = this.numSequences;
           this.dataType = alignment.dataType;
+          this.hasInvariantSites = alignment.hasInvariantSites;
           this.typecheckingComplete = alignment.typecheckingComplete;
           this.loading = false;
         });
@@ -409,23 +411,6 @@ class Alignment {
     }
     return '-'.repeat(this.length);
   };
-
-  // Checks if the alignment has invariant sites, if true ascertainment bias correction option should not be available
-  @computed get hasInvariantSites() {
-    for (let i = 0; i < this.numSites; i++) {
-      const variantsAtPosition = [];
-      for (let j = 0; j < this.sequences.length; j++) {
-        const site = this.sequences[j].code[i];
-        if (!variantsAtPosition.includes(site)) {
-          variantsAtPosition.push(site)
-        }
-      }
-      if (variantsAtPosition.length <= 1) {
-        return true;
-      }
-    }
-    return false;
-  }
 
 }
 
