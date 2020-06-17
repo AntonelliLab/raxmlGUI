@@ -229,6 +229,7 @@ class SubstitutionModel extends Option {
     let model = this.value;
     if (this.run.dataType === 'protein')  {
       model += this.run.alignments[0].aaMatrixName;
+      model += this.run.empiricalFrequencies.value ? 'F' : '';
     }
     return model;
   }
@@ -237,6 +238,11 @@ class SubstitutionModel extends Option {
 class AAMatrixName extends Option {
   constructor(run) { super(run, 'BLOSUM62', 'Matrix name', 'Amino Acid Substitution Matrix name'); }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(value => ({ value, title: value }));
+  @computed get notAvailable() { return this.run.dataType !== 'protein'; }
+}
+
+class EmpiricalFrequencies extends Option {
+  constructor(run) { super(run, false, 'Emp.Freq.', 'Use empirical base frequencies', 'Use empirical base frequencies instead of a maximum likelihood estimate.'); }
   @computed get notAvailable() { return this.run.dataType !== 'protein'; }
 }
 
@@ -382,6 +388,7 @@ class Run extends StoreBase {
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
   aaMatrixName = new AAMatrixName(this);
+  empiricalFrequencies = new EmpiricalFrequencies(this);
   multistateModel = new MultistateModel(this);
   startingTree = new StartingTree(this);
 
