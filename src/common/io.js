@@ -51,12 +51,24 @@ export const parseAlignment = async (filePath) => {
           return reject(err);
         }
 
-        // Check if duplicate taxons
+        // Check if duplicate or invalid taxon names
         const taxons = new Map();
         alignment.sequences.forEach(({ taxon }, index) => {
           const ind = taxons.get(taxon);
           if (ind !== undefined) {
             return reject(new UserFixError(`Sequence names of taxon ${ind+1} and ${index+1} are identical, they are both called ${taxon}. Please make sure each sequence has a unique name.`));
+          }
+
+          // If the taxon name has one of those characters raxml will error out
+          const excludedCharacters = [':', ',', '.', '(', ')', '[', ']', ';', "'"];
+          // Test white-space characters and excluded characters above
+          const testInvalid = new RegExp(`[\\s${excludedCharacters.map(c => `\\${c}`).join('')}]`);
+          if (testInvalid.test(taxon)) {
+            return reject(new UserFixError(`Taxon '${taxon}' in sequence ${index+1} contains illegal characters. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ${excludedCharacters.map(c => `"${c}"`).join(', ')}. Please remove those characters from your alignment.`));
+          }
+          // If the taxon name is longer than 256 characters raxml will error out
+          if (taxon.length > 256) {
+            return reject(new UserFixError(`The taxon name in sequence ${index+1} is too long. RAxML only allows lengths up to 256 characters. Taxon name has length ${taxon.length}: '${taxon}'`));
           }
           taxons.set(taxon, index);
         });

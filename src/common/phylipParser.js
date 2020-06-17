@@ -159,15 +159,6 @@ export const parse = (lines) => {
   const parseSequence = isRelaxed ? parseSeqAssumingRelaxedName : parseSeqAssumingStrictName;
   for (let seqIndex = 0; seqIndex < numSequences; ++seqIndex) {
     const seq = parseSequence(seqIndex);
-    let hasExcluded = false;
-    const excludedCharacters = [' ', ':', ',', '.', '(', ')', '[', ']', ';', "'"];
-    excludedCharacters.map(ex => {
-      hasExcluded = hasExcluded || seq.taxon.includes(ex);
-      return true;
-    })
-    if (hasExcluded) {
-      throw new UserFixError(`Alignment contains illegal character in taxon names. Illegal characters in taxon-names are: tabulators, carriage returns, spaces, ":", ",", ".", ")", "(", ";", "]", "[", "'". Please remove those characters from your alignment.`);
-    }
     if (seq.code.length !== length) {
       throw new Error(`Length ${seq.code.length} of sequence ${seqIndex + 1} (parsed taxon name '${seq.taxon}' and code '${seq.code}') doesn't match specified length of ${length}.`);
     }

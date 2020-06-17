@@ -42,6 +42,8 @@ function initDev(exampleFiles) {
     // 'multistate.txt',
     'nucleotide.txt',
     // 'fail_duplicate_taxon.txt',
+    // 'fail_bad_base_at_site.txt',
+    // 'fail_bad_name.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
