@@ -27,20 +27,20 @@ const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/g;
 const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/g;
 
 export function findInvalidCharacter(code, dataType) {
-  // Returns the position of the invalid character if found, else -1
+  // Returns the index of the invalid character if found, else -1
   switch (dataType) {
     case 'protein':
-      return reInvalidAA.test(code) ? reInvalidAA.lastIndex : -1;
+      return reInvalidAA.test(code) ? reInvalidAA.lastIndex - 1 : -1;
     case 'nucleotide':
-      return reInvalidDNA.test(code) ? reInvalidDNA.lastIndex : -1;
+      return reInvalidDNA.test(code) ? reInvalidDNA.lastIndex - 1 : -1;
     case 'multistate':
-      return reInvalidGeneric.test(code) ? reInvalidGeneric.lastIndex : -1;
+      return reInvalidGeneric.test(code) ? reInvalidGeneric.lastIndex - 1 : -1;
     case 'binary':
-      return reInvalidBinary.test(code) ? reInvalidBinary.lastIndex : -1;
+      return reInvalidBinary.test(code) ? reInvalidBinary.lastIndex - 1 : -1;
     case 'unknown':
     case 'mixed':
     default:
-      return reInvalidMixed.test(code) ? reInvalidMixed.lastIndex : -1;
+      return reInvalidMixed.test(code) ? reInvalidMixed.lastIndex - 1 : -1;
   }
 }
 
@@ -101,10 +101,6 @@ export default function typecheckAlignment(alignment) {
     } else if (binaryMatch.test(code) || multistateMatch.test(code)) {
       dataType = 'mixed';
     }
-    const invalidSite = findInvalidCharacter(code, dataType);
-    if (invalidSite !== -1) {
-      throw new Error(`Invalid character in sequence ${index+1} at site ${invalidSite}`);
-    }
     dataTypes.add(dataType);
     sequence.dataType = dataType;
     ++numSequencesTypechecked;
@@ -130,6 +126,12 @@ export default function typecheckAlignment(alignment) {
       throw new Error(`Invalid alignment: sequences must be of same data type, but found [${Array.from(dataTypes.keys())}].`);
     }
   }
+  alignment.sequences.forEach((seq, index) => {
+    const invalidSiteIndex = findInvalidCharacter(seq.code, dataType);
+    if (invalidSiteIndex !== -1) {
+      throw new Error(`Invalid character '${seq.code[invalidSiteIndex]}' in sequence ${index + 1} at site ${invalidSiteIndex + 1} for inferred data type '${dataType}'`);
+    }
+  })
   alignment.hasInvariantSites = hasInvariantSites(alignment.sequences);
   alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
