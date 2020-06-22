@@ -129,7 +129,8 @@ export default function typecheckAlignment(alignment) {
   alignment.sequences.forEach((seq, index) => {
     const invalidSiteIndex = findInvalidCharacter(seq.code, dataType);
     if (invalidSiteIndex !== -1) {
-      throw new Error(`Invalid character '${seq.code[invalidSiteIndex]}' in sequence ${index + 1} at site ${invalidSiteIndex + 1} for inferred data type '${dataType}'`);
+      const sample = seq.code.length <= 8 ? `'${seq.code}'` : `'${seq.code.substring(0, 8)}'...`;
+      throw new Error(`Invalid character '${seq.code[invalidSiteIndex]}' at site ${invalidSiteIndex + 1} in sequence ${index + 1} (${sample}) for inferred data type '${dataType}'`);
     }
   })
   alignment.hasInvariantSites = hasInvariantSites(alignment.sequences);
