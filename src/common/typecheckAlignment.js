@@ -21,10 +21,10 @@ export const getFinalDataType = (dataTypes) => {
 
 // Valid characters taken from Standard-RAxML (axml.c)
 const reInvalidBinary = /[^01-?]/g;
-const reInvalidDNA = /[^ABCDGHKMRSTUVWYNOX?-]/g;
-const reInvalidAA = /[^ARNDCQEGHILKMFPSTWYVBZX*?-]/g;
-const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/g;
-const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/g;
+const reInvalidDNA = /[^ABCDGHKMRSTUVWYNOX?-]/gi;
+const reInvalidAA = /[^ARNDCQEGHILKMFPSTWYVBZX*?-]/gi;
+const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/gi;
+const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/gi;
 
 export function findInvalidCharacter(code, dataType) {
   // Returns the index of the invalid character if found, else -1
