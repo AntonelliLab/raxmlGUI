@@ -7,6 +7,7 @@ import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import Box from '@material-ui/core/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@material-ui/core';
+import Dropzone from 'react-dropzone';
 
 const useStyles = makeStyles(theme => ({
   Input: {
@@ -93,21 +94,35 @@ const Input = ({ run }) => {
   const classes = useStyles();
 
   // const SelectNumRuns = run.
-
   return (
     <div className={classes.Input}>
-      <Box mb={1} className={classes.alignmentList}>
-        <div className={classes.alignments}>
-        { run.alignments.map(alignment => (
-          <AlignmentCard key={alignment.path} alignment={alignment} className="alignment" />
-        )) }
-        <Button variant="outlined" className={`alignment ${classes.addAlignment}`}
-          onClick={run.loadAlignmentFiles}
-          title={ run.haveAlignments ? "Concatenate new alignments and create partition" : "" }>
-          { run.haveAlignments ? 'Add alignment' : 'Load alignment' }
-        </Button>
-        </div>
-      </Box>
+      <Dropzone onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}>
+        {({ getRootProps, getInputProps }) => (
+          <Box mb={1} className={classes.alignmentList} {...getRootProps()}>
+            <div className={classes.alignments}>
+              {run.alignments.map((alignment) => (
+                <AlignmentCard
+                  key={alignment.path}
+                  alignment={alignment}
+                  className="alignment"
+                />
+              ))}
+              <Button
+                variant="outlined"
+                className={`alignment ${classes.addAlignment}`}
+                onClick={run.loadAlignmentFiles}
+                title={
+                  run.haveAlignments
+                    ? 'Concatenate new alignments and create partition'
+                    : ''
+                }
+              >
+                {run.haveAlignments ? 'Add alignment' : 'Load alignment'}
+              </Button>
+            </div>
+          </Box>
+        )}
+      </Dropzone>
 
       { run.tree.notAvailable ? null :
         <Box className={classes.treeList}>
