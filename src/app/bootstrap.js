@@ -20,14 +20,14 @@ function initDev(exampleFiles) {
   const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFastaFiles = [
-    // 'aminoacid.txt',
+    'aminoacid.txt',
     // 'bin1.txt',
     // 'bin2.txt',
     // 'binary.txt',
     // 'dna.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    // 'nucleotide.txt',
+    'nucleotide.txt',
   ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
   const usePhylipFiles = [
     // 'AA.txt',
@@ -40,7 +40,7 @@ function initDev(exampleFiles) {
     // 'dna_sequential.txt',
     // 'mixed_data.txt',
     // 'multistate.txt',
-    'nucleotide.txt',
+    // 'nucleotide.txt',
     // 'fail_duplicate_taxon.txt',
     // 'fail_bad_base_at_site.txt',
     // 'fail_bad_name.txt',
