@@ -7,6 +7,7 @@ import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import Box from '@material-ui/core/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@material-ui/core';
+import Dropzone from 'react-dropzone';
 
 const useStyles = makeStyles(theme => ({
   Input: {
@@ -93,66 +94,106 @@ const Input = ({ run }) => {
   const classes = useStyles();
 
   // const SelectNumRuns = run.
-
   return (
     <div className={classes.Input}>
-      <Box mb={1} className={classes.alignmentList}>
-        <div className={classes.alignments}>
-        { run.alignments.map(alignment => (
-          <AlignmentCard key={alignment.path} alignment={alignment} className="alignment" />
-        )) }
-        <Button variant="outlined" className={`alignment ${classes.addAlignment}`}
-          onClick={run.loadAlignmentFiles}
-          title={ run.haveAlignments ? "Concatenate new alignments and create partition" : "" }>
-          { run.haveAlignments ? 'Add alignment' : 'Load alignment' }
-        </Button>
-        </div>
-      </Box>
+      <Dropzone
+        noClick
+        onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}
+      >
+        {({ getRootProps, getInputProps }) => (
+          <Box mb={1} className={classes.alignmentList} {...getRootProps()}>
+            <div className={classes.alignments}>
+              {run.alignments.map((alignment) => (
+                <AlignmentCard
+                  key={alignment.path}
+                  alignment={alignment}
+                  className="alignment"
+                />
+              ))}
+              <Button
+                variant="outlined"
+                className={`alignment ${classes.addAlignment}`}
+                onClick={run.loadAlignmentFiles}
+                title={
+                  run.haveAlignments
+                    ? 'Concatenate new alignments and create partition'
+                    : ''
+                }
+              >
+                {run.haveAlignments ? 'Add alignment' : 'Load alignment'}
+              </Button>
+            </div>
+          </Box>
+        )}
+      </Dropzone>
 
-      { run.tree.notAvailable ? null :
+      {run.tree.notAvailable ? null : (
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
-          { run.tree.haveFile ?
-            <TreeCard tree={run.tree} className={classes.treeCard} /> :
-            <Button variant="outlined" className={classes.treeCard} onClick={run.loadTreeFile}>
-              Add Tree
-            </Button>
-          }
+            {run.tree.haveFile ? (
+              <TreeCard tree={run.tree} className={classes.treeCard} />
+            ) : (
+              <Button
+                variant="outlined"
+                className={classes.treeCard}
+                onClick={run.loadTreeFile}
+              >
+                Add Tree
+              </Button>
+            )}
           </div>
         </Box>
-      }
-      { run.backboneConstraint.notAvailable ? null :
+      )}
+      {run.backboneConstraint.notAvailable ? null : (
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
-          { run.backboneConstraint.haveFile ?
-            <TreeCard tree={run.backboneConstraint} className={classes.treeCard} /> :
-            <Button variant="outlined" className={classes.treeCard} onClick={run.loadBackboneConstraintFile}>
-              Add Backbone Constraint
-            </Button>
-          }
+            {run.backboneConstraint.haveFile ? (
+              <TreeCard
+                tree={run.backboneConstraint}
+                className={classes.treeCard}
+              />
+            ) : (
+              <Button
+                variant="outlined"
+                className={classes.treeCard}
+                onClick={run.loadBackboneConstraintFile}
+              >
+                Add Backbone Constraint
+              </Button>
+            )}
           </div>
         </Box>
-      }
-      { run.multifurcatingConstraint.notAvailable ? null :
+      )}
+      {run.multifurcatingConstraint.notAvailable ? null : (
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
-          { run.multifurcatingConstraint.haveFile ?
-            <TreeCard tree={run.multifurcatingConstraint} className={classes.treeCard} /> :
-            <Button variant="outlined" className={classes.treeCard} onClick={run.loadMultifurcatingConstraintFile}>
-              Add Multifurcating Constraint
-            </Button>
-          }
+            {run.multifurcatingConstraint.haveFile ? (
+              <TreeCard
+                tree={run.multifurcatingConstraint}
+                className={classes.treeCard}
+              />
+            ) : (
+              <Button
+                variant="outlined"
+                className={classes.treeCard}
+                onClick={run.loadMultifurcatingConstraintFile}
+              >
+                Add Multifurcating Constraint
+              </Button>
+            )}
           </div>
         </Box>
-      }
+      )}
 
-      { run.alignments.length <= 1 ? null :
+      {run.alignments.length <= 1 ? null : (
         <Box className={classes.finalInput}>
           <Typography variant="h5">Concatenated alignment</Typography>
-          <FinalAlignmentCard alignment={run.finalAlignment} className={classes.concatenatedAlignment} />
+          <FinalAlignmentCard
+            alignment={run.finalAlignment}
+            className={classes.concatenatedAlignment}
+          />
         </Box>
-      }
-
+      )}
     </div>
   );
 };
