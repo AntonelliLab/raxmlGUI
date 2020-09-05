@@ -606,6 +606,9 @@ class Run extends StoreBase {
     }
   }
   @computed get args() {
+    if (this.usesModeltestNg) {
+      return this.modeltestNgArgs();
+    }
     if (this.usesRaxmlNg) {
       return this.raxmlNgArgs();
     }
@@ -635,7 +638,31 @@ class Run extends StoreBase {
     for (let i = 0; i < this.alignments.length; i++) {
       this.alignments[i].clearConverted();
     }
-  }
+  };
+
+  modeltestNgArgs = () => {
+    const first = [];
+    // data type
+    if (this.dataType === 'nucleotide') {
+      first.push('-d', 'nt');
+    }
+    else if (this.dataType === 'protein') {
+      first.push('-d', 'aa');
+    }
+    // alignment file
+    first.push('-i', quote(this.finalAlignment.path));
+    // output file, modeltest errors if this file already exists
+    first.push('-o', quote(join(this.outputDir, this.outputNameSafe)));
+    // Number of processors
+    first.push('-p', this.numThreads.value);
+    // TODO: in able to support partitioned modeltest we need to change the partition file text
+    // https://github.com/ddarriba/modeltest/wiki/Input-Data#partition-files
+    // partition scheme
+    // if (!this.finalAlignment.partition.isDefault) {
+    //   first.push('-q', quote(this.finalAlignment.partitionFilePath));
+    // }
+    return [first];
+  };
 
   raxmlNgArgs = () => {
     const first = [];
