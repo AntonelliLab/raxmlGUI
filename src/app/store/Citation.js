@@ -40,7 +40,6 @@ AU  - Antonelli, Alexandre
 AU  - Silvestro, Daniele
 Y1  - 2019/01/01
 UR  - http://biorxiv.org/content/early/2019/10/10/800912.abstract
-N2  - RaxmlGUI is a graphical user interface to RAxML, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. Here we present raxmlGUI 2.0-beta, a complete rewrite of the GUI, which replaces raxmlGUI and seamlessly integrates RAxML binaries for all major operating systems providing an intuitive graphical front-end to set up and run phylogenetic analyses. Our program offers automated pipelines for analyses that require multiple successive calls of RAxML and built-in functions to concatenate alignment files while automatically specifying the appropriate partition settings. While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to send us any feedback they may have. RaxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML.
 ER  -`,
       txt: `Daniel Edler, Johannes Klein, Alexandre Antonelli, Daniele Silvestro (2019) raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML. bioRxiv, doi: https://doi.org/10.1101/800912`,
     },
@@ -78,7 +77,6 @@ IS  - 9
 SP  - 1312
 EP  - 1313
 SN  - 1367-4803
-AB  - Motivation: Phylogenies are increasingly used in all fields of medical and biological research. Moreover, because of the next-generation sequencing revolution, datasets used for conducting phylogenetic analyses grow at an unprecedented pace. RAxML (Randomized Axelerated Maximum Likelihood) is a popular program for phylogenetic analyses of large datasets under maximum likelihood. Since the last RAxML paper in 2006, it has been continuously maintained and extended to accommodate the increasingly growing input datasets and to serve the needs of the user community.Results: I present some of the most notable new features and extensions of RAxML, such as a substantial extension of substitution models and supported data types, the introduction of SSE3, AVX and AVX2 vector intrinsics, techniques for reducing the memory requirements of the code and a plethora of operations for conducting post-analyses on sets of trees. In addition, an up-to-date 50-page user manual covering all new RAxML options is available.Availability and implementation: The code is available under GNU GPL at https://github.com/stamatak/standard-RAxML.Contact:alexandros.stamatakis@h-its.orgSupplementary information:Supplementary data are available at Bioinformatics online.
 Y2  - 10/17/2019
 UR  - https://doi.org/10.1093/bioinformatics/btu033
 ER  - `,
@@ -121,7 +119,6 @@ IS  - 21
 SP  - 4453
 EP  - 4455
 SN  - 1367-4803
-AB  - Phylogenies are important for fundamental biological research, but also have numerous applications in biotechnology, agriculture and medicine. Finding the optimal tree under the popular maximum likelihood (ML) criterion is known to be NP-hard. Thus, highly optimized and scalable codes are needed to analyze constantly growing empirical datasets.We present RAxML-NG, a from-scratch re-implementation of the established greedy tree search algorithm of RAxML/ExaML. RAxML-NG offers improved accuracy, flexibility, speed, scalability, and usability compared with RAxML/ExaML. On taxon-rich datasets, RAxML-NG typically finds higher-scoring trees than IQTree, an increasingly popular recent tool for ML-based phylogenetic inference (although IQ-Tree shows better stability). Finally, RAxML-NG introduces several new features, such as the detection of terraces in tree space and the recently introduced transfer bootstrap support metric.The code is available under GNU GPL at https://github.com/amkozlov/raxml-ng. RAxML-NG web service (maintained by Vital-IT) is available at https://raxml-ng.vital-it.ch/.Supplementary data are available at Bioinformatics online.
 Y2  - 7/17/2020
 UR  - https://doi.org/10.1093/bioinformatics/btz305
 ER  - `,
