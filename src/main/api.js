@@ -299,7 +299,7 @@ ipcMain.on(
     );
     const anyMatch = new RegExp(`RAxML_info\.${outputName}\.tre`);
     const filenames = await fs.readdir(outputDir);
-    const infoFiles = filenames.filter(filename => anyMatch.test(filename));
+    const infoFiles = filenames.filter((filename) => anyMatch.test(filename));
     for (let i = 0; i < infoFiles.length; i++) {
       const infoPath = path.join(outputDir, infoFiles[i]);
       const newPath = path.join(
@@ -310,7 +310,7 @@ ipcMain.on(
     }
 
     const nextFilenames = await fs.readdir(outputDir);
-    const resultFilenames = nextFilenames.filter(filename =>
+    const resultFilenames = nextFilenames.filter((filename) =>
       filename.includes(outputName)
     );
 
@@ -318,7 +318,7 @@ ipcMain.on(
       id,
       resultDir: outputDir,
       resultFilenames,
-      exitCode
+      exitCode,
     });
   }
 );
