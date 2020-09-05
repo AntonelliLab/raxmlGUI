@@ -559,7 +559,15 @@ class Run extends StoreBase {
   }
 
   @computed get startDisabled() {
-    return this.alignments.length === 0 || !this.ok || this.running || !this.finalAlignment.partition.isComplete;
+    console.log('this', this);
+    return (
+      this.alignments.length === 0 ||
+      !this.ok ||
+      this.running ||
+      !this.finalAlignment.partition.isComplete ||
+      (this.usesModeltestNg && !this.modelTestCanRun) ||
+      (this.usesModeltestNg && this.alignments.length > 1)
+    );
   }
 
   @observable seedParsimony = 123;
@@ -605,6 +613,11 @@ class Run extends StoreBase {
         return false;
     }
   }
+
+  @computed get modelTestCanRun() {
+    return this.dataType === 'nucleotide' || this.dataType === 'protein';
+  }
+
   @computed get args() {
     if (this.usesModeltestNg) {
       return this.modeltestNgArgs();
