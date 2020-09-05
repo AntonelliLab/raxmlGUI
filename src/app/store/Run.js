@@ -30,6 +30,7 @@ const winBinaries = [
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
+      { name: 'modeltest-ng', multithreaded: true, version: '0.1.6' },
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
