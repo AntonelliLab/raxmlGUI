@@ -130,7 +130,7 @@ function initialize() {
         nodeIntegration: true,
         contextIsolation: false, // Needed to expose ipcRenderer from preload script
         // preload: path.join(app.getAppPath(), 'src', 'main', 'preload.js'),
-        // enableRemoteModule: false
+        enableRemoteModule: true,
         allowEval: false
       }
     };
