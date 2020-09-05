@@ -1407,7 +1407,8 @@ Results saved to: ${this.outputDir}
       outputFilenameSafe: outputFilename,
       outputNameSafe: outputName,
       combinedOutput,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     } = this;
 
     if (this.finalAlignment.numSequences <= 3) {
@@ -1434,7 +1435,8 @@ Results saved to: ${this.outputDir}
       outputFilename,
       outputName,
       combinedOutput: combinedOutput.isUsed,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     });
   };
 
