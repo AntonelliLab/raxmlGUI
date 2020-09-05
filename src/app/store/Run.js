@@ -597,6 +597,14 @@ class Run extends StoreBase {
     }
   }
 
+  @computed get usesModeltestNg() {
+    switch (this.binary.value) {
+      case 'modeltest-ng':
+        return true;
+      default:
+        return false;
+    }
+  }
   @computed get args() {
     if (this.usesRaxmlNg) {
       return this.raxmlNgArgs();
