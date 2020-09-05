@@ -254,14 +254,14 @@ ipcMain.on(
     // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
     // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
     // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
-    const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg;
+    const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg &&!usesModeltestNg;
     if (checkFlags) {
       for (const arg of args) {
         try {
           const { stdout, stderr } = await exec(
             `"${binaryPath}" ${arg.join(' ')} --flag-check`,
             {
-              shell: electronUtil.is.windows
+              shell: electronUtil.is.windows,
             }
           );
           console.log(stdout, stderr);
