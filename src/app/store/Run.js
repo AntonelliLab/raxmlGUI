@@ -561,7 +561,6 @@ class Run extends StoreBase {
   }
 
   @computed get startDisabled() {
-    console.log('this', this);
     return (
       this.alignments.length === 0 ||
       !this.ok ||
