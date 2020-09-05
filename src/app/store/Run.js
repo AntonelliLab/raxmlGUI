@@ -30,6 +30,7 @@ const winBinaries = [
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
+      { name: 'modeltest-ng', multithreaded: true, version: '0.1.6' },
       { name: 'raxml-ng', multithreaded: true, version: '0.0.9' },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
@@ -143,7 +144,9 @@ class Binary extends Option {
 class NumThreads extends Option {
   constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
   options = range(1, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !/PTHREADS/.test(this.run.binary.value) && this.run.binary.value !== 'raxml-ng'; }
+  @computed get notAvailable() {
+    return !/PTHREADS/.test(this.run.binary.value) && !this.run.usesRaxmlNg && !this.run.usesModeltestNg;
+  }
 }
 
 class Analysis extends Option {
@@ -373,8 +376,8 @@ class Run extends StoreBase {
   @computed
   get analysisOption() {
     return this.raxmlNgSwitch(
-      raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value),
-      analysisOptions.find(opt => opt.value === this.analysis.value)
+      raxmlNgAnalysisOptions.find((opt) => opt.value === this.analysis.value),
+      analysisOptions.find((opt) => opt.value === this.analysis.value)
     );
   }
 
@@ -403,56 +406,65 @@ class Run extends StoreBase {
 
   @action
   loadBackboneConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'backboneConstraint' });
+    ipcRenderer.send(ipc.TREE_SELECT, {
+      id: this.id,
+      type: 'backboneConstraint',
+    });
   };
 
   @action
   loadMultifurcatingConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'multifurcatingConstraint' });
+    ipcRenderer.send(ipc.TREE_SELECT, {
+      id: this.id,
+      type: 'multifurcatingConstraint',
+    });
   };
 
   @observable disableCheckUndeterminedSequence = true;
 
   @observable outputName = 'output';
-  @action setOutputName = value => {
+  @action setOutputName = (value) => {
     this.outputName = filenamify(value.replace(/\s+/g, '_').trim());
   };
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
 
-  outputNameAvailable = promisedComputed({ ok: false, resultFilenames: [] }, async () => {
-    const {
-      id,
-      outputDir,
-      outputName,
-      outputNamePlaceholder,
-      atomAfterRun
-    } = this;
-    const defaultValue = {
-      id,
-      outputDir,
-      outputName,
-      ok: false,
-      notice: 'Checking...',
-      outputNameUnused: outputName,
-      resultFilenames: []
-    };
-    const outputNameToCheck = outputName || outputNamePlaceholder;
-    const check = atomAfterRun.reportObserved() || outputNameToCheck;
-    if (!check) {
-      return defaultValue;
-    }
-    const result = await this.sendAsync(
-      ipc.OUTPUT_CHECK,
-      {
+  outputNameAvailable = promisedComputed(
+    { ok: false, resultFilenames: [] },
+    async () => {
+      const {
         id,
         outputDir,
-        outputName: outputNameToCheck
-      },
-      ipc.OUTPUT_CHECKED
-    );
-    return result;
-  });
+        outputName,
+        outputNamePlaceholder,
+        atomAfterRun,
+      } = this;
+      const defaultValue = {
+        id,
+        outputDir,
+        outputName,
+        ok: false,
+        notice: 'Checking...',
+        outputNameUnused: outputName,
+        resultFilenames: [],
+      };
+      const outputNameToCheck = outputName || outputNamePlaceholder;
+      const check = atomAfterRun.reportObserved() || outputNameToCheck;
+      if (!check) {
+        return defaultValue;
+      }
+      const result = await this.sendAsync(
+        ipc.OUTPUT_CHECK,
+        {
+          id,
+          outputDir,
+          outputName: outputNameToCheck,
+        },
+        ipc.OUTPUT_CHECKED
+      );
+      return result;
+    }
+  );
 
   @computed get outputNameOk() {
     return this.outputNameAvailable.get().ok;
@@ -477,7 +489,7 @@ class Run extends StoreBase {
 
   @observable outputDir = '';
   @action
-  setOutputDir = dir => {
+  setOutputDir = (dir) => {
     this.outputDir = dir;
   };
   @action
@@ -493,11 +505,11 @@ class Run extends StoreBase {
   @action
   showPartition = (alignment) => {
     this.showPartitionFor = alignment;
-  }
+  };
   @action
   hidePartition = () => {
     this.showPartition(null);
-  }
+  };
 
   // Result
   @observable resultDir = '';
@@ -509,7 +521,7 @@ class Run extends StoreBase {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  @action openFile = filePath => {
+  @action openFile = (filePath) => {
     ipcRenderer.send(ipc.FILE_OPEN, filePath);
   };
 
@@ -549,7 +561,15 @@ class Run extends StoreBase {
   }
 
   @computed get startDisabled() {
-    return this.alignments.length === 0 || !this.ok || this.running || !this.finalAlignment.partition.isComplete;
+    console.log('this', this);
+    return (
+      this.alignments.length === 0 ||
+      !this.ok ||
+      this.running ||
+      !this.finalAlignment.partition.isComplete ||
+      (this.usesModeltestNg && !this.modelTestCanRun) ||
+      (this.usesModeltestNg && this.alignments.length > 1)
+    );
   }
 
   @observable seedParsimony = 123;
@@ -587,7 +607,23 @@ class Run extends StoreBase {
     }
   }
 
+  @computed get usesModeltestNg() {
+    switch (this.binary.value) {
+      case 'modeltest-ng':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  @computed get modelTestCanRun() {
+    return this.dataType === 'nucleotide' || this.dataType === 'protein';
+  }
+
   @computed get args() {
+    if (this.usesModeltestNg) {
+      return this.modeltestNgArgs();
+    }
     if (this.usesRaxmlNg) {
       return this.raxmlNgArgs();
     }
@@ -599,7 +635,9 @@ class Run extends StoreBase {
   }
 
   @computed get showConverted() {
-    const shouldShow = this.alignments.map(a => a.showConverted).some(e => e);
+    const shouldShow = this.alignments
+      .map((a) => a.showConverted)
+      .some((e) => e);
     return this.haveAlignments && shouldShow;
   }
 
@@ -607,7 +645,7 @@ class Run extends StoreBase {
     if (!this.haveAlignments || !this.showConverted) {
       return null;
     }
-    const converted = this.alignments.filter(a => a.showConverted);
+    const converted = this.alignments.filter((a) => a.showConverted);
     return converted[0].convertedFrom;
   }
 
@@ -615,7 +653,31 @@ class Run extends StoreBase {
     for (let i = 0; i < this.alignments.length; i++) {
       this.alignments[i].clearConverted();
     }
-  }
+  };
+
+  modeltestNgArgs = () => {
+    const first = [];
+    // data type
+    if (this.dataType === 'nucleotide') {
+      first.push('-d', 'nt');
+    }
+    else if (this.dataType === 'protein') {
+      first.push('-d', 'aa');
+    }
+    // alignment file
+    first.push('-i', quote(this.finalAlignment.path));
+    // output file, modeltest errors if this file already exists
+    first.push('-o', quote(join(this.outputDir, this.outputNameSafe)));
+    // Number of processors
+    first.push('-p', this.numThreads.value);
+    // TODO: in able to support partitioned modeltest we need to change the partition file text
+    // https://github.com/ddarriba/modeltest/wiki/Input-Data#partition-files
+    // partition scheme
+    // if (!this.finalAlignment.partition.isDefault) {
+    //   first.push('-q', quote(this.finalAlignment.partitionFilePath));
+    // }
+    return [first];
+  };
 
   raxmlNgArgs = () => {
     const first = [];
@@ -637,10 +699,16 @@ class Run extends StoreBase {
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'CC':
@@ -657,10 +725,16 @@ class Run extends StoreBase {
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'TI':
@@ -684,10 +758,16 @@ class Run extends StoreBase {
         }
         first.push('--tree', `rand{${this.numRuns.value}}`);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'ML+tBS+con':
@@ -715,10 +795,16 @@ class Run extends StoreBase {
         first.push('--tree', `rand{${this.numRuns.value}}`);
         first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'ML+TBE+con':
@@ -746,10 +832,16 @@ class Run extends StoreBase {
         first.push('--tree', `rand{${this.numRuns.value}}`);
         first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'AS':
@@ -770,7 +862,7 @@ class Run extends StoreBase {
         break;
       default:
     }
-    return cmdArgs.filter(args => args.length > 0);
+    return cmdArgs.filter((args) => args.length > 0);
   };
 
   raxmlArgs = () => {
@@ -1255,12 +1347,12 @@ class Run extends StoreBase {
       default:
     }
 
-    return cmdArgs.filter(args => args.length > 0);
+    return cmdArgs.filter((args) => args.length > 0);
   };
 
   @computed get command() {
     return this.args
-      .map(cmdArgs => `${this.binary.value} ${cmdArgs.join(' ')}`)
+      .map((cmdArgs) => `${this.binary.value} ${cmdArgs.join(' ')}`)
       .join(' &&\\\n');
   }
 
@@ -1270,15 +1362,15 @@ Analysis: ${this.analysisOption.title}
 Binary: ${this.binary.value} version ${this.binary.version}
 Results saved to: ${this.outputDir}
 `;
-    let argumentext = 'RAxML was called with these arguments:\n'
+    let argumentext = 'RAxML was called with these arguments:\n';
     this.args.map(
-      (arg, index) => argumentext += `${index + 1}.) ${arg.join(' ')}\n`
+      (arg, index) => (argumentext += `${index + 1}.) ${arg.join(' ')}\n`)
     );
     text += argumentext;
-// TODO: should we be more precise about what the single params mean?
-//     text += `To repeat the analysis use the following seeds:
-// Bootstrap seed: ${this.seedBootstrap}
-// Parsimony seed: ${this.seedParsimony}`;
+    // TODO: should we be more precise about what the single params mean?
+    //     text += `To repeat the analysis use the following seeds:
+    // Bootstrap seed: ${this.seedBootstrap}
+    // Parsimony seed: ${this.seedParsimony}`;
     return text;
   }
 
@@ -1299,12 +1391,11 @@ Results saved to: ${this.outputDir}
     try {
       console.log(`Writing settings to ${this.settingsFilePath}...`);
       await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Error writing settings:', err);
       throw err;
     }
-  }
+  };
 
   @action
   start = async () => {
@@ -1316,7 +1407,8 @@ Results saved to: ${this.outputDir}
       outputFilenameSafe: outputFilename,
       outputNameSafe: outputName,
       combinedOutput,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     } = this;
 
     if (this.finalAlignment.numSequences <= 3) {
@@ -1331,8 +1423,7 @@ Results saved to: ${this.outputDir}
     }
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
-    }
-    else if (!this.finalAlignment.partition.isDefault) {
+    } else if (!this.finalAlignment.partition.isDefault) {
       await this.finalAlignment.writePartition();
     }
     await this.writeSettings();
@@ -1344,7 +1435,8 @@ Results saved to: ${this.outputDir}
       outputFilename,
       outputName,
       combinedOutput: combinedOutput.isUsed,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     });
   };
 
@@ -1390,12 +1482,12 @@ Results saved to: ${this.outputDir}
     ipcRenderer.send(ipc.ALIGNMENT_SELECT);
   };
 
-  haveAlignment = id => {
-    return this.alignments.findIndex(alignment => alignment.id === id) >= 0;
+  haveAlignment = (id) => {
+    return this.alignments.findIndex((alignment) => alignment.id === id) >= 0;
   };
 
   @action
-  addAlignments = alignments => {
+  addAlignments = (alignments) => {
     alignments.forEach(({ path }) => {
       if (!this.haveAlignment(path)) {
         this.alignments.push(new Alignment(this, path));
@@ -1410,7 +1502,7 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  removeAlignment = alignment => {
+  removeAlignment = (alignment) => {
     const oldDataType = this.dataType;
     const index = this.alignments.indexOf(alignment);
     if (index >= 0) {
@@ -1553,11 +1645,10 @@ Results saved to: ${this.outputDir}
       command,
       stdout:
         stdout.length > maxStdoutLength
-          ? `[${stdout.length -
-              maxStdoutLength} more characters]...${stdout.slice(
-              -maxStdoutLength
-            )}`
-          : stdout
+          ? `[${
+              stdout.length - maxStdoutLength
+            } more characters]...${stdout.slice(-maxStdoutLength)}`
+          : stdout,
     };
   };
 }

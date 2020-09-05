@@ -193,7 +193,8 @@ ipcMain.on(
       outputFilename,
       outputName,
       combinedOutput,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     }
   ) => {
     cancelProcess(id);
@@ -229,10 +230,14 @@ ipcMain.on(
 
     console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
     try {
-      const { stdout, stderr } = await execFile(get_space_safe_binary_path(binaryPath), ['-v'], {
-        // env: { PATH: binaryDir },
-        shell: electronUtil.is.windows
-      });
+      const { stdout, stderr } = await execFile(
+        get_space_safe_binary_path(binaryPath),
+        usesModeltestNg ? ['--version'] : ['-v'],
+        {
+          // env: { PATH: binaryDir },
+          shell: electronUtil.is.windows,
+        }
+      );
       console.log(stdout);
       if (stderr) {
         console.error('Error:', stderr);
@@ -249,14 +254,14 @@ ipcMain.on(
     // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
     // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
     // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
-    const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg;
+    const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg &&!usesModeltestNg;
     if (checkFlags) {
       for (const arg of args) {
         try {
           const { stdout, stderr } = await exec(
             `"${binaryPath}" ${arg.join(' ')} --flag-check`,
             {
-              shell: electronUtil.is.windows
+              shell: electronUtil.is.windows,
             }
           );
           console.log(stdout, stderr);
@@ -294,7 +299,7 @@ ipcMain.on(
     );
     const anyMatch = new RegExp(`RAxML_info\.${outputName}\.tre`);
     const filenames = await fs.readdir(outputDir);
-    const infoFiles = filenames.filter(filename => anyMatch.test(filename));
+    const infoFiles = filenames.filter((filename) => anyMatch.test(filename));
     for (let i = 0; i < infoFiles.length; i++) {
       const infoPath = path.join(outputDir, infoFiles[i]);
       const newPath = path.join(
@@ -305,7 +310,7 @@ ipcMain.on(
     }
 
     const nextFilenames = await fs.readdir(outputDir);
-    const resultFilenames = nextFilenames.filter(filename =>
+    const resultFilenames = nextFilenames.filter((filename) =>
       filename.includes(outputName)
     );
 
@@ -313,7 +318,7 @@ ipcMain.on(
       id,
       resultDir: outputDir,
       resultFilenames,
-      exitCode
+      exitCode,
     });
   }
 );

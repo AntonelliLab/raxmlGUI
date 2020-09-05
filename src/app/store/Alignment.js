@@ -207,7 +207,6 @@ class Alignment {
     /*
       DNA, gene1 = 1-3676
       BIN, morph = 3677-3851
-      asdf
     */
     let partitionFileText = '';
     let site = 1;

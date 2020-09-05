@@ -368,7 +368,7 @@ const App = () => {
               onClose={run.clearFinished}
               variant={run.exitCode === 0 ? 'success' : 'info'}
               message={
-                run.exitCode === 0 ? 'RAxML finished!' : `RAxML cancelled!`
+                run.exitCode === 0 ? 'Calculation finished!' : `Calculation cancelled!`
               }
             />
           </Snackbar>
