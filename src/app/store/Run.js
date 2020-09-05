@@ -374,8 +374,8 @@ class Run extends StoreBase {
   @computed
   get analysisOption() {
     return this.raxmlNgSwitch(
-      raxmlNgAnalysisOptions.find(opt => opt.value === this.analysis.value),
-      analysisOptions.find(opt => opt.value === this.analysis.value)
+      raxmlNgAnalysisOptions.find((opt) => opt.value === this.analysis.value),
+      analysisOptions.find((opt) => opt.value === this.analysis.value)
     );
   }
 
@@ -404,56 +404,65 @@ class Run extends StoreBase {
 
   @action
   loadBackboneConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'backboneConstraint' });
+    ipcRenderer.send(ipc.TREE_SELECT, {
+      id: this.id,
+      type: 'backboneConstraint',
+    });
   };
 
   @action
   loadMultifurcatingConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'multifurcatingConstraint' });
+    ipcRenderer.send(ipc.TREE_SELECT, {
+      id: this.id,
+      type: 'multifurcatingConstraint',
+    });
   };
 
   @observable disableCheckUndeterminedSequence = true;
 
   @observable outputName = 'output';
-  @action setOutputName = value => {
+  @action setOutputName = (value) => {
     this.outputName = filenamify(value.replace(/\s+/g, '_').trim());
   };
 
   atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
 
-  outputNameAvailable = promisedComputed({ ok: false, resultFilenames: [] }, async () => {
-    const {
-      id,
-      outputDir,
-      outputName,
-      outputNamePlaceholder,
-      atomAfterRun
-    } = this;
-    const defaultValue = {
-      id,
-      outputDir,
-      outputName,
-      ok: false,
-      notice: 'Checking...',
-      outputNameUnused: outputName,
-      resultFilenames: []
-    };
-    const outputNameToCheck = outputName || outputNamePlaceholder;
-    const check = atomAfterRun.reportObserved() || outputNameToCheck;
-    if (!check) {
-      return defaultValue;
-    }
-    const result = await this.sendAsync(
-      ipc.OUTPUT_CHECK,
-      {
+  outputNameAvailable = promisedComputed(
+    { ok: false, resultFilenames: [] },
+    async () => {
+      const {
         id,
         outputDir,
-        outputName: outputNameToCheck
-      },
-      ipc.OUTPUT_CHECKED
-    );
-    return result;
-  });
+        outputName,
+        outputNamePlaceholder,
+        atomAfterRun,
+      } = this;
+      const defaultValue = {
+        id,
+        outputDir,
+        outputName,
+        ok: false,
+        notice: 'Checking...',
+        outputNameUnused: outputName,
+        resultFilenames: [],
+      };
+      const outputNameToCheck = outputName || outputNamePlaceholder;
+      const check = atomAfterRun.reportObserved() || outputNameToCheck;
+      if (!check) {
+        return defaultValue;
+      }
+      const result = await this.sendAsync(
+        ipc.OUTPUT_CHECK,
+        {
+          id,
+          outputDir,
+          outputName: outputNameToCheck,
+        },
+        ipc.OUTPUT_CHECKED
+      );
+      return result;
+    }
+  );
 
   @computed get outputNameOk() {
     return this.outputNameAvailable.get().ok;
@@ -478,7 +487,7 @@ class Run extends StoreBase {
 
   @observable outputDir = '';
   @action
-  setOutputDir = dir => {
+  setOutputDir = (dir) => {
     this.outputDir = dir;
   };
   @action
@@ -494,11 +503,11 @@ class Run extends StoreBase {
   @action
   showPartition = (alignment) => {
     this.showPartitionFor = alignment;
-  }
+  };
   @action
   hidePartition = () => {
     this.showPartition(null);
-  }
+  };
 
   // Result
   @observable resultDir = '';
@@ -510,7 +519,7 @@ class Run extends StoreBase {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  @action openFile = filePath => {
+  @action openFile = (filePath) => {
     ipcRenderer.send(ipc.FILE_OPEN, filePath);
   };
 
@@ -600,7 +609,9 @@ class Run extends StoreBase {
   }
 
   @computed get showConverted() {
-    const shouldShow = this.alignments.map(a => a.showConverted).some(e => e);
+    const shouldShow = this.alignments
+      .map((a) => a.showConverted)
+      .some((e) => e);
     return this.haveAlignments && shouldShow;
   }
 
@@ -608,7 +619,7 @@ class Run extends StoreBase {
     if (!this.haveAlignments || !this.showConverted) {
       return null;
     }
-    const converted = this.alignments.filter(a => a.showConverted);
+    const converted = this.alignments.filter((a) => a.showConverted);
     return converted[0].convertedFrom;
   }
 
@@ -638,10 +649,16 @@ class Run extends StoreBase {
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'CC':
@@ -658,10 +675,16 @@ class Run extends StoreBase {
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'TI':
@@ -685,10 +708,16 @@ class Run extends StoreBase {
         }
         first.push('--tree', `rand{${this.numRuns.value}}`);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'ML+tBS+con':
@@ -716,10 +745,16 @@ class Run extends StoreBase {
         first.push('--tree', `rand{${this.numRuns.value}}`);
         first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'ML+TBE+con':
@@ -747,10 +782,16 @@ class Run extends StoreBase {
         first.push('--tree', `rand{${this.numRuns.value}}`);
         first.push('--bs-trees', this.numRepetitionsNg.value);
         if (this.backboneConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.backboneConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.backboneConstraint.filePath)
+          );
         }
         if (this.multifurcatingConstraint.isSet) {
-          first.push('--tree-constraint', quote(this.multifurcatingConstraint.filePath));
+          first.push(
+            '--tree-constraint',
+            quote(this.multifurcatingConstraint.filePath)
+          );
         }
         break;
       case 'AS':
@@ -771,7 +812,7 @@ class Run extends StoreBase {
         break;
       default:
     }
-    return cmdArgs.filter(args => args.length > 0);
+    return cmdArgs.filter((args) => args.length > 0);
   };
 
   raxmlArgs = () => {
@@ -1256,12 +1297,12 @@ class Run extends StoreBase {
       default:
     }
 
-    return cmdArgs.filter(args => args.length > 0);
+    return cmdArgs.filter((args) => args.length > 0);
   };
 
   @computed get command() {
     return this.args
-      .map(cmdArgs => `${this.binary.value} ${cmdArgs.join(' ')}`)
+      .map((cmdArgs) => `${this.binary.value} ${cmdArgs.join(' ')}`)
       .join(' &&\\\n');
   }
 
@@ -1271,15 +1312,15 @@ Analysis: ${this.analysisOption.title}
 Binary: ${this.binary.value} version ${this.binary.version}
 Results saved to: ${this.outputDir}
 `;
-    let argumentext = 'RAxML was called with these arguments:\n'
+    let argumentext = 'RAxML was called with these arguments:\n';
     this.args.map(
-      (arg, index) => argumentext += `${index + 1}.) ${arg.join(' ')}\n`
+      (arg, index) => (argumentext += `${index + 1}.) ${arg.join(' ')}\n`)
     );
     text += argumentext;
-// TODO: should we be more precise about what the single params mean?
-//     text += `To repeat the analysis use the following seeds:
-// Bootstrap seed: ${this.seedBootstrap}
-// Parsimony seed: ${this.seedParsimony}`;
+    // TODO: should we be more precise about what the single params mean?
+    //     text += `To repeat the analysis use the following seeds:
+    // Bootstrap seed: ${this.seedBootstrap}
+    // Parsimony seed: ${this.seedParsimony}`;
     return text;
   }
 
@@ -1300,12 +1341,11 @@ Results saved to: ${this.outputDir}
     try {
       console.log(`Writing settings to ${this.settingsFilePath}...`);
       await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Error writing settings:', err);
       throw err;
     }
-  }
+  };
 
   @action
   start = async () => {
@@ -1332,8 +1372,7 @@ Results saved to: ${this.outputDir}
     }
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
-    }
-    else if (!this.finalAlignment.partition.isDefault) {
+    } else if (!this.finalAlignment.partition.isDefault) {
       await this.finalAlignment.writePartition();
     }
     await this.writeSettings();
@@ -1391,12 +1430,12 @@ Results saved to: ${this.outputDir}
     ipcRenderer.send(ipc.ALIGNMENT_SELECT);
   };
 
-  haveAlignment = id => {
-    return this.alignments.findIndex(alignment => alignment.id === id) >= 0;
+  haveAlignment = (id) => {
+    return this.alignments.findIndex((alignment) => alignment.id === id) >= 0;
   };
 
   @action
-  addAlignments = alignments => {
+  addAlignments = (alignments) => {
     alignments.forEach(({ path }) => {
       if (!this.haveAlignment(path)) {
         this.alignments.push(new Alignment(this, path));
@@ -1411,7 +1450,7 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  removeAlignment = alignment => {
+  removeAlignment = (alignment) => {
     const oldDataType = this.dataType;
     const index = this.alignments.indexOf(alignment);
     if (index >= 0) {
@@ -1554,11 +1593,10 @@ Results saved to: ${this.outputDir}
       command,
       stdout:
         stdout.length > maxStdoutLength
-          ? `[${stdout.length -
-              maxStdoutLength} more characters]...${stdout.slice(
-              -maxStdoutLength
-            )}`
-          : stdout
+          ? `[${
+              stdout.length - maxStdoutLength
+            } more characters]...${stdout.slice(-maxStdoutLength)}`
+          : stdout,
     };
   };
 }
