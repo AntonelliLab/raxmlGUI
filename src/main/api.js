@@ -193,7 +193,8 @@ ipcMain.on(
       outputFilename,
       outputName,
       combinedOutput,
-      usesRaxmlNg
+      usesRaxmlNg,
+      usesModeltestNg,
     }
   ) => {
     cancelProcess(id);
@@ -229,10 +230,14 @@ ipcMain.on(
 
     console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
     try {
-      const { stdout, stderr } = await execFile(get_space_safe_binary_path(binaryPath), ['-v'], {
-        // env: { PATH: binaryDir },
-        shell: electronUtil.is.windows
-      });
+      const { stdout, stderr } = await execFile(
+        get_space_safe_binary_path(binaryPath),
+        usesModeltestNg ? ['--version'] : ['-v'],
+        {
+          // env: { PATH: binaryDir },
+          shell: electronUtil.is.windows,
+        }
+      );
       console.log(stdout);
       if (stderr) {
         console.error('Error:', stderr);
