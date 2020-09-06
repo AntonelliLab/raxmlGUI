@@ -4,6 +4,7 @@ import url from 'url';
 import isDev from 'electron-is-dev';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
+import ProgressBar from 'electron-progressbar';
 
 const debug = require('electron-debug');
 
@@ -54,6 +55,7 @@ const isDevMode = isDev && process.argv.indexOf("--noDevServer") === -1;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let progressBar;
 
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for update...');
@@ -69,6 +71,21 @@ autoUpdater.on('update-available', info => {
     .then(r => {
       // Button index
       if (r.response === 0) {
+        progressBar = new ProgressBar({
+          text: 'Downloading the update for the app',
+          browserWindow: {
+            webPreferences: {
+                nodeIntegration: true
+            }
+        }});
+        progressBar
+          .on('completed', function() {
+            console.info(`completed...`);
+            progressBar.detail = 'Task completed. Exiting...';
+          })
+          .on('aborted', function() {
+            console.info(`aborted...`);
+          });
         autoUpdater.downloadUpdate();
       }
     });
@@ -97,6 +114,7 @@ autoUpdater.on('download-progress', progressObj => {
   log.info(log_message);
 });
 autoUpdater.on('update-downloaded', info => {
+  progressBar.setCompleted();
   dialog.showMessageBox({
     title: 'Install Updates',
     message: 'Updates downloaded, the application will now quit to update...'
@@ -199,12 +217,7 @@ function initialize() {
       require("devtron").install();
     }
     createMainWindow();
-    //-------------------------------------------------------------------
-    // Auto updates - Option 1 - Simplest version
-    //
-    // This will immediately download an update, then install when the
-    // app quits.
-    //-------------------------------------------------------------------
+
     autoUpdater.autoDownload = false;
     autoUpdater.checkForUpdates();
   })
