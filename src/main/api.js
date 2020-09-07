@@ -87,7 +87,7 @@ ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
 // Open a file with the OS's default file handler
 ipcMain.on(ipc.FILE_OPEN, (event, fullPath) => {
   console.debug(ipc.FILE_OPEN, fullPath);
-  shell.openItem(fullPath);
+  shell.openPath(fullPath);
 });
 
 // Open a file in it's folder with native file explorer

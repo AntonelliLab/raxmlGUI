@@ -267,7 +267,7 @@ class TreeFile extends Option {
     shell.showItemInFolder(this.filePath);
   };
   @action openFile = () => {
-    shell.openItem(this.filePath);
+    shell.openPath(this.filePath);
   };
   @action remove = () => {
     this.setFilePath('');
@@ -498,7 +498,7 @@ class Run extends StoreBase {
   };
 
   @action openOutputDir = () => {
-    shell.openItem(this.outputDir);
+    shell.openPath(this.outputDir);
   };
 
   @observable.ref showPartitionFor = null;
