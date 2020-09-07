@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { FormControl, FormHelperText } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   Model: {
@@ -28,6 +29,15 @@ const Model = ({ run }) => {
   const classes = useStyles();
 
   // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top
+  if (run.usesModeltestNg) {
+    return (
+      <div className={classes.Model}>
+        <Typography variant="body1">
+          Select the best-fit model of evolution for a single DNA or protein alignment
+        </Typography>
+      </div>
+    );
+  }
   return (
     <div className={classes.Model}>
       <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">

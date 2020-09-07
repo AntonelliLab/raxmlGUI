@@ -20,7 +20,7 @@ function initDev(exampleFiles) {
   const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFastaFiles = [
-    'aminoacid.txt',
+    // 'aminoacid.txt',
     // 'bin1.txt',
     // 'bin2.txt',
     // 'binary.txt',
