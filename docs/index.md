@@ -4,13 +4,14 @@ raxmlGUI<sup>1,2</sup> is a graphical user interface to RAxML<sup>3, 4</sup>, on
 *	Seamless integration with RAxML and RAxML-NG available on all major operating systems
 *	Automated pipelines for analyses that require multiple successive calls of RAxML 
 *	Built-in functions to concatenate alignment files with automatic partition settings
+*	Possibility to select the best-fit model of evolution for DNA or protein alignments using ModelTest-NG<sup>5</sup>
 
 While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). raxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML. Read more in the [bioRxiv paper](https://www.biorxiv.org/content/10.1101/800912v1).
 
 ------------------------
 
 <small>
-  <sup>1</sup> Edler, D., Klein, J., Antonelli, A., and Silvestro, D. 2019. **raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML.** _bioRxiv_, doi: https://doi.org/10.1101/800912
+  <sup>1</sup> Edler, D., J. Klein, A. Antonelli, and D. Silvestro. 2019. **raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML.** _bioRxiv_, doi: https://doi.org/10.1101/800912
 </small>
 
 <small>
@@ -23,4 +24,8 @@ While the program presented here is a beta version, the most important functions
 
 <small>
   <sup>4</sup> Kozlov, A. M., D. Darriba, T. Flouri, B. Morel, and A. Stamatakis. 2019. **RAxML-NG: a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference.** _Bioinformatics_ 35:4453–4455.
+</small>
+
+<small>
+  <sup>5</sup> Darriba, D., D. Posada, A. M. Kozlov, A. Stamatakis, B. Morel, T. Flouri. 2020. **ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models.** _Molecular Biology and Evolution_ 37:291–294.
 </small>
