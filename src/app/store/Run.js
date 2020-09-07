@@ -666,7 +666,7 @@ class Run extends StoreBase {
     // alignment file
     first.push('-i', quote(this.finalAlignment.path));
     // output file, modeltest errors if this file already exists
-    first.push('-o', quote(join(this.outputDir, this.outputNameSafe)));
+    first.push('-o', quote(join(this.outputDir,`RAxML_GUI_ModelTest_${this.outputNameSafe}`)));
     // Number of processors
     first.push('-p', this.numThreads.value);
     // TODO: in able to support partitioned modeltest we need to change the partition file text
