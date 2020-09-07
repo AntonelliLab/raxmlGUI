@@ -64,7 +64,7 @@ autoUpdater.on('update-available', info => {
   dialog.showMessageBox({
     type: 'info',
     title: 'Found Updates',
-    message: 'Found updates, do you want update now?',
+    message: 'An update for RAxML-GUI is available, do you want to update now?',
     buttons: ['Yes', 'No'],
     cancelId: 1
   })
@@ -81,7 +81,7 @@ autoUpdater.on('update-available', info => {
         progressBar
           .on('completed', function() {
             console.info(`completed...`);
-            progressBar.detail = 'Task completed. Exiting...';
+            progressBar.detail = 'Download completed. Exiting...';
           })
           .on('aborted', function() {
             console.info(`aborted...`);
