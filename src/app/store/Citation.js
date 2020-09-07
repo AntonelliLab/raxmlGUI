@@ -123,6 +123,49 @@ Y2  - 7/17/2020
 UR  - https://doi.org/10.1093/bioinformatics/btz305
 ER  - `,
       txt: `Alexey M Kozlov, Diego Darriba, Tomáš Flouri, Benoit Morel, Alexandros Stamatakis, RAxML-NG: a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference, Bioinformatics, Volume 35, Issue 21, 1 November 2019, Pages 4453–4455, https://doi.org/10.1093/bioinformatics/btz305`,
+    },
+    {
+      name: 'ModelTest-NG',
+      bib: `@article{10.1093/molbev/msz189,
+    author = {Darriba, Diego and Posada, David and Kozlov, Alexey M and Stamatakis, Alexandros and Morel, Benoit and Flouri, Tomas},
+    title = "{ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models}",
+    journal = {Molecular Biology and Evolution},
+    volume = {37},
+    number = {1},
+    pages = {291-294},
+    year = {2019},
+    month = {08},
+    issn = {0737-4038},
+    doi = {10.1093/molbev/msz189},
+    url = {https://doi.org/10.1093/molbev/msz189},
+    eprint = {https://academic.oup.com/mbe/article-pdf/37/1/291/32085561/msz189.pdf},
+}`,
+      ris: `Provider: Silverchair
+Database: Oxford University Press
+Content: text/plain; charset="UTF-8"
+
+TY  - JOUR
+AU  - Darriba, Diego
+AU  - Posada, David
+AU  - Kozlov, Alexey M
+AU  - Stamatakis, Alexandros
+AU  - Morel, Benoit
+AU  - Flouri, Tomas
+T1  - ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models
+PY  - 2020
+Y1  - 2020/01/01
+DO  - 10.1093/molbev/msz189
+JO  - Molecular Biology and Evolution
+JA  - Mol Biol Evol
+VL  - 37
+IS  - 1
+SP  - 291
+EP  - 294
+SN  - 0737-4038
+Y2  - 9/5/2020
+UR  - https://doi.org/10.1093/molbev/msz189
+ER  - `,
+      txt: `Diego Darriba, David Posada, Alexey M Kozlov, Alexandros Stamatakis, Benoit Morel, Tomas Flouri, ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models, Molecular Biology and Evolution, Volume 37, Issue 1, January 2020, Pages 291–294, https://doi.org/10.1093/molbev/msz189`,
     }
   ];
 
