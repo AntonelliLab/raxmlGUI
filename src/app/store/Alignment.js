@@ -12,6 +12,7 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
+import { quote } from '../../common/utils';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -308,6 +309,20 @@ class Alignment {
     }
   }
 
+
+  @observable modeltestLoading = false;
+
+  @action
+  runModelTest = () => {
+    this.modeltestLoading = true;
+    ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
+      id: this.id,
+      filePath: this.path,
+      dataType: this.dataType,
+      numThreads: this.run.numThreads.value,
+    });
+  }
+
   listen = () => {
     // Send alignments to main process for processing
     ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, {
@@ -362,6 +377,18 @@ class Alignment {
             this.showConverted = true;
           });
         }
+      }
+    );
+    ipcRenderer.on(
+      ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
+      (event, { id, result }) => {
+        console.log(id, 'Modeltest result:', result);
+      }
+    );
+    ipcRenderer.on(
+      ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
+      (event, { id, error }) => {
+        console.log(id, 'Modeltest error:', error);
       }
     );
   };

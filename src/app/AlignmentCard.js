@@ -22,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
 import CardActions from '@material-ui/core/CardActions';
+import { Button } from '@material-ui/core';
 
 const InputSwitch = withStyles(theme => ({
   switchBase: {
@@ -303,6 +304,7 @@ function AlignmentCard({ className, alignment }) {
         { alignment.partition.isComplete || alignment.showPartition ? null : (
           <Typography variant="caption" color="primary">Partition not complete, click <strong style={{ cursor: 'pointer' }} onClick={alignment.setShowPartition}>here</strong> to edit.</Typography>
         )}
+        <Button onClick={alignment.runModelTest}>Optimize model</Button>
       </CardActions>
     </Card>
   );

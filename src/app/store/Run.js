@@ -10,7 +10,7 @@ import { join } from 'path';
 import filenamify from 'filenamify';
 import electronutil from 'electron-util';
 import fs from 'fs';
-
+import { quote } from '../../common/utils';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
@@ -132,8 +132,6 @@ const raxmlNgAnalysisOptions = [
     params: [params.tree],
   },
 ];
-
-const quote = dir => electronutil.is.windows ? `"${dir}"` : dir;
 
 class Binary extends Option {
   constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
@@ -667,6 +665,8 @@ class Run extends StoreBase {
     first.push('-i', quote(this.finalAlignment.path));
     // output file, modeltest errors if this file already exists
     first.push('-o', quote(join(this.outputDir,`RAxML_GUI_ModelTest_${this.outputNameSafe}`)));
+    // modeltest throws errors if the output file already exists
+    first.push('--force');
     // Number of processors
     first.push('-p', this.numThreads.value);
     // TODO: in able to support partitioned modeltest we need to change the partition file text

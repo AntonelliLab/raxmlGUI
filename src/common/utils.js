@@ -34,6 +34,9 @@ const serializeAndCleanError = (error) => {
   return err;
 }
 
+
+export const quote = dir => is.windows ? `"${dir}"` : dir;
+
 const stringify = json => JSON.stringify(json, null, '  ');
 
 const stringifyToGithubMarkdown = (json) => `\`\`\`json

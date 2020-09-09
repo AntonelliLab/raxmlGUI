@@ -8,9 +8,10 @@ import isDev from 'electron-is-dev';
 import { serializeError } from 'serialize-error';
 import { activeWindow } from 'electron-util';
 import io from '../common/io';
-
+import parsePath from 'parse-filepath';
 import * as ipc from '../constants/ipc';
 import electronUtil from 'electron-util';
+import { quote } from '../common/utils';
 // import unhandled from 'electron-unhandled';
 // import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
 
@@ -353,7 +354,10 @@ function spawnProcess(binaryDir, binaryName, args) {
   return proc;
 }
 
-async function runProcess(id, event, binaryDir, binaryName, args) {
+async function runProcess(id, event, binaryDir, binaryName, args, {
+  onStdOut = () => {},
+  onStdErr = () => {},
+} = {}) {
   return new Promise((resolve, reject) => {
     cancelProcess(id);
     try {
@@ -366,12 +370,14 @@ async function runProcess(id, event, binaryDir, binaryName, args) {
       proc.stdout.on('data', buffer => {
         const content = String(buffer);
         console.log('on stdout:', content);
+        onStdOut(content);
         send(event, ipc.RUN_STDOUT, { id, content });
       });
 
       proc.stderr.on('data', buffer => {
         const content = String(buffer);
         console.log('on stderr:', content);
+        onStdErr(content);
         send(event, ipc.RUN_STDERR, { id, content });
       });
 
@@ -527,6 +533,73 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async event => {
     fasta: fastaFiles,
     phylip: phylipFiles,
     dir
+  });
+});
+
+ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
+  const { id, filePath, dataType, numThreads } = payload;
+  const { dir, name } = parsePath(filePath);
+
+  const outputPath = path.join(dir, `RAxML_GUI_ModelTest_${name}`);
+  const args = [];
+  if (dataType === 'nucleotide') {
+    args.push('-d', 'nt');
+  }
+  else if (dataType === 'protein') {
+    args.push('-d', 'aa');
+  }
+  // alignment file
+  args.push('-i', quote(filePath));
+  // output path
+  args.push('-o', quote(outputPath));
+  // modeltest throws errors if the output file already exists
+  args.push('--force');
+  // Number of processors
+  args.push('-p', numThreads);
+
+  console.log(`Alignment '${id}': Run modeltest with args ${args}...`);
+
+  const binaryName = 'modeltest-ng';
+  const stdOuts = [];
+  const onStdOut = (content) => {
+    stdOuts.push(content);
+  }
+  let exitCode = 0;
+  try {
+    console.log(`Run '${binaryName}' with args:`, args);
+    exitCode = await runProcess(id, event, binaryDir, binaryName, args, { onStdOut });
+    if (exitCode !== 0) {
+      throw new Error(`Error trying to run modeltest-ng, exited with code '${exitCode}'.`);
+    }
+  } catch (err) {
+    console.error('Modeltest run error:', err);
+    send(event, ipc.RUN_ERROR, { id, error: err });
+    return;
+  }
+
+  // Parse stdout to get the best models
+  console.log('Parse output from modeltest-ng...');
+  // 'Commands:\n' +
+  // '  > phyml  -i /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt -m 012314 -f m -v e -a 0 -c 1 -o tlr\n' +
+  // '  > raxmlHPC-SSE3 -s /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt -c 1 -m GTRCATIX -n EXEC_NAME -p PARSIMONY_SEED\n' +
+  // '  > raxml-ng --msa /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt --model TVM+I\n' +
+  const commands = stdOuts.join('').split('\n');
+
+  // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use the last.
+  const cmdRaxml = commands.filter(cmd => cmd.startsWith('  > raxmlHPC-SSE3'))[2];
+  const cmdRaxmlNG = commands.filter(cmd => cmd.startsWith('  > raxml-ng'))[2];
+
+  const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
+  const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
+
+  console.log('Models:', modelRaxml, modelRaxmlNG)
+
+  send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
+    id,
+    result: {
+      raxml: modelRaxml,
+      raxmlNG: modelRaxmlNG,
+    }
   });
 });
 
