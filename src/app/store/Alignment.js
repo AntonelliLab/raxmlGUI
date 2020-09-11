@@ -328,7 +328,7 @@ class Alignment {
     this.modeltestLoading = false;
     console.log(`Set model from string, raxml: '${raxml}', raxml-ng: '${raxmlNG}'.`);
     // For raxml-ng
-    const model = raxmlNG.split('+')[0];
+    let model = raxmlNG.split('+')[0];
     this.substitutionModel.setValue(model);
     if (/\+F[O|E]?/.test(raxmlNG)) {
       this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
@@ -342,6 +342,27 @@ class Alignment {
     if (/\+ASC_LEWIS/.test(raxmlNG)) {
       this.ngAscertainmentBias.setValue('+ASC_LEWIS');
     }
+
+    model = raxml;
+    // For raxml
+    if (/F$/.test(raxml)) {
+      this.run.empiricalFrequencies.setValue(true);
+      model = model.slice(0, -1)
+    }
+    else if (/X$/.test(raxml)) {
+      // this.run.mlFrequencies.setValue(true);
+      model = model.slice(0, -1)
+    }
+    if (this.dataType === 'protein') {
+      console.log('parsing matrix name...');
+      const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
+      const re = new RegExp(`(${options.join('|')})$`);
+      const matrixName = re.exec(model)[1];
+      this.aaMatrixName = matrixName;
+      model = model.replace(re, '');
+    }
+    this.run.substitutionModel.setValue(model);
+
   }
 
   listen = () => {
