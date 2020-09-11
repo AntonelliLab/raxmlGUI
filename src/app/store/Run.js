@@ -24,23 +24,25 @@ const winBinaries = [
   { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.10' },
   { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.10' },
   { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10', initial: true }
 ];
 
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'modeltest-ng', multithreaded: true, version: '0.1.6' },
-      { name: 'raxml-ng', multithreaded: true, version: '0.9.0' },
+      { name: 'raxml-ng', multithreaded: true, version: '0.9.0', initial: true },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
     ];
 
-const binaries = allBinaries.filter(({ multithreaded }) =>
+  const binaries = allBinaries.filter(({ multithreaded }) =>
   MAX_NUM_CPUS === 1 ? !multithreaded : true
-);
+  );
+
+  const initialBinaryName = binaries.filter(({ initial }) => initial )[0].name;
 
 // Available parameters for different analysis
 const params = {
@@ -134,7 +136,7 @@ const raxmlNgAnalysisOptions = [
 ];
 
 class Binary extends Option {
-  constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
+  constructor(run) { super(run, initialBinaryName, 'Binary', 'Name of binary'); }
   options = binaries.map(({ name }) => ({ value: name, title: name }));
   @computed get version() { return binaries.filter(b => b.name === this.value)[0].version };
 }
