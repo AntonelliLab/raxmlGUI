@@ -573,34 +573,37 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     }
   } catch (err) {
     console.error('Modeltest run error:', err);
-    send(event, ipc.RUN_ERROR, { id, error: err });
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error: err });
     return;
   }
 
   // Parse stdout to get the best models
   console.log('Parse output from modeltest-ng...');
-  // 'Commands:\n' +
-  // '  > phyml  -i /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt -m 012314 -f m -v e -a 0 -c 1 -o tlr\n' +
-  // '  > raxmlHPC-SSE3 -s /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt -c 1 -m GTRCATIX -n EXEC_NAME -p PARSIMONY_SEED\n' +
-  // '  > raxml-ng --msa /Users/Daniel/dev/projects/bioenv/raxmlGUI/raxmlgui2/static/example-files/fasta/nucleotide.txt --model TVM+I\n' +
   const commands = stdOuts.join('').split('\n');
 
-  // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use the last.
-  const cmdRaxml = commands.filter(cmd => cmd.startsWith('  > raxmlHPC-SSE3'))[2];
-  const cmdRaxmlNG = commands.filter(cmd => cmd.startsWith('  > raxml-ng'))[2];
+  try {
+    // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use AICc.
+    const cmdRaxml = commands.filter(cmd => cmd.startsWith('  > raxmlHPC-SSE3'))[2];
+    const cmdRaxmlNG = commands.filter(cmd => cmd.startsWith('  > raxml-ng'))[2];
 
-  const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
-  const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
+    const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
+    const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
 
-  console.log('Models:', modelRaxml, modelRaxmlNG)
+    console.log('Models:', modelRaxml, modelRaxmlNG)
 
-  send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
-    id,
-    result: {
-      raxml: modelRaxml,
-      raxmlNG: modelRaxmlNG,
-    }
-  });
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
+      id,
+      result: {
+        raxml: modelRaxml,
+        raxmlNG: modelRaxmlNG,
+      }
+    });
+  } catch (err) {
+    console.error(`Couldn't parse best models from modeltest-ng output:`, err);
+    console.log('output:', commands);
+    const error = new Error(`Couldn't parse best models from modeltest-ng output. Check alignment log.`);
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
+  }
 });
 
 // Open a dialog to select a tree file

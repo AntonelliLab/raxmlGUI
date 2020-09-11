@@ -12,7 +12,7 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
-import { quote } from '../../common/utils';
+// import { quote } from '../../common/utils';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -96,7 +96,7 @@ class RaxmlNgModelG extends RaxmlNgModelExtraParam {
   constructor(alignment) {
     super(
       alignment,
-      'Among-site rate heterogeneity model',
+      'Rate heterogeneity',
       raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options
     );
   }
@@ -323,6 +323,27 @@ class Alignment {
     });
   }
 
+  @action
+  setModelFromString = ({ raxml, raxmlNG }) => {
+    this.modeltestLoading = false;
+    console.log(`Set model from string, raxml: '${raxml}', raxml-ng: '${raxmlNG}'.`);
+    // For raxml-ng
+    const model = raxmlNG.split('+')[0];
+    this.substitutionModel.setValue(model);
+    if (/\+F[O|E]?/.test(raxmlNG)) {
+      this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
+    }
+    if (/\+IC?/.test(raxmlNG)) {
+      this.ngInvariantSites.setValue(/\+IC?/.exec(raxmlNG)[0]);
+    }
+    if (/\+GA?/.test(raxmlNG)) {
+      this.ngRateHeterogeneity.setValue(/\+GA?/.exec(raxmlNG)[0]);
+    }
+    if (/\+ASC_LEWIS/.test(raxmlNG)) {
+      this.ngAscertainmentBias.setValue('+ASC_LEWIS');
+    }
+  }
+
   listen = () => {
     // Send alignments to main process for processing
     ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, {
@@ -382,13 +403,19 @@ class Alignment {
     ipcRenderer.on(
       ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
       (event, { id, result }) => {
-        console.log(id, 'Modeltest result:', result);
+        if (id === this.id) {
+          console.log(id, 'Modeltest result:', result);
+          this.setModelFromString(result);
+        }
       }
     );
     ipcRenderer.on(
       ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
       (event, { id, error }) => {
-        console.log(id, 'Modeltest error:', error);
+        if (id === this.id) {
+          this.modeltestLoading = false;
+          console.log(id, 'Modeltest error:', error);
+        }
       }
     );
   };
