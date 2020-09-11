@@ -369,14 +369,14 @@ async function runProcess(id, event, binaryDir, binaryName, args, {
 
       proc.stdout.on('data', buffer => {
         const content = String(buffer);
-        console.log('on stdout:', content);
+        // console.log('on stdout:', content);
         onStdOut(content);
         send(event, ipc.RUN_STDOUT, { id, content });
       });
 
       proc.stderr.on('data', buffer => {
         const content = String(buffer);
-        console.log('on stderr:', content);
+        console.error('on stderr:', content);
         onStdErr(content);
         send(event, ipc.RUN_STDERR, { id, content });
       });
@@ -541,6 +541,12 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const { dir, name } = parsePath(filePath);
 
   const outputPath = path.join(dir, `RAxML_GUI_ModelTest_${name}`);
+
+  try {
+    // Remove binary checkpoint as that may be invalid
+    await fs.unlink(`${outputPath}.ckp`);
+  } catch (err) {}
+
   const args = [];
   if (dataType === 'nucleotide') {
     args.push('-d', 'nt');
@@ -589,7 +595,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
     const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
 
-    console.log('Models:', modelRaxml, modelRaxmlNG)
+    console.log(`-> raxml: ${modelRaxml}, raxml-ng: ${modelRaxmlNG}`);
 
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
       id,
