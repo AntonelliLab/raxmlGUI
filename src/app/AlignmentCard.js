@@ -107,6 +107,14 @@ const useStyles = makeStyles((theme) => {
     button: {
       margin: theme.spacing(1),
     },
+    primaryButton: {
+      backgroundColor: theme.palette.input.main,
+      border: `1px solid ${theme.palette.input.darker}`,
+      color: theme.palette.input.contrastText,
+      '&:hover': {
+        backgroundColor: theme.palette.input.main,
+      },
+    },
     rightIcon: {
       marginLeft: theme.spacing(1),
     },
@@ -218,6 +226,9 @@ function AlignmentCard({ className, alignment }) {
                 variant="contained"
                 color="default"
                 style={{ marginLeft: 10 }}
+                classes={{
+                  root: classes.primaryButton,
+                }}
                 disabled={alignment.modeltestLoading}
                 loading={alignment.modeltestLoading}
                 onClick={alignment.runModelTest}
@@ -226,32 +237,48 @@ function AlignmentCard({ className, alignment }) {
               </LoadingButton>
             </Box>
           </Box>
-        ) : null}
-        {alignment.modelExtra ? (
-          <FormControl>
-            <InputLabel
-              className={classes.secondaryText}
-              style={{ whiteSpace: 'nowrap' }}
-              htmlFor={alignment.modelExtra.label}
-            >
-              {alignment.modelExtra.label}
-            </InputLabel>
-            <Select
-              value={alignment.modelExtra.value}
-              onChange={alignment.modelExtra.onChange}
-              inputProps={{
-                name: alignment.modelExtra.label,
-                id: alignment.modelExtra.label,
+        ) : (
+          <Box display="flex" flexWrap="wrap" alignItems="flex-end">
+            {alignment.modelExtra ? (
+              <FormControl>
+                <InputLabel
+                  className={classes.secondaryText}
+                  style={{ whiteSpace: 'nowrap' }}
+                  htmlFor={alignment.modelExtra.label}
+                >
+                  {alignment.modelExtra.label}
+                </InputLabel>
+                <Select
+                  value={alignment.modelExtra.value}
+                  onChange={alignment.modelExtra.onChange}
+                  inputProps={{
+                    name: alignment.modelExtra.label,
+                    id: alignment.modelExtra.label,
+                  }}
+                >
+                  {alignment.modelExtra.options.map((model) => (
+                    <MenuItem key={model} value={model}>
+                      {model}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+            <LoadingButton
+              variant="contained"
+              color="default"
+              style={{ marginLeft: 10 }}
+              classes={{
+                root: classes.primaryButton,
               }}
+              disabled={alignment.modeltestLoading}
+              loading={alignment.modeltestLoading}
+              onClick={alignment.runModelTest}
             >
-              {alignment.modelExtra.options.map((model) => (
-                <MenuItem key={model} value={model}>
-                  {model}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null}
+              Optimize model
+            </LoadingButton>
+          </Box>
+        )}
       </div>
     </div>
   );
@@ -329,15 +356,6 @@ function AlignmentCard({ className, alignment }) {
             to edit.
           </Typography>
         )}
-        <LoadingButton
-          variant="contained"
-          color="default"
-          disabled={alignment.modeltestLoading}
-          loading={alignment.modeltestLoading}
-          onClick={alignment.runModelTest}
-        >
-          Optimize model
-        </LoadingButton>
       </CardActions>
     </Card>
   );

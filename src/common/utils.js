@@ -34,6 +34,9 @@ const serializeAndCleanError = (error) => {
   return err;
 }
 
+export function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export const quote = dir => is.windows ? `"${dir}"` : dir;
 
