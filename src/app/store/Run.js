@@ -567,7 +567,8 @@ class Run extends StoreBase {
       this.running ||
       !this.finalAlignment.partition.isComplete ||
       (this.usesModeltestNg && !this.modelTestCanRun) ||
-      (this.usesModeltestNg && this.alignments.length > 1)
+      (this.usesModeltestNg && this.alignments.length > 1) ||
+      this.modelTestIsRunningOnAlignment
     );
   }
 
@@ -617,6 +618,16 @@ class Run extends StoreBase {
 
   @computed get modelTestCanRun() {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
+  }
+
+  @computed get modelTestIsRunningOnAlignment() {
+    // return this.alignments.some(alignment => alignment.modeltestLoading);
+    const running = this.alignments.some(alignment => alignment.modeltestLoading);
+    return running;
+  }
+
+  @action cancelModeltestOnAlignment = () => {
+    this.alignments.forEach(alignment => alignment.cancelModelTest());
   }
 
   @computed get args() {

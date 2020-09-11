@@ -574,7 +574,10 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   try {
     console.log(`Run '${binaryName}' with args:`, args);
     exitCode = await runProcess(id, event, binaryDir, binaryName, args, { onStdOut });
-    if (exitCode !== 0 && exitCode !== 'SIGTERM') {
+    if (exitCode !== 0) {
+      if (exitCode === 'SIGTERM') { // Cancelled
+        return;
+      }
       throw new Error(`Error trying to run modeltest-ng, exited with code '${exitCode}'.`);
     }
   } catch (err) {

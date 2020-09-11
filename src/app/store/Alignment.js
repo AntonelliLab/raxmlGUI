@@ -10,6 +10,7 @@ import intersection from 'lodash/intersection';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
+import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 // import { quote } from '../../common/utils';
@@ -130,7 +131,7 @@ class MultistateNumber extends Option {
 }
 
 
-class Alignment {
+class Alignment extends StoreBase {
   run = null;
 
   @observable path = '';
@@ -221,6 +222,7 @@ class Alignment {
   }
 
   constructor(run, path) {
+    super();
     this.run = run;
     this.path = path;
     this.substitutionModel = new RaxmlNgAlignmentSubstitutionModel(this);
@@ -325,9 +327,10 @@ class Alignment {
 
   @action
   cancelModelTest = () => {
-    console.log('Cancel model test!');
-    this.modeltestLoading = false;
-    ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
+    if (this.modeltestLoading) {
+      this.modeltestLoading = false;
+      ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
+    }
   }
 
   @action
@@ -445,6 +448,9 @@ class Alignment {
         }
       }
     );
+    //TODO: Transform above to the form of below to be able to unlisten on removal
+    this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
+    this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
   };
 
   @action clearConverted = () => {
@@ -463,11 +469,15 @@ class Alignment {
 
   @action
   dispose = () => {
-    //TODO: Remove listeners (make callbacks class methods to be able to remove them)
+    this.unlisten();
+    if (this.modeltestLoading) {
+      this.cancelModelTest();
+    }
   };
 
   @action
   remove = () => {
+    this.dispose();
     this.run.removeAlignment(this);
   };
 
@@ -481,6 +491,21 @@ class Alignment {
   onChangeAAMatrixName = event => {
     console.log('onChangeAAMatrixName');
     this.aaMatrixName = event.target.value;
+  };
+
+  @action
+  onRunStdout = (event, { id, content }) => {
+    if (id === this.id) {
+      // TODO: Keep local log?
+      this.run.stdout += content;
+    }
+  };
+
+  @action
+  onRunStderr = (event, { id, content }) => {
+    if (id === this.id) {
+      this.run.stderr += content;
+    }
   };
 
   getSequenceCode = taxon => {

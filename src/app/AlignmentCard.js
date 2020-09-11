@@ -23,7 +23,7 @@ import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
 import CardActions from '@material-ui/core/CardActions';
 import LoadingButton from './components/LoadingButton';
-import { Box, Button } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 
 const InputSwitch = withStyles((theme) => ({
   switchBase: {
@@ -145,36 +145,19 @@ const useStyles = makeStyles((theme) => {
 
 function _ModelTestButton({ alignment }) {
   const classes = useStyles();
-
-  if (alignment.modeltestLoading) {
-    return (
-      <LoadingButton
-        variant="contained"
-        color="default"
-        style={{ marginLeft: 10 }}
-        classes={{
-          root: classes.primaryButton,
-        }}
-        loading
-        noDisabled
-        onClick={alignment.cancelModelTest}
-      >
-        Cancel
-      </LoadingButton>
-    );
-  }
   return (
-    <Button
+    <LoadingButton
       variant="contained"
       color="default"
       style={{ marginLeft: 10 }}
       classes={{
         root: classes.primaryButton,
       }}
+      loading={alignment.modeltestLoading}
       onClick={alignment.runModelTest}
     >
       Optimize
-    </Button>
+    </LoadingButton>
   );
 }
 _ModelTestButton.propTypes = {
@@ -345,6 +328,11 @@ function AlignmentCard({ className, alignment }) {
               <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>
                 Edit partition
               </MenuItem>
+              { alignment.modeltestLoading ? (
+                <MenuItem onClick={closeMenuAndRun(alignment.cancelModelTest)}>
+                  Cancel modeltest
+                </MenuItem>
+              ) : null }
             </Menu>
           </div>
         }
