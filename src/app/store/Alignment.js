@@ -324,9 +324,15 @@ class Alignment {
   }
 
   @action
+  cancelModelTest = () => {
+    console.log('Cancel model test!');
+    this.modeltestLoading = false;
+    ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
+  }
+
+  @action
   setModelFromString = ({ raxml, raxmlNG }) => {
     this.modeltestLoading = false;
-    console.log(`Set model from string, raxml: '${raxml}', raxml-ng: '${raxmlNG}'.`);
     // For raxml-ng
     let model = raxmlNG.split('+')[0];
     this.substitutionModel.setValue(model);

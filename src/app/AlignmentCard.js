@@ -23,7 +23,7 @@ import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
 import CardActions from '@material-ui/core/CardActions';
 import LoadingButton from './components/LoadingButton';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 
 const InputSwitch = withStyles((theme) => ({
   switchBase: {
@@ -143,6 +143,46 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+function _ModelTestButton({ alignment }) {
+  const classes = useStyles();
+
+  if (alignment.modeltestLoading) {
+    return (
+      <LoadingButton
+        variant="contained"
+        color="default"
+        style={{ marginLeft: 10 }}
+        classes={{
+          root: classes.primaryButton,
+        }}
+        loading
+        noDisabled
+        onClick={alignment.cancelModelTest}
+      >
+        Cancel
+      </LoadingButton>
+    );
+  }
+  return (
+    <Button
+      variant="contained"
+      color="default"
+      style={{ marginLeft: 10 }}
+      classes={{
+        root: classes.primaryButton,
+      }}
+      onClick={alignment.runModelTest}
+    >
+      Optimize
+    </Button>
+  );
+}
+_ModelTestButton.propTypes = {
+  alignment: PropTypes.object.isRequired,
+};
+
+const ModelTestButton = observer(_ModelTestButton);
+
 function AlignmentCard({ className, alignment }) {
   const { dataType, numSequences, length } = alignment;
 
@@ -222,19 +262,7 @@ function AlignmentCard({ className, alignment }) {
                 className={classes.selectWide}
                 option={alignment.ngAscertainmentBias}
               />
-              <LoadingButton
-                variant="contained"
-                color="default"
-                style={{ marginLeft: 10 }}
-                classes={{
-                  root: classes.primaryButton,
-                }}
-                disabled={alignment.modeltestLoading}
-                loading={alignment.modeltestLoading}
-                onClick={alignment.runModelTest}
-              >
-                Optimize
-              </LoadingButton>
+              <ModelTestButton alignment={alignment} />
             </Box>
           </Box>
         ) : (
@@ -264,19 +292,7 @@ function AlignmentCard({ className, alignment }) {
                 </Select>
               </FormControl>
             ) : null}
-            <LoadingButton
-              variant="contained"
-              color="default"
-              style={{ marginLeft: 10 }}
-              classes={{
-                root: classes.primaryButton,
-              }}
-              disabled={alignment.modeltestLoading}
-              loading={alignment.modeltestLoading}
-              onClick={alignment.runModelTest}
-            >
-              Optimize model
-            </LoadingButton>
+            <ModelTestButton alignItems={alignment} />
           </Box>
         )}
       </div>

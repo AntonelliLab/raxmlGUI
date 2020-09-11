@@ -574,7 +574,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   try {
     console.log(`Run '${binaryName}' with args:`, args);
     exitCode = await runProcess(id, event, binaryDir, binaryName, args, { onStdOut });
-    if (exitCode !== 0) {
+    if (exitCode !== 0 && exitCode !== 'SIGTERM') {
       throw new Error(`Error trying to run modeltest-ng, exited with code '${exitCode}'.`);
     }
   } catch (err) {
@@ -610,6 +610,12 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     const error = new Error(`Couldn't parse best models from modeltest-ng output. Check alignment log.`);
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
   }
+});
+
+
+ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, (event, id) => {
+  console.log(`Cancel modeltest process ${id}...`);
+  cancelProcess(id);
 });
 
 // Open a dialog to select a tree file

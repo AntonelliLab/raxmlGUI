@@ -16,17 +16,19 @@ const useStyles = makeStyles(theme => ({
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
+    pointerEvents: 'none',
   },
 }));
 
 function LoadingButton(props) {
   const classes = useStyles();
-  const { loading, className, buttonClassName, progressProps = {}, ...buttonProps } = props;
+  const { loading, noDisabled, className, buttonClassName, progressProps = {}, ...buttonProps } = props;
+  const disabled = !noDisabled && (loading || buttonProps.disabled);
 
   return (
     <div className={clsx(classes.wrapper, className)}>
       <Button
-        disabled={loading || buttonProps.disabled}
+        disabled={disabled}
         {...buttonProps}
       >
         { props.children }
@@ -43,7 +45,8 @@ LoadingButton.propTypes = {
   children: PropTypes.node,
   loading: PropTypes.bool,
   buttonClassName: PropTypes.string,
-  progressProps: PropTypes.object
+  progressProps: PropTypes.object,
+  noDisabled: PropTypes.bool,
 };
 
 // LoadingButton.defaultProps = {
