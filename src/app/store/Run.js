@@ -572,9 +572,17 @@ class Run extends StoreBase {
     );
   }
 
-  @observable seedParsimony = 123;
-  @observable seedRapidBootstrap = 123;
-  @observable seedBootstrap = 123;
+  @observable randomSeed = 123;
+  @computed get seedParsimony() { return this.randomSeed; }
+  @computed get seedRapidBootstrap() { return this.randomSeed; }
+  @computed get seedBootstrap() { return this.randomSeed; }
+
+  @action setRandomSeed = (value) => {
+    const v = Number(value);
+    if (!Number.isNaN(v) && v !== 0 && v < 1e6) {
+      this.randomSeed = v;
+    }
+  }
 
   @computed get haveRandomSeed() {
     const analysisWithSeed = [
@@ -593,9 +601,7 @@ class Run extends StoreBase {
   }
 
   @action randomizeSeed = () => {
-    this.seedParsimony = Math.floor(Math.random() * 1000 + 1);
-    this.seedRapidBootstrap = Math.floor(Math.random() * 1000 + 1);
-    this.seedBootstrap = Math.floor(Math.random() * 1000 + 1);
+    this.randomSeed = Math.floor(Math.random() * 1000 + 1);
   };
 
   @computed get usesRaxmlNg() {

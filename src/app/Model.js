@@ -8,7 +8,7 @@ import OptionCheck from './components/OptionCheck';
 import IconButton from '@material-ui/core/IconButton';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { FormControl, FormHelperText } from '@material-ui/core';
+import { FormControl, FormHelperText, TextField } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
@@ -54,17 +54,13 @@ const Model = ({ run }) => {
       <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.outGroup} />
         { run.haveRandomSeed ? (
-          <FormControl title="Randomize seed">
-            <FormHelperText style={{ marginTop: -1 }}>Randomize</FormHelperText>
-            <FormControlLabel
-              control={
-                <IconButton style={{ marginTop: -2 }} label="Randomize seed" color="default" onClick={run.randomizeSeed}>
-                  <ShuffleIcon />
-                </IconButton>
-              }
-              label=""
-            />
-          </FormControl>
+          <TextField
+            label="Seed"
+            title="Random seed"
+            style={{ width: 60 }}
+            value={run.randomSeed}
+            onChange={e => run.setRandomSeed(e.target.value)}
+          />
         ) : null}
       </Box>
       <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
