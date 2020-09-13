@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
 import Box from '@material-ui/core/Box';
 import LoadingButton from './components/LoadingButton';
+import TextField from '@material-ui/core/TextField';
 
 const styles = theme => ({
   Raxml: {
@@ -29,6 +30,16 @@ const styles = theme => ({
     marginTop: '20px',
     display: 'flex',
     alignItems: 'center'
+  },
+  code: {
+    color: theme.palette.console.contrastText,
+    fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+    fontSize: '12px',
+    height: '100%',
+    width: '100%',
+    // overflowWrap: 'anywhere', // currently not available in Chrome
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
   }
 });
 
@@ -43,6 +54,16 @@ class Raxml extends React.Component {
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
           <div style={{ flexGrow: 1 }}/>
+        </Box>
+
+        <Box paddingBottom={1}>
+          <TextField
+            label="Command"
+            fullWidth
+            multiline
+            variant="standard"
+            value={run.command}
+          />
         </Box>
         <Box component="form" display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
           {run.modelTestIsRunningOnAlignment ? (

@@ -174,7 +174,7 @@ const useStyles = makeStyles(theme => ({
   console: {
     backgroundColor: theme.palette.console.background,
     height: '100%',
-    borderTop: '1px solid #ccc',
+    borderTop: '2px solid #ccc',
   },
   deleteIcon: {
     '&:hover': {
