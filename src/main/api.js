@@ -8,9 +8,10 @@ import isDev from 'electron-is-dev';
 import { serializeError } from 'serialize-error';
 import { activeWindow } from 'electron-util';
 import io from '../common/io';
-
+import parsePath from 'parse-filepath';
 import * as ipc from '../constants/ipc';
 import electronUtil from 'electron-util';
+import { quote } from '../common/utils';
 // import unhandled from 'electron-unhandled';
 // import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
 
@@ -353,7 +354,10 @@ function spawnProcess(binaryDir, binaryName, args) {
   return proc;
 }
 
-async function runProcess(id, event, binaryDir, binaryName, args) {
+async function runProcess(id, event, binaryDir, binaryName, args, {
+  onStdOut = () => {},
+  onStdErr = () => {},
+} = {}) {
   return new Promise((resolve, reject) => {
     cancelProcess(id);
     try {
@@ -365,13 +369,15 @@ async function runProcess(id, event, binaryDir, binaryName, args) {
 
       proc.stdout.on('data', buffer => {
         const content = String(buffer);
-        console.log('on stdout:', content);
+        // console.log('on stdout:', content);
+        onStdOut(content);
         send(event, ipc.RUN_STDOUT, { id, content });
       });
 
       proc.stderr.on('data', buffer => {
         const content = String(buffer);
-        console.log('on stderr:', content);
+        console.error('on stderr:', content);
+        onStdErr(content);
         send(event, ipc.RUN_STDERR, { id, content });
       });
 
@@ -528,6 +534,91 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async event => {
     phylip: phylipFiles,
     dir
   });
+});
+
+ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
+  const { id, filePath, dataType, numThreads } = payload;
+  const { dir, name } = parsePath(filePath);
+
+  const outputPath = path.join(dir, `RAxML_GUI_ModelTest_${name}`);
+
+  try {
+    // Remove binary checkpoint as that may be invalid
+    await fs.unlink(`${outputPath}.ckp`);
+  } catch (err) {}
+
+  const args = [];
+  if (dataType === 'nucleotide') {
+    args.push('-d', 'nt');
+  }
+  else if (dataType === 'protein') {
+    args.push('-d', 'aa');
+  }
+  // alignment file
+  args.push('-i', quote(filePath));
+  // output path
+  args.push('-o', quote(outputPath));
+  // modeltest throws errors if the output file already exists
+  args.push('--force');
+  // Number of processors
+  args.push('-p', numThreads);
+
+  console.log(`Alignment '${id}': Run modeltest with args ${args}...`);
+
+  const binaryName = 'modeltest-ng';
+  const stdOuts = [];
+  const onStdOut = (content) => {
+    stdOuts.push(content);
+  }
+  let exitCode = 0;
+  try {
+    console.log(`Run '${binaryName}' with args:`, args);
+    exitCode = await runProcess(id, event, binaryDir, binaryName, args, { onStdOut });
+    if (exitCode !== 0) {
+      if (exitCode === 'SIGTERM') { // Cancelled
+        return;
+      }
+      throw new Error(`Error trying to run modeltest-ng, exited with code '${exitCode}'.`);
+    }
+  } catch (err) {
+    console.error('Modeltest run error:', err);
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error: err });
+    return;
+  }
+
+  // Parse stdout to get the best models
+  console.log('Parse output from modeltest-ng...');
+  const commands = stdOuts.join('').split('\n');
+
+  try {
+    // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use AICc.
+    const cmdRaxml = commands.filter(cmd => cmd.startsWith('  > raxmlHPC-SSE3'))[2];
+    const cmdRaxmlNG = commands.filter(cmd => cmd.startsWith('  > raxml-ng'))[2];
+
+    const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
+    const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
+
+    console.log(`-> raxml: ${modelRaxml}, raxml-ng: ${modelRaxmlNG}`);
+
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
+      id,
+      result: {
+        raxml: modelRaxml,
+        raxmlNG: modelRaxmlNG,
+      }
+    });
+  } catch (err) {
+    console.error(`Couldn't parse best models from modeltest-ng output:`, err);
+    console.log('output:', commands);
+    const error = new Error(`Couldn't parse best models from modeltest-ng output. Check alignment log.`);
+    send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
+  }
+});
+
+
+ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, (event, id) => {
+  console.log(`Cancel modeltest process ${id}...`);
+  cancelProcess(id);
 });
 
 // Open a dialog to select a tree file

@@ -10,7 +10,7 @@ import { join } from 'path';
 import filenamify from 'filenamify';
 import electronutil from 'electron-util';
 import fs from 'fs';
-
+import { quote } from '../../common/utils';
 import StoreBase from './StoreBase';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
@@ -24,23 +24,25 @@ const winBinaries = [
   { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.10' },
   { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.10' },
   { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10' }
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10', initial: true }
 ];
 
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'modeltest-ng', multithreaded: true, version: '0.1.6' },
-      { name: 'raxml-ng', multithreaded: true, version: '0.9.0' },
+      { name: 'raxml-ng', multithreaded: true, version: '0.9.0', initial: true },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
     ];
 
-const binaries = allBinaries.filter(({ multithreaded }) =>
+  const binaries = allBinaries.filter(({ multithreaded }) =>
   MAX_NUM_CPUS === 1 ? !multithreaded : true
-);
+  );
+
+  const initialBinaryName = binaries.filter(({ initial }) => initial )[0].name;
 
 // Available parameters for different analysis
 const params = {
@@ -133,10 +135,8 @@ const raxmlNgAnalysisOptions = [
   },
 ];
 
-const quote = dir => electronutil.is.windows ? `"${dir}"` : dir;
-
 class Binary extends Option {
-  constructor(run) { super(run, binaries[binaries.length - 1].name, 'Binary', 'Name of binary'); }
+  constructor(run) { super(run, initialBinaryName, 'Binary', 'Name of binary'); }
   options = binaries.map(({ name }) => ({ value: name, title: name }));
   @computed get version() { return binaries.filter(b => b.name === this.value)[0].version };
 }
@@ -567,7 +567,8 @@ class Run extends StoreBase {
       this.running ||
       !this.finalAlignment.partition.isComplete ||
       (this.usesModeltestNg && !this.modelTestCanRun) ||
-      (this.usesModeltestNg && this.alignments.length > 1)
+      (this.usesModeltestNg && this.alignments.length > 1) ||
+      this.modelTestIsRunningOnAlignment
     );
   }
 
@@ -619,6 +620,16 @@ class Run extends StoreBase {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
   }
 
+  @computed get modelTestIsRunningOnAlignment() {
+    // return this.alignments.some(alignment => alignment.modeltestLoading);
+    const running = this.alignments.some(alignment => alignment.modeltestLoading);
+    return running;
+  }
+
+  @action cancelModeltestOnAlignment = () => {
+    this.alignments.forEach(alignment => alignment.cancelModelTest());
+  }
+
   @computed get args() {
     if (this.usesModeltestNg) {
       return this.modeltestNgArgs();
@@ -667,6 +678,8 @@ class Run extends StoreBase {
     first.push('-i', quote(this.finalAlignment.path));
     // output file, modeltest errors if this file already exists
     first.push('-o', quote(join(this.outputDir,`RAxML_GUI_ModelTest_${this.outputNameSafe}`)));
+    // modeltest throws errors if the output file already exists
+    first.push('--force');
     // Number of processors
     first.push('-p', this.numThreads.value);
     // TODO: in able to support partitioned modeltest we need to change the partition file text

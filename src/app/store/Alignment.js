@@ -10,8 +10,10 @@ import intersection from 'lodash/intersection';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
+import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
+// import { quote } from '../../common/utils';
 
 const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -95,7 +97,7 @@ class RaxmlNgModelG extends RaxmlNgModelExtraParam {
   constructor(alignment) {
     super(
       alignment,
-      'Among-site rate heterogeneity model',
+      'Rate heterogeneity',
       raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options
     );
   }
@@ -129,7 +131,7 @@ class MultistateNumber extends Option {
 }
 
 
-class Alignment {
+class Alignment extends StoreBase {
   run = null;
 
   @observable path = '';
@@ -220,6 +222,7 @@ class Alignment {
   }
 
   constructor(run, path) {
+    super();
     this.run = run;
     this.path = path;
     this.substitutionModel = new RaxmlNgAlignmentSubstitutionModel(this);
@@ -308,6 +311,69 @@ class Alignment {
     }
   }
 
+
+  @observable modeltestLoading = false;
+
+  @action
+  runModelTest = () => {
+    this.modeltestLoading = true;
+    ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
+      id: this.id,
+      filePath: this.path,
+      dataType: this.dataType,
+      numThreads: this.run.numThreads.value,
+    });
+  }
+
+  @action
+  cancelModelTest = () => {
+    if (this.modeltestLoading) {
+      this.modeltestLoading = false;
+      ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
+    }
+  }
+
+  @action
+  setModelFromString = ({ raxml, raxmlNG }) => {
+    this.modeltestLoading = false;
+    // For raxml-ng
+    let model = raxmlNG.split('+')[0];
+    this.substitutionModel.setValue(model);
+    if (/\+F[O|E]?/.test(raxmlNG)) {
+      this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
+    }
+    if (/\+IC?/.test(raxmlNG)) {
+      this.ngInvariantSites.setValue(/\+IC?/.exec(raxmlNG)[0]);
+    }
+    if (/\+GA?/.test(raxmlNG)) {
+      this.ngRateHeterogeneity.setValue(/\+GA?/.exec(raxmlNG)[0]);
+    }
+    if (/\+ASC_LEWIS/.test(raxmlNG)) {
+      this.ngAscertainmentBias.setValue('+ASC_LEWIS');
+    }
+
+    model = raxml;
+    // For raxml
+    if (/F$/.test(raxml)) {
+      this.run.empiricalFrequencies.setValue(true);
+      model = model.slice(0, -1)
+    }
+    else if (/X$/.test(raxml)) {
+      // this.run.mlFrequencies.setValue(true);
+      model = model.slice(0, -1)
+    }
+    if (this.dataType === 'protein') {
+      console.log('parsing matrix name...');
+      const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
+      const re = new RegExp(`(${options.join('|')})$`);
+      const matrixName = re.exec(model)[1];
+      this.aaMatrixName = matrixName;
+      model = model.replace(re, '');
+    }
+    this.run.substitutionModel.setValue(model);
+
+  }
+
   listen = () => {
     // Send alignments to main process for processing
     ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, {
@@ -364,6 +430,27 @@ class Alignment {
         }
       }
     );
+    ipcRenderer.on(
+      ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
+      (event, { id, result }) => {
+        if (id === this.id) {
+          console.log(id, 'Modeltest result:', result);
+          this.setModelFromString(result);
+        }
+      }
+    );
+    ipcRenderer.on(
+      ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
+      (event, { id, error }) => {
+        if (id === this.id) {
+          this.modeltestLoading = false;
+          console.log(id, 'Modeltest error:', error);
+        }
+      }
+    );
+    //TODO: Transform above to the form of below to be able to unlisten on removal
+    this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
+    this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
   };
 
   @action clearConverted = () => {
@@ -382,11 +469,15 @@ class Alignment {
 
   @action
   dispose = () => {
-    //TODO: Remove listeners (make callbacks class methods to be able to remove them)
+    this.unlisten();
+    if (this.modeltestLoading) {
+      this.cancelModelTest();
+    }
   };
 
   @action
   remove = () => {
+    this.dispose();
     this.run.removeAlignment(this);
   };
 
@@ -400,6 +491,21 @@ class Alignment {
   onChangeAAMatrixName = event => {
     console.log('onChangeAAMatrixName');
     this.aaMatrixName = event.target.value;
+  };
+
+  @action
+  onRunStdout = (event, { id, content }) => {
+    if (id === this.id) {
+      // TODO: Keep local log?
+      this.run.stdout += content;
+    }
+  };
+
+  @action
+  onRunStderr = (event, { id, content }) => {
+    if (id === this.id) {
+      this.run.stderr += content;
+    }
   };
 
   getSequenceCode = taxon => {

@@ -45,6 +45,11 @@ class Raxml extends React.Component {
           <div style={{ flexGrow: 1 }}/>
         </Box>
         <Box component="form" display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
+          {run.modelTestIsRunningOnAlignment ? (
+            <Button size="small" variant="outlined" color="default" onClick={run.cancelModeltestOnAlignment}>
+              Cancel modeltest
+            </Button>
+          ) : null}
           {run.running ? (
             <Button size="small" variant="outlined" color="default" onClick={run.cancel}>
               Cancel
