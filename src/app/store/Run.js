@@ -232,7 +232,12 @@ class SubstitutionModel extends Option {
     let model = this.value;
     if (this.run.dataType === 'protein')  {
       model += this.run.alignments[0].aaMatrixName;
-      model += this.run.empiricalFrequencies.value ? 'F' : '';
+      const { value: suffix } = this.run.baseFrequencies;
+      model += suffix === 'default' ? '' : suffix;
+    } else {
+      if (this.run.estimatedFrequencies.value) {
+        model += 'X';
+      }
     }
     return model;
   }
@@ -244,9 +249,19 @@ class AAMatrixName extends Option {
   @computed get notAvailable() { return this.run.dataType !== 'protein'; }
 }
 
-class EmpiricalFrequencies extends Option {
-  constructor(run) { super(run, false, 'Emp.Freq.', 'Use empirical base frequencies', 'Use empirical base frequencies instead of a maximum likelihood estimate.'); }
-  @computed get notAvailable() { return this.run.dataType !== 'protein'; }
+class EstimatedFrequencies extends Option {
+  constructor(run) { super(run, false, 'ML Freq.', 'Estimated base frequencies', 'Use estimated base frequencies instead of empirical.'); }
+  @computed get notAvailable() { return this.run.dataType === 'protein' || this.run.usesRaxmlNg; }
+}
+
+class BaseFrequencies extends Option {
+  constructor(run) { super(run, 'default', 'Base frequencies', 'Empirical, ML estimated or model based base frequencies'); }
+  options = [
+    { title: 'From model', value: 'default' },
+    { title: 'Empirical', value: 'F' },
+    { title: 'Estimated (ML)', value: 'X' },
+  ]
+  @computed get notAvailable() { return this.run.dataType !== 'protein' || this.run.usesRaxmlNg; }
 }
 
 class MultistateModel extends Option {
@@ -391,7 +406,8 @@ class Run extends StoreBase {
   combinedOutput = new CombinedOutput(this);
   outGroup = new OutGroup(this);
   aaMatrixName = new AAMatrixName(this);
-  empiricalFrequencies = new EmpiricalFrequencies(this);
+  estimatedFrequencies = new EstimatedFrequencies(this);
+  baseFrequencies = new BaseFrequencies(this);
   multistateModel = new MultistateModel(this);
   startingTree = new StartingTree(this);
 

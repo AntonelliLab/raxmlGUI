@@ -47,11 +47,10 @@ const Model = ({ run }) => {
         <OptionSelect option={run.numRepetitionsNg} />
         <OptionCheck option={run.branchLength} />
         <OptionCheck option={run.sHlike} />
-        <OptionCheck option={run.empiricalFrequencies} />
         <OptionCheck option={run.combinedOutput} />
         <OptionSelect option={run.startingTree} />
       </Box>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
+      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.outGroup} />
         { run.haveRandomSeed ? (
           <TextField
@@ -63,9 +62,11 @@ const Model = ({ run }) => {
           />
         ) : null}
       </Box>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="center" className={classes.form} noValidate autoComplete="off">
+      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
         <OptionSelect option={run.substitutionModel} />
         <OptionSelect option={run.multistateModel} />
+        <OptionCheck option={run.estimatedFrequencies} />
+        <OptionSelect option={run.baseFrequencies} />
       </Box>
 
     </div>

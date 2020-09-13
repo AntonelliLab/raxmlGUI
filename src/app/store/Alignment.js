@@ -355,13 +355,18 @@ class Alignment extends StoreBase {
     model = raxml;
     // For raxml
     if (/F$/.test(raxml)) {
-      this.run.empiricalFrequencies.setValue(true);
+      this.run.baseFrequencies.setValue('F');
       model = model.slice(0, -1)
     }
     else if (/X$/.test(raxml)) {
-      // this.run.mlFrequencies.setValue(true);
+      this.run.estimatedFrequencies.setValue(true); // for all but proteins
+      this.run.baseFrequencies.setValue('X'); // for proteins
       model = model.slice(0, -1)
     }
+    else {
+      this.run.baseFrequencies.setValue('default');
+    }
+
     if (this.dataType === 'protein') {
       console.log('parsing matrix name...');
       const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
