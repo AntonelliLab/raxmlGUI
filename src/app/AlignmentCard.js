@@ -275,7 +275,7 @@ function AlignmentCard({ className, alignment }) {
                 </Select>
               </FormControl>
             ) : null}
-            <ModelTestButton alignItems={alignment} />
+            <ModelTestButton alignment={alignment} />
           </Box>
         )}
       </div>
