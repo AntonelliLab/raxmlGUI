@@ -126,7 +126,7 @@ const raxmlNgAnalysisOptions = [
     params: [params.runs, params.repsNg, params.outGroup],
   },
   {
-    title: 'ML + Transfer Bootstrap Expectation + consensus',
+    title: 'ML + transfer bootstrap expectation + consensus',
     value: 'ML+TBE+con',
     params: [params.runs, params.repsNg, params.outGroup],
   },
@@ -158,7 +158,7 @@ class Analysis extends Option {
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'TI', 'Analysis', 'Type of analysis'); }
+  constructor(run) { super(run, 'ML+TBE+con', 'Analysis', 'Type of analysis'); }
   options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
