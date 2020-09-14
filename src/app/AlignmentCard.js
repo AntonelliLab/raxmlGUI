@@ -146,6 +146,9 @@ const useStyles = makeStyles((theme) => {
 
 function _ModelTestButton({ alignment }) {
   const classes = useStyles();
+  if (!alignment.modelTestAvailable) {
+    return null;
+  }
   return (
     <LoadingButton
       variant="contained"

@@ -1,5 +1,6 @@
 import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
+import electronutil from 'electron-util';
 import * as ipc from '../../constants/ipc';
 import parsePath from 'parse-filepath';
 import { join } from 'path';
@@ -313,6 +314,9 @@ class Alignment extends StoreBase {
     }
   }
 
+  get modelTestAvailable() {
+    return !electronutil.is.windows;
+  }
 
   @observable modeltestLoading = false;
 
