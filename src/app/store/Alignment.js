@@ -450,6 +450,7 @@ class Alignment extends StoreBase {
         if (id === this.id) {
           this.modeltestLoading = false;
           console.log(id, 'Modeltest error:', error);
+          this.run.error = error;
         }
       }
     );

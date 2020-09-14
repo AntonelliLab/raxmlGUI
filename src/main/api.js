@@ -611,6 +611,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     console.error(`Couldn't parse best models from modeltest-ng output:`, err);
     console.log('output:', commands);
     const error = new Error(`Couldn't parse best models from modeltest-ng output. Check alignment log.`);
+    error.name = 'Modeltest error';
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
   }
 });
