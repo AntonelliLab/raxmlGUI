@@ -4,8 +4,7 @@ import subMenuFile from './subMenuFile';
 import subMenuAnalysis from './subMenuAnalysis';
 // import subMenuInfo from './subMenuInfo';
 import subMenuDeveloper from './subMenuDeveloper';
-
-
+import saveScreenshot from '../utils/saveScreenshot';
 
 const menuTemplate = [
   subMenuFile,
@@ -15,9 +14,16 @@ const menuTemplate = [
     role: 'window',
     submenu: [
       { role: 'minimize' },
-      { role: 'close' }
+      { role: 'close' },
+      {
+        label: 'Save screenshot',
+        accelerator: 'CmdOrCtrl+S',
+        click() {
+          saveScreenshot();
+        }
+      },
     ]
-  }
+  },
 ];
 
 export default class MenuBuilder {
