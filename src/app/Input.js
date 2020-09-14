@@ -37,9 +37,9 @@ const useStyles = makeStyles(theme => ({
     width: '200px',
     height: '200px',
   },
-  loadPartition: {
+  addAlignmentOrPartition: {
     minWidth: '200px',
-    minHeight: '200px',
+    flexGrow: 1,
   },
   treeCard: {
     width: '380px',
@@ -118,7 +118,7 @@ const Input = ({ run }) => {
                 <Box paddingX={1}>
                   <PartitionFileCard run={run} />
                 </Box>
-                { run.canLoadAlignment ? (
+                { run.canLoadAlignment && !run.canLoadPartitionFile ? (
                   <Button
                     variant="outlined"
                     className={`alignment ${classes.addAlignment}`}
@@ -137,18 +137,26 @@ const Input = ({ run }) => {
           )}
         </Dropzone>
 
-        { run.canLoadPartitionFile ? (
-          <React.Fragment>
+        { run.canLoadAlignment && run.canLoadPartitionFile ? (
+          <Box display="flex" flexDirection="column" alignItems="center" style={{ height: '200px' }}>
+            <Button
+              variant="outlined"
+              className={classes.addAlignmentOrPartition}
+              onClick={run.loadAlignmentFiles}
+              title="Concatenate new alignments and automatically generate a partition"
+            >
+              Add alignment
+            </Button>
             <Box paddingX={2}>OR</Box>
             <Button
               variant="outlined"
-              className={classes.loadPartition}
+              className={classes.addAlignmentOrPartition}
               onClick={run.loadPartitionFile}
               title="Load a partition file for the current alignment"
             >
               Load partition
             </Button>
-          </React.Fragment>
+          </Box>
         ) : null}
         <Box>
           <div style={{ width: 20, height: 200 }}></div>
