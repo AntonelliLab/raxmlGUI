@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
+import PartitionFileCard from './PartitionFileCard';
 import Box from '@material-ui/core/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@material-ui/core';
@@ -33,9 +34,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   addAlignment: {
-    width: '150px',
-    height: '150px',
-    marginRight: '10px',
+    width: '200px',
+    height: '200px',
+  },
+  loadPartition: {
+    minWidth: '200px',
+    minHeight: '200px',
   },
   treeCard: {
     width: '380px',
@@ -95,37 +99,61 @@ const Input = ({ run }) => {
 
   // const SelectNumRuns = run.
   return (
-    <div className={classes.Input}>
-      <Dropzone
-        noClick
-        onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}
-      >
-        {({ getRootProps, getInputProps }) => (
-          <Box mb={1} className={classes.alignmentList} {...getRootProps()}>
-            <div className={classes.alignments}>
-              {run.alignments.map((alignment) => (
-                <AlignmentCard
-                  key={alignment.path}
-                  alignment={alignment}
-                  className="alignment"
-                />
-              ))}
-              <Button
-                variant="outlined"
-                className={`alignment ${classes.addAlignment}`}
-                onClick={run.loadAlignmentFiles}
-                title={
-                  run.haveAlignments
-                    ? 'Concatenate new alignments and create partition'
-                    : ''
-                }
-              >
-                {run.haveAlignments ? 'Add alignment' : 'Load alignment'}
-              </Button>
+    <Box display="flex" flexDirection="column" className={classes.Input}>
+      <Box display="flex" mb={1} alignItems="center" className={classes.alignmentList}>
+        <Dropzone
+          noClick
+          onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}
+        >
+          {({ getRootProps, getInputProps }) => (
+            <div {...getRootProps()}>
+              <Box display="flex" alignItems="center">
+                {run.alignments.map((alignment) => (
+                  <AlignmentCard
+                    key={alignment.path}
+                    alignment={alignment}
+                    className="alignment"
+                  />
+                ))}
+                <Box paddingX={1}>
+                  <PartitionFileCard run={run} />
+                </Box>
+                { run.canLoadAlignment ? (
+                  <Button
+                    variant="outlined"
+                    className={`alignment ${classes.addAlignment}`}
+                    onClick={run.loadAlignmentFiles}
+                    title={
+                      run.haveAlignments
+                        ? 'Concatenate new alignments and create partition'
+                        : ''
+                    }
+                  >
+                    {run.haveAlignments ? 'Add alignment' : 'Load alignment'}
+                  </Button>
+                ) : null}
+              </Box>
             </div>
-          </Box>
-        )}
-      </Dropzone>
+          )}
+        </Dropzone>
+
+        { run.canLoadPartitionFile ? (
+          <React.Fragment>
+            <Box paddingX={2}>OR</Box>
+            <Button
+              variant="outlined"
+              className={classes.loadPartition}
+              onClick={run.loadPartitionFile}
+              title="Load a partition file for the current alignment"
+            >
+              Load partition
+            </Button>
+          </React.Fragment>
+        ) : null}
+        <Box>
+          <div style={{ width: 20, height: 200 }}></div>
+        </Box>
+      </Box>
 
       {run.tree.notAvailable ? null : (
         <Box className={classes.treeList}>
@@ -194,7 +222,7 @@ const Input = ({ run }) => {
           />
         </Box>
       )}
-    </div>
+    </Box>
   );
 };
 // <Box mt={1} display="flex">
