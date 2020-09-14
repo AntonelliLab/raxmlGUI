@@ -46,21 +46,17 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
 }
 
 class RaxmlNgModelExtraParam extends Option {
-  constructor(alignment, label, options) {
-    super(alignment.run, '<none>', label);
+  constructor(alignment, label, options, { addNone = true } = {}) {
+    super(alignment.run, addNone ? '<none>' : options[0].value, label);
     this.alignment = alignment;
-    this.optionsSource = options;
+    this.optionsSource = addNone ? [{ value: '<none>', title: 'none' }, ...options] : options;
+    this.addNone = addNone;
   }
   @computed get options() {
     if (!this.run.haveAlignments) {
       return [];
     }
-    return [{ value: '<none>', label: 'none' }, ...this.optionsSource].map(
-      o => ({
-        value: o.value,
-        title: o.label
-      })
-    );
+    return this.optionsSource;
   }
   @computed get notAvailable() {
     return (
@@ -78,7 +74,8 @@ class RaxmlNgModelF extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Stationary frequencies',
-      raxmlNgSettings.stationaryFrequenciesOptions.options
+      raxmlNgSettings.stationaryFrequenciesOptions.options.map(({ value, label: title }) =>
+        ({ value, title }))
     );
   }
 }
@@ -88,7 +85,8 @@ class RaxmlNgModelI extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Proportion of invariant sites',
-      raxmlNgSettings.proportionOfInvariantSitesOptions.options
+      raxmlNgSettings.proportionOfInvariantSitesOptions.options.map(({ value, label: title }) =>
+        ({ value, title }))
     );
   }
 }
@@ -98,7 +96,8 @@ class RaxmlNgModelG extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Rate heterogeneity',
-      raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options
+      raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options.map(({ value, label: title }) =>
+        ({ value, title }))
     );
   }
 }
@@ -107,8 +106,11 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
   constructor(alignment) {
     super(
       alignment,
-      'Ascertainment bias correction',
-      raxmlNgSettings.ascertainmentBiasCorrectionOptions.options
+      'Ascertainment bias',
+      [{ value: '<none>', label: 'No correction' },
+      ...raxmlNgSettings.ascertainmentBiasCorrectionOptions.options].map(({ value, label: title }) =>
+        ({ value, title })),
+      { addNone: false },
     );
   }
   @computed get notAvailable() {

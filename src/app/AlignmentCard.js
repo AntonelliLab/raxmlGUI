@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => {
     content: {
       display: 'flex',
       alignItems: 'center',
+      marginLeft: '-10px',
     },
     name: {
       marginRight: theme.spacing(1),
@@ -242,7 +243,7 @@ function AlignmentCard({ className, alignment }) {
                 option={alignment.ngRateHeterogeneity}
               />
               <OptionSelect
-                className={classes.selectWide}
+                className={classes.select}
                 option={alignment.ngAscertainmentBias}
               />
               <ModelTestButton alignment={alignment} />
@@ -251,7 +252,7 @@ function AlignmentCard({ className, alignment }) {
         ) : (
           <Box display="flex" flexWrap="wrap" alignItems="flex-end">
             {alignment.modelExtra ? (
-              <FormControl>
+              <FormControl className={classes.select}>
                 <InputLabel
                   className={classes.secondaryText}
                   style={{ whiteSpace: 'nowrap' }}
