@@ -12,17 +12,20 @@ const styles = theme => ({
     // flexGrow: 1,
     // padding: '0 4px',
     padding: '10px',
-    width: '100%',
+    width: '100% ',
+    height: '100%',
   },
   stdoutContainer: {
     overflowY: 'auto',
     height: '100%',
+    position: 'relative',
   },
   code: {
     color: theme.palette.console.contrastText,
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
     fontSize: '12px',
     height: '100%',
+    position: 'absolute',
     width: '100%',
     // overflowWrap: 'anywhere', // currently not available in Chrome
     whiteSpace: 'pre-wrap',
