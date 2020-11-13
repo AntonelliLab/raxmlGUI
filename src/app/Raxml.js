@@ -54,18 +54,6 @@ class Raxml extends React.Component {
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
           <div style={{ flexGrow: 1 }}/>
-        </Box>
-
-        <Box paddingBottom={1}>
-          <TextField
-            label="Command"
-            fullWidth
-            multiline
-            variant="standard"
-            value={run.command}
-          />
-        </Box>
-        <Box component="form" display="flex" justifyContent="flex-end" className={classes.form} noValidate autoComplete="off">
           {run.modelTestIsRunningOnAlignment ? (
             <Button size="small" variant="outlined" color="default" onClick={run.cancelModeltestOnAlignment}>
               Cancel modeltest
@@ -86,6 +74,16 @@ class Raxml extends React.Component {
           >
             Run
           </LoadingButton>
+        </Box>
+
+        <Box paddingBottom={1}>
+          <TextField
+            label="Command"
+            fullWidth
+            multiline
+            variant="standard"
+            value={run.command}
+          />
         </Box>
       </div>
     );
