@@ -440,7 +440,7 @@ async function readalGetFormat(alignmentPath) {
   const { stdout, stderr } = await exec(childCmd, {
     shell: electronUtil.is.windows
   });
-  console.log('stderr', stderr);
+  console.log('Readal stderr', stderr);
   const replaced = stdout.replace(alignmentPath, '');
   const formats = ['clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'];
   for (let i = 0; i < formats.length; i++) {
