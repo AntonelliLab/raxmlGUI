@@ -64,12 +64,12 @@ function hasInvariantSites(sequences) {
 }
 
 export default function typecheckAlignment(alignment) {
-  const acgMatch = /[ACG]/i;
+  const acgMatch = /[ACGN?]/i; // Include 'N' and '?' as symbols for missing characters in DNA
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
   const proteinMatch = /[EFJIJLOPQZX]/i;
   const binaryMatch = /[01]/;
   const multistateMatch = /2/;
-  const unknownMatch = /^\?+$/;
+  const unknownMatch = /^[\?N]+$/i;
   const sequenceDataTypes = [];
   const dataTypes = new Set();
   let numSequencesTypechecked = 0;
