@@ -90,7 +90,7 @@
     "react-split-pane": "^0.1.92",
     "serialize-error": "^7.0.1",
     "source-map-support": "^0.5.16",
-    "yup": "^0.29.3"
+    "yup": "^0.32.8"
   },
   "devDependencies": {
     "@babel/core": "7.9.6",
