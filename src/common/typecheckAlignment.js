@@ -69,7 +69,7 @@ export default function typecheckAlignment(alignment) {
   const proteinMatch = /[EFJIJLOPQZX]/i;
   const binaryMatch = /[01]/;
   const multistateMatch = /2/;
-  const unknownMatch = /^[\?N]+$/i;
+  const unknownMatch = /^[N?]+$/i;
   const sequenceDataTypes = [];
   const dataTypes = new Set();
   let numSequencesTypechecked = 0;
