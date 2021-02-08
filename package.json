@@ -86,7 +86,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.3.1",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "^3.4.4",
     "react-split-pane": "^0.1.92",
     "serialize-error": "^7.0.1",
     "source-map-support": "^0.5.16",
