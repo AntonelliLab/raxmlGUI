@@ -96,7 +96,7 @@
     "@babel/core": "7.9.6",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.11.5",
-    "cross-env": "^7.0.2",
+    "cross-env": "^7.0.3",
     "devtron": "^1.4.0",
     "dotenv": "^8.2.0",
     "download": "^8.0.0",
