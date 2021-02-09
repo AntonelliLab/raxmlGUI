@@ -6,9 +6,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
@@ -78,23 +78,23 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
       <DialogTitle id="error-dialog-title">{title || 'Unexpected error'}</DialogTitle>
       <DialogContent>
         <Box p={1}>
-          <ExpansionPanel>
-            <ExpansionPanelSummary
+          <Accordion>
+            <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="error-panel-content"
               id="error-panel-header"
             >
               <Typography>Details</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <Box>
                 <Typography variant="h6">{error.name}</Typography>
                 <Typography variant="body2" style={{ maxWidth: 400, wordBreak: 'break-all' }}>
                   {error.message}
                 </Typography>
               </Box>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
+            </AccordionDetails>
+          </Accordion>
         </Box>
         {Message}
       </DialogContent>
