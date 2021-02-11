@@ -193,7 +193,7 @@ const useStyles = makeStyles(theme => ({
 const App = () => {
   const classes = useStyles();
 
-  const TabItems = store.runs.map(run => (
+  const TabItems = store.runs.map((run) => (
     <Tab
       key={run.id}
       icon={
@@ -205,12 +205,14 @@ const App = () => {
                 color="inherit"
                 size={20}
                 className={classes.tabIcon}
-                variant={run.running ? 'indeterminate' : 'static'}
+                variant={run.running ? 'indeterminate' : 'determinate'}
                 value={0}
               />
             }
             label={`Run ${run.id}`}
-            onDelete={() => { run.removeRun(); }}
+            onDelete={() => {
+              run.removeRun();
+            }}
             variant="outlined"
           />
         </span>
