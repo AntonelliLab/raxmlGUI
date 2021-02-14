@@ -1,9 +1,10 @@
 # Building
 
-## Before pushing
+## App
+### Before pushing
 * Check if there are any warnings in the console. Those will be treated as errors in the CI environment.
 
-## Recommended GitHub Releases Workflow¶
+### Recommended GitHub Releases Workflow¶
 From [electron.build publish](https://www.electron.build/configuration/publish#recommended-github-releases-workflow)
 
 1. Draft a new release. Set the “Tag version” to the value of version in your application package.json, and prefix it with v. “Release title” can be anything you want.
@@ -12,3 +13,28 @@ From [electron.build publish](https://www.electron.build/configuration/publish#r
 
 Once you are done, publish the release. GitHub will tag the latest commit for you.
 The benefit of this workflow is that it allows you to always have the latest artifacts, and the release can be published once it is ready.
+
+
+## Homepage
+
+Build steps for local development
+
+## Prerequisites
+Install ruby 2.4 or higher
+
+Run
+```
+gem install jekyll bundler
+```
+
+In docs folder, run
+```
+bundle install
+```
+
+## Local serve
+
+Run npm script `docs-serve` or in docs folder run
+```
+bundle exec jekyll serve
+```

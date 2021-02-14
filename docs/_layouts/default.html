@@ -14,20 +14,19 @@
     <meta charset="UTF-8">
 
 {% seo %}
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
   </head>
   <body>
-
     <header class="page-header" role="banner">
       <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
       {% if site.github.is_project_page and site.show_view_on_github %}
-        <div>
-          <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
-        </div>
+        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
       {% endif %}
       {% if site.show_downloads %}
         <a onclick="gtag('event', 'Download', { 'event_label': 'Mac', 'event_category': 'Downloads' });" download type="application/octet-stream" href="https://github.com/AntonelliLab/raxmlGUI/releases/download/v2.0.0/raxmlGUI-2.0.0.dmg" class="btn">Download v2.0.0 for Mac</a>
