@@ -3,6 +3,7 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 #layout: home
+description: A new user-friendly program integrating RAxML-NG and ModelTest-NG for cutting-edge phylogenetic analysis
 ---
 ![image](/assets/img/raxmlGUI-screenshot-tabs.png)
 
