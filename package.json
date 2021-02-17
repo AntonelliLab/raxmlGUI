@@ -49,7 +49,8 @@
     "dist-pack": "run-s react-build compile electron-pack",
     "dist-pack-win": "run-s react-build compile electron-pack-win",
     "publish-all": "run-s react-build compile electron-build-publish-all",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "docs-serve": "cd docs && bundle exec jekyll serve"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.13",
