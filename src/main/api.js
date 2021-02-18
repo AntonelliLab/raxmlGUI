@@ -470,11 +470,14 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   console.log('Parse alignment', filePath);
   let format;
   let newFilePath;
+  let converted;
+  let modified;
   // Use readal to check the alignment file format
   try {
     format = await readalGetFormat(filePath);
     if (format !== 'fasta' && format !== 'phylip') {
       newFilePath = await convertAlignment(filePath);
+      converted = true;
     }
   } catch (error) {
     console.log('error', error);
@@ -490,6 +493,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (sequence.taxon.length > 256) {
         console.log(`Taxon name is too long: '${sequence.taxon}'.`);
         // Shorten the invalid taxon name
+        modified = true;
       }
 
       const ind = taxons.get(sequence.taxon);
@@ -497,6 +501,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (ind !== undefined) {
         console.log(`Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`);
         // Add a digit to the end of the second sequence
+        modified = true;
       }
 
       // If the taxon name has one of those characters raxml will error out
@@ -508,6 +513,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (testInvalid.test(sequence.taxon)) {
         console.log(`Illegal characters in sequence name = taxon '${sequence.taxon}' found.`);
         // Replace the invalid characters in taxon names with underscores
+        modified = true;
       }
 
       // Add this taxon to the map for checking
@@ -518,7 +524,9 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, {
         id,
         newFilePath,
-        format
+        format,
+        converted,
+        modified,
       });
     }
   } catch (error) {

@@ -149,6 +149,7 @@ class Alignment extends StoreBase {
   @observable convertedFrom = undefined;
   @observable converted = false;
   @observable showConverted = false;
+  @observable modified = false;
   @observable length = 0;
   @observable numSequences = 0;
   @observable sequences = [];
@@ -430,13 +431,14 @@ class Alignment extends StoreBase {
     // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
     ipcRenderer.on(
       ipc.ALIGNMENT_PARSE_CHANGED_PATH,
-      (event, { id, newFilePath, format }) => {
+      (event, { id, newFilePath, format, converted, modified }) => {
         if (id === this.id) {
           runInAction(() => {
             this.path = newFilePath;
             this.convertedFrom = format;
-            this.converted = true;
-            this.showConverted = true;
+            this.converted = converted;
+            this.modified = modified;
+            this.showModified = true;
           });
         }
       }
