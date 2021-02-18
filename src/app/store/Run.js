@@ -592,16 +592,22 @@ class Run extends StoreBase {
   }
 
   @observable randomSeed = 123;
-  @computed get seedParsimony() { return this.randomSeed; }
-  @computed get seedRapidBootstrap() { return this.randomSeed; }
-  @computed get seedBootstrap() { return this.randomSeed; }
+  @computed get seedParsimony() {
+    return this.randomSeed;
+  }
+  @computed get seedRapidBootstrap() {
+    return this.randomSeed;
+  }
+  @computed get seedBootstrap() {
+    return this.randomSeed;
+  }
 
   @action setRandomSeed = (value) => {
     const v = Number(value);
     if (!Number.isNaN(v) && v !== 0 && v < 1e6) {
       this.randomSeed = v;
     }
-  }
+  };
 
   @computed get haveRandomSeed() {
     const analysisWithSeed = [
@@ -647,13 +653,15 @@ class Run extends StoreBase {
 
   @computed get modelTestIsRunningOnAlignment() {
     // return this.alignments.some(alignment => alignment.modeltestLoading);
-    const running = this.alignments.some(alignment => alignment.modeltestLoading);
+    const running = this.alignments.some(
+      (alignment) => alignment.modeltestLoading
+    );
     return running;
   }
 
   @action cancelModeltestOnAlignment = () => {
-    this.alignments.forEach(alignment => alignment.cancelModelTest());
-  }
+    this.alignments.forEach((alignment) => alignment.cancelModelTest());
+  };
 
   @computed get args() {
     if (this.usesModeltestNg) {
@@ -695,14 +703,16 @@ class Run extends StoreBase {
     // data type
     if (this.dataType === 'nucleotide') {
       first.push('-d', 'nt');
-    }
-    else if (this.dataType === 'protein') {
+    } else if (this.dataType === 'protein') {
       first.push('-d', 'aa');
     }
     // alignment file
     first.push('-i', quote(this.finalAlignment.path));
     // output file, modeltest errors if this file already exists
-    first.push('-o', quote(join(this.outputDir,`RAxML_GUI_ModelTest_${this.outputNameSafe}`)));
+    first.push(
+      '-o',
+      quote(join(this.outputDir, `RAxML_GUI_ModelTest_${this.outputNameSafe}`))
+    );
     // modeltest throws errors if the output file already exists
     first.push('--force');
     // Number of processors
@@ -724,8 +734,7 @@ class Run extends StoreBase {
         first.push('--check');
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -753,8 +762,7 @@ class Run extends StoreBase {
         first.push('--parse');
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -782,8 +790,7 @@ class Run extends StoreBase {
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -820,8 +827,7 @@ class Run extends StoreBase {
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -860,8 +866,7 @@ class Run extends StoreBase {
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -900,8 +905,7 @@ class Run extends StoreBase {
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.havePartitionFile) {
           first.push('--model', quote(this.partitionFile));
-        }
-        else if (this.alignments.length > 1) {
+        } else if (this.alignments.length > 1) {
           first.push('--model', quote(this.finalAlignment.partitionFilePath));
         } else {
           first.push('--model', this.ngSubstitutionModelCmd);
@@ -952,8 +956,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.branchLength.value) {
@@ -979,8 +982,7 @@ class Run extends StoreBase {
           next.push('-w', quote(this.outputDir));
           if (this.havePartitionFile) {
             next.push('-q', quote(this.partitionFile));
-          }
-          else if (!this.finalAlignment.partition.isDefault) {
+          } else if (!this.finalAlignment.partition.isDefault) {
             next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
@@ -1010,8 +1012,7 @@ class Run extends StoreBase {
           next.push('-w', quote(this.outputDir));
           if (this.havePartitionFile) {
             next.push('-q', quote(this.partitionFile));
-          }
-          else if (!this.finalAlignment.partition.isDefault) {
+          } else if (!this.finalAlignment.partition.isDefault) {
             next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
@@ -1046,8 +1047,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1079,8 +1079,7 @@ class Run extends StoreBase {
           next.push('-w', quote(this.outputDir));
           if (this.havePartitionFile) {
             next.push('-q', quote(this.partitionFile));
-          }
-          else if (!this.finalAlignment.partition.isDefault) {
+          } else if (!this.finalAlignment.partition.isDefault) {
             next.push('-q', quote(this.finalAlignment.partitionFilePath));
           }
           cmdArgs.push(next);
@@ -1119,8 +1118,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1182,8 +1180,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1217,8 +1214,7 @@ class Run extends StoreBase {
         second.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           second.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           second.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1293,8 +1289,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1346,8 +1341,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
@@ -1379,8 +1373,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         break;
@@ -1418,8 +1411,7 @@ class Run extends StoreBase {
         first.push('-w', quote(this.outputDir));
         if (this.havePartitionFile) {
           first.push('-q', quote(this.partitionFile));
-        }
-        else if (!this.finalAlignment.partition.isDefault) {
+        } else if (!this.finalAlignment.partition.isDefault) {
           first.push('-q', quote(this.finalAlignment.partitionFilePath));
         }
         if (this.backboneConstraint.isSet) {
@@ -1626,27 +1618,27 @@ Results saved to: ${this.outputDir}
     const result = await remote.dialog.showOpenDialog(
       {
         title: 'Select a partition file',
-        properties: ['openFile']
+        properties: ['openFile'],
       },
-      filePaths => {
+      (filePaths) => {
         if (filePaths.length === 0) {
           return;
         }
       }
-    )
+    );
     if (result.canceled) {
       return;
     }
     const filePath = result.filePaths[0];
-    const content = await readFile(filePath, 'utf-8')
+    const content = await readFile(filePath, 'utf-8');
     this.partitionFile = filePath;
     this.partitionFileContent = content;
-  }
+  };
 
   @action removePartitionFile = () => {
     this.partitionFile = '';
     this.partitionFileContent = '';
-  }
+  };
 
   @action
   clearStdout = () => {
