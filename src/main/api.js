@@ -494,6 +494,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (sequence.taxon.length > 256) {
         console.log(`Taxon name is too long: '${sequence.taxon}'.`);
         // Shorten the invalid taxon name
+        alignment.sequences[index].taxon = sequence.taxon.slice(0, 253);
         modified = true;
       }
 
