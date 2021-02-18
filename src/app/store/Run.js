@@ -1570,7 +1570,7 @@ Results saved to: ${this.outputDir}
 
   @action
   loadAlignmentFiles = () => {
-    ipcRenderer.send(ipc.ALIGNMENT_SELECT);
+    ipcRenderer.send(ipc.ALIGNMENT_SELECT, this.id);
   };
 
   haveAlignment = (id) => {
@@ -1710,8 +1710,10 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  onAlignmentAdded = (event, data) => {
-    this.addAlignments(data);
+  onAlignmentAdded = (event, { id, alignments }) => {
+    if (id === this.id) {
+      this.addAlignments(alignments);
+    }
   };
 
   @action

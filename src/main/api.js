@@ -549,26 +549,26 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
 });
 
 // Open a dialog to select alignments
-ipcMain.on(ipc.ALIGNMENT_SELECT, event => {
+ipcMain.on(ipc.ALIGNMENT_SELECT, (event, runId) => {
   dialog
     .showOpenDialog({
       title: 'Select an alignment',
-      properties: ['openFile', 'multiSelections']
+      properties: ['openFile', 'multiSelections'],
     })
-    .then(result => {
+    .then((result) => {
       console.debug(ipc.ALIGNMENT_SELECTED, result);
       if (result.canceled) {
         return;
       }
-      const alignments = result.filePaths.map(filePath => {
+      const alignments = result.filePaths.map((filePath) => {
         return {
           path: filePath,
-          name: path.basename(filePath)
+          name: path.basename(filePath),
         };
       });
-      send(event, ipc.ALIGNMENT_SELECTED, alignments);
+      send(event, ipc.ALIGNMENT_SELECTED, { id: runId, alignments });
     })
-    .catch(err => {
+    .catch((err) => {
       console.debug(ipc.ALIGNMENT_SELECTED, err);
     });
 });
