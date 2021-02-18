@@ -1,5 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
+import util from 'util';
 
 import phylipParser from './phylipParser';
 import fastaParser from './fastaParser';
@@ -79,11 +80,25 @@ export const parseAlignment = async (filePath) => {
         resolve(alignment);
       }
     });
-
   });
+}
 
+export const writeAlignment = async (filePath, alignment) => {
+  console.log(`Write alignment in FASTA format to ${filePath}`);
+  console.log(alignment);
+  const writeStream = fs.createWriteStream(filePath);
+  const write = util.promisify(writeStream.write);
+  const end = util.promisify(writeStream.end);
+  for (let i = 0; i < alignment.sequences.length; ++i) {
+    const prefix = i === 0 ? '>' : '\n>';
+    const sequence = alignment.sequences[i];
+    await write.call(writeStream, `${prefix}${sequence.taxon}\n`);
+    await write.call(writeStream, sequence.code);
+  }
+  await end.call(writeStream);
 }
 
 export default {
   parseAlignment,
+  writeAlignment,
 }
