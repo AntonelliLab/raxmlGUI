@@ -516,6 +516,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (testInvalid.test(sequence.taxon)) {
         console.log(`Illegal characters in sequence name = taxon '${sequence.taxon}' found.`);
         // Replace the invalid characters in taxon names with underscores
+        alignment.sequences[index].taxon = sequence.taxon.replace(testInvalid, '_');
         modified = true;
       }
 
