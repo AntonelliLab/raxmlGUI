@@ -50,17 +50,35 @@ class Raxml extends React.Component {
 
     return (
       <div className={classes.Raxml}>
-        <Box component="form" mt={1} mb={2} display="flex" className={classes.form} noValidate autoComplete="off">
+        <Box
+          component="form"
+          mt={1}
+          mb={2}
+          display="flex"
+          className={classes.form}
+          noValidate
+          autoComplete="off"
+        >
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
-          <div style={{ flexGrow: 1 }}/>
+          <div style={{ flexGrow: 1 }} />
           {run.modelTestIsRunningOnAlignment ? (
-            <Button size="small" variant="outlined" color="default" onClick={run.cancelModeltestOnAlignment}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="default"
+              onClick={run.cancelModeltestOnAlignment}
+            >
               Cancel modeltest
             </Button>
           ) : null}
           {run.running ? (
-            <Button size="small" variant="outlined" color="default" onClick={run.cancel}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="default"
+              onClick={run.cancel}
+            >
               Cancel
             </Button>
           ) : null}
