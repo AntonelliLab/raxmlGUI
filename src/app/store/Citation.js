@@ -5,43 +5,65 @@ export default class Citation {
   @observable visible = false;
 
   formats = [
-    { value: "bib", name: "BibTeX" },
-    { value: "ris", name: "RIS/EndNote" },
-    { value: "txt", name: "Plain text" },
+    { value: 'bib', name: 'BibTeX' },
+    { value: 'ris', name: 'RIS/EndNote' },
+    { value: 'txt', name: 'Plain text' },
   ];
 
-  @observable format = "bib";
+  @observable format = 'bib';
   @action setFormat = (format) => {
     this.format = format;
-  }
+  };
 
   content = [
     {
       name: 'raxmlGUI',
-      bib: `@article {Edler800912,
-  author = {Edler, Daniel and Klein, Johannes and Antonelli, Alexandre and Silvestro, Daniele},
-  title = {raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML},
-  elocation-id = {800912},
-  year = {2019},
-  doi = {10.1101/800912},
-  publisher = {Cold Spring Harbor Laboratory},
-  URL = {https://www.biorxiv.org/content/early/2019/10/10/800912},
-  eprint = {https://www.biorxiv.org/content/early/2019/10/10/800912.full.pdf},
-  journal = {bioRxiv}
+      bib: `@article{https://doi.org/10.1111/2041-210X.13512,
+author = {Edler, Daniel and Klein, Johannes and Antonelli, Alexandre and Silvestro, Daniele},
+title = {raxmlGUI 2.0: A graphical interface and toolkit for phylogenetic analyses using RAxML},
+journal = {Methods in Ecology and Evolution},
+volume = {12},
+number = {2},
+pages = {373-377},
+keywords = {bioinformatics, evolutionary biology, molecular biology, phylogenetics, software},
+doi = {https://doi.org/10.1111/2041-210X.13512},
+url = {https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13512},
+eprint = {https://besjournals.onlinelibrary.wiley.com/doi/pdf/10.1111/2041-210X.13512},
+year = {2021}
 }`,
-      ris: `TY  - JOUR
-T1  - raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML
-JF  - bioRxiv
-DO  - 10.1101/800912
-SP  - 800912
+      ris: `
+TY  - JOUR
+T1  - raxmlGUI 2.0: A graphical interface and toolkit for phylogenetic analyses using RAxML
 AU  - Edler, Daniel
 AU  - Klein, Johannes
 AU  - Antonelli, Alexandre
 AU  - Silvestro, Daniele
-Y1  - 2019/01/01
-UR  - http://biorxiv.org/content/early/2019/10/10/800912.abstract
-ER  -`,
-      txt: `Daniel Edler, Johannes Klein, Alexandre Antonelli, Daniele Silvestro (2019) raxmlGUI 2.0 beta: a graphical interface and toolkit for phylogenetic analyses using RAxML. bioRxiv, doi: https://doi.org/10.1101/800912`,
+Y1  - 2021/02/01
+PY  - 2021
+DA  - 2021/02/01
+N1  - https://doi.org/10.1111/2041-210X.13512
+DO  - https://doi.org/10.1111/2041-210X.13512
+T2  - Methods in Ecology and Evolution
+JF  - Methods in Ecology and Evolution
+JO  - Methods in Ecology and Evolution
+JA  - Methods Ecol Evol
+SP  - 373
+EP  - 377
+VL  - 12
+IS  - 2
+KW  - bioinformatics
+KW  - evolutionary biology
+KW  - molecular biology
+KW  - phylogenetics
+KW  - software
+PB  - John Wiley & Sons, Ltd
+SN  - 2041-210X
+M3  - https://doi.org/10.1111/2041-210X.13512
+UR  - https://doi.org/10.1111/2041-210X.13512
+Y2  - 2021/02/18
+ER  - 
+`,
+      txt: `Edler, D, Klein, J, Antonelli, A, Silvestro, D. raxmlGUI 2.0: A graphical interface and toolkit for phylogenetic analyses using RAxML. Methods Ecol Evol. 2021; 12: 373– 377. https://doi.org/10.1111/2041-210X.13512`,
     },
     {
       name: 'RAxML',
@@ -166,29 +188,26 @@ Y2  - 9/5/2020
 UR  - https://doi.org/10.1093/molbev/msz189
 ER  - `,
       txt: `Diego Darriba, David Posada, Alexey M Kozlov, Alexandros Stamatakis, Benoit Morel, Tomas Flouri, ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models, Molecular Biology and Evolution, Volume 37, Issue 1, January 2020, Pages 291–294, https://doi.org/10.1093/molbev/msz189`,
-    }
+    },
   ];
-
-    // abstract = {RaxmlGUI is a graphical user interface to RAxML, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. Here we present raxmlGUI 2.0-beta, a complete rewrite of the GUI, which replaces raxmlGUI and seamlessly integrates RAxML binaries for all major operating systems providing an intuitive graphical front-end to set up and run phylogenetic analyses. Our program offers automated pipelines for analyses that require multiple successive calls of RAxML and built-in functions to concatenate alignment files while automatically specifying the appropriate partition settings. While the program presented here is a beta version, the most important functions and analyses are already implemented and functional and we encourage users to send us any feedback they may have. RaxmlGUI facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML.},
-  // abstract = "{Motivation: Phylogenies are increasingly used in all fields of medical and biological research. Moreover, because of the next-generation sequencing revolution, datasets used for conducting phylogenetic analyses grow at an unprecedented pace. RAxML (Randomized Axelerated Maximum Likelihood) is a popular program for phylogenetic analyses of large datasets under maximum likelihood. Since the last RAxML paper in 2006, it has been continuously maintained and extended to accommodate the increasingly growing input datasets and to serve the needs of the user community.Results: I present some of the most notable new features and extensions of RAxML, such as a substantial extension of substitution models and supported data types, the introduction of SSE3, AVX and AVX2 vector intrinsics, techniques for reducing the memory requirements of the code and a plethora of operations for conducting post-analyses on sets of trees. In addition, an up-to-date 50-page user manual covering all new RAxML options is available.Availability and implementation: The code is available under GNU GPL at https://github.com/stamatak/standard-RAxML.Contact:alexandros.stamatakis@h-its.orgSupplementary information:Supplementary data are available at Bioinformatics online.}",
 
   @computed
   get allText() {
-    return this.content.map(ref => ref[this.format]).join('\n');
+    return this.content.map((ref) => ref[this.format]).join('\n');
   }
 
   @action
   show = () => {
     this.visible = true;
-  }
+  };
   @action
   hide = () => {
     this.visible = false;
-  }
+  };
 
   copyToClipboard = () => {
     clipboard.writeText(this.allText);
     console.log('Copied citation to clipboard');
-  }
+  };
 }
 
