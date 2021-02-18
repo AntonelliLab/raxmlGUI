@@ -83,10 +83,12 @@ class Raxml extends React.Component {
             </Button>
           ) : null}
           <LoadingButton
-            loading={run.running}
-            size="small"
             variant="contained"
             color="default"
+            classes={{
+              root: classes.primaryButton,
+            }}
+            loading={run.running}
             disabled={run.startDisabled}
             onClick={run.start}
           >
