@@ -156,7 +156,7 @@ class Alignment extends StoreBase {
   @observable hasInvariantSites = false;
 
   @computed get taxons() {
-    return this.sequences.map(seq => seq.taxon);
+    return this.sequences.map((seq) => seq.taxon);
   }
 
   @observable parsingComplete = false;
@@ -171,7 +171,7 @@ class Alignment extends StoreBase {
   // Partition stuff
   @computed get showPartition() {
     return this.run.showPartitionFor === this;
-  };
+  }
 
   @action
   setShowPartition = (value = true) => {
@@ -184,7 +184,7 @@ class Alignment extends StoreBase {
   };
 
   @action
-  setPartitionText = value => {
+  setPartitionText = (value) => {
     this.partitionText = value;
   };
 
@@ -308,7 +308,7 @@ class Alignment extends StoreBase {
           label: 'Matrix name',
           options: raxmlSettings.aminoAcidSubstitutionMatrixOptions.options,
           value: this.aaMatrixName,
-          onChange: this.onChangeAAMatrixName
+          onChange: this.onChangeAAMatrixName,
         };
       default:
         return null;
@@ -330,7 +330,7 @@ class Alignment extends StoreBase {
       dataType: this.dataType,
       numThreads: this.run.numThreads.value,
     });
-  }
+  };
 
   @action
   cancelModelTest = () => {
@@ -338,7 +338,7 @@ class Alignment extends StoreBase {
       this.modeltestLoading = false;
       ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
     }
-  }
+  };
 
   @action
   setModelFromString = ({ raxml, raxmlNG }) => {
@@ -363,14 +363,12 @@ class Alignment extends StoreBase {
     // For raxml
     if (/F$/.test(raxml)) {
       this.run.baseFrequencies.setValue('F');
-      model = model.slice(0, -1)
-    }
-    else if (/X$/.test(raxml)) {
+      model = model.slice(0, -1);
+    } else if (/X$/.test(raxml)) {
       this.run.estimatedFrequencies.setValue(true); // for all but proteins
       this.run.baseFrequencies.setValue('X'); // for proteins
-      model = model.slice(0, -1)
-    }
-    else {
+      model = model.slice(0, -1);
+    } else {
       this.run.baseFrequencies.setValue('default');
     }
 
@@ -383,22 +381,26 @@ class Alignment extends StoreBase {
       model = model.replace(re, '');
     }
     this.run.substitutionModel.setValue(model);
-
-  }
+  };
 
   listen = () => {
     // Send alignments to main process for processing
     ipcRenderer.send(ipc.ALIGNMENT_PARSE_REQUEST, {
       id: this.id,
-      filePath: this.path
+      filePath: this.path,
     });
     // Listener taken from processAlignments()
     // Receive a progress update for one of the alignments being parsed
     ipcRenderer.on(ipc.ALIGNMENT_PARSE_SUCCESS, (event, { id, alignment }) => {
       if (id === this.id) {
-        const newDataType = getFinalDataType(this.run.alignments.map(({ dataType }) => dataType).concat(alignment.dataType));
+        const newDataType = getFinalDataType(
+          this.run.alignments
+            .map(({ dataType }) => dataType)
+            .concat(alignment.dataType)
+        );
         if (this.run.dataType !== newDataType) {
-          this.run.substitutionModel.value = raxmlModelOptions[newDataType].default;
+          this.run.substitutionModel.value =
+            raxmlModelOptions[newDataType].default;
         }
         // When the alignment has finished processing take the default ubstitution model for this datatype
         this.substitutionModel.value =
@@ -496,13 +498,13 @@ class Alignment extends StoreBase {
   };
 
   @action
-  onChangeModel = event => {
+  onChangeModel = (event) => {
     console.log('onChangeModel');
     this.model = event.target.value;
   };
 
   @action
-  onChangeAAMatrixName = event => {
+  onChangeAAMatrixName = (event) => {
     console.log('onChangeAAMatrixName');
     this.aaMatrixName = event.target.value;
   };
@@ -522,15 +524,14 @@ class Alignment extends StoreBase {
     }
   };
 
-  getSequenceCode = taxon => {
+  getSequenceCode = (taxon) => {
     // TODO: Sort sequences on taxon for quicker search, intersection and union
-    const seq = this.sequences.find(seq => seq.taxon === taxon);
+    const seq = this.sequences.find((seq) => seq.taxon === taxon);
     if (seq !== undefined) {
       return seq.code;
     }
     return '-'.repeat(this.length);
   };
-
 }
 
 class FinalAlignment {
