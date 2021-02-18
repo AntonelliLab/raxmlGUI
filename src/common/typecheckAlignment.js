@@ -1,3 +1,4 @@
+import UserFixError from "./errors";
 
 export const getFinalDataType = (dataTypes) => {
   const notUndefinedTypes = dataTypes.filter(d => d !== undefined);
@@ -130,7 +131,7 @@ export default function typecheckAlignment(alignment) {
     const invalidSiteIndex = findInvalidCharacter(seq.code, dataType);
     if (invalidSiteIndex !== -1) {
       const sample = seq.code.length <= 8 ? `'${seq.code}'` : `'${seq.code.substring(0, 8)}'...`;
-      throw new Error(`Invalid character '${seq.code[invalidSiteIndex]}' at site ${invalidSiteIndex + 1} in sequence ${index + 1} (${sample}) for inferred data type '${dataType}'`);
+      throw new UserFixError(`Invalid character '${seq.code[invalidSiteIndex]}' at site ${invalidSiteIndex + 1} in sequence ${index + 1} (${sample}) for inferred data type '${dataType}'`);
     }
   })
   alignment.hasInvariantSites = hasInvariantSites(alignment.sequences);
