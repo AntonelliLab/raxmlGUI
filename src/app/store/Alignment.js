@@ -327,6 +327,7 @@ class Alignment extends StoreBase {
     ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
       id: this.id,
       filePath: this.path,
+      outputDir: this.run.outputDir,
       dataType: this.dataType,
       numThreads: this.run.numThreads.value,
     });

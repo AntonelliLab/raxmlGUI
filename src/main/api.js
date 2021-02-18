@@ -595,10 +595,10 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async event => {
 });
 
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
-  const { id, filePath, dataType, numThreads } = payload;
+  const { id, filePath, outputDir, dataType, numThreads } = payload;
   const { dir, name } = parsePath(filePath);
 
-  const outputPath = path.join(dir, `RAxML_GUI_ModelTest_${name}`);
+  const outputPath = path.join(outputDir, `RAxML_GUI_ModelTest_${name}`);
 
   try {
     // Remove binary checkpoint as that may be invalid
@@ -616,6 +616,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   args.push('-i', quote(filePath));
   // output path
   args.push('-o', quote(outputPath));
+
   // modeltest throws errors if the output file already exists
   args.push('--force');
   // Number of processors
