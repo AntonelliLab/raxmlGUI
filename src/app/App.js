@@ -220,6 +220,32 @@ const App = () => {
     />
   ));
 
+  function fileModifiedSnack(run) {
+    let message = "Something happened"
+    if (run.converted) {
+      message = `Converted your ${run.convertedAlignmentFrom} alignment into fasta!`;
+    }
+    if (run.modified) {
+      message = `Made a copy of your input file, because there were some issues!`;
+    }
+    return (
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        open={run.showModified}
+        onClose={run.clearShowModified}
+      >
+        <SnackbarMessage
+          onClose={run.clearShowModified}
+          variant={'info'}
+          message={message}
+        />
+      </Snackbar>
+    );
+  }
+
   const run = store.activeRun;
   const { binary } = run;
   return (
@@ -374,20 +400,7 @@ const App = () => {
               }
             />
           </Snackbar>
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            open={run.showConverted}
-            onClose={run.clearShowConverted}
-          >
-            <SnackbarMessage
-              onClose={run.clearShowConverted}
-              variant={'info'}
-              message={`Converted your ${run.convertedAlignmentFrom} alignment into fasta!`}
-            />
-          </Snackbar>
+          {fileModifiedSnack(run)}
           <ErrorDialog error={run.error} onClose={run.clearError} />
         </ErrorBoundary>
 
