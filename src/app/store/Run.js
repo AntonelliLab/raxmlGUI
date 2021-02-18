@@ -1714,7 +1714,9 @@ Results saved to: ${this.outputDir}
 
   @action
   onOutputDirSelected = (event, { id, outputDir }) => {
-    this.setOutputDir(outputDir);
+    if (id === this.id) {
+      this.setOutputDir(outputDir);
+    }
   };
 
   @action
