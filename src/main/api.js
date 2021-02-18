@@ -487,7 +487,6 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
     const actualPath = newFilePath ? newFilePath : filePath;
     const alignment = await io.parseAlignment(actualPath);
 
-    // TODO: check for all the input errors here and write fixes to new file
     // Check if duplicate or invalid taxon names
     const taxons = new Map();
     let identicalCounter = 0;
