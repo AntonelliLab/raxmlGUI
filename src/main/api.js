@@ -123,12 +123,19 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
   try {
     const filenames = await fs.readdir(outputDir);
     let outputNameUnused = outputName;
-    const filterResultFilenames = filename =>
+    const filterResultFilenames = (filename) =>
       filename.startsWith(`${outputNameUnused}.raxml.`) ||
       filename.endsWith(outputNameUnused) ||
       filename.endsWith(`.${outputNameUnused}.txt`) ||
       filename.endsWith(`${outputNameUnused}.tre`);
-    const resultFilenames = filenames.filter(filterResultFilenames);
+    const resultFilenamesMain = filenames.filter(filterResultFilenames);
+    const filterResultFilenamesAdditional = (filename) =>
+      filename.startsWith(`RAxML_GUI_ModelTest_${outputNameUnused}.`) ||
+      filename.startsWith(`RAxML_GUI_Settings_${outputNameUnused}.`);
+    const resultFilenamesAdditional = filenames.filter(
+      filterResultFilenamesAdditional
+    );
+    const resultFilenames = resultFilenamesMain.concat(resultFilenamesAdditional);
     let counter = 1;
     const matchCounterName = /(\w+)_\d+$/.exec(outputName);
     const outputNameWithoutCounter = matchCounterName
