@@ -268,7 +268,12 @@ const App = () => {
           </AppBar>
         )}
 
-        <SplitPane split="vertical" size={640} minSize={100} style={{ position: 'static' }}>
+        <SplitPane
+          split="vertical"
+          size={640}
+          minSize={100}
+          style={{ position: 'static' }}
+        >
           <Box
             display="flex"
             flexDirection="column"
@@ -358,9 +363,7 @@ const App = () => {
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
             <Box display="flex">
-              <div className={classes.statusVersion}>
-                raxmlGUI {version}
-              </div>
+              <div className={classes.statusVersion}>raxmlGUI {version}</div>
               <div className={classes.statusVersion}>
                 {binary.value} {binary.version}
               </div>
@@ -386,7 +389,7 @@ const App = () => {
           <Snackbar
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right'
+              horizontal: 'right',
             }}
             open={run.finished}
             autoHideDuration={6000}
@@ -396,7 +399,9 @@ const App = () => {
               onClose={run.clearFinished}
               variant={run.exitCode === 0 ? 'success' : 'info'}
               message={
-                run.exitCode === 0 ? 'Calculation finished!' : `Calculation cancelled!`
+                run.exitCode === 0
+                  ? 'Calculation finished!'
+                  : `Calculation cancelled!`
               }
             />
           </Snackbar>
@@ -404,7 +409,7 @@ const App = () => {
           <ErrorDialog error={run.error} onClose={run.clearError} />
         </ErrorBoundary>
 
-        { run.showPartitionFor === null ? null : (
+        {run.showPartitionFor === null ? null : (
           <Modal
             aria-labelledby="show-partition"
             open={true}
@@ -416,7 +421,7 @@ const App = () => {
             </div>
           </Modal>
         )}
-        { store.citation.visible ? (
+        {store.citation.visible ? (
           <Modal
             aria-labelledby="show-citation"
             open={true}
@@ -427,7 +432,7 @@ const App = () => {
               <CitationModal citation={store.citation} />
             </div>
           </Modal>
-        ) : null }
+        ) : null}
         <ErrorDialog error={store.error} onClose={store.clearError} />
       </div>
     </React.Fragment>
