@@ -526,6 +526,14 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       // Add this taxon to the map for checking
       taxons.set(sequence.taxon, index);
     });
+
+    if (modified) {
+      // Write the new alignment to file
+      const baseName = path.basename(actualPath, path.extname(actualPath));
+      newFilePath = actualPath.replace(baseName, `${baseName}_modified`);
+      await io.writeAlignment(newFilePath, alignment);
+    }
+
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
     if (newFilePath) {
       send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, {
