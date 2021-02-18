@@ -484,6 +484,35 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
     const alignment = await io.parseAlignment(
       newFilePath ? newFilePath : filePath
     );
+    const taxons = new Map();
+    alignment.sequences.forEach(async (sequence, index) => {
+      // If the taxon name is longer than 256 characters raxml will error out
+      if (sequence.taxon.length > 256) {
+        console.log(`Taxon name is too long: '${sequence.taxon}'.`);
+        // Shorten the invalid taxon name
+      }
+
+      const ind = taxons.get(sequence.taxon);
+      // Check if a sequence with this name is already in the map
+      if (ind !== undefined) {
+        console.log(`Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`);
+        // Add a digit to the end of the second sequence
+      }
+
+      // If the taxon name has one of those characters raxml will error out
+      const excludedCharacters = [':', ',', '.', '(', ')', '[', ']', ';', "'"];
+      // Test white-space characters and excluded characters above
+      const testInvalid = new RegExp(
+        `[\\s${excludedCharacters.map((c) => `\\${c}`).join('')}]`, 'g'
+      );
+      if (testInvalid.test(sequence.taxon)) {
+        console.log(`Illegal characters in sequence name = taxon '${sequence.taxon}' found.`);
+        // Replace the invalid characters in taxon names with underscores
+      }
+
+      // Add this taxon to the map for checking
+      taxons.set(sequence.taxon, index);
+    });
     send(event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment });
     if (newFilePath) {
       send(event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, {
