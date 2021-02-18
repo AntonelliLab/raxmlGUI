@@ -148,8 +148,8 @@ class Alignment extends StoreBase {
   @observable fileFormat = undefined;
   @observable convertedFrom = undefined;
   @observable converted = false;
-  @observable showConverted = false;
   @observable modified = false;
+  @observable showModified = false;
   @observable length = 0;
   @observable numSequences = 0;
   @observable sequences = [];
@@ -469,8 +469,8 @@ class Alignment extends StoreBase {
     this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
   };
 
-  @action clearConverted = () => {
-    this.showConverted = false;
+  @action clearModified = () => {
+    this.showModified = false;
   };
 
   @action

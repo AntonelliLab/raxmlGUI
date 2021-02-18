@@ -677,16 +677,16 @@ class Run extends StoreBase {
   }
 
   @computed get convertedAlignmentFrom() {
-    if (!this.haveAlignments || !this.showConverted) {
+    if (!this.haveAlignments || !this.showModified) {
       return null;
     }
-    const converted = this.alignments.filter((a) => a.showConverted);
-    return converted[0].convertedFrom;
+    const convertedAlignments = this.alignments.filter((a) => a.converted);
+    return convertedAlignments[0].convertedFrom;
   }
 
-  @action clearShowConverted = () => {
+  @action clearShowModified = () => {
     for (let i = 0; i < this.alignments.length; i++) {
-      this.alignments[i].clearConverted();
+      this.alignments[i].clearModified();
     }
   };
 
