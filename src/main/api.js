@@ -488,6 +488,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       newFilePath ? newFilePath : filePath
     );
     const taxons = new Map();
+    let identicalCounter = 0;
     alignment.sequences.forEach(async (sequence, index) => {
       // If the taxon name is longer than 256 characters raxml will error out
       if (sequence.taxon.length > 256) {
@@ -501,6 +502,8 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       if (ind !== undefined) {
         console.log(`Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`);
         // Add a digit to the end of the second sequence
+        identicalCounter++;
+        alignment.sequences[index].taxon = `${sequence.taxon}_${identicalCounter}`;
         modified = true;
       }
 
