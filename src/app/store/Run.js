@@ -685,16 +685,12 @@ class Run extends StoreBase {
   }
 
   @computed get converted() {
-    const converted = this.alignments
-      .map((a) => a.converted)
-      .some((e) => e);
+    const converted = this.alignments.map((a) => a.converted).some((e) => e);
     return this.haveAlignments && converted;
   }
 
   @computed get modified() {
-    const modified = this.alignments
-      .map((a) => a.modified)
-      .some((e) => e);
+    const modified = this.alignments.map((a) => a.modified).some((e) => e);
     return this.haveAlignments && modified;
   }
 
