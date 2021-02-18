@@ -677,11 +677,25 @@ class Run extends StoreBase {
     return this.haveAlignments ? this.alignments[0].ngSubstitutionModelCmd : '';
   }
 
-  @computed get showConverted() {
+  @computed get showModified() {
     const shouldShow = this.alignments
-      .map((a) => a.showConverted)
+      .map((a) => a.showModified)
       .some((e) => e);
     return this.haveAlignments && shouldShow;
+  }
+
+  @computed get converted() {
+    const converted = this.alignments
+      .map((a) => a.converted)
+      .some((e) => e);
+    return this.haveAlignments && converted;
+  }
+
+  @computed get modified() {
+    const modified = this.alignments
+      .map((a) => a.modified)
+      .some((e) => e);
+    return this.haveAlignments && modified;
   }
 
   @computed get convertedAlignmentFrom() {
