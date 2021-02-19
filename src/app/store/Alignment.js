@@ -319,6 +319,10 @@ class Alignment extends StoreBase {
     return !electronutil.is.windows;
   }
 
+  @computed get modelTestCanRun() {
+    return this.dataType === 'nucleotide' || this.dataType === 'protein';
+  }
+
   @observable modeltestLoading = false;
 
   @action

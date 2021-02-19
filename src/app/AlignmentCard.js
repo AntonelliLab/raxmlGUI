@@ -149,6 +149,9 @@ function _ModelTestButton({ alignment }) {
   if (!alignment.modelTestAvailable) {
     return null;
   }
+  if (!alignment.modelTestCanRun) {
+    return null;
+  }
   return (
     <LoadingButton
       variant="contained"
