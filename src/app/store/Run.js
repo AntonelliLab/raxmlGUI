@@ -34,7 +34,7 @@ const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'modeltest-ng', multithreaded: true, version: '0.1.6' },
-      { name: 'raxml-ng', multithreaded: true, version: '1.0.0', initial: true },
+      { name: 'raxml-ng', multithreaded: true, version: '1.0.1', initial: true },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
