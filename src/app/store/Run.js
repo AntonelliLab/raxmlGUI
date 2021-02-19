@@ -591,7 +591,7 @@ class Run extends StoreBase {
     );
   }
 
-  @observable randomSeed = 123;
+  @observable randomSeed = Math.floor(1000000 * Math.random());
   @computed get seedParsimony() {
     return this.randomSeed;
   }
@@ -624,10 +624,6 @@ class Run extends StoreBase {
     ];
     return analysisWithSeed.includes(this.analysis.value);
   }
-
-  @action randomizeSeed = () => {
-    this.randomSeed = Math.floor(Math.random() * 1000 + 1);
-  };
 
   @computed get usesRaxmlNg() {
     switch (this.binary.value) {
