@@ -2,8 +2,6 @@ import { observable, computed, action, createAtom } from 'mobx';
 import { ipcRenderer, shell, remote } from 'electron';
 import { range } from 'd3-array';
 import cpus from 'cpus';
-import Alignment, { FinalAlignment } from './Alignment';
-import Option from './Option';
 import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
@@ -11,8 +9,11 @@ import filenamify from 'filenamify';
 import electronutil from 'electron-util';
 import util from 'util';
 import fs from 'fs';
-import { quote } from '../../common/utils';
+
+import Alignment, { FinalAlignment } from './Alignment';
+import Option from './Option';
 import StoreBase from './StoreBase';
+import { quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
 
