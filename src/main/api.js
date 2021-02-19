@@ -12,6 +12,7 @@ import parsePath from 'parse-filepath';
 import * as ipc from '../constants/ipc';
 import electronUtil from 'electron-util';
 import { quote } from '../common/utils';
+import UserFixError from '../common/errors';
 // import unhandled from 'electron-unhandled';
 // import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
 
@@ -203,6 +204,7 @@ ipcMain.on(
       combinedOutput,
       usesRaxmlNg,
       usesModeltestNg,
+      inputPath,
     }
   ) => {
     cancelProcess(id);
@@ -213,6 +215,18 @@ ipcMain.on(
       `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`,
       args
     );
+
+    // Check for deleted input file
+    try {
+      await fs.access(inputPath);
+      // The check succeeded
+    } catch (err) {
+      const error = new UserFixError(
+        `The input file does not exist '${inputPath}': ${err.message}`
+      );
+      send(event, ipc.RUN_ERROR, { id, error });
+      return;
+    }
 
     const resultFilePath = path.join(outputDir, outputFilename);
     console.log(`Try writing to output file '${resultFilePath}'...`);
@@ -262,7 +276,8 @@ ipcMain.on(
     // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
     // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
     // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
-    const checkFlags = isDev && !electronUtil.is.windows && !usesRaxmlNg &&!usesModeltestNg;
+    const checkFlags =
+      isDev && !electronUtil.is.windows && !usesRaxmlNg && !usesModeltestNg;
     if (checkFlags) {
       for (const arg of args) {
         try {

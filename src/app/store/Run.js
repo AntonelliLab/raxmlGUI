@@ -1493,6 +1493,7 @@ Results saved to: ${this.outputDir}
       combinedOutput,
       usesRaxmlNg,
       usesModeltestNg,
+      finalAlignment,
     } = this;
 
     if (this.finalAlignment.numSequences <= 3) {
@@ -1521,6 +1522,7 @@ Results saved to: ${this.outputDir}
       combinedOutput: combinedOutput.isUsed,
       usesRaxmlNg,
       usesModeltestNg,
+      inputPath: finalAlignment.path,
     });
   };
 
