@@ -18,18 +18,20 @@ for any bug fixes.
 ### Security
 in case of vulnerabilities.
 
-## [Unreleased]
 
+## [Unreleased]
 ### Added
 - Some common errors in alignments will be automatically fixed when loading an alignment. This includes, replacing illegal characters with underscores in taxon names, disambiguating duplicated taxon names, shortening taxon names that are too long.
 ### Changed
-- Updated to include the latest binaries for raxml-ng  on Mac and Linux (1.0.1).
+- Updated to include the latest binaries for raxml-ng on Mac and Linux (1.0.1).
 ### Fixed
 - Now correctly recognizes ? and N in nucleotide sequences.
 - Fixed a small bug that showed output files that are not a result of the actual analysis.
 - Added the correct citation for the release paper.
 - Fixed a bug where selecting the output dir would lead to the change in all tabs.
 - Fixed a bug where adding an alignment would add it in all tabs. 
+- Fixed a crash when running ModelTest-NG on binary or multistate alignments.
+
 
 ## [2.0.0] - 2017-06-20
 
