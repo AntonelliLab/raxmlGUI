@@ -43,4 +43,4 @@ plugins:
 
 show_downloads: true
 show_view_on_github: false
-#google_analytics: UA-149851800-1
+google_analytics: UA-149851800-1
