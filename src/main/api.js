@@ -7,14 +7,13 @@ import childProcess from 'child_process';
 import isDev from 'electron-is-dev';
 import { serializeError } from 'serialize-error';
 import { activeWindow } from 'electron-util';
-import io from '../common/io';
 import parsePath from 'parse-filepath';
-import * as ipc from '../constants/ipc';
 import electronUtil from 'electron-util';
+
+import * as ipc from '../constants/ipc';
+import io from '../common/io';
 import { quote } from '../common/utils';
 import UserFixError from '../common/errors';
-// import unhandled from 'electron-unhandled';
-// import { reportIssue, getMailtoLinkToReportError } from "../common/utils";
 
 const fs = _fs.promises;
 
@@ -22,11 +21,6 @@ const get_space_safe_binary_path = (bin_path) => {
   // For Windows users with spaces in user dir
   return electronUtil.is.windows ? `"${bin_path}"` : bin_path;
 }
-
-// unhandled({
-//   showDialog: true,
-// 	reportButton: reportIssue,
-// });
 
 function handleError(title, error) {
   // send error to renderer
@@ -64,6 +58,14 @@ function send(event, channel, data) {
     Object.assign({}, data, { error: serializeError(data.error) })
   );
 }
+
+// Init the app state with some relevant information
+ipcMain.on(ipc.INIT_APP_STATE, (event) => {
+  const version = app.getVersion();
+  send(event, ipc.INIT_APP_STATE_RECEIVED, {
+    version,
+  });
+});
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   dialog

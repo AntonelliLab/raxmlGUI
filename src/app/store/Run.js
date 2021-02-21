@@ -1441,7 +1441,7 @@ class Run extends StoreBase {
   }
 
   @computed get settingsFileContent() {
-    let text = `Your analaysis was run as follows:
+    let text = `The analysis was run using raxmlGUI 2.0 (version ${this.version}) as follows:
 Analysis: ${this.analysisOption.title}
 Binary: ${this.binary.value} version ${this.binary.version}
 Results saved to: ${this.outputDir}

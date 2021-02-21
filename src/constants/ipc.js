@@ -1,6 +1,9 @@
 /*
     Strings for ipc
 */
+;
+export const INIT_APP_STATE = 'INIT_APP_STATE';
+export const INIT_APP_STATE_RECEIVED = 'INIT_APP_STATE_RECEIVED';
 export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
 export const OUTPUT_DIR_SELECTED = 'OUTPUT_DIR_SELECTED';
 export const TREE_SELECT = 'TREE_SELECT';

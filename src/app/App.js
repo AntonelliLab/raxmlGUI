@@ -1,4 +1,5 @@
 import React from 'react';
+import { app } from 'electron';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -26,7 +27,6 @@ import './App.css';
 import store from './store';
 import SplitPane from 'react-split-pane';
 import { Typography } from '@material-ui/core';
-import { version } from '../../package.json';
 import Modal from '@material-ui/core/Modal';
 import PartitionEditor from './PartitionEditor';
 import CitationModal from './CitationModal';
@@ -363,7 +363,8 @@ const App = () => {
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
             <Box display="flex">
-              <div className={classes.statusVersion}>raxmlGUI {version}</div>
+              {/* In dev mode the app version shown is from electron, in production it is ours */}
+              <div className={classes.statusVersion}>raxmlGUI {store.version}</div>
               <div className={classes.statusVersion}>
                 {binary.value} {binary.version}
               </div>
