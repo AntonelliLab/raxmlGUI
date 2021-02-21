@@ -1459,15 +1459,10 @@ Results saved to: ${this.outputDir}
   }
 
   @computed get settingsFilePath() {
-    const raxmlSettingsFilePath = join(
+    return join(
       `${this.outputDir}`,
       `RAxML_GUI_Settings_${this.outputNameSafe}.txt`
     );
-    const raxmlNgSettingsFilePath = join(
-      `${this.outputDir}`,
-      `${this.outputNameSafe}.raxml.settings`
-    );
-    return this.raxmlNgSwitch(raxmlNgSettingsFilePath, raxmlSettingsFilePath);
   }
 
   @action
