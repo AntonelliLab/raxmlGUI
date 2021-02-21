@@ -350,6 +350,9 @@ class Alignment extends StoreBase {
     this.modeltestLoading = false;
     // For raxml-ng
     let model = raxmlNG.split('+')[0];
+    // Two models have different names in modeltest-ng and raxml-ng
+    model = model.replace('TrN', 'TN93');
+    model = model.replace('TPM1', 'K81');
     this.substitutionModel.setValue(model);
     if (/\+F[O|E]?/.test(raxmlNG)) {
       this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
