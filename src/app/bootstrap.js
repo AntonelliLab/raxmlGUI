@@ -49,6 +49,7 @@ function initDev(exampleFiles) {
   ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
+  store.activeRun.setOutputDir(exampleFiles.outdir);
   setTimeout(() => {
     // store.activeRun.alignments[0].setShowPartition();
     // store.citation.show();

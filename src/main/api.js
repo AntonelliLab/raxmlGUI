@@ -597,15 +597,15 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event, runId) => {
 
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async event => {
   // __static is defined by electron-webpack
-  // const dir = path.join(__static, 'example-files', 'fasta');
   const dir = path.join(__static, 'example-files');
-  // const dir = path.join(__static, 'example-files', 'phylip');
+  const outdir = path.join(__static, 'test-results');
   const fastaFiles = await fs.readdir(path.join(dir, 'fasta'));
   const phylipFiles = await fs.readdir(path.join(dir, 'phylip'));
   send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
     fasta: fastaFiles,
     phylip: phylipFiles,
-    dir
+    dir,
+    outdir,
   });
 });
 
