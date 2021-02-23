@@ -56,7 +56,7 @@ export const parse = (lines) => {
     const assertCorrectNumberOfSeqLines = (startIndex, endIndex) => {
       const numSeq = endIndex + 1 - startIndex;
       if (numSeq !== numSequences) {
-        throw new Error(`Interleaved section (lines ${startIndex+1}-${endIndex+1}) doesn't have specified ${numSequences} lines of sequences.`);
+        throw new UserFixError(`Interleaved section (lines ${startIndex+1}-${endIndex+1}) doesn't have specified ${numSequences} lines of sequences.`);
       }
     }
     for (let i = firstSeqLineIndex; i <= lastSeqLineIndex; ++i) {
@@ -85,7 +85,7 @@ export const parse = (lines) => {
     else {
       // Should be sequential
       if (isInterleaved) {
-        throw new Error(`File is specified as interleaved in header but no empty lines separating interleaved sections found`);
+        throw new UserFixError(`File is specified as interleaved in header but no empty lines separating interleaved sections found`);
       }
       // Is sequential, check consistent number of lines for each taxa
       // (the total number of sequence lines should be a multiple of the number of sequences specified)
@@ -94,7 +94,7 @@ export const parse = (lines) => {
         ++numLinesPerTaxa;
       }
       if (numSeqLines !== numLinesPerTaxa * numSequences) {
-        throw new Error(`Inferred sequential phylip format because of no empty lines between sequences, but the number of sequence lines (${numSeqLines}) is not a multiple of the specified number of sequences (${numSequences}).`);
+        throw new UserFixError(`Inferred sequential phylip format because of no empty lines between sequences, but the number of sequence lines (${numSeqLines}) is not a multiple of the specified number of sequences (${numSequences}).`);
       }
       console.log(`Is sequential format with ${numLinesPerTaxa} consecutive lines for each sequence`);
     }
@@ -150,7 +150,7 @@ export const parse = (lines) => {
       console.log('Is relaxed phylip format! First sequence:', seqIfRelaxed);
       return true;
     }
-    throw new Error(`Can't find specified ${length} number of characters for first sequence. Assuming relaxed format gives length ${seqIfRelaxed.code.length} (${JSON.stringify(seqIfRelaxed)}) and assuming strict format gives length ${seqIfStrict.code.length} (${JSON.stringify(seqIfStrict)})`);
+    throw new UserFixError(`Can't find specified ${length} number of characters for first sequence. Assuming relaxed format gives length ${seqIfRelaxed.code.length} (${JSON.stringify(seqIfRelaxed)}) and assuming strict format gives length ${seqIfStrict.code.length} (${JSON.stringify(seqIfStrict)})`);
   }
   const isRelaxed = checkIsRelaxed();
 
@@ -160,7 +160,7 @@ export const parse = (lines) => {
   for (let seqIndex = 0; seqIndex < numSequences; ++seqIndex) {
     const seq = parseSequence(seqIndex);
     if (seq.code.length !== length) {
-      throw new Error(`Length ${seq.code.length} of sequence ${seqIndex + 1} (parsed taxon name '${seq.taxon}' and code '${seq.code}') doesn't match specified length of ${length}.`);
+      throw new UserFixError(`Length ${seq.code.length} of sequence ${seqIndex + 1} (parsed taxon name '${seq.taxon}' and code '${seq.code}') doesn't match specified length of ${length}.`);
     }
     sequences.push(seq);
   }
