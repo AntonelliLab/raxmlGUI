@@ -1,5 +1,3 @@
-import UserFixError from "./errors";
-
 export const isFasta = (lines) => {
   for (let i = 0; i < lines.length; ++i) {
     const line = lines[0].trim();
@@ -26,7 +24,7 @@ export const parse = (lines) => {
     if (line[0] !== '>') {
       throw new Error(`Expected a '>' to start a taxon line`);
     }
-    const taxon = line.substring(1).split(' ')[0];
+    const taxon = line.substring(1);
     if (!taxon) {
       throw new Error(`Empty taxon at line ${lineIndex + 1}`);
     }
