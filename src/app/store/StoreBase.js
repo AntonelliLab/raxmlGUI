@@ -38,7 +38,6 @@ export default class StoreBase {
   };
 
   _initAppState = (event, { version }) => {
-    console.log('version :>> ', version);
     this.version = version;
   };
 }
