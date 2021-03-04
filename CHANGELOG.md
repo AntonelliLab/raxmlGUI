@@ -31,7 +31,8 @@ in case of vulnerabilities.
 - Fixed a bug where selecting the output dir would lead to the change in all tabs.
 - Fixed a bug where adding an alignment would add it in all tabs. 
 - Fixed a crash when running ModelTest-NG on binary or multistate alignments.
-- Fixed a crash when the input alignment did not exist when starting a run
+- Fixed a crash when the input alignment did not exist when starting a run.
+- Fixed a bug that deleted last parts of a taxon names with whitespaces. 
 
 ## [2.0.0] - 2017-06-20
 
