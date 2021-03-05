@@ -19,7 +19,9 @@ for any bug fixes.
 in case of vulnerabilities.
 
 
-## [Unreleased]
+## [Unreleased] - YYYY-MM-DD
+
+## [2.0.1] - 2021-03-04
 ### Added
 - Some common errors in alignments will be automatically fixed when loading an alignment. This includes, replacing illegal characters with underscores in taxon names, disambiguating duplicated taxon names, shortening taxon names that are too long.
 ### Changed
