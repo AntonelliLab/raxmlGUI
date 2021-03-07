@@ -637,12 +637,11 @@ class Run extends StoreBase {
   }
 
   @computed get usesModeltestNg() {
-    switch (this.binary.value) {
-      case 'modeltest-ng':
-        return true;
-      default:
-        return false;
+    console.log(this.binary.value);
+    if (this.binary.value.includes('modeltest-ng')) {
+      return true;
     }
+    return false;
   }
 
   @computed get modelTestCanRun() {
