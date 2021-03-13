@@ -20,6 +20,8 @@ in case of vulnerabilities.
 
 
 ## [Unreleased] - YYYY-MM-DD
+### Added
+- Display more detailed information when an input alignment has been modified.
 ### Fixed
 - Small bugfix: Remove "null" showing up in SnackBar text
 
