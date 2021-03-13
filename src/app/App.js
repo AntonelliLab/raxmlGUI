@@ -1,6 +1,7 @@
 import React from 'react';
-import { app } from 'electron';
 import { observer } from 'mobx-react';
+import clsx from 'clsx';
+import SplitPane from 'react-split-pane';
 import { makeStyles } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,22 +15,23 @@ import IconAdd from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
 import Box from '@material-ui/core/Box';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarMessage from './components/SnackbarMessage';
-import ErrorBoundary from './components/ErrorBoundary';
-import ErrorDialog from './components/ErrorDialog';
-import clsx from 'clsx';
+import { Typography } from '@material-ui/core';
+import Modal from '@material-ui/core/Modal';
+
 import Model from './Model';
 import Input from './Input';
 import Output from './Output';
 import Raxml from './Raxml';
 import Console from './Console';
-import './App.css';
 import store from './store';
-import SplitPane from 'react-split-pane';
-import { Typography } from '@material-ui/core';
-import Modal from '@material-ui/core/Modal';
 import PartitionEditor from './PartitionEditor';
 import CitationModal from './CitationModal';
+
+import SnackbarMessage from './components/SnackbarMessage';
+import ErrorBoundary from './components/ErrorBoundary';
+import ErrorDialog from './components/ErrorDialog';
+
+import './App.css';
 
 const useStyles = makeStyles(theme => ({
   App: {
