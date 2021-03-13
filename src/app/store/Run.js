@@ -691,7 +691,7 @@ class Run extends StoreBase {
   }
 
   @computed get convertedAlignmentFrom() {
-    if (!this.haveAlignments || !this.showModified) {
+    if (!this.haveAlignments) {
       return null;
     }
     const convertedAlignments = this.alignments.filter((a) => a.converted);
