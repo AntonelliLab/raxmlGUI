@@ -149,7 +149,9 @@ class Alignment extends StoreBase {
   @observable convertedFrom = undefined;
   @observable converted = false;
   @observable modified = false;
-  @observable showModified = false;
+  @observable modificationMessages = [];
+  @observable showModifiedSnack = false;
+  @observable showModifiedDialog = false;
   @observable length = 0;
   @observable numSequences = 0;
   @observable sequences = [];
@@ -439,16 +441,25 @@ class Alignment extends StoreBase {
       }
     });
     // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
+    // Also called when the input alignment is modified, due to errors in the alignment
     ipcRenderer.on(
       ipc.ALIGNMENT_PARSE_CHANGED_PATH,
-      (event, { id, newFilePath, format, converted, modified }) => {
+      (
+        event,
+        { id, newFilePath, format, converted, modified, modificationMessages }
+      ) => {
         if (id === this.id) {
           runInAction(() => {
             this.path = newFilePath;
             this.convertedFrom = format;
             this.converted = converted;
             this.modified = modified;
-            this.showModified = true;
+            this.modificationMessages = modificationMessages;
+            if (modificationMessages.length > 0) {
+              this.showModifiedDialog = true;
+            } else {
+              this.showModifiedSnack = true;
+            }
           });
         }
       }
@@ -480,7 +491,8 @@ class Alignment extends StoreBase {
   };
 
   @action clearModified = () => {
-    this.showModified = false;
+    this.showModifiedSnack = false;
+    this.showModifiedDialog = false;
   };
 
   @action

@@ -496,6 +496,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
   let newFilePath;
   let converted;
   let modified;
+  let modificationMessages = [];
   // Use readal to check the alignment file format
   try {
     format = await readalGetFormat(filePath);
@@ -517,20 +518,24 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
     alignment.sequences.forEach(async (sequence, index) => {
       // If the taxon name is longer than 256 characters raxml will error out
       if (sequence.taxon.length > 256) {
-        console.log(`Taxon name is too long: '${sequence.taxon}'.`);
+        const message = `Taxon name is too long: '${sequence.taxon}'.`;
+        console.log(message);
         // Shorten the invalid taxon name
         alignment.sequences[index].taxon = sequence.taxon.slice(0, 253);
         modified = true;
+        modificationMessages.push(message);
       }
 
       const ind = taxons.get(sequence.taxon);
       // Check if a sequence with this name is already in the map
       if (ind !== undefined) {
-        console.log(`Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`);
+        const message = `Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`;
+        console.log(message);
         // Add a digit to the end of the second sequence
         identicalCounter++;
         alignment.sequences[index].taxon = `${sequence.taxon}_${identicalCounter}`;
         modified = true;
+        modificationMessages.push(message);
       }
 
       // If the taxon name has one of those characters raxml will error out
@@ -540,10 +545,12 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
         `[\\s${excludedCharacters.map((c) => `\\${c}`).join('')}]`, 'g'
       );
       if (testInvalid.test(sequence.taxon)) {
-        console.log(`Illegal characters in sequence name = taxon '${sequence.taxon}' found.`);
+        const message = `Illegal characters in sequence name = taxon '${sequence.taxon}' found.`;
+        console.log(message);
         // Replace the invalid characters in taxon names with underscores
         alignment.sequences[index].taxon = sequence.taxon.replace(testInvalid, '_');
         modified = true;
+        modificationMessages.push(message);
       }
 
       // Add this taxon to the map for checking
@@ -565,6 +572,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
         format,
         converted,
         modified,
+        modificationMessages,
       });
     }
   } catch (error) {

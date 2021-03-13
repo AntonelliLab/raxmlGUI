@@ -30,6 +30,7 @@ import CitationModal from './CitationModal';
 import SnackbarMessage from './components/SnackbarMessage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
+import ModifiedDialog from './components/ModifiedDialog';
 
 import './App.css';
 
@@ -236,7 +237,7 @@ const App = () => {
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        open={run.showModified}
+        open={run.showModifiedSnack}
         onClose={run.clearShowModified}
       >
         <SnackbarMessage
@@ -366,7 +367,9 @@ const App = () => {
           <Toolbar className={classes.statusToolbar}>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
-              <div className={classes.statusVersion}>raxmlGUI {store.version}</div>
+              <div className={classes.statusVersion}>
+                raxmlGUI {store.version}
+              </div>
               <div className={classes.statusVersion}>
                 {binary.value} {binary.version}
               </div>
@@ -410,6 +413,11 @@ const App = () => {
           </Snackbar>
           {fileModifiedSnack(run)}
           <ErrorDialog error={run.error} onClose={run.clearError} />
+          <ModifiedDialog
+            show={run.showModifiedDialog}
+            onClose={run.clearShowModified}
+            messages={run.modificationMessages}
+          />
         </ErrorBoundary>
 
         {run.showPartitionFor === null ? null : (
