@@ -20,6 +20,8 @@ in case of vulnerabilities.
 
 
 ## [Unreleased] - YYYY-MM-DD
+### Fixed
+- Small bugfix: Remove "null" showing up in SnackBar text
 
 ## [2.0.1] - 2021-03-04
 ### Added
