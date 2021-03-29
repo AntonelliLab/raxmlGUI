@@ -20,7 +20,7 @@ const fs = _fs.promises;
 const get_space_safe_binary_path = (bin_path) => {
   // For Windows users with spaces in user dir
   return electronUtil.is.windows ? `"${bin_path}"` : bin_path;
-}
+};
 
 function handleError(title, error) {
   // send error to renderer
@@ -29,16 +29,16 @@ function handleError(title, error) {
   if (win) {
     win.webContents.send(ipc.UNHANDLED_ERROR, {
       title,
-      error: serializeError(error)
+      error: serializeError(error),
     });
   }
 }
 
-process.on('uncaughtException', error => {
+process.on('uncaughtException', (error) => {
   handleError('Unhandled Error', error);
 });
 
-process.on('unhandledRejection', error => {
+process.on('unhandledRejection', (error) => {
   handleError('Unhandled Promise Rejection', error);
 });
 
@@ -46,7 +46,7 @@ const exec = util.promisify(childProcess.exec);
 const execFile = util.promisify(childProcess.execFile);
 
 const state = {
-  processes: {}
+  processes: {},
 };
 
 function send(event, channel, data) {
@@ -71,19 +71,19 @@ ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   dialog
     .showOpenDialog({
       title: 'Select a directory for RAxML output',
-      properties: ['openFile', 'openDirectory']
+      properties: ['openFile', 'openDirectory'],
     })
-    .then(result => {
+    .then((result) => {
       console.debug(ipc.OUTPUT_DIR_SELECT, result);
       if (result.canceled) {
         return;
       }
       send(event, ipc.OUTPUT_DIR_SELECTED, {
         id: runId,
-        outputDir: result.filePaths[0]
+        outputDir: result.filePaths[0],
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.debug(ipc.OUTPUT_DIR_SELECT, err);
     });
 });
@@ -119,7 +119,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       ok: true,
       notice: '',
       outputNameUnused: outputName,
-      resultFilenames: []
+      resultFilenames: [],
     });
     return;
   }
@@ -138,7 +138,9 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
     const resultFilenamesAdditional = filenames.filter(
       filterResultFilenamesAdditional
     );
-    const resultFilenames = resultFilenamesMain.concat(resultFilenamesAdditional);
+    const resultFilenames = resultFilenamesMain.concat(
+      resultFilenamesAdditional
+    );
     let counter = 1;
     const matchCounterName = /(\w+)_\d+$/.exec(outputName);
     const outputNameWithoutCounter = matchCounterName
@@ -157,7 +159,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       ok,
       notice,
       outputNameUnused,
-      resultFilenames
+      resultFilenames,
     });
   } catch (error) {
     console.log(ipc.OUTPUT_CHECK, 'error:', error);
@@ -166,7 +168,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       ok: false,
       notice: error.message,
       error,
-      resultFilenames
+      resultFilenames,
     });
   }
 });
@@ -178,7 +180,7 @@ async function combineOutput(outputDir, outputFilename) {
   const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, {
     cwd: outputDir,
-    shell: electronUtil.is.windows
+    shell: electronUtil.is.windows,
   });
   console.log(stdout, stderr);
 }
@@ -188,7 +190,7 @@ const binParentDir = app.isPackaged
   : electronUtil.platform({
       macos: 'Mac',
       windows: 'Windows',
-      linux: 'Linux'
+      linux: 'Linux',
     });
 const binaryDir = path.join(__static, 'bin', binParentDir);
 
@@ -369,19 +371,27 @@ function spawnProcess(binaryDir, binaryName, args) {
   // const binaryName = path.basename(binaryPath);
   const binaryPath = path.join(binaryDir, binaryName);
 
-  const proc = childProcess.execFile(get_space_safe_binary_path(binaryPath), args, {
-    // stdio: 'pipe',
-    // cwd: os.homedir(),
-    // env: { PATH: binaryDir },
-    shell: electronUtil.is.windows
-  });
+  const proc = childProcess.execFile(
+    get_space_safe_binary_path(binaryPath),
+    args,
+    {
+      // stdio: 'pipe',
+      // cwd: os.homedir(),
+      // env: { PATH: binaryDir },
+      shell: electronUtil.is.windows,
+    }
+  );
   return proc;
 }
 
-async function runProcess(id, event, binaryDir, binaryName, args, {
-  onStdOut = () => {},
-  onStdErr = () => {},
-} = {}) {
+async function runProcess(
+  id,
+  event,
+  binaryDir,
+  binaryName,
+  args,
+  { onStdOut = () => {}, onStdErr = () => {} } = {}
+) {
   return new Promise((resolve, reject) => {
     cancelProcess(id);
     try {
@@ -391,21 +401,21 @@ async function runProcess(id, event, binaryDir, binaryName, args, {
 
       const exit = ({ event, code, signal, error }) => {};
 
-      proc.stdout.on('data', buffer => {
+      proc.stdout.on('data', (buffer) => {
         const content = String(buffer);
         // console.log('on stdout:', content);
         onStdOut(content);
         send(event, ipc.RUN_STDOUT, { id, content });
       });
 
-      proc.stderr.on('data', buffer => {
+      proc.stderr.on('data', (buffer) => {
         const content = String(buffer);
         console.error('on stderr:', content);
         onStdErr(content);
         send(event, ipc.RUN_STDERR, { id, content });
       });
 
-      const onQuit = message => (code, signal) => {
+      const onQuit = (message) => (code, signal) => {
         if (exited) {
           return;
         }
@@ -420,7 +430,7 @@ async function runProcess(id, event, binaryDir, binaryName, args, {
         if (!win || !win.isFocused()) {
           const notification = new Notification({
             title: app.name,
-            body: 'Calculation finished'
+            body: 'Calculation finished',
           });
           notification.show();
         }
@@ -433,13 +443,14 @@ async function runProcess(id, event, binaryDir, binaryName, args, {
         }
         return reject(
           new Error(
-            `Exited with code ${signal ||
-              code}. Check console output for more information.`
+            `Exited with code ${
+              signal || code
+            }. Check console output for more information.`
           )
         );
       };
 
-      ['error', 'exit', 'close'].forEach(message => {
+      ['error', 'exit', 'close'].forEach((message) => {
         proc.on(message, onQuit(message));
       });
     } catch (err) {
@@ -462,7 +473,7 @@ async function readalGetFormat(alignmentPath) {
   //TODO: Wrap readalPath in quotes?!
   const childCmd = `${readalPath} -in ${alignmentPath} -type -format`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: electronUtil.is.windows
+    shell: electronUtil.is.windows,
   });
   console.log('Readal stderr', stderr);
   const replaced = stdout.replace(alignmentPath, '');
@@ -483,7 +494,7 @@ async function convertAlignment(alignmentPath) {
   //TODO: Wrap readalPath in quotes?!
   const childCmd = `${readalPath} -in ${alignmentPath} -out ${newPath} -fasta`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: electronUtil.is.windows
+    shell: electronUtil.is.windows,
   });
   console.log(stdout, stderr);
   return newPath;
@@ -529,11 +540,15 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       const ind = taxons.get(sequence.taxon);
       // Check if a sequence with this name is already in the map
       if (ind !== undefined) {
-        const message = `Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`;
+        const message = `Identical sequence names: ${ind + 1} and ${
+          index + 1
+        } = ${sequence.taxon}`;
         console.log(message);
         // Add a digit to the end of the second sequence
         identicalCounter++;
-        alignment.sequences[index].taxon = `${sequence.taxon}_${identicalCounter}`;
+        alignment.sequences[
+          index
+        ].taxon = `${sequence.taxon}_${identicalCounter}`;
         modified = true;
         modificationMessages.push(message);
       }
@@ -542,13 +557,17 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       const excludedCharacters = [':', ',', '.', '(', ')', '[', ']', ';', "'"];
       // Test white-space characters and excluded characters above
       const testInvalid = new RegExp(
-        `[\\s${excludedCharacters.map((c) => `\\${c}`).join('')}]`, 'g'
+        `[\\s${excludedCharacters.map((c) => `\\${c}`).join('')}]`,
+        'g'
       );
       if (testInvalid.test(sequence.taxon)) {
         const message = `Illegal characters in sequence name = taxon '${sequence.taxon}' found.`;
         console.log(message);
         // Replace the invalid characters in taxon names with underscores
-        alignment.sequences[index].taxon = sequence.taxon.replace(testInvalid, '_');
+        alignment.sequences[index].taxon = sequence.taxon.replace(
+          testInvalid,
+          '_'
+        );
         modified = true;
         modificationMessages.push(message);
       }
@@ -605,10 +624,12 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event, runId) => {
     });
 });
 
-ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async event => {
+ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   // __static is defined by electron-webpack
   const dir = path.join(__static, 'example-files');
   const outdir = path.join(__static, 'test-results');
+  // Create outdir if not exists
+  await fs.mkdir(outdir, { recursive: true });
   const fastaFiles = await fs.readdir(path.join(dir, 'fasta'));
   const phylipFiles = await fs.readdir(path.join(dir, 'phylip'));
   send(event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
@@ -633,8 +654,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const args = [];
   if (dataType === 'nucleotide') {
     args.push('-d', 'nt');
-  }
-  else if (dataType === 'protein') {
+  } else if (dataType === 'protein') {
     args.push('-d', 'aa');
   }
   // alignment file
@@ -653,16 +673,21 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const stdOuts = [];
   const onStdOut = (content) => {
     stdOuts.push(content);
-  }
+  };
   let exitCode = 0;
   try {
     console.log(`Run '${binaryName}' with args:`, args);
-    exitCode = await runProcess(id, event, binaryDir, binaryName, args, { onStdOut });
+    exitCode = await runProcess(id, event, binaryDir, binaryName, args, {
+      onStdOut,
+    });
     if (exitCode !== 0) {
-      if (exitCode === 'SIGTERM') { // Cancelled
+      if (exitCode === 'SIGTERM') {
+        // Cancelled
         return;
       }
-      throw new Error(`Error trying to run modeltest-ng, exited with code '${exitCode}'.`);
+      throw new Error(
+        `Error trying to run modeltest-ng, exited with code '${exitCode}'.`
+      );
     }
   } catch (err) {
     console.error('Modeltest run error:', err);
@@ -676,11 +701,15 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
 
   try {
     // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use AICc.
-    const cmdRaxml = commands.filter(cmd => cmd.startsWith('  > raxmlHPC-SSE3'))[2];
-    const cmdRaxmlNG = commands.filter(cmd => cmd.startsWith('  > raxml-ng'))[2];
+    const cmdRaxml = commands.filter((cmd) =>
+      cmd.startsWith('  > raxmlHPC-SSE3')
+    )[2];
+    const cmdRaxmlNG = commands.filter((cmd) =>
+      cmd.startsWith('  > raxml-ng')
+    )[2];
 
-    const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1]
-    const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1]
+    const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1];
+    const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1];
 
     console.log(`-> raxml: ${modelRaxml}, raxml-ng: ${modelRaxmlNG}`);
 
@@ -689,17 +718,18 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
       result: {
         raxml: modelRaxml,
         raxmlNG: modelRaxmlNG,
-      }
+      },
     });
   } catch (err) {
     console.error(`Couldn't parse best models from modeltest-ng output:`, err);
     console.log('output:', commands);
-    const error = new Error(`Couldn't parse best models from modeltest-ng output. Check alignment log.`);
+    const error = new Error(
+      `Couldn't parse best models from modeltest-ng output. Check alignment log.`
+    );
     error.name = 'Modeltest error';
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
   }
 });
-
 
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, (event, id) => {
   console.log(`Cancel modeltest process ${id}...`);
@@ -713,15 +743,15 @@ ipcMain.on(ipc.TREE_SELECT, (event, params) => {
     .showOpenDialog(
       {
         title: 'Select a tree file',
-        properties: ['openFile']
+        properties: ['openFile'],
       },
-      filePaths => {
+      (filePaths) => {
         if (filePaths.length === 0) {
           return;
         }
       }
     )
-    .then(result => {
+    .then((result) => {
       console.debug(ipc.TREE_SELECT, result);
       if (result.canceled) {
         return;
@@ -729,10 +759,10 @@ ipcMain.on(ipc.TREE_SELECT, (event, params) => {
       send(event, ipc.TREE_SELECTED, {
         id,
         type,
-        filePath: result.filePaths[0]
+        filePath: result.filePaths[0],
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.debug(ipc.TREE_SELECT, err);
     });
 });
