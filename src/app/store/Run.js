@@ -636,7 +636,6 @@ class Run extends StoreBase {
   }
 
   @computed get usesModeltestNg() {
-    console.log(this.binary.value);
     if (this.binary.value.includes('modeltest-ng')) {
       return true;
     }
