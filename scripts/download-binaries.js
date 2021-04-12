@@ -13,7 +13,7 @@ const osName = (() => {
   }
 })();
 
-const binariesBaseDir = "https://github.com/AntonelliLab/raxmlGUI-binaries/releases/download/v21.02.23";
+const binariesBaseDir = "https://github.com/AntonelliLab/raxmlGUI-binaries/releases/download/v21.03.24";
 const binariesUrl = `${binariesBaseDir}/${osName}.zip`;
 
 const binPath = path.join(__dirname, "..", "static", "bin");
