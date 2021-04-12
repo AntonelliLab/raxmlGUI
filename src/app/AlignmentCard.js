@@ -146,9 +146,6 @@ const useStyles = makeStyles((theme) => {
 
 function _ModelTestButton({ alignment }) {
   const classes = useStyles();
-  if (!alignment.modelTestAvailable) {
-    return null;
-  }
   if (!alignment.modelTestCanRun) {
     return null;
   }
