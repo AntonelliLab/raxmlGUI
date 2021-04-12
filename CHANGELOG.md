@@ -21,7 +21,12 @@ in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
 ### Added
+- Modeltest-NG is now also available on Windows (Tested on Windows 10 only).
+
+## [2.0.2] - 2021-03-29
+### Added
 - Display more detailed information when an input alignment has been modified.
+- Allow completely unknown binary sequences.
 ### Fixed
 - Small bugfix: Remove "null" showing up in SnackBar text
 
