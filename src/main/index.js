@@ -154,9 +154,8 @@ function initialize() {
     };
 
     if (process.platform === 'linux') {
-      // Could set a window icon for linux
-      // TODO: get original icon from Daniele
-      // mainWindowOptions.icon = path.join(__dirname, '/assets/app-icon/png/512.png');
+      // Set a window icon for linux
+      mainWindowOptions.icon = path.join(__dirname, '/public/favicon.ico');
     }
 
     // Create the browser window.
