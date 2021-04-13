@@ -554,7 +554,6 @@ class Run extends StoreBase {
     return this.haveAlignments ? this.alignments[0].taxons : [];
   }
 
-  // @observable dataType = 'mixed';
   @computed get dataType() {
     return this.finalAlignment.dataType;
   }
@@ -686,14 +685,13 @@ class Run extends StoreBase {
       .some((e) => e);
     return this.haveAlignments && shouldShow;
   }
-  
+
   @computed get modificationMessages() {
     const messages = [];
-    this.alignments
-      .map((a) => {
-        messages.push(a.name + ":\n")
-        a.modificationMessages.map((b) => messages.push(b + '\n'));
-      });
+    this.alignments.map((a) => {
+      messages.push(a.name + ':\n');
+      a.modificationMessages.map((b) => messages.push(b + '\n'));
+    });
     return messages;
   }
 
@@ -1634,25 +1632,16 @@ Results saved to: ${this.outputDir}
     return this.alignments.length === 1 && !this.havePartitionFile;
   }
 
-  @action loadPartitionFile = async () => {
-    const result = await remote.dialog.showOpenDialog(
-      {
-        title: 'Select a partition file',
-        properties: ['openFile'],
-      },
-      (filePaths) => {
-        if (filePaths.length === 0) {
-          return;
-        }
-      }
-    );
-    if (result.canceled) {
-      return;
+  @action loadPartitionFile = () => {
+    ipcRenderer.send(ipc.PARTITION_FILE_SELECT, this.id);
+  };
+
+  @action onPartitionSelected = async (event, { id, filePath }) => {
+    if (id === this.id) {
+      const content = await readFile(filePath, 'utf-8');
+      this.partitionFile = filePath;
+      this.partitionFileContent = content;
     }
-    const filePath = result.filePaths[0];
-    const content = await readFile(filePath, 'utf-8');
-    this.partitionFile = filePath;
-    this.partitionFileContent = content;
   };
 
   @action removePartitionFile = () => {
@@ -1683,6 +1672,7 @@ Results saved to: ${this.outputDir}
 
   listen = () => {
     this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
+    this.listenTo(ipc.PARTITION_FILE_SELECTED, this.onPartitionSelected);
     this.listenTo(ipc.ALIGNMENT_SELECTED, this.onAlignmentAdded);
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
     this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);

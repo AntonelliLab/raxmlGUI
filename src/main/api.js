@@ -1,4 +1,11 @@
-import { app, ipcMain, shell, dialog, Notification } from 'electron';
+import {
+  app,
+  ipcMain,
+  shell,
+  dialog,
+  Notification,
+  BrowserWindow,
+} from 'electron';
 import _ from 'lodash';
 import path from 'path';
 import util from 'util';
@@ -67,6 +74,10 @@ ipcMain.on(ipc.INIT_APP_STATE, (event) => {
   });
 });
 
+ipcMain.on(ipc.RELOAD, () => {
+  BrowserWindow.getCurrentWindow().reload();
+});
+
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
   dialog
     .showOpenDialog({
@@ -85,6 +96,27 @@ ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
     })
     .catch((err) => {
       console.debug(ipc.OUTPUT_DIR_SELECT, err);
+    });
+});
+
+ipcMain.on(ipc.PARTITION_FILE_SELECT, (event, runId) => {
+  dialog
+    .showOpenDialog({
+      title: 'Select a partition file',
+      properties: ['openFile'],
+    })
+    .then((result) => {
+      console.debug(ipc.PARTITION_FILE_SELECT, result);
+      if (result.canceled) {
+        return;
+      }
+      send(event, ipc.PARTITION_FILE_SELECTED, {
+        id: runId,
+        filePath: result.filePaths[0],
+      });
+    })
+    .catch((err) => {
+      console.debug(ipc.PARTITION_FILE_SELECT, err);
     });
 });
 

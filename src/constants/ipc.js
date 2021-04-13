@@ -1,13 +1,14 @@
 /*
     Strings for ipc
 */
-;
 export const INIT_APP_STATE = 'INIT_APP_STATE';
 export const INIT_APP_STATE_RECEIVED = 'INIT_APP_STATE_RECEIVED';
 export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
 export const OUTPUT_DIR_SELECTED = 'OUTPUT_DIR_SELECTED';
 export const TREE_SELECT = 'TREE_SELECT';
 export const TREE_SELECTED = 'TREE_SELECTED';
+export const PARTITION_FILE_SELECT = 'PARTITION_FILE_SELECT';
+export const PARTITION_FILE_SELECTED = 'PARTITION_FILE_SELECTED';
 export const RUN_START = 'RUN_START';
 export const RUN_STARTED = 'RUN_STARTED';
 export const RUN_STDOUT = 'RUN_STDOUT';
@@ -39,3 +40,4 @@ export const ADD_RUN = 'ADD_RUN';
 export const REMOVE_RUN = 'REMOVE_RUN';
 export const LIGHT_MODE = 'LIGHT_MODE';
 export const DARK_MODE = 'DARK_MODE';
+export const RELOAD = 'RELOAD';
