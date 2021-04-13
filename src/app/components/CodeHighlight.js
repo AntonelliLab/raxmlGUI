@@ -6,7 +6,6 @@ import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';
 import 'prismjs/themes/prism-okaidia.css'; // coy, dark, funky, okaidia, solarizedlight, tomorrow, twilight
 
-
 const useStyles = makeStyles(() => ({
   code: {
     fontSize: 10,

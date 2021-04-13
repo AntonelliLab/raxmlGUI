@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+
 import CodeHighlight from './components/CodeHighlight';
 
 const useStyles = makeStyles(theme => ({
@@ -25,8 +26,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto'
   },
   code: {
-    // backgroundColor: theme.palette.console.background,
-    backgroundColor: '#444',
+    backgroundColor: theme.palette.console.background,
     borderRadius: '4px',
     padding: '4px'
   }
