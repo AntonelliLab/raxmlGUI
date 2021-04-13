@@ -19,7 +19,7 @@ const variantIcon = {
   info: InfoIcon,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   success: {
     backgroundColor: theme.palette.output.main,
   },
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   message: {
     display: 'flex',
     alignItems: 'center',
-    color: '#333',
+    color: theme.palette.primary.contrastText,
   },
 }));
 

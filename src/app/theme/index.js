@@ -7,12 +7,11 @@ const darkTheme = {
       background: 'hsl(29, 5%, 5%)',
       border: 'hsl(29, 80%, 38%)',
       main: 'hsl(29, 80%, 30%)',
-      contrastText: '#333',
+      contrastText: '#ddd',
     },
     secondary: {
       main: 'hsl(29, 80%, 30%)',
-      // main: 'hsl(180, 50%, 50%)',
-      contrastText: '#333',
+      contrastText: '#ddd',
     },
     model: {
       background: 'hsla(33, 27%, 10%, 1)',
