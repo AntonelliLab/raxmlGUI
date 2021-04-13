@@ -554,7 +554,6 @@ class Run extends StoreBase {
     return this.haveAlignments ? this.alignments[0].taxons : [];
   }
 
-  // @observable dataType = 'mixed';
   @computed get dataType() {
     return this.finalAlignment.dataType;
   }
