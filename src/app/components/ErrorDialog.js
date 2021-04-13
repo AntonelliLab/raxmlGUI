@@ -12,12 +12,13 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
-import { remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import SnackbarMessage from './SnackbarMessage';
 import { reportIssueToGitHub, getMailtoLinkToReportError } from '../../common/utils';
+import * as ipc from '../../constants/ipc';
 
 const handleReload = () => {
-  remote.getCurrentWindow().reload();
+  ipcRenderer.send(ipc.RELOAD);
 }
 
 export default function ErrorDialog({ error, onClose, needReload, title }) {

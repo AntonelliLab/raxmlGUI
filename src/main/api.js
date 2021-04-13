@@ -1,4 +1,11 @@
-import { app, ipcMain, shell, dialog, Notification } from 'electron';
+import {
+  app,
+  ipcMain,
+  shell,
+  dialog,
+  Notification,
+  BrowserWindow,
+} from 'electron';
 import _ from 'lodash';
 import path from 'path';
 import util from 'util';
@@ -65,6 +72,10 @@ ipcMain.on(ipc.INIT_APP_STATE, (event) => {
   send(event, ipc.INIT_APP_STATE_RECEIVED, {
     version,
   });
+});
+
+ipcMain.on(ipc.RELOAD, () => {
+  BrowserWindow.getCurrentWindow().reload();
 });
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
