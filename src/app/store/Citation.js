@@ -5,12 +5,12 @@ export default class Citation {
   @observable visible = false;
 
   formats = [
-    { value: 'bib', name: 'BibTeX' },
-    { value: 'ris', name: 'RIS/EndNote' },
     { value: 'txt', name: 'Plain text' },
+    { value: 'ris', name: 'RIS/EndNote' },
+    { value: 'bib', name: 'BibTeX' },
   ];
 
-  @observable format = 'bib';
+  @observable format = 'txt';
   @action setFormat = (format) => {
     this.format = format;
   };
