@@ -9,7 +9,7 @@ import { Link, Typography } from '@material-ui/core';
 import FileIcon from '@material-ui/icons/InsertDriveFileSharp';
 import { join } from 'path';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   Output: {
     width: '100%',
     padding: '10px',
@@ -18,23 +18,22 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     '& > *:not(:first-child)': {
       marginTop: theme.spacing(3),
-    }
+    },
   },
-  formItem: {
-  },
+  formItem: {},
   result: {
     // maxHeight: 200,
     // overflowY: 'auto',
   },
   resultFilenameRow: {
-    color: '#666',
+    color: theme.palette.primary.contrastText,
     display: 'flex',
     alignItems: 'flex-end',
     cursor: 'pointer',
   },
   resultFilename: {
-    color: '#ccc',
-  }
+    color: theme.palette.primary.contrastText,
+  },
 }));
 
 const Output = ({ run }) => {
