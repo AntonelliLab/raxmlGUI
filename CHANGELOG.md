@@ -18,11 +18,12 @@ for any bug fixes.
 ### Security
 in case of vulnerabilities.
 
-
 ## [Unreleased] - YYYY-MM-DD
+
+## [2.0.3] - 2021-04-14
 ### Added
 - Modeltest-NG is now also available on Windows (Tested on Windows 10 only).
-- ### Fixed
+### Fixed
 - Fixed some smaller styling issues.
 
 ## [2.0.2] - 2021-03-29
