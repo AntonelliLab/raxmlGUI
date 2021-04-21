@@ -1,5 +1,5 @@
 import { observable, computed, action, createAtom } from 'mobx';
-import { ipcRenderer, shell, remote } from 'electron';
+import { ipcRenderer, shell } from 'electron';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import parsePath from 'parse-filepath';
