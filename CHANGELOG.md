@@ -19,6 +19,9 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
+### Fixed
+- Fixed a crash with ModelTest-NG on Windows.
+- Fixed an error when restarting the app after n update.
 
 ## [2.0.3] - 2021-04-14
 ### Added
