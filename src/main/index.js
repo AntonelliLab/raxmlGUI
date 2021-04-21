@@ -20,6 +20,8 @@ import MenuBuilder from './menu';
 //-------------------------------------------------------------------
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
+// Fixes this error: https://github.com/electron-userland/electron-builder/issues/5717
+autoUpdater.autoInstallOnAppQuit = false;
 log.info('App starting...');
 
 debug({
@@ -64,7 +66,7 @@ autoUpdater.on('update-available', info => {
   dialog.showMessageBox({
     type: 'info',
     title: 'Found Updates',
-    message: 'An update for RAxML-GUI is available, do you want to update now?',
+    message: 'An update for RAxML-GUI is available, do you want to update now and restart?',
     buttons: ['Yes', 'No'],
     cancelId: 1
   })
