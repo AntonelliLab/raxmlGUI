@@ -59,6 +59,77 @@
       </div>
     </section>
 
+    <!-- Features section -->
+    <section id="features" class="features-section">
+      <div class="features-container">
+        <div class="features-title">
+          <h2 class="h2">Features</h2>
+          <p class="features-info">This is the initial release of raxmlGUI 2.0, featuring:</p>
+        </div>
+        <div class="feature-grid">
+          <!-- Feature card -->
+          <div class="feature">
+            <div class="feature-image">
+              <figure class="feature-figure">
+                <img src="{{ '/assets/img/screenshots/partition_editor.png' | relative_url }}" loading="lazy"
+                  alt="The partition editor in raxmlGUI">
+              </figure>
+            </div>
+            <div>
+              <h3 class="feature-header">Concatenation & partitioning</h3>
+              <p class="feature-info">Built-in functions to concatenate alignment files with automatic partition settings.
+                The default partition can be edited with an intuitive partition editor.</p>
+            </div>
+          </div>
+          <!-- Feature card -->
+          <div class="feature">
+            <div class="feature-image">
+              <figure class="feature-figure">
+                <img src="{{ '/assets/img/screenshots/model.png' | relative_url }}" loading="lazy"
+                  alt="Model selection in raxmlGUI">
+              </figure>
+            </div>
+            <div>
+              <h3 class="feature-header">One-click model selection</h3>
+              <p class="feature-info">Possibility to select the best-fit model of evolution for DNA or protein alignments using
+                ModelTest-NG<sup>5</sup>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <!-- Feature card -->
+          <div class="feature">
+            <div class="feature-image">
+              <figure class="feature-figure">
+                <img src="{{ '/assets/img/screenshots/pipelines.png' | relative_url }}"
+                  loading="lazy" alt="A basic pipeline in raxmlGUI">
+              </figure>
+            </div>
+            <div>
+              <h3 class="feature-header">Pipelines for analyses</h3>
+              <p class="feature-info">Automated pipelines for analyses that require multiple successive calls of RAxML.</p>
+            </div>
+          </div>
+          <!-- Feature card -->
+          <div class="feature">
+            <div class="feature-image">
+              <figure class="feature-figure">
+                <img src="{{ '/assets/img/screenshots/console.png' | relative_url }}"
+                  loading="lazy" alt="The console of raxmlGUI">
+              </figure>
+            </div>
+            <div>
+              <h3 class="feature-header">Seamless integration with RAxML and RAxML-NG</h3>
+              <p class="feature-info">raxmlGUI includes pre-compiled versions of RAxML and RAxML-ng
+                and does not require any dependency.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <main id="content" class="main-content" role="main">
       {{ content }}
 
