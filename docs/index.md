@@ -5,15 +5,6 @@
 #layout: home
 description: A new user-friendly program integrating RAxML-NG and ModelTest-NG for cutting-edge phylogenetic analysis
 ---
-raxmlGUI 2.0<sup>1</sup>, a complete rewrite of raxmlGUI<sup>2</sup>, is a graphical user interface to RAxML<sup>3, 4</sup>, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. This is the initial release of raxmlGUI 2.0, featuring:
-
-*	Intuitive graphical front-end to set up and run phylogenetic analyses
-*	Seamless integration with RAxML and RAxML-NG available on all major operating systems
-*	Automated pipelines for analyses that require multiple successive calls of RAxML 
-*	Built-in functions to concatenate alignment files with automatic partition settings
-*	Possibility to select the best-fit model of evolution for DNA or protein alignments using ModelTest-NG<sup>5</sup>
-
-![image](/assets/img/Partition-editor.png)
 
 The program presented here is the first release, the most important functions and analyses are implemented and functional. However, we encourage users to [send us any feedback they may have](mailto:raxmlgui.help@gmail.com). raxmlGUI 2.0 facilitates phylogenetic analyses by coupling an intuitive interface with the unmatched performance of RAxML. Read more in the [accompanying paper](http://dx.doi.org/10.1111/2041-210X.13512).
 
