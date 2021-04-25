@@ -5,8 +5,6 @@
 #layout: home
 description: A new user-friendly program integrating RAxML-NG and ModelTest-NG for cutting-edge phylogenetic analysis
 ---
-![image](/assets/img/raxmlGUI-screenshot-tabs.png)
-
 raxmlGUI 2.0<sup>1</sup>, a complete rewrite of raxmlGUI<sup>2</sup>, is a graphical user interface to RAxML<sup>3, 4</sup>, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. This is the initial release of raxmlGUI 2.0, featuring:
 
 *	Intuitive graphical front-end to set up and run phylogenetic analyses
