@@ -11,6 +11,8 @@
         gtag('config', '{{ site.google_analytics }}');
       </script>
     {% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
     <meta charset="UTF-8">
     {% seo %}
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -68,4 +70,41 @@
       </footer>
     </main>
   </body>
+
+  <script>
+    (function () {
+      const view = {
+        init: function () {
+          this.dark = document.getElementById('basic-screenshot-dark');
+        },
+        // Checks if the screenshot is fully visible
+        fade: function () {
+          var objectTop = $('#basic-screenshot-dark').offset().top;
+          var objectBottom = $('#basic-screenshot-dark').offset().top + $('#basic-screenshot-dark').innerHeight();
+          var windowBottom = $(window).scrollTop() + $(window).innerHeight();
+          if (objectBottom < windowBottom) {
+            // console.log('Should be black')
+            if (!this.dark.classList.contains('active')) {
+              this.fadeInOut();
+            }
+          } else {
+            // console.log('Should be white')
+            if (this.dark.classList.contains('active')) {
+              this.fadeInOut();
+            }
+          }
+        },
+        fadeInOut: function () {
+          // Show button by increasing opacity
+          this.dark.classList.toggle('active');
+        },
+      };
+
+      // Start the app
+      view.init();
+      // When scrolled call the fade function
+      $(window).scroll(function () { view.fade(); });
+
+    }());
+  </script>
 </html>
