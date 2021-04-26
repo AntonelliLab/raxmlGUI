@@ -95,6 +95,7 @@
  padding-right:.75rem;
  padding-left:.75rem;
  text-align:center;
+ align-items: stretch;
 }
 
 .features-title {
@@ -145,7 +146,6 @@
 
 .feature {
  z-index:1;
- height:34.4375rem;
  width:100%;
  padding:1rem;
  text-align:left;
