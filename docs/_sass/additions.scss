@@ -131,6 +131,14 @@
  color:#707070;
 }
 
+.feature {
+ z-index:1;
+ width:100%;
+ padding:1rem;
+ text-align:left;
+ float:none;
+}
+
 .feature-grid {
  display:-ms-grid;
  display:grid;
@@ -144,12 +152,11 @@
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.feature {
- z-index:1;
- width:100%;
- padding:1rem;
- text-align:left;
- float:none;
+@media (min-width: 600px) {
+  .feature-reversed {
+    grid-column: 1;
+    grid-row: 1;
+  }
 }
 
 .feature-image img {
