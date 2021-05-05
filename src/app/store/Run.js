@@ -244,6 +244,9 @@ class SubstitutionModel extends Option {
         model += 'X';
       }
     }
+    if (model == 'JC' || model == 'K80' || model == 'HKY') {
+      return 'GTRGAMMA'
+    }
     return model;
   }
 }
@@ -963,6 +966,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -994,6 +1006,15 @@ class Run extends StoreBase {
           if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
           }
+          if (this.substitutionModel.value == 'JC') {
+            next.push('--JC69');
+          }
+          if (this.substitutionModel.value == 'K80') {
+            next.push('--K80');
+          }
+          if (this.substitutionModel.value == 'HKY') {
+            next.push('--HKY85');
+          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1024,6 +1045,15 @@ class Run extends StoreBase {
           if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
           }
+          if (this.substitutionModel.value == 'JC') {
+            next.push('--JC69');
+          }
+          if (this.substitutionModel.value == 'K80') {
+            next.push('--K80');
+          }
+          if (this.substitutionModel.value == 'HKY') {
+            next.push('--HKY85');
+          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1051,6 +1081,15 @@ class Run extends StoreBase {
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
         }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
@@ -1091,6 +1130,15 @@ class Run extends StoreBase {
           if (this.substitutionModel.value.startsWith('ASC_')) {
             next.push('--asc-corr=lewis');
           }
+          if (this.substitutionModel.value == 'JC') {
+            next.push('--JC69');
+          }
+          if (this.substitutionModel.value == 'K80') {
+            next.push('--K80');
+          }
+          if (this.substitutionModel.value == 'HKY') {
+            next.push('--HKY85');
+          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1121,6 +1169,15 @@ class Run extends StoreBase {
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
         }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
@@ -1182,6 +1239,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1219,6 +1285,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           second.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          second.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          second.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          second.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1254,6 +1329,15 @@ class Run extends StoreBase {
         third.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           third.push('--asc-corr=lewis');
+        }
+        if (this.substitutionModel.value == 'JC') {
+          third.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          third.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          third.push('--HKY85');
         }
         if (!this.multistateModel.notAvailable) {
           third.push('-K', this.multistateModel.value);
@@ -1296,6 +1380,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1327,6 +1420,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           second.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          second.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          second.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          second.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1354,6 +1456,15 @@ class Run extends StoreBase {
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
         }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
+        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1379,6 +1490,15 @@ class Run extends StoreBase {
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
         }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
@@ -1411,6 +1531,15 @@ class Run extends StoreBase {
         first.push('-m', this.substitutionModel.cmdValue);
         if (this.substitutionModel.value.startsWith('ASC_')) {
           first.push('--asc-corr=lewis');
+        }
+        if (this.substitutionModel.value == 'JC') {
+          first.push('--JC69');
+        }
+        if (this.substitutionModel.value == 'K80') {
+          first.push('--K80');
+        }
+        if (this.substitutionModel.value == 'HKY') {
+          first.push('--HKY85');
         }
         if (this.branchLength.value) {
           first.push('-k');

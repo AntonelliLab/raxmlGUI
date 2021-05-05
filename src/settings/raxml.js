@@ -123,13 +123,16 @@ export const nucleotideSubstitutionModelOptions = {
   argument: 'm',
   default: 'GTRGAMMA',
   options: [
+    'JC',
+    'K80',
+    'HKY',
     'GTRCAT',
     'GTRCATI',
     'ASC_GTRCAT',
     'GTRGAMMA',
     'GTRGAMMAI',
     'ASC_GTRGAMMA'
-  ]
+  ],
 };
 
 // -m
