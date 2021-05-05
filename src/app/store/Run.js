@@ -235,6 +235,9 @@ class SubstitutionModel extends Option {
   @computed get notAvailable() { return !this.run.haveAlignments || this.run.usesRaxmlNg; }
   @computed get cmdValue() {
     let model = this.value;
+    if (model == 'JC' || model == 'K80' || model == 'HKY') {
+      model = 'GTRGAMMA';
+    }
     if (this.run.dataType === 'protein')  {
       model += this.run.alignments[0].aaMatrixName;
       const { value: suffix } = this.run.baseFrequencies;
@@ -243,9 +246,6 @@ class SubstitutionModel extends Option {
       if (this.run.estimatedFrequencies.value) {
         model += 'X';
       }
-    }
-    if (model == 'JC' || model == 'K80' || model == 'HKY') {
-      return 'GTRGAMMA'
     }
     return model;
   }
