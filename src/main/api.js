@@ -741,14 +741,16 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     )[2];
 
     const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1];
+    const extraFlag = /--(\S+)/.exec(cmdRaxml)?.[0];
     const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1];
 
-    console.log(`-> raxml: ${modelRaxml}, raxml-ng: ${modelRaxmlNG}`);
+    console.log(`-> raxml: ${modelRaxml}, extraFlag: ${extraFlag}, raxml-ng: ${modelRaxmlNG}`);
 
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
       id,
       result: {
         raxml: modelRaxml,
+        extraFlag,
         raxmlNG: modelRaxmlNG,
       },
     });
