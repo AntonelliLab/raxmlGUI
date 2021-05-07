@@ -344,7 +344,7 @@ class Alignment extends StoreBase {
   };
 
   @action
-  setModelFromString = ({ raxml, raxmlNG }) => {
+  setModelFromString = ({ raxml, extraFlag, raxmlNG }) => {
     this.modeltestLoading = false;
     // For raxml-ng
     let model = raxmlNG.split('+')[0];
@@ -366,6 +366,18 @@ class Alignment extends StoreBase {
     }
 
     model = raxml;
+    if (extraFlag === '--JC69') {
+      // Replace in the model string for model value
+      model = model.replace('GTR', 'JC');
+    }
+    if (extraFlag === '--K80') {
+      // Replace in the model string for model value
+      model = model.replace('GTR', 'K80');
+    }
+    if (extraFlag === '--HKY85') {
+      // Replace in the model string for model value
+      model = model.replace('GTR', 'HKY');
+    }
     // For raxml
     if (/F$/.test(raxml)) {
       this.run.baseFrequencies.setValue('F');
