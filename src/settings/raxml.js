@@ -114,8 +114,8 @@ export const binarySubstitutionModelOptions = {
     'ASC_BINCAT',
     'BINGAMMA',
     'BINGAMMAI',
-    'ASC_BINGAMMA'
-  ]
+    'ASC_BINGAMMA',
+  ],
 };
 
 // -m
@@ -135,6 +135,31 @@ export const nucleotideSubstitutionModelOptions = {
     'GTRGAMMA',
     'GTRGAMMAI',
     'ASC_GTRGAMMA',
+  ],
+};
+
+export const nucleotideSubstitutionMatrixOptions = {
+  default: 'GTR',
+  options: ['JC', 'K80', 'HKY', 'GTR'],
+};
+
+export const rateOptions = {
+  default: 'GAMMA',
+  options: ['CAT', 'GAMMA'],
+};
+
+export const iOptions = {
+  default: 'none',
+  options: ['none', '+I (ML estimate)'],
+};
+
+export const ascertainmentOptions = {
+  default: 'none',
+  options: [
+    'none',
+    "Lewis' method",
+    "Felsenstein's method",
+    "Stamatakis' method",
   ],
 };
 
@@ -209,6 +234,14 @@ export const modelOptions = {
   'dna': nucleotideSubstitutionModelOptions,
   'rna': nucleotideSubstitutionModelOptions,
   'nucleotide': nucleotideSubstitutionModelOptions,
+};
+
+export const matrixOptions = {
+  // mixed: mixedSubstitutionModelOptions,
+  // multistate: multistateSubstitutionModelOptions,
+  dna: nucleotideSubstitutionMatrixOptions,
+  rna: nucleotideSubstitutionMatrixOptions,
+  nucleotide: nucleotideSubstitutionMatrixOptions,
 };
 
 
