@@ -160,7 +160,7 @@ function _ModelTestButton({ alignment }) {
       loading={alignment.modeltestLoading}
       onClick={alignment.runModelTest}
     >
-      Optimize
+      Run ModelTest
     </LoadingButton>
   );
 }
