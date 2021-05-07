@@ -16,6 +16,7 @@ import StoreBase from './StoreBase';
 import { quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
+import _ from 'lodash';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -256,7 +257,10 @@ class SubstitutionMatrix extends Option {
     if (this.run.dataType === 'multistate') {
       return 'MULTI';
     }
-    return 'GTR';
+    if (this.value === 'JC' || this.value === 'K80' || this.value === 'HKY') {
+      return 'GTR';
+    }
+    return this.value;
   }
   @computed get extraCmdValue() {
     switch (this.value) {
@@ -354,15 +358,11 @@ class SubstitutionAscertainment extends Option {
   }
   @computed get notAvailable() {
     return (
-      this.run.finalAlignment.hasInvariantSites ||
-      this.run.substitutionI.isSet ||
       !this.run.haveAlignments ||
-      // !(
-      //   this.run.dataType === 'dna' ||
-      //   this.run.dataType === 'rna' ||
-      //   this.run.dataType === 'nucleotide'
-      // ) ||
-      this.run.usesRaxmlNg
+      this.run.usesRaxmlNg ||
+      this.run.dataType === 'mixed' ||
+      this.run.finalAlignment.hasInvariantSites ||
+      this.run.substitutionI.isSet
     );
   }
   @computed get cmdValue() {
@@ -400,9 +400,6 @@ class SubstitutionModel extends Option {
   @computed get notAvailable() {
     return (
       !this.run.haveAlignments ||
-      // this.run.dataType === 'dna' ||
-      // this.run.dataType === 'rna' ||
-      // this.run.dataType === 'nucleotide' ||
       this.run.usesRaxmlNg
     );
   }
@@ -888,23 +885,13 @@ class Run extends StoreBase {
   };
 
   @computed get raxmlSubstitutionModelCmd() {
-    let model = '';
-    if (
-      this.dataType === 'dna' ||
-      this.dataType === 'rna' ||
-      this.dataType === 'nucleotide' ||
-      this.dataType === 'binary' ||
-      this.dataType === 'protein' ||
-      this.dataType === 'multistate'
-    ) {
-      model =
-        this.substitutionAscertainment.cmdValue +
-        this.substitutionMatrix.cmdValue +
-        this.substitutionRate.value +
-        this.substitutionI.cmdValue;
-    } else {
-      model = this.substitutionModel.cmdValue;
-    }
+    let model =
+      this.substitutionAscertainment.cmdValue +
+      this.substitutionMatrix.cmdValue +
+      this.substitutionRate.value +
+      this.substitutionI.cmdValue;
+
+    // model = this.substitutionModel.cmdValue;
     if (this.dataType === 'protein') {
       model += this.alignments[0].aaMatrixName;
       const { value: suffix } = this.baseFrequencies;
@@ -1137,6 +1124,8 @@ class Run extends StoreBase {
         break;
       default:
     }
+    // Remove items that are only empty strings
+    cmdArgs.forEach((args) => _.remove(args, (n) => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
@@ -1670,7 +1659,8 @@ class Run extends StoreBase {
         break;
       default:
     }
-
+    // Remove items that are only empty strings
+    cmdArgs.forEach(args => _.remove(args, n => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
