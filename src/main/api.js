@@ -708,7 +708,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   };
   let exitCode = 0;
   try {
-    console.log(`Run '${binaryName}' with args:`, args);
+    console.log(`Run modeltest-ng with args:`, args);
     exitCode = await runProcess(id, event, binaryDir, binaryName, args, {
       onStdOut,
     });
