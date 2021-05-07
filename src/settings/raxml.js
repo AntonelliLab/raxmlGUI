@@ -100,8 +100,17 @@ export const mixedSubstitutionModelOptions = {
     'MULTICAT',
     'MULTICATI',
     'MULTIGAMMA',
-    'MULTIGAMMAI'
-  ]
+    'MULTIGAMMAI',
+  ],
+};
+
+export const mixedSubstitutionMatrixOptions = {
+  default: 'GTR',
+  options: [
+    'GTR',
+    'BIN',
+    'MULTI',
+  ],
 };
 
 // -m
@@ -237,8 +246,7 @@ export const modelOptions = {
 };
 
 export const matrixOptions = {
-  // mixed: mixedSubstitutionModelOptions,
-  // multistate: multistateSubstitutionModelOptions,
+  mixed: mixedSubstitutionMatrixOptions,
   dna: nucleotideSubstitutionMatrixOptions,
   rna: nucleotideSubstitutionMatrixOptions,
   nucleotide: nucleotideSubstitutionMatrixOptions,
