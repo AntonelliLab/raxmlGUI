@@ -369,14 +369,20 @@ class Alignment extends StoreBase {
     if (extraFlag === '--JC69') {
       // Replace in the model string for model value
       model = model.replace('GTR', 'JC');
+      // We dont allow CAT model for this matrix
+      model = model.replace('CAT', 'GAMMA');
     }
     if (extraFlag === '--K80') {
       // Replace in the model string for model value
       model = model.replace('GTR', 'K80');
+      // We dont allow CAT model for this matrix
+      model = model.replace('CAT', 'GAMMA');
     }
     if (extraFlag === '--HKY85') {
       // Replace in the model string for model value
       model = model.replace('GTR', 'HKY');
+      // We dont allow CAT model for this matrix
+      model = model.replace('CAT', 'GAMMA');
     }
     // For raxml
     if (/F$/.test(raxml)) {
