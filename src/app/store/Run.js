@@ -237,6 +237,8 @@ class SubstitutionMatrix extends Option {
     return (
       !this.run.haveAlignments ||
       this.run.dataType === 'binary' ||
+      this.run.dataType === 'protein' ||
+      this.run.dataType === 'multistate' ||
       ((this.run.dataType === 'dna' ||
         this.run.dataType === 'rna' ||
         this.run.dataType === 'nucleotide') &&
@@ -247,6 +249,12 @@ class SubstitutionMatrix extends Option {
   @computed get cmdValue() {
     if (this.run.dataType === 'binary') {
       return 'BIN';
+    }
+    if (this.run.dataType === 'protein') {
+      return 'PROT';
+    }
+    if (this.run.dataType === 'multistate') {
+      return 'MULTI';
     }
     return 'GTR';
   }
@@ -886,7 +894,8 @@ class Run extends StoreBase {
       this.dataType === 'rna' ||
       this.dataType === 'nucleotide' ||
       this.dataType === 'binary' ||
-      this.dataType === 'protein'
+      this.dataType === 'protein' ||
+      this.dataType === 'multistate'
     ) {
       model =
         this.substitutionAscertainment.cmdValue +
