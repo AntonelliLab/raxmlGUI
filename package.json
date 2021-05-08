@@ -68,13 +68,13 @@
     "electron-better-ipc": "^1.1.0",
     "electron-debug": "^3.2.0",
     "electron-is-dev": "^1.1.0",
-    "electron-log": "^4.3.2",
+    "electron-log": "^4.3.5",
     "electron-progressbar": "^2.0.0",
     "electron-store": "^7.0.2",
     "electron-unhandled": "^3.0.1",
     "electron-updater": "^4.3.8",
     "electron-util": "^0.14.2",
-    "filenamify": "^4.2.0",
+    "filenamify": "^4.3.0",
     "lodash": "^4.17.21",
     "mobx": "^5.15.7",
     "mobx-react": "^6.3.1",
@@ -89,7 +89,7 @@
     "react-dropzone": "^11.3.1",
     "react-scripts": "^4.0.3",
     "react-split-pane": "^0.1.92",
-    "serialize-error": "^8.0.1",
+    "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.16",
     "yup": "^0.32.9"
   },
@@ -111,7 +111,7 @@
     "prettier": "^2.2.1",
     "shx": "^0.3.3",
     "typescript": "^4.1.3",
-    "wait-on": "^5.2.1"
+    "wait-on": "^5.3.0"
   },
   "browserslist": [
     ">0.2%",
