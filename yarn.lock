@@ -5087,7 +5087,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.6:
+classnames@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
   integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
@@ -6605,10 +6605,10 @@ electron-localshortcut@^3.1.0:
     keyboardevent-from-electron-accelerator "^2.0.0"
     keyboardevents-areequal "^0.2.1"
 
-electron-log@^4.3.2:
-  version "4.3.4"
-  resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-4.3.4.tgz#97e991dcd653e759e14eb2ae5d6ba4440f50afd8"
-  integrity sha512-Cd6xZ9if2J4NG+PNoi3cARAYoanbM4ddpod0faaL5LIhmwuSdxP9XH95C9SgTpHMqklbg8u3CFh1yqiaqo2Bng==
+electron-log@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-4.3.5.tgz#2aad5f93842b9b5214a1b4a10e47b5ac5c9ec104"
+  integrity sha512-J5Ew3axdk7W4jzzxKLSAi1sqbcAoo9CzHuBVsG0tT47j256xKulNrWFf3lZmHJ1KDXOQUcuwOngQF0jjmpEdpw==
 
 electron-notarize@^1.0.0:
   version "1.0.0"
@@ -7632,10 +7632,10 @@ filenamify@^3.0.0:
     strip-outer "^1.0.0"
     trim-repeated "^1.0.0"
 
-filenamify@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/filenamify/-/filenamify-4.2.0.tgz#c99716d676869585b3b5d328b3f06590d032e89f"
-  integrity sha512-pkgE+4p7N1n7QieOopmn3TqJaefjdWXwEkj2XLZJLKfOgcQKkn11ahvGNgTD8mLggexLiDFQxeTs14xVU22XPA==
+filenamify@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/filenamify/-/filenamify-4.3.0.tgz#62391cb58f02b09971c9d4f9d63b3cf9aba03106"
+  integrity sha512-hcFKyUG57yWGAzu1CMt/dPzYZuv+jAJUT85bL8mrXvNe6hWj6yEHEc4EdcgiA6Z3oi1/9wXJdZPXF2dZNgwgOg==
   dependencies:
     filename-reserved-regex "^2.0.0"
     strip-outer "^1.0.1"
@@ -13798,10 +13798,10 @@ serialize-error@^7.0.1:
   dependencies:
     type-fest "^0.13.1"
 
-serialize-error@^8.0.1:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.0.1.tgz#7a67f8ecbbf28973b5a954a2852ff9f4eef52d99"
-  integrity sha512-r5o60rWFS+8/b49DNAbB+GXZA0SpDpuWE758JxDKgRTga05r3U5lwyksE91dYKDhXSmnu36RALj615E6Aj5pSg==
+serialize-error@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
+  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
   dependencies:
     type-fest "^0.20.2"
 
@@ -15506,14 +15506,14 @@ w3c-xmlserializer@^2.0.0:
   dependencies:
     xml-name-validator "^3.0.0"
 
-wait-on@^5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/wait-on/-/wait-on-5.2.1.tgz#05b66fcb4d7f5da01537f03e7cf96e8836422996"
-  integrity sha512-H2F986kNWMU9hKlI9l/ppO6tN8ZSJd35yBljMLa1/vjzWP++Qh6aXyt77/u7ySJFZQqBtQxnvm/xgG48AObXcw==
+wait-on@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/wait-on/-/wait-on-5.3.0.tgz#584e17d4b3fe7b46ac2b9f8e5e102c005c2776c7"
+  integrity sha512-DwrHrnTK+/0QFaB9a8Ol5Lna3k7WvUR4jzSKmz0YaPBpuN2sACyiPVKVfj6ejnjcajAcvn3wlbTyMIn9AZouOg==
   dependencies:
     axios "^0.21.1"
     joi "^17.3.0"
-    lodash "^4.17.20"
+    lodash "^4.17.21"
     minimist "^1.2.5"
     rxjs "^6.6.3"
 
