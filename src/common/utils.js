@@ -83,12 +83,3 @@ export const getMailtoLinkToReportError = (error) => {
   const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI(error.name)}&body=${createReportBodyForMail(error, activeState)}`;
   return mailtoLinkContent;
 }
-
-
-// TODO: app now gets undefined in production!
-// const IS_PROD = process.env.NODE_ENV === 'production';
-// const root = process.cwd();
-// export const assetsDir =
-//   IS_PROD && app.isPackaged
-//     ? path.join(path.dirname(app.getAppPath()), '..', './resources', './assets')
-//     : path.join(root, './assets');
