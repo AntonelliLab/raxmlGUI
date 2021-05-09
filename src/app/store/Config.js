@@ -17,7 +17,6 @@ export default class Config extends StoreBase {
   @action
   setDarkMode = value => {
     value = !!value;
-    console.log('!! setDarkMode:', value);
     store.set('darkMode', value);
     this.isDarkMode = value;
   }

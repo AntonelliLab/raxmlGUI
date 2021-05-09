@@ -3629,12 +3629,12 @@ ajv-errors@^1.0.0:
   resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.1.tgz#f35986aceb91afadec4102fbd85014950cefa64d"
   integrity sha512-DCRfO/4nQ+89p/RK43i8Ezd41EqdGIU4ld7nGF8OQ14oc/we5rEntLCUa7+jrn3nn83BosfwZA0wb4pon2o8iQ==
 
-ajv-formats@^1.5.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/ajv-formats/-/ajv-formats-1.6.1.tgz#35c7cdcd2a12d509171c37bac32f2e8eb010a536"
-  integrity sha512-4CjkH20If1lhR5CGtqkrVg3bbOtFEG80X9v6jDOIUhbzzbB+UzPBGy8GQhUNVZ0yvMHdMpawCOcy5ydGMsagGQ==
+ajv-formats@^2.0.2:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ajv-formats/-/ajv-formats-2.1.0.tgz#96eaf83e38d32108b66d82a9cb0cfa24886cdfeb"
+  integrity sha512-USH2jBb+C/hIpwD2iRjp0pe0k+MvzG0mlSn/FIdCgQhUb9ALPRjt2KIQdfZDS9r0ZIeUAg7gOu9KL0PFqGqr5Q==
   dependencies:
-    ajv "^7.0.0"
+    ajv "^8.0.0"
 
 ajv-keywords@^3.1.0:
   version "3.4.1"
@@ -3681,20 +3681,20 @@ ajv@^6.12.4, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^7.0.0, ajv@^7.0.3:
-  version "7.2.4"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.2.4.tgz#8e239d4d56cf884bccca8cca362f508446dc160f"
-  integrity sha512-nBeQgg/ZZA3u3SYxyaDvpvDtgZ/EZPF547ARgZBrG9Bhu1vKDwAIjtIf+sDtJUKa2zOcEbmRLBRSyMraS/Oy1A==
+ajv@^7.0.2:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.0.4.tgz#827e5f5ae32f5e5c1637db61f253a112229b5e2f"
+  integrity sha512-xzzzaqgEQfmuhbhAoqjJ8T/1okb6gAzXn/eQRNpAN1AEUoHJTNF9xCDRTtf/s3SKldtZfa+RJeTs+BQq+eZ/sw==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-ajv@^7.0.2:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.0.4.tgz#827e5f5ae32f5e5c1637db61f253a112229b5e2f"
-  integrity sha512-xzzzaqgEQfmuhbhAoqjJ8T/1okb6gAzXn/eQRNpAN1AEUoHJTNF9xCDRTtf/s3SKldtZfa+RJeTs+BQq+eZ/sw==
+ajv@^8.0.0, ajv@^8.1.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.2.0.tgz#c89d3380a784ce81b2085f48811c4c101df4c602"
+  integrity sha512-WSNGFuyWd//XO8n/m/EaOlNLtO0yL8EXT/74LqT4khdhpZjP7lkj/kT5uwRmGitKEVp/Oj7ZUHeGfPtgHhQ5CA==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -5366,22 +5366,21 @@ concat-stream@^1.5.0, concat-stream@^1.6.2:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-conf@^9.0.0:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/conf/-/conf-9.0.2.tgz#943589602b1ce274d9234265314336a698972bc5"
-  integrity sha512-rLSiilO85qHgaTBIIHQpsv8z+NnVfZq3cKuYNCXN1AOqPzced0GWZEe/A517VldRLyQYXUMyV+vszavE2jSAqw==
+conf@^10.0.0:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/conf/-/conf-10.0.1.tgz#038093e5cbddc0e59bc14f63382c4ce732a4781d"
+  integrity sha512-QClEoNcruwBL84QgMEPHibL3ERxWIrRKhbjJKG1VsFBadm5QpS0jsu4QjY/maxUvhyAKXeyrs+ws+lC6PajnEg==
   dependencies:
-    ajv "^7.0.3"
-    ajv-formats "^1.5.1"
+    ajv "^8.1.0"
+    ajv-formats "^2.0.2"
     atomically "^1.7.0"
     debounce-fn "^4.0.0"
     dot-prop "^6.0.1"
-    env-paths "^2.2.0"
+    env-paths "^2.2.1"
     json-schema-typed "^7.0.3"
-    make-dir "^3.1.0"
     onetime "^5.1.2"
     pkg-up "^3.1.0"
-    semver "^7.3.4"
+    semver "^7.3.5"
 
 config-chain@^1.1.11:
   version "1.1.12"
@@ -6648,13 +6647,13 @@ electron-publish@22.11.1:
     lazy-val "^1.0.4"
     mime "^2.5.0"
 
-electron-store@^7.0.2:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-7.0.3.tgz#56d78284454018ed50ffc7645da49f828ae5ff19"
-  integrity sha512-wIbw4GHt4djs4dVrlRLCD/SpdpDUiRsQc212jagGA6zJ8xt1iwx3KZIzXY8gmwvgVCOcVxi3iyCXZoBBWwBXpQ==
+electron-store@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-8.0.0.tgz#81a4e687958e2dae1c5c84cc099a8148be776337"
+  integrity sha512-ZgRPUZkfrrjWSqxZeaxu7lEvmYf6tgl49dLMqxXGnEmliSiwv3u4rJPG+mH3fBQP9PBqgSh4TCuxHZImMMUgWg==
   dependencies:
-    conf "^9.0.0"
-    type-fest "^0.20.2"
+    conf "^10.0.0"
+    type-fest "^1.0.2"
 
 electron-to-chromium@^1.3.413, electron-to-chromium@^1.3.488:
   version "1.3.496"
@@ -6852,7 +6851,7 @@ entities@^2.0.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
   integrity sha512-D9f7V0JSRwIxlRI2mjMqufDrRDnx8p+eEOz7aUM9SuvF8gsBzra0/6tbjl1m8eQHrZlYj6PxqE00hZ1SAIKPLw==
 
-env-paths@^2.2.0:
+env-paths@^2.2.0, env-paths@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.1.tgz#420399d416ce1fbe9bc0a07c62fa68d67fd0f8f2"
   integrity sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
@@ -10465,7 +10464,7 @@ make-dir@^2.0.0, make-dir@^2.1.0:
     pify "^4.0.1"
     semver "^5.6.0"
 
-make-dir@^3.0.0, make-dir@^3.0.2, make-dir@^3.1.0:
+make-dir@^3.0.0, make-dir@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
   integrity sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
@@ -13768,7 +13767,7 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.2.0, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
-semver@^7.3.4:
+semver@^7.3.4, semver@^7.3.5:
   version "7.3.5"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
   integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
@@ -15093,6 +15092,11 @@ type-fest@^0.8.0, type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+type-fest@^1.0.2:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.1.1.tgz#210251e7f57357a1457269e6b34837fed067ac2c"
+  integrity sha512-RPDKc5KrIyKTP7Fk75LruUagqG6b+OTgXlCR2Z0aQDJFeIvL4/mhahSEtHmmVzXu4gmA0srkF/8FCH3WOWxTWA==
 
 type-is@~1.6.17, type-is@~1.6.18:
   version "1.6.18"
