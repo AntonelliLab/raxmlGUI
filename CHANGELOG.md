@@ -19,6 +19,11 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
+
+## [2.0.5] - 2021-05-09
+### Added
+- Using RAxML 8 you can now select these substitution models for nucleotide data as well: JC69, K80, HKY85.
+- ModelTest will also recognize these models if they are the best fit.
 ### Fixed
 - Fixed an error when restarting the app after an update.
 
