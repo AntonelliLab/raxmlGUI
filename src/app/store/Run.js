@@ -371,11 +371,11 @@ class SubstitutionAscertainment extends Option {
   @computed get extraCmdValue() {
     switch (this.value) {
       case "Lewis' method":
-        return '­­--asc-corr=lewis';
+        return '--asc-corr=lewis';
       case "Felsenstein's method":
-        return '­­--asc-corr=felsenstein';
+        return '--asc-corr=felsenstein';
       case "Stamatakis' method":
-        return '­­--asc-corr=stamatakis';
+        return '--asc-corr=stamatakis';
       default:
         return '';
     }
