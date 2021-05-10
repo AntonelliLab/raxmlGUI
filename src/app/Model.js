@@ -37,7 +37,16 @@ const Model = ({ run }) => {
   }
   return (
     <div className={classes.Model}>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
+      <Box
+        component="form"
+        mt={1}
+        mb={2}
+        display="flex"
+        alignItems="start"
+        className={classes.form}
+        noValidate
+        autoComplete="off"
+      >
         <OptionSelect option={run.analysis} />
         <OptionSelect option={run.numRuns} />
         <OptionSelect option={run.numRepetitions} />
@@ -47,25 +56,56 @@ const Model = ({ run }) => {
         <OptionCheck option={run.combinedOutput} />
         <OptionSelect option={run.startingTree} />
       </Box>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
+      <Box
+        component="form"
+        mt={1}
+        mb={2}
+        display="flex"
+        alignItems="start"
+        className={classes.form}
+        noValidate
+        autoComplete="off"
+      >
         <OptionSelect option={run.outGroup} />
-        { run.haveRandomSeed ? (
+        {run.haveRandomSeed ? (
           <TextField
             label="Seed"
             title="Random seed"
             style={{ width: 60 }}
             value={run.randomSeed}
-            onChange={e => run.setRandomSeed(e.target.value)}
+            onChange={(e) => run.setRandomSeed(e.target.value)}
           />
         ) : null}
       </Box>
-      <Box component="form" mt={1} mb={2} display="flex" alignItems="start" className={classes.form} noValidate autoComplete="off">
-        <OptionSelect option={run.substitutionModel} />
+      <Box
+        component="form"
+        mt={1}
+        mb={2}
+        display="flex"
+        alignItems="start"
+        className={classes.form}
+        noValidate
+        autoComplete="off"
+      >
+        <OptionSelect option={run.substitutionMatrix} />
+        <OptionSelect option={run.substitutionRate} />
+      </Box>
+      <Box
+        component="form"
+        mt={1}
+        mb={2}
+        display="flex"
+        alignItems="start"
+        className={classes.form}
+        noValidate
+        autoComplete="off"
+      >
+        <OptionSelect option={run.substitutionI} />
+        <OptionSelect option={run.substitutionAscertainment} />
         <OptionSelect option={run.multistateModel} />
         <OptionCheck option={run.estimatedFrequencies} />
         <OptionSelect option={run.baseFrequencies} />
       </Box>
-
     </div>
   );
 };

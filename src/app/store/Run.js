@@ -16,10 +16,14 @@ import StoreBase from './StoreBase';
 import { quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
+import _ from 'lodash';
 
 const readFile = util.promisify(fs.readFile);
 
-const raxmlModelOptions = raxmlSettings.modelOptions;
+const raxmlMatrixOptions = raxmlSettings.matrixOptions;
+const raxmlRateOptions = raxmlSettings.rateOptions;
+const raxmlIOptions = raxmlSettings.iOptions;
+const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
@@ -215,42 +219,163 @@ class OutGroup extends Option {
   @computed get cmdValue() { return this.value.includes('<none>') ? '' : this.value.join(',') }
 }
 
-class SubstitutionModel extends Option {
-  constructor(run) { super(run, 'GTRGAMMA', 'Substitution model'); }
+class SubstitutionMatrix extends Option {
+  constructor(run) {
+    super(run, 'GTR', 'Substitution matrix');
+  }
   @computed get options() {
     if (!this.run.haveAlignments) {
       return [];
     }
-    const modelSettings = raxmlModelOptions[this.run.dataType];
+    const modelSettings = raxmlMatrixOptions[this.run.dataType];
     if (!modelSettings) {
       return [];
     }
-
-    // Remove options with ascertainment bias correction if the alignment has invariant sites
-    if (this.run.finalAlignment.hasInvariantSites) {
-      modelSettings.options = modelSettings.options.filter(value => !value.startsWith('ASC_'));;
-    }
-    return modelSettings.options.map(value => ({ value, title: value }));
+    return modelSettings.options.map((value) => ({ value, title: value }));
   }
-  @computed get notAvailable() { return !this.run.haveAlignments || this.run.usesRaxmlNg; }
+  @computed get notAvailable() {
+    return (
+      !this.run.haveAlignments ||
+      this.run.dataType === 'binary' ||
+      this.run.dataType === 'protein' ||
+      this.run.dataType === 'multistate' ||
+      ((this.run.dataType === 'dna' ||
+        this.run.dataType === 'rna' ||
+        this.run.dataType === 'nucleotide') &&
+        this.run.substitutionRate.isCAT) ||
+      this.run.usesRaxmlNg
+    );
+  }
   @computed get cmdValue() {
-    let model = this.value;
-    if (model == 'JCGAMMA' || model == 'K80GAMMA' || model == 'HKYGAMMA') {
-      model = 'GTRGAMMA';
+    if (this.run.dataType === 'binary') {
+      return 'BIN';
     }
-    if (model == 'JCGAMMAI' || model == 'K80GAMMAI' || model == 'HKYGAMMAI') {
-      model = 'GTRGAMMAI';
+    if (this.run.dataType === 'protein') {
+      return 'PROT';
     }
-    if (this.run.dataType === 'protein')  {
-      model += this.run.alignments[0].aaMatrixName;
-      const { value: suffix } = this.run.baseFrequencies;
-      model += suffix === 'default' ? '' : suffix;
-    } else {
-      if (this.run.estimatedFrequencies.value) {
-        model += 'X';
-      }
+    if (this.run.dataType === 'multistate') {
+      return 'MULTI';
     }
-    return model;
+    if (this.value === 'JC' || this.value === 'K80' || this.value === 'HKY') {
+      return 'GTR';
+    }
+    return this.value;
+  }
+  @computed get extraCmdValue() {
+    switch (this.value) {
+      case 'JC':
+        return '--JC69';
+      case 'K80':
+        return '--K80';
+      case 'HKY':
+        return '--HKY85';
+      default:
+        return '';
+    }
+  }
+  @computed get notGTR() {
+    return this.value !== 'GTR';
+  }
+}
+
+class SubstitutionRate extends Option {
+  constructor(run) {
+    super(run, 'GAMMA', 'Substitution rates');
+  }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlRateOptions;
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map((value) => ({ value, title: value }));
+  }
+  @computed get notAvailable() {
+    return (
+      !this.run.haveAlignments ||
+      ((this.run.dataType === 'dna' ||
+        this.run.dataType === 'rna' ||
+        this.run.dataType === 'nucleotide') &&
+        this.run.substitutionMatrix.notGTR) ||
+      this.run.usesRaxmlNg
+    );
+  }
+  @computed get isCAT() {
+    return this.value === 'CAT';
+  }
+}
+
+class SubstitutionI extends Option {
+  constructor(run) {
+    super(run, 'none', 'Proportion of invariant sites');
+  }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlIOptions;
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map((value) => ({ value, title: value }));
+  }
+  @computed get notAvailable() {
+    return (
+      this.run.substitutionAscertainment.isSet ||
+      !this.run.haveAlignments ||
+      this.run.usesRaxmlNg
+    );
+  }
+  @computed get cmdValue() {
+    return this.value === 'none' ? '' : 'I';
+  }
+  @computed get isSet() {
+    return this.value !== 'none';
+  }
+}
+
+class SubstitutionAscertainment extends Option {
+  constructor(run) {
+    super(run, 'none', 'Ascertainment bias correction');
+  }
+  @computed get options() {
+    if (!this.run.haveAlignments) {
+      return [];
+    }
+    const modelSettings = raxmlAscertainmentOptions;
+    if (!modelSettings) {
+      return [];
+    }
+    return modelSettings.options.map((value) => ({ value, title: value }));
+  }
+  @computed get notAvailable() {
+    return (
+      !this.run.haveAlignments ||
+      this.run.usesRaxmlNg ||
+      this.run.dataType === 'mixed' ||
+      this.run.finalAlignment.hasInvariantSites ||
+      this.run.substitutionI.isSet
+    );
+  }
+  @computed get cmdValue() {
+    return this.value === 'none' ? '' : 'ASC_';
+  }
+  @computed get extraCmdValue() {
+    switch (this.value) {
+      case "Lewis' method":
+        return '--asc-corr=lewis';
+      case "Felsenstein's method":
+        return '--asc-corr=felsenstein';
+      case "Stamatakis' method":
+        return '--asc-corr=stamatakis';
+      default:
+        return '';
+    }
+  }
+  @computed get isSet() {
+    return this.value !== 'none';
   }
 }
 
@@ -408,7 +533,10 @@ class Run extends StoreBase {
   }
 
   // Analysis params
-  substitutionModel = new SubstitutionModel(this);
+  substitutionMatrix = new SubstitutionMatrix(this);
+  substitutionI = new SubstitutionI(this);
+  substitutionRate = new SubstitutionRate(this);
+  substitutionAscertainment = new SubstitutionAscertainment(this);
   numRuns = new NumRuns(this);
   numRepetitions = new NumRepetitions(this);
   numRepetitionsNg = new NumRepetitionsNg(this);
@@ -725,6 +853,24 @@ class Run extends StoreBase {
     }
   };
 
+  @computed get raxmlSubstitutionModelCmd() {
+    let model =
+      this.substitutionAscertainment.cmdValue +
+      this.substitutionMatrix.cmdValue +
+      this.substitutionRate.value +
+      this.substitutionI.cmdValue;
+    if (this.dataType === 'protein') {
+      model += this.alignments[0].aaMatrixName;
+      const { value: suffix } = this.baseFrequencies;
+      model += suffix === 'default' ? '' : suffix;
+    } else {
+      if (this.estimatedFrequencies.value) {
+        model += 'X';
+      }
+    }
+    return model;
+  }
+
   modeltestNgArgs = () => {
     const first = [];
     // data type
@@ -945,6 +1091,8 @@ class Run extends StoreBase {
         break;
       default:
     }
+    // Remove items that are only empty strings
+    cmdArgs.forEach((args) => _.remove(args, (n) => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
@@ -965,19 +1113,9 @@ class Run extends StoreBase {
         }
         first.push('-f', 'E');
         first.push('-p', this.seedParsimony);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1005,19 +1143,9 @@ class Run extends StoreBase {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.substitutionModel.cmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
-          if (this.substitutionModel.value.includes('JC')) {
-            next.push('--JC69');
-          }
-          if (this.substitutionModel.value.includes('K80')) {
-            next.push('--K80');
-          }
-          if (this.substitutionModel.value.includes('HKY')) {
-            next.push('--HKY85');
-          }
+          next.push('-m', this.raxmlSubstitutionModelCmd);
+          next.push(this.substitutionMatrix.extraCmdValue);
+          next.push(this.substitutionAscertainment.extraCmdValue);
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1044,19 +1172,9 @@ class Run extends StoreBase {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.substitutionModel.cmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
-          if (this.substitutionModel.value.includes('JC')) {
-            next.push('--JC69');
-          }
-          if (this.substitutionModel.value.includes('K80')) {
-            next.push('--K80');
-          }
-          if (this.substitutionModel.value.includes('HKY')) {
-            next.push('--HKY85');
-          }
+          next.push('-m', this.raxmlSubstitutionModelCmd);
+          next.push(this.substitutionMatrix.extraCmdValue);
+          next.push(this.substitutionAscertainment.extraCmdValue);
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1081,19 +1199,9 @@ class Run extends StoreBase {
           first.push('-T', this.numThreads.value);
         }
         first.push('-f', 'd');
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1129,19 +1237,9 @@ class Run extends StoreBase {
             next.push('-T', this.numThreads.value);
           }
           next.push('-f', 'e');
-          next.push('-m', this.substitutionModel.cmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
-          if (this.substitutionModel.value.includes('JC')) {
-            next.push('--JC69');
-          }
-          if (this.substitutionModel.value.includes('K80')) {
-            next.push('--K80');
-          }
-          if (this.substitutionModel.value.includes('HKY')) {
-            next.push('--HKY85');
-          }
+          next.push('-m', this.raxmlSubstitutionModelCmd);
+          next.push(this.substitutionMatrix.extraCmdValue);
+          next.push(this.substitutionAscertainment.extraCmdValue);
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1169,19 +1267,9 @@ class Run extends StoreBase {
         first.push('-x', this.seedRapidBootstrap);
         first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1238,19 +1326,9 @@ class Run extends StoreBase {
           first.push('-T', this.numThreads.value);
         }
         first.push('-b', this.seedBootstrap);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1284,19 +1362,9 @@ class Run extends StoreBase {
           second.push('-T', this.numThreads.value);
         }
         second.push('-f', 'd');
-        second.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          second.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          second.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          second.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          second.push('--HKY85');
-        }
+        second.push('-m', this.raxmlSubstitutionModelCmd);
+        second.push(this.substitutionMatrix.extraCmdValue);
+        second.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1329,19 +1397,9 @@ class Run extends StoreBase {
         third.push('-f', 'b');
         third.push('-t', quote(treeFile));
         third.push('-z', quote(treesFile));
-        third.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          third.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          third.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          third.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          third.push('--HKY85');
-        }
+        third.push('-m', this.raxmlSubstitutionModelCmd);
+        third.push(this.substitutionMatrix.extraCmdValue);
+        third.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           third.push('-K', this.multistateModel.value);
         }
@@ -1379,19 +1437,9 @@ class Run extends StoreBase {
         first.push('-x', this.seedRapidBootstrap);
         first.push('-p', this.seedParsimony);
         first.push('-N', this.numRepetitions.value);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1419,19 +1467,9 @@ class Run extends StoreBase {
         if (!this.numThreads.notAvailable) {
           second.push('-T', this.numThreads.value);
         }
-        second.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          second.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          second.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          second.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          second.push('--HKY85');
-        }
+        second.push('-m', this.raxmlSubstitutionModelCmd);
+        second.push(this.substitutionMatrix.extraCmdValue);
+        second.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1455,19 +1493,9 @@ class Run extends StoreBase {
         }
         first.push('-f', 'A');
         first.push('-t', quote(this.tree.filePath));
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1490,19 +1518,9 @@ class Run extends StoreBase {
         }
         first.push('-f', 'x');
         first.push('-p', this.seedParsimony);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1531,19 +1549,9 @@ class Run extends StoreBase {
         }
         first.push('-f', 'D');
         first.push('-p', this.seedParsimony);
-        first.push('-m', this.substitutionModel.cmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
-        if (this.substitutionModel.value.includes('JC')) {
-          first.push('--JC69');
-        }
-        if (this.substitutionModel.value.includes('K80')) {
-          first.push('--K80');
-        }
-        if (this.substitutionModel.value.includes('HKY')) {
-          first.push('--HKY85');
-        }
+        first.push('-m', this.raxmlSubstitutionModelCmd);
+        first.push(this.substitutionMatrix.extraCmdValue);
+        first.push(this.substitutionAscertainment.extraCmdValue);
         if (this.branchLength.value) {
           first.push('-k');
         }
@@ -1576,7 +1584,8 @@ class Run extends StoreBase {
         break;
       default:
     }
-
+    // Remove items that are only empty strings
+    cmdArgs.forEach(args => _.remove(args, n => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
@@ -1738,7 +1747,8 @@ Results saved to: ${this.outputDir}
     if (this.haveAlignments) {
       // this.dataType is computed automatically with the reduced set, reset to default if changed (from mixed or multistate)
       if (this.dataType !== oldDataType) {
-        this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
+        // This parameter is deleted, but there seems to be no need for updating other params
+        // this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
       }
     } else {
       this.reset();

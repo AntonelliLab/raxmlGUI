@@ -100,8 +100,17 @@ export const mixedSubstitutionModelOptions = {
     'MULTICAT',
     'MULTICATI',
     'MULTIGAMMA',
-    'MULTIGAMMAI'
-  ]
+    'MULTIGAMMAI',
+  ],
+};
+
+export const mixedSubstitutionMatrixOptions = {
+  default: 'GTR',
+  options: [
+    'GTR',
+    'BIN',
+    'MULTI',
+  ],
 };
 
 // -m
@@ -114,8 +123,17 @@ export const binarySubstitutionModelOptions = {
     'ASC_BINCAT',
     'BINGAMMA',
     'BINGAMMAI',
-    'ASC_BINGAMMA'
-  ]
+    'ASC_BINGAMMA',
+  ],
+};
+
+// -m
+export const binarySubstitutionMatrixOptions = {
+  argument: 'm',
+  default: 'BIN',
+  options: [
+    'BIN',
+  ],
 };
 
 // -m
@@ -138,6 +156,31 @@ export const nucleotideSubstitutionModelOptions = {
   ],
 };
 
+export const nucleotideSubstitutionMatrixOptions = {
+  default: 'GTR',
+  options: ['JC', 'K80', 'HKY', 'GTR'],
+};
+
+export const rateOptions = {
+  default: 'GAMMA',
+  options: ['CAT', 'GAMMA'],
+};
+
+export const iOptions = {
+  default: 'none',
+  options: ['none', '+I (ML estimate)'],
+};
+
+export const ascertainmentOptions = {
+  default: 'none',
+  options: [
+    'none',
+    "Lewis' method",
+    "Felsenstein's method",
+    "Stamatakis' method",
+  ],
+};
+
 // -m
 export const multistateSubstitutionModelOptions = {
   argument: 'm',
@@ -150,6 +193,14 @@ export const multistateSubstitutionModelOptions = {
     'MULTIGAMMAI',
     'ASC_MULTIGAMMA'
   ]
+};
+
+// -m
+export const multistateSubstitutionMatrixOptions = {
+  default: 'MULTI',
+  options: [
+    'MULTI',
+  ],
 };
 
 // -m
@@ -209,6 +260,16 @@ export const modelOptions = {
   'dna': nucleotideSubstitutionModelOptions,
   'rna': nucleotideSubstitutionModelOptions,
   'nucleotide': nucleotideSubstitutionModelOptions,
+};
+
+export const matrixOptions = {
+  protein: aminoAcidSubstitutionMatrixOptions,
+  binary: binarySubstitutionMatrixOptions,
+  mixed: mixedSubstitutionMatrixOptions,
+  multistate: multistateSubstitutionMatrixOptions,
+  dna: nucleotideSubstitutionMatrixOptions,
+  rna: nucleotideSubstitutionMatrixOptions,
+  nucleotide: nucleotideSubstitutionMatrixOptions,
 };
 
 
