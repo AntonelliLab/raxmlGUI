@@ -441,9 +441,9 @@ class Alignment extends StoreBase {
           this.run.substitutionMatrix.value =
             raxmlMatrixOptions[newDataType].default;
         }
-        // When the alignment has finished processing take the default ubstitution model for this datatype
+        // When the alignment has finished processing take the default substitution model for this datatype
         this.substitutionModel.value =
-          raxmlNgModelOptions[alignment.dataType].default;
+          raxmlNgModelOptions[alignment.dataType]?.default;
         runInAction(() => {
           this.sequences = alignment.sequences;
           this.fileFormat = alignment.fileFormat;
