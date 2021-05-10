@@ -385,7 +385,7 @@ class Alignment extends StoreBase {
       this.aaMatrixName = matrixName;
       model = model.replace(re, '');
     }
-    // TODO: I couldnt find information if ModelTest checks for ASC_
+    // I couldnt find information if ModelTest checks for ASC_
     this.run.substitutionAscertainment.setValue('none');
     
     // Check for invariant sites
@@ -395,7 +395,7 @@ class Alignment extends StoreBase {
     } else {
       this.run.substitutionI.setValue('none');
     }
-    // Checj for substitution rates
+    // Check for substitution rates
     if (/GAMMA/.test(model)) {
       this.run.substitutionRate.setValue('GAMMA');
       model = model.replace('GAMMA', '');
