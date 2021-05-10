@@ -20,7 +20,6 @@ import _ from 'lodash';
 
 const readFile = util.promisify(fs.readFile);
 
-const raxmlModelOptions = raxmlSettings.modelOptions;
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlRateOptions = raxmlSettings.rateOptions;
 const raxmlIOptions = raxmlSettings.iOptions;
@@ -326,11 +325,6 @@ class SubstitutionI extends Option {
     return (
       this.run.substitutionAscertainment.isSet ||
       !this.run.haveAlignments ||
-      // !(
-      //   this.run.dataType === 'dna' ||
-      //   this.run.dataType === 'rna' ||
-      //   this.run.dataType === 'nucleotide'
-      // ) ||
       this.run.usesRaxmlNg
     );
   }
@@ -382,30 +376,6 @@ class SubstitutionAscertainment extends Option {
   }
   @computed get isSet() {
     return this.value !== 'none';
-  }
-}
-
-class SubstitutionModel extends Option {
-  constructor(run) { super(run, 'GTRGAMMA', 'Substitution model'); }
-  @computed get options() {
-    if (!this.run.haveAlignments) {
-      return [];
-    }
-    const modelSettings = raxmlModelOptions[this.run.dataType];
-    if (!modelSettings) {
-      return [];
-    }
-    return modelSettings.options.map(value => ({ value, title: value }));
-  }
-  @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      this.run.usesRaxmlNg
-    );
-  }
-  @computed get cmdValue() {
-    let model = this.value;
-    return model;
   }
 }
 
@@ -563,7 +533,6 @@ class Run extends StoreBase {
   }
 
   // Analysis params
-  substitutionModel = new SubstitutionModel(this);
   substitutionMatrix = new SubstitutionMatrix(this);
   substitutionI = new SubstitutionI(this);
   substitutionRate = new SubstitutionRate(this);
@@ -890,8 +859,6 @@ class Run extends StoreBase {
       this.substitutionMatrix.cmdValue +
       this.substitutionRate.value +
       this.substitutionI.cmdValue;
-
-    // model = this.substitutionModel.cmdValue;
     if (this.dataType === 'protein') {
       model += this.alignments[0].aaMatrixName;
       const { value: suffix } = this.baseFrequencies;
@@ -1149,9 +1116,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1182,9 +1146,6 @@ class Run extends StoreBase {
           next.push('-m', this.raxmlSubstitutionModelCmd);
           next.push(this.substitutionMatrix.extraCmdValue);
           next.push(this.substitutionAscertainment.extraCmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1214,9 +1175,6 @@ class Run extends StoreBase {
           next.push('-m', this.raxmlSubstitutionModelCmd);
           next.push(this.substitutionMatrix.extraCmdValue);
           next.push(this.substitutionAscertainment.extraCmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1244,9 +1202,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1285,9 +1240,6 @@ class Run extends StoreBase {
           next.push('-m', this.raxmlSubstitutionModelCmd);
           next.push(this.substitutionMatrix.extraCmdValue);
           next.push(this.substitutionAscertainment.extraCmdValue);
-          if (this.substitutionModel.value.startsWith('ASC_')) {
-            next.push('--asc-corr=lewis');
-          }
           if (!this.multistateModel.notAvailable) {
             next.push('-K', this.multistateModel.value);
           }
@@ -1318,9 +1270,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1380,9 +1329,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1419,9 +1365,6 @@ class Run extends StoreBase {
         second.push('-m', this.raxmlSubstitutionModelCmd);
         second.push(this.substitutionMatrix.extraCmdValue);
         second.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          second.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1457,9 +1400,6 @@ class Run extends StoreBase {
         third.push('-m', this.raxmlSubstitutionModelCmd);
         third.push(this.substitutionMatrix.extraCmdValue);
         third.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          third.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           third.push('-K', this.multistateModel.value);
         }
@@ -1500,9 +1440,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1533,9 +1470,6 @@ class Run extends StoreBase {
         second.push('-m', this.raxmlSubstitutionModelCmd);
         second.push(this.substitutionMatrix.extraCmdValue);
         second.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          second.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           second.push('-K', this.multistateModel.value);
         }
@@ -1562,9 +1496,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1590,9 +1521,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (!this.multistateModel.notAvailable) {
           first.push('-K', this.multistateModel.value);
         }
@@ -1624,9 +1552,6 @@ class Run extends StoreBase {
         first.push('-m', this.raxmlSubstitutionModelCmd);
         first.push(this.substitutionMatrix.extraCmdValue);
         first.push(this.substitutionAscertainment.extraCmdValue);
-        if (this.substitutionModel.value.startsWith('ASC_')) {
-          first.push('--asc-corr=lewis');
-        }
         if (this.branchLength.value) {
           first.push('-k');
         }
@@ -1822,7 +1747,8 @@ Results saved to: ${this.outputDir}
     if (this.haveAlignments) {
       // this.dataType is computed automatically with the reduced set, reset to default if changed (from mixed or multistate)
       if (this.dataType !== oldDataType) {
-        this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
+        // This parameter is deleted, but there seems to be no need for updating other params
+        // this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
       }
     } else {
       this.reset();

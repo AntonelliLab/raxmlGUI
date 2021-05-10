@@ -102,7 +102,6 @@ const Model = ({ run }) => {
       >
         <OptionSelect option={run.substitutionI} />
         <OptionSelect option={run.substitutionAscertainment} />
-        <OptionSelect option={run.substitutionModel} />
         <OptionSelect option={run.multistateModel} />
         <OptionCheck option={run.estimatedFrequencies} />
         <OptionSelect option={run.baseFrequencies} />

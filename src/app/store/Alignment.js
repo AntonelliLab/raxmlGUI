@@ -423,8 +423,8 @@ class Alignment extends StoreBase {
             .concat(alignment.dataType)
         );
         if (this.run.dataType !== newDataType) {
-          this.run.substitutionModel.value =
-            raxmlModelOptions[newDataType].default;
+          this.run.substitutionMatrix.value =
+            raxmlMatrixOptions[newDataType].default;
         }
         // When the alignment has finished processing take the default ubstitution model for this datatype
         this.substitutionModel.value =
