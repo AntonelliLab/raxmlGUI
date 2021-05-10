@@ -50,7 +50,6 @@ function initDev(exampleFiles) {
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
   store.activeRun.setOutputDir(exampleFiles.outdir);
-  store.activeRun.binary.value = "raxmlHPC";
   setTimeout(() => {
     // store.activeRun.alignments[0].setShowPartition();
     // store.citation.show();
