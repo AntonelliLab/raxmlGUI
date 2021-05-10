@@ -14,9 +14,8 @@ import * as raxmlNgSettings from '../../settings/raxmlng';
 import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
-// import { quote } from '../../common/utils';
 
-const raxmlModelOptions = raxmlSettings.modelOptions;
+const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 
 const writeFile = util.promisify(fs.writeFile);
@@ -366,24 +365,6 @@ class Alignment extends StoreBase {
     }
 
     model = raxml;
-    if (extraFlag === '--JC69') {
-      // Replace in the model string for model value
-      model = model.replace('GTR', 'JC');
-      // We dont allow CAT model for this matrix
-      model = model.replace('CAT', 'GAMMA');
-    }
-    if (extraFlag === '--K80') {
-      // Replace in the model string for model value
-      model = model.replace('GTR', 'K80');
-      // We dont allow CAT model for this matrix
-      model = model.replace('CAT', 'GAMMA');
-    }
-    if (extraFlag === '--HKY85') {
-      // Replace in the model string for model value
-      model = model.replace('GTR', 'HKY');
-      // We dont allow CAT model for this matrix
-      model = model.replace('CAT', 'GAMMA');
-    }
     // For raxml
     if (/F$/.test(raxml)) {
       this.run.baseFrequencies.setValue('F');
@@ -404,7 +385,42 @@ class Alignment extends StoreBase {
       this.aaMatrixName = matrixName;
       model = model.replace(re, '');
     }
-    this.run.substitutionModel.setValue(model);
+    // TODO: I couldnt find information if ModelTest checks for ASC_
+    this.run.substitutionAscertainment.setValue('none');
+    
+    // Check for invariant sites
+    if (/I$/.test(model)) {
+      this.run.substitutionI.setValue('+I (ML estimate)');
+      model = model.slice(0, -1);
+    } else {
+      this.run.substitutionI.setValue('none');
+    }
+    // Checj for substitution rates
+    if (/GAMMA/.test(model)) {
+      this.run.substitutionRate.setValue('GAMMA');
+      model = model.replace('GAMMA', '');
+    }
+    if (/CAT/.test(model)) {
+      this.run.substitutionRate.setValue('CAT');
+      model = model.replace('CAT', '');
+    }
+    // Checks for the different nucleotide substitution matrices
+    // Default is GTR
+    if (extraFlag === '--JC69') {
+      this.run.substitutionMatrix.setValue('JC');
+      // We dont allow CAT model for this matrix
+      this.run.substitutionRate.setValue('GAMMA');
+    }
+    if (extraFlag === '--K80') {
+      this.run.substitutionMatrix.setValue('K80');
+      // We dont allow CAT model for this matrix
+      this.run.substitutionRate.setValue('GAMMA');
+    }
+    if (extraFlag === '--HKY85') {
+      this.run.substitutionMatrix.setValue('HKY');
+      // We dont allow CAT model for this matrix
+      this.run.substitutionRate.setValue('GAMMA');
+    }
   };
 
   listen = () => {
