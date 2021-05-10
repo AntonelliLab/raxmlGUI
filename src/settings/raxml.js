@@ -128,6 +128,15 @@ export const binarySubstitutionModelOptions = {
 };
 
 // -m
+export const binarySubstitutionMatrixOptions = {
+  argument: 'm',
+  default: 'BIN',
+  options: [
+    'BIN',
+  ],
+};
+
+// -m
 export const nucleotideSubstitutionModelOptions = {
   argument: 'm',
   default: 'GTRGAMMA',
@@ -184,6 +193,14 @@ export const multistateSubstitutionModelOptions = {
     'MULTIGAMMAI',
     'ASC_MULTIGAMMA'
   ]
+};
+
+// -m
+export const multistateSubstitutionMatrixOptions = {
+  default: 'MULTI',
+  options: [
+    'MULTI',
+  ],
 };
 
 // -m
@@ -246,7 +263,10 @@ export const modelOptions = {
 };
 
 export const matrixOptions = {
+  protein: aminoAcidSubstitutionMatrixOptions,
+  binary: binarySubstitutionMatrixOptions,
   mixed: mixedSubstitutionMatrixOptions,
+  multistate: multistateSubstitutionMatrixOptions,
   dna: nucleotideSubstitutionMatrixOptions,
   rna: nucleotideSubstitutionMatrixOptions,
   nucleotide: nucleotideSubstitutionMatrixOptions,
