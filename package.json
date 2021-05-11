@@ -72,7 +72,7 @@
     "electron-progressbar": "^2.0.0",
     "electron-store": "^8.0.0",
     "electron-unhandled": "^3.0.1",
-    "electron-updater": "^4.3.8",
+    "electron-updater": "^4.3.9",
     "electron-util": "^0.16.0",
     "filenamify": "^4.3.0",
     "lodash": "^4.17.21",
