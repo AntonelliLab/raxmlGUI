@@ -117,12 +117,12 @@ export const amongsiteRateHeterogeneityModelOptions = {
     {
       value: '+G',
       label:
-        '+G (mean category rates)'
+        '+GAMMA (mean)'
     },
     {
       value: '+GA',
       label:
-        '+GA (median category rates)'
+        '+GAMMA (median)'
     }
     // Also posibble are user defined values
     // +Gn (discrete GAMMA with n categories', 'ML estimate of alpha)
