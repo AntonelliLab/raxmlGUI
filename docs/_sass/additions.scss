@@ -1,3 +1,10 @@
+/* Style the collapsible content. Note: hidden by default */
+.collapsibleContent {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+
 .basic-section {
  position:relative;
  padding-top:2.5rem;
