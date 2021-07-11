@@ -93,7 +93,7 @@
             4</sup>, one of the most popular and widely used software for phylogenetic inference using maximum likelihood. All in an intuitive graphical front-end to set up and run phylogenetic analyses</p>
         </div>
         <div class="basic-screenshot-container">
-          <img id="basic-screenshot-white" src="{{ '/assets/img/screenshots/basic.png' | relative_url }}" loading="lazy" alt="Basic screenshot of raxmlGUI light theme"
+          <img id="basic-screenshot-light" src="{{ '/assets/img/screenshots/basic.png' | relative_url }}" loading="lazy" alt="Basic screenshot of raxmlGUI light theme"
             class="basic-screenshot active">
           <img id="basic-screenshot-dark" src="{{ '/assets/img/screenshots/basic_dark.png' | relative_url }}" loading="lazy" alt="Basic screenshot of raxmlGUI dark theme"
             class="basic-screenshot">
@@ -209,7 +209,14 @@
     (function () {
       const view = {
         init: function () {
+          this.light = document.getElementById('basic-screenshot-light');
           this.dark = document.getElementById('basic-screenshot-dark');
+          // On Windows use the screenshot with raxml 8
+          if (window.navigator.userAgent.indexOf("Windows") != -1) {
+            this.light.src = "{{ '/assets/img/screenshots/basic2.png' | relative_url }}";
+            this.dark.src = "{{ '/assets/img/screenshots/basic2_dark.png' | relative_url }}";
+          }
+
         },
         // Checks if the screenshot is fully visible
         fade: function () {
@@ -229,7 +236,7 @@
           }
         },
         fadeInOut: function () {
-          // Show button by increasing opacity
+          // Show dark screenshot by increasing opacity
           this.dark.classList.toggle('active');
         },
       };
