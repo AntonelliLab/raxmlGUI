@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
 const darkTheme = {
   palette: {
@@ -208,6 +208,6 @@ const lightTheme = {
 };
 
 export default {
-  light: createMuiTheme(lightTheme),
-  dark: createMuiTheme(darkTheme)
+  light: createTheme(lightTheme),
+  dark: createTheme(darkTheme)
 };

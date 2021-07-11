@@ -374,7 +374,7 @@ const App = () => {
                 {binary.value} {binary.version}
               </div>
             </Box>
-            <Box css={{ flexGrow: 1 }} />
+            <Box sx={{ flexGrow: 1 }} />
             <Box display="flex">
               <span
                 className={classes.statusCite}

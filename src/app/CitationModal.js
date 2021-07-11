@@ -73,7 +73,7 @@ function CitationModal({ citation }) {
         ))}
       </CardContent>
       <CardActions style={{ width: '100%' }}>
-        <Box display="flex" justifyContent="flex-end" css={{ width: '100%' }}>
+        <Box display="flex" justifyContent="flex-end" sx={{ width: '100%' }}>
           <Button
             aria-label="Copy to clipboard"
             variant="contained"

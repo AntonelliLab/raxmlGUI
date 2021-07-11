@@ -92,9 +92,9 @@ function PartitionEditor({ alignment }) {
   return (
     <Box p={4} pt={2} className={classes.Partition}>
       <Typography variant="h6">Partition editor</Typography>
-      <Box mb={2} css={{ width: '100%' }}>
+      <Box mb={2} sx={{ width: '100%' }}>
         <LinearProgress variant="determinate" color="primary" value={partition.progress} />
-        <Box display="flex" justifyContent="space-between" css={{ marginTop: 2 }}>
+        <Box display="flex" justifyContent="space-between" sx={{ marginTop: 2 }}>
           <small style={{ color: '#999' }}>{alignment.filename}: {alignment.numSequences} sequences of length {alignment.length}</small>
           <small style={{ color: '#999', marginLeft: 10 }}>Partition coverage: {partition.currentEndValue} / {partition.maxEndValue}</small>
         </Box>
@@ -127,7 +127,7 @@ function PartitionEditor({ alignment }) {
           <Typography variant="caption" color="error">{partition.errorMessage || ' '}</Typography>
         </Box>
       </Box>
-      <Box mt={2} css={{ width: '100%' }}>
+      <Box mt={2} sx={{ width: '100%' }}>
         <form className={classes.form} noValidate autoComplete="off">
           <TextField
             className="pre"
@@ -150,7 +150,7 @@ function PartitionEditor({ alignment }) {
           />
         </form>
       </Box>
-      <Grid container spacing={1} justify="flex-end" css={{ width: '100%' }}>
+      <Grid container spacing={1} justify="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
           <Grid item>
             <Button variant="outlined" title="Clear partition entries" onClick={partition.reset}>Reset</Button>
