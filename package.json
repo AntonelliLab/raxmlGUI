@@ -73,7 +73,7 @@
     "electron-store": "^8.0.0",
     "electron-unhandled": "^3.0.1",
     "electron-updater": "^4.3.9",
-    "electron-util": "^0.17.0",
+    "electron-util": "^0.17.2",
     "filenamify": "^4.3.0",
     "lodash": "^4.17.21",
     "mobx": "^5.15.7",
