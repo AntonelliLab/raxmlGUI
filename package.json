@@ -55,7 +55,7 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.14.5",
     "@craco/craco": "^6.2.0",
-    "@material-ui/core": "^4.12.1",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.4",
@@ -68,7 +68,7 @@
     "electron-better-ipc": "^2.0.1",
     "electron-debug": "^3.2.0",
     "electron-is-dev": "^2.0.0",
-    "electron-log": "^4.3.5",
+    "electron-log": "^4.4.1",
     "electron-progressbar": "^2.0.1",
     "electron-store": "^8.0.0",
     "electron-unhandled": "^3.0.1",
@@ -109,7 +109,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "shx": "^0.3.3",
-    "typescript": "^4.3.5",
+    "typescript": "^4.4.2",
     "wait-on": "^6.0.0"
   },
   "browserslist": [
