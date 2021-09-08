@@ -1,3 +1,5 @@
+import UserFixError from "./errors";
+
 export const isFasta = (lines) => {
   for (let i = 0; i < lines.length; ++i) {
     const line = lines[0].trim();
@@ -74,7 +76,7 @@ export const parse = (lines) => {
   // Check that all sequnces have the same length;
   for (let seq of sequences) {
     if (seq.code.length !== length) {
-      throw new Error(`Sequence '${seq.taxon}' have different length (${seq.code.length}) than previous taxons (${length})`);
+      throw new UserFixError(`Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`);
     }
   }
 
