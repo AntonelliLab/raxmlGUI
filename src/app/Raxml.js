@@ -58,6 +58,7 @@ class Raxml extends React.Component {
           className={classes.form}
           noValidate
           autoComplete="off"
+          alignItems="center"
         >
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
