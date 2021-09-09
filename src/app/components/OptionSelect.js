@@ -2,8 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 
@@ -17,13 +17,11 @@ const OptionSelect = observer(({ option, className }) => {
     return (
       <TextField
         id={option.title}
-        label={option.title}
-        title={option.hoverInfo}
+        helperText={option.title}
         className={className}
         value={option.value}
         placeholder={option.placeholder}
         error={option.error}
-        helperText={option.helperText}
         InputProps={{
           readOnly: true,
         }}
@@ -33,10 +31,9 @@ const OptionSelect = observer(({ option, className }) => {
 
   return (
     <FormControl className={className} title={option.hoverInfo}>
-      <InputLabel style={{ whiteSpace: 'nowrap' }} htmlFor={option.title}>{option.title}</InputLabel>
       <Select
         value={option.value}
-        onChange={e => option.setValue(e.target.value) }
+        onChange={(e) => option.setValue(e.target.value)}
         inputProps={{
           name: option.title,
           id: option.title,
@@ -44,10 +41,13 @@ const OptionSelect = observer(({ option, className }) => {
         error={option.error}
         multiple={option.multiple}
       >
-        {
-          option.options.map(({value, title}, index) => <MenuItem key={index} value={value}>{title}</MenuItem>)
-        }
+        {option.options.map(({ value, title }, index) => (
+          <MenuItem key={index} value={value}>
+            {title}
+          </MenuItem>
+        ))}
       </Select>
+      <FormHelperText>{option.title}</FormHelperText>
     </FormControl>
   );
 });

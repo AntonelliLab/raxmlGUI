@@ -69,7 +69,7 @@ const Model = ({ run }) => {
         <OptionSelect option={run.outGroup} />
         {run.haveRandomSeed ? (
           <TextField
-            label="Seed"
+            helperText="Seed"
             title="Random seed"
             style={{ width: 60 }}
             value={run.randomSeed}

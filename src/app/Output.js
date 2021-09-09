@@ -48,7 +48,7 @@ const Output = ({ run }) => {
       <Box component="form" mt={1} mb={2} display="flex" flexDirection="column" className={classes.form} noValidate autoComplete="off">
         <TextField
           id="output-dir"
-          label="Select output directory"
+          helperText="Select output directory"
           fullWidth
           className={classes.formItem}
           value={run.outputDir}
@@ -59,13 +59,13 @@ const Output = ({ run }) => {
         />
         <TextField
           id="output-name"
-          label="Select output name"
+          helperText="Select output name"
           className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
           onChange={e => run.setOutputName(e.target.value)}
           error={!run.outputNameOk}
-          helperText={run.outputNameNotice}
+          label={run.outputNameNotice}
         />
       </Box>
 

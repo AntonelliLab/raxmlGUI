@@ -10,15 +10,14 @@ const OptionTextField = observer(({ option, className }) => {
   return (
     <TextField
       id={option.title}
-      label={option.title}
+      helperText={option.title}
       title={option.hoverInfo}
       disabled={option.disabled}
       className={className}
       value={option.value}
       placeholder={option.placeholder}
-      onChange={e => option.setValue(e.target.value)}
+      onChange={(e) => option.setValue(e.target.value)}
       error={option.haveError}
-      helperText={option.helperText}
     />
   );
 });

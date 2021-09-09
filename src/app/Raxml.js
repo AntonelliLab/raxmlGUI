@@ -98,7 +98,7 @@ class Raxml extends React.Component {
 
         <Box paddingBottom={1}>
           <TextField
-            label="Command"
+            helperText="Command"
             fullWidth
             multiline
             variant="standard"
