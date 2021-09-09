@@ -42,7 +42,13 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
   const closeMessage = needReload ? (
     reported ? 'Reload' : 'Ignore and reload'
   ) : 'Close';
-  const closeHandler = needReload ? handleReload : onClose;
+
+  const resetAndClose = () => {
+    setReported(false);
+    onClose();
+  };
+
+  const closeHandler = needReload ? handleReload : resetAndClose;
 
   const CloseAction = (
     <DialogActions>
@@ -75,8 +81,14 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
   );
 
   const GenericErrorDialog = (
-    <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
-      <DialogTitle id="error-dialog-title">{title || 'Unexpected error'}</DialogTitle>
+    <Dialog
+      onClose={resetAndClose}
+      aria-labelledby="error-dialog-title"
+      open={true}
+    >
+      <DialogTitle id="error-dialog-title">
+        {title || 'Unexpected error'}
+      </DialogTitle>
       <DialogContent>
         <Box p={1}>
           <Accordion>
@@ -90,7 +102,10 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
             <AccordionDetails>
               <Box>
                 <Typography variant="h6">{error.name}</Typography>
-                <Typography variant="body2" style={{ maxWidth: 400, wordBreak: 'break-all' }}>
+                <Typography
+                  variant="body2"
+                  style={{ maxWidth: 400, wordBreak: 'break-all' }}
+                >
                   {error.message}
                 </Typography>
               </Box>
@@ -104,10 +119,16 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
   );
 
   const UserFixErrorDialog = (
-    <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
+    <Dialog
+      onClose={resetAndClose}
+      aria-labelledby="error-dialog-title"
+      open={true}
+    >
       <DialogTitle id="error-dialog-title">{title || 'Error'}</DialogTitle>
       <DialogContent>
-        {"RaxmlGUI2 encountered an error that you need to fix before you can continue."}
+        {
+          'RaxmlGUI2 encountered an error that you need to fix before you can continue.'
+        }
         <Typography variant="body2" style={{ wordBreak: 'break-all' }}>
           {error.message}
         </Typography>
