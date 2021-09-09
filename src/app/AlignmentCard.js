@@ -224,7 +224,7 @@ function AlignmentCard({ className, alignment }) {
       <div>
         {alignment.run.usesRaxmlNg ? (
           <Box display="flex">
-            <Box display="flex" flexWrap="wrap" alignItems="flex-end">
+            <Box display="flex" flexWrap="wrap" alignItems="center">
               <OptionSelect
                 className={classes.select}
                 option={alignment.substitutionModel}
@@ -253,7 +253,7 @@ function AlignmentCard({ className, alignment }) {
             </Box>
           </Box>
         ) : (
-          <Box display="flex" flexWrap="wrap" alignItems="flex-end">
+          <Box display="flex" flexWrap="wrap" alignItems="center">
             {alignment.modelExtra ? (
               <FormControl className={classes.select}>
                 <InputLabel
