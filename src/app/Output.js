@@ -59,13 +59,12 @@ const Output = ({ run }) => {
         />
         <TextField
           id="output-name"
-          helperText="Select output name"
+          helperText={run.outputNameNotice || "Select output name"}
           className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
           onChange={e => run.setOutputName(e.target.value)}
           error={!run.outputNameOk}
-          label={run.outputNameNotice}
         />
       </Box>
 
