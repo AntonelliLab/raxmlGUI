@@ -555,9 +555,9 @@ class Alignment extends StoreBase {
   };
 
   @action
-  onChangeAAMatrixName = (event) => {
+  onChangeAAMatrixName = (value) => {
     console.log('onChangeAAMatrixName');
-    this.aaMatrixName = event.target.value;
+    this.aaMatrixName = value;
   };
 
   @action

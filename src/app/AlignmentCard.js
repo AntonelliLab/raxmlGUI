@@ -255,29 +255,20 @@ function AlignmentCard({ className, alignment }) {
         ) : (
           <Box display="flex" flexWrap="wrap" alignItems="center">
             {alignment.modelExtra ? (
-              <FormControl className={classes.select}>
-                <InputLabel
-                  className={classes.secondaryText}
-                  style={{ whiteSpace: 'nowrap' }}
-                  htmlFor={alignment.modelExtra.label}
-                >
-                  {alignment.modelExtra.label}
-                </InputLabel>
-                <Select
-                  value={alignment.modelExtra.value}
-                  onChange={alignment.modelExtra.onChange}
-                  inputProps={{
-                    name: alignment.modelExtra.label,
-                    id: alignment.modelExtra.label,
-                  }}
-                >
-                  {alignment.modelExtra.options.map((model) => (
-                    <MenuItem key={model} value={model}>
-                      {model}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <OptionSelect
+                className={classes.select}
+                option={{
+                  ...alignment.modelExtra,
+                  setValue: alignment.modelExtra.onChange,
+                  title: alignment.modelExtra.label,
+                  options: alignment.modelExtra.options.map((model) => (
+                    {
+                      value: model,
+                      title: model,
+                    }
+                  )),
+                }}
+              />
             ) : null}
             <ModelTestButton alignment={alignment} />
           </Box>
