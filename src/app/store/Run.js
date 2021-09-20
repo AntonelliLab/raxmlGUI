@@ -214,9 +214,34 @@ class OutGroup extends Option {
     super(run, ['<none>'], 'Outgroup', '');
     this.multiple = true;
   }
-  @computed get options() { return ['<none>', ...this.run.taxons].map(value => ({ value, title: value })); }
-  @computed get notAvailable() { return !this.run.haveAlignments || !this.run.analysisOption.params.includes(params.outGroup); }
-  @computed get cmdValue() { return this.value.includes('<none>') ? '' : this.value.join(',') }
+  @computed get options() {
+    return ['<none>', ...this.run.taxons].map((value) => ({
+      value,
+      title: value,
+    }));
+  }
+
+  @action setValue = (value) => {
+    if (this.value.includes('<none>')) {
+      this.value = value.filter((v) => v !== '<none>');
+      return;
+    }
+    if (!this.value.includes('<none>') && value.includes('<none>')) {
+      this.value = value.filter((v) => v === '<none>');
+      return;
+    }
+    this.value = value;
+  };
+
+  @computed get notAvailable() {
+    return (
+      !this.run.haveAlignments ||
+      !this.run.analysisOption.params.includes(params.outGroup)
+    );
+  }
+  @computed get cmdValue() {
+    return this.value.includes('<none>') ? '' : this.value.join(',');
+  }
 }
 
 class SubstitutionMatrix extends Option {
