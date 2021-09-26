@@ -21,6 +21,10 @@ in case of vulnerabilities.
 ## [Unreleased] - YYYY-MM-DD
 ### Changed
 - Updated to include the latest binaries for raxml-ng on Mac and Linux (1.0.3).
+- A bit of restyling.
+### Fixed
+- Fixed a bug that only one error could be reported.
+- Fixed a bug in outgroup selection.
 
 ## [2.0.5] - 2021-05-09
 ### Added
