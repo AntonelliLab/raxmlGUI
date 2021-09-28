@@ -59,6 +59,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.4",
+    "caniuse-lite": "^1.0.30001261",
     "classnames": "^2.3.1",
     "clean-stack": "3.0.1",
     "clsx": "^1.1.1",
