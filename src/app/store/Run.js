@@ -30,10 +30,10 @@ export const MAX_NUM_CPUS = cpus().length;
 const winBinaries = [
   // TODO: add raxml ng windows exe
   { name: 'modeltest-ng.exe', version: '0.1.7' },
-  { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.10' },
-  { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-AVX2.exe', multithreaded: true, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.10', initial: true }
+  { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
+  { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.12' },
+  { name: 'raxmlHPC-PTHREADS-AVX.exe', multithreaded: true, version: '8.2.12' },
+  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.12', initial: true }
 ];
 
 const allBinaries = electronutil.is.windows
