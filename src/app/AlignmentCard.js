@@ -46,6 +46,12 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.input.light,
       border: `1px solid ${theme.palette.input.border}`,
     },
+    cardHeaderRoot: {
+      overflow: "hidden"
+    },
+    cardHeaderContent: {
+      overflow: "hidden"
+    },
     heading: {
       display: 'flex',
       alignItems: 'center',
@@ -285,6 +291,10 @@ function AlignmentCard({ className, alignment }) {
   return (
     <Card className={classNames(className, classes.AlignmentCard)}>
       <CardHeader
+        classes={{
+          root: classes.cardHeaderRoot,
+          content: classes.cardHeaderContent,
+        }}
         avatar={Type}
         action={
           <div>
@@ -323,11 +333,11 @@ function AlignmentCard({ className, alignment }) {
               <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>
                 Edit partition
               </MenuItem>
-              { alignment.modeltestLoading ? (
+              {alignment.modeltestLoading ? (
                 <MenuItem onClick={closeMenuAndRun(alignment.cancelModelTest)}>
                   Cancel modeltest
                 </MenuItem>
-              ) : null }
+              ) : null}
             </Menu>
           </div>
         }
