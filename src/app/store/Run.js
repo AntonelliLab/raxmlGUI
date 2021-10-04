@@ -9,6 +9,7 @@ import filenamify from 'filenamify';
 import electronutil from 'electron-util';
 import util from 'util';
 import fs from 'fs';
+import os from 'os';
 
 import Alignment, { FinalAlignment } from './Alignment';
 import Option from './Option';
@@ -27,7 +28,8 @@ const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
-const winBinaries = false ? [
+// On Windows 7 (= 6.1) use older versions of RAxML
+const winBinaries = os.release() === "6.1" ? [
   // TODO: add raxml ng windows exe
   { name: 'modeltest-ng.exe', version: '0.1.7' },
   { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
