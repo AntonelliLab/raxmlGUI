@@ -27,7 +27,14 @@ const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 
 export const MAX_NUM_CPUS = cpus().length;
 
-const winBinaries = [
+const winBinaries = false ? [
+  // TODO: add raxml ng windows exe
+  { name: 'modeltest-ng.exe', version: '0.1.7' },
+  { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
+  { name: 'raxmlHPC-SSE3_Win7.exe', multithreaded: false, version: '8.2.10' },
+  { name: 'raxmlHPC-PTHREADS-AVX_Win7.exe', multithreaded: true, version: '8.2.10' },
+  { name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe', multithreaded: true, version: '8.2.10', initial: true }
+] : [
   // TODO: add raxml ng windows exe
   { name: 'modeltest-ng.exe', version: '0.1.7' },
   { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
@@ -47,11 +54,11 @@ const allBinaries = electronutil.is.windows
       { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
     ];
 
-  const binaries = allBinaries.filter(({ multithreaded }) =>
+const binaries = allBinaries.filter(({ multithreaded }) =>
   MAX_NUM_CPUS === 1 ? !multithreaded : true
-  );
+);
 
-  const initialBinaryName = binaries.filter(({ initial }) => initial )[0].name;
+const initialBinaryName = binaries.filter(({ initial }) => initial )[0].name;
 
 // Available parameters for different analysis
 const params = {
