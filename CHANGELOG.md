@@ -19,8 +19,11 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
+
+## [2.0.6] - 2021-10-05
 ### Changed
 - Updated to include the latest binaries for raxml-ng on Mac and Linux (1.0.3).
+- Updated to include the latest binaries for RAxML on Windows 8 and 10 (8.2.12).
 - A bit of restyling.
 ### Fixed
 - Fixed a bug that only one error could be reported.
