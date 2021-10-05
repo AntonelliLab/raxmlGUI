@@ -29,21 +29,47 @@ const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 export const MAX_NUM_CPUS = cpus().length;
 
 // On Windows 7 (= 6.1) use older versions of RAxML
-const winBinaries = os.release() === "6.1" ? [
-  // TODO: add raxml ng windows exe
-  { name: 'modeltest-ng.exe', version: '0.1.7' },
-  { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
-  { name: 'raxmlHPC-SSE3_Win7.exe', multithreaded: false, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-AVX_Win7.exe', multithreaded: true, version: '8.2.10' },
-  { name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe', multithreaded: true, version: '8.2.10', initial: true }
-] : [
-  // TODO: add raxml ng windows exe
-  { name: 'modeltest-ng.exe', version: '0.1.7' },
-  { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
-  { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.12' },
-  { name: 'raxmlHPC-PTHREADS-AVX.exe', multithreaded: true, version: '8.2.12' },
-  { name: 'raxmlHPC-PTHREADS-SSE3.exe', multithreaded: true, version: '8.2.12', initial: true }
-];
+const [majorVersion, minorVersion] = os.release().split('.');
+const winBinaries =
+  majorVersion === '6' && minorVersion === '1'
+    ? [
+        // TODO: add raxml ng windows exe
+        { name: 'modeltest-ng.exe', version: '0.1.7' },
+        { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
+        {
+          name: 'raxmlHPC-SSE3_Win7.exe',
+          multithreaded: false,
+          version: '8.2.10',
+        },
+        {
+          name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
+          multithreaded: true,
+          version: '8.2.10',
+        },
+        {
+          name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe',
+          multithreaded: true,
+          version: '8.2.10',
+          initial: true,
+        },
+      ]
+    : [
+        // TODO: add raxml ng windows exe
+        { name: 'modeltest-ng.exe', version: '0.1.7' },
+        { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
+        { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.12' },
+        {
+          name: 'raxmlHPC-PTHREADS-AVX.exe',
+          multithreaded: true,
+          version: '8.2.12',
+        },
+        {
+          name: 'raxmlHPC-PTHREADS-SSE3.exe',
+          multithreaded: true,
+          version: '8.2.12',
+          initial: true,
+        },
+      ];
 
 const allBinaries = electronutil.is.windows
   ? winBinaries
