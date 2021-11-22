@@ -72,7 +72,7 @@
     "electron-log": "^4.4.1",
     "electron-progressbar": "^2.0.1",
     "electron-store": "^8.0.1",
-    "electron-updater": "^4.3.9",
+    "electron-updater": "^4.6.2",
     "electron-util": "^0.17.2",
     "filenamify": "^4.3.0",
     "lodash": "^4.17.21",
@@ -105,11 +105,11 @@
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "^1.1.1",
     "electron-webpack": "^2.8.2",
-    "nodemon": "^2.0.13",
+    "nodemon": "^2.0.15",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
     "shx": "^0.3.3",
-    "typescript": "^4.4.3",
+    "typescript": "^4.5.2",
     "wait-on": "^6.0.0"
   },
   "browserslist": [
