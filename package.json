@@ -101,7 +101,7 @@
     "dotenv": "^10.0.0",
     "download": "^8.0.0",
     "electron": "^13.6.2",
-    "electron-builder": "^22.14.3",
+    "electron-builder": "^22.14.7",
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "^1.1.1",
     "electron-webpack": "^2.8.2",
