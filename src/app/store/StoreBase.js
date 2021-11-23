@@ -1,12 +1,9 @@
 import { ipcRenderer } from 'electron';
-import { observable } from 'mobx';
 
 import * as ipc from '../../constants/ipc';
 
 export default class StoreBase {
   listeners = [];
-
-  @observable version = undefined;
 
   constructor() {
     this._init();

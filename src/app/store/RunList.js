@@ -1,16 +1,11 @@
 import { observable, computed, action } from 'mobx';
 import Run from './Run';
 import * as ipc from '../../constants/ipc';
-import StoreBase from './StoreBase';
-import Citation from './Citation';
-import Config from './Config';
+import AppStore from './AppStore';
 
-class RunList extends StoreBase {
+class RunList extends AppStore {
   @observable runs = [];
   @observable activeIndex = 0;
-
-  citation = new Citation();
-  config = new Config();
 
   constructor() {
     super();
