@@ -70,14 +70,6 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.input.main,
       border: `1px solid ${theme.palette.input.darker}`,
     },
-    deleteChip: {
-      backgroundColor: 'transparent',
-      border: 'none',
-      marginRight: -5,
-    },
-    deleteChipIcon: {
-      opacity: 1,
-    },
     link: {
       cursor: 'pointer',
       color: theme.palette.secondary.main,
@@ -298,15 +290,12 @@ function AlignmentCard({ className, alignment }) {
         avatar={Type}
         action={
           <div>
-            <Chip
-              classes={{
-                root: classes.deleteChip,
-                deleteIcon: classes.deleteChipIcon,
-              }}
-              deleteIcon={<DeleteForeverIcon />}
-              onDelete={alignment.remove}
-              title="Remove alignment"
-            />
+            <IconButton
+              onClick={alignment.remove}
+            >
+              <DeleteForeverIcon />
+            </IconButton>
+
             <IconButton
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
