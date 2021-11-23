@@ -249,6 +249,26 @@ const App = () => {
     );
   }
 
+  function appSnack(store) {
+    const message = 'Command copied';
+    return (
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        open={store.showAppSnack}
+        onClose={store.clearAppSnack}
+      >
+        <SnackbarMessage
+          onClose={store.clearAppSnack}
+          variant={'info'}
+          message={message}
+        />
+      </Snackbar>
+    );
+  }
+
   const run = store.activeRun;
   const { binary } = run;
   return (
@@ -338,7 +358,7 @@ const App = () => {
                 RAxML
               </Typography>
               <div className={classes.ioItem}>
-                <Raxml run={run} />
+                <Raxml run={run} store={store}/>
               </div>
             </Box>
             <Box
@@ -412,6 +432,7 @@ const App = () => {
             />
           </Snackbar>
           {fileModifiedSnack(run)}
+          {appSnack(store)}
           <ErrorDialog error={run.error} onClose={run.clearError} />
           <ModifiedDialog
             show={run.showModifiedDialog}

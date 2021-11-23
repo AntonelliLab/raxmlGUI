@@ -1,4 +1,5 @@
 import React from 'react';
+import { clipboard } from 'electron';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -6,7 +7,10 @@ import { withStyles } from '@material-ui/core/styles';
 import OptionSelect from './components/OptionSelect';
 import Box from '@material-ui/core/Box';
 import LoadingButton from './components/LoadingButton';
-import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const styles = (theme) => ({
   Raxml: {
@@ -45,6 +49,12 @@ const styles = (theme) => ({
 
 @observer
 class Raxml extends React.Component {
+  copyCommand = () => {
+    const { run, store } = this.props;
+    clipboard.writeText(run.command);
+    store.setAppSnack();
+  };
+
   render() {
     const { classes, run } = this.props;
 
@@ -98,13 +108,18 @@ class Raxml extends React.Component {
         </Box>
 
         <Box paddingBottom={1}>
-          <TextField
-            helperText="Command"
-            fullWidth
-            multiline
-            variant="standard"
-            value={run.command}
-          />
+          <Box display="flex">
+            <Tooltip aria-label="copy-command" title="Copy command">
+              <IconButton
+                style={{ position: 'absolute', right: 0 }}
+                onClick={this.copyCommand}
+              >
+                <FileCopyIcon />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="body1">{run.command}</Typography>
+          </Box>
+          <p className="MuiFormHelperText-root">Command</p>
         </Box>
       </div>
     );
