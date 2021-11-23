@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import Tooltip from '@material-ui/core/Tooltip';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -290,11 +291,14 @@ function AlignmentCard({ className, alignment }) {
         avatar={Type}
         action={
           <div>
-            <IconButton
-              onClick={alignment.remove}
+            <Tooltip
+              aria-label="remove-alignment"
+              title="Remove alignment"
             >
-              <DeleteForeverIcon />
-            </IconButton>
+              <IconButton onClick={alignment.remove}>
+                <DeleteForeverIcon />
+              </IconButton>
+            </Tooltip>
 
             <IconButton
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
