@@ -8,7 +8,7 @@ import Box from '@material-ui/core/Box';
 import LoadingButton from './components/LoadingButton';
 import TextField from '@material-ui/core/TextField';
 
-const styles = theme => ({
+const styles = (theme) => ({
   Raxml: {
     padding: '10px',
     width: '100%',
@@ -17,19 +17,19 @@ const styles = theme => ({
   form: {
     // '& > *:not(:first-child)': {
     '& > *+*': {
-      marginLeft: '20px'
-    }
+      marginLeft: '20px',
+    },
   },
   formItem: {
     // marginRight: '20px',
   },
   button: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   run: {
     marginTop: '20px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   code: {
     color: theme.palette.console.contrastText,
@@ -40,7 +40,7 @@ const styles = theme => ({
     // overflowWrap: 'anywhere', // currently not available in Chrome
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-all',
-  }
+  },
 });
 
 @observer
@@ -113,7 +113,7 @@ class Raxml extends React.Component {
 
 Raxml.propTypes = {
   classes: PropTypes.object.isRequired,
-  run: PropTypes.object.isRequired
+  run: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Raxml);
