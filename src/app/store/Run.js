@@ -75,18 +75,27 @@ const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
       { name: 'modeltest-ng', multithreaded: true, version: '0.1.7' },
-      { name: 'raxml-ng', multithreaded: true, version: '1.0.3', initial: true },
+      {
+        name: 'raxml-ng',
+        multithreaded: true,
+        version: '1.1.0',
+        initial: true,
+      },
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
-      { name: 'raxmlHPC-PTHREADS-SSE3', multithreaded: true, version: '8.2.12' }
+      {
+        name: 'raxmlHPC-PTHREADS-SSE3',
+        multithreaded: true,
+        version: '8.2.12',
+      },
     ];
 
 const binaries = allBinaries.filter(({ multithreaded }) =>
   MAX_NUM_CPUS === 1 ? !multithreaded : true
 );
 
-const initialBinaryName = binaries.filter(({ initial }) => initial )[0].name;
+const initialBinaryName = binaries.filter(({ initial }) => initial)[0].name;
 
 // Available parameters for different analysis
 const params = {
@@ -110,7 +119,12 @@ const analysisOptions = [
   {
     title: 'ML search',
     value: 'ML',
-    params: [params.runs, params.SHlike, params.combinedOutput, params.outGroup],
+    params: [
+      params.runs,
+      params.SHlike,
+      params.combinedOutput,
+      params.outGroup,
+    ],
   },
   {
     title: 'ML + rapid bootstrap',
@@ -142,7 +156,7 @@ const analysisOptions = [
     title: 'RELL bootstraps',
     value: 'RBS',
     params: [],
-  }
+  },
 ];
 
 const raxmlNgAnalysisOptions = [
@@ -180,68 +194,144 @@ const raxmlNgAnalysisOptions = [
 ];
 
 class Binary extends Option {
-  constructor(run) { super(run, initialBinaryName, 'Binary', 'Name of binary'); }
+  constructor(run) {
+    super(run, initialBinaryName, 'Binary', 'Name of binary');
+  }
   options = binaries.map(({ name }) => ({ value: name, title: name }));
-  @computed get version() { return binaries.filter(b => b.name === this.value)[0].version };
+  @computed get version() {
+    return binaries.filter((b) => b.name === this.value)[0].version;
+  }
 }
 
 class NumThreads extends Option {
-  constructor(run) { super(run, 2, 'Threads', 'Number of cpu threads'); }
-  options = range(1, MAX_NUM_CPUS + 1).map(value => ({ value, title: value }));
+  constructor(run) {
+    super(run, 2, 'Threads', 'Number of cpu threads');
+  }
+  options = range(1, MAX_NUM_CPUS + 1).map((value) => ({
+    value,
+    title: value,
+  }));
   @computed get notAvailable() {
-    return !(/PTHREADS/.test(this.run.binary.value) || this.run.usesModeltestNg);
+    return !(
+      /PTHREADS/.test(this.run.binary.value) || this.run.usesModeltestNg
+    );
   }
 }
 
 class Analysis extends Option {
-  constructor(run) { super(run, 'ML+rBS', 'Analysis', 'Type of analysis'); }
+  constructor(run) {
+    super(run, 'ML+rBS', 'Analysis', 'Type of analysis');
+  }
   options = analysisOptions.map(({ value, title }) => ({ value, title }));
 }
 
 class RaxmlNgAnalysis extends Option {
-  constructor(run) { super(run, 'ML+TBE+con', 'Analysis', 'Type of analysis'); }
-  options = raxmlNgAnalysisOptions.map(({ value, title }) => ({ value, title }));
+  constructor(run) {
+    super(run, 'ML+TBE+con', 'Analysis', 'Type of analysis');
+  }
+  options = raxmlNgAnalysisOptions.map(({ value, title }) => ({
+    value,
+    title,
+  }));
 }
 
 class NumRuns extends Option {
-  constructor(run) { super(run, 1, 'Runs', 'Number of runs'); }
-  options = [1, 10, 20, 50, 100, 500].map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.runs); }
+  constructor(run) {
+    super(run, 1, 'Runs', 'Number of runs');
+  }
+  options = [1, 10, 20, 50, 100, 500].map((value) => ({ value, title: value }));
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.runs);
+  }
 }
 
 class NumRepetitions extends Option {
-  constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
-  options = [100, 200, 500, 1000, 10000, 'autoMR', 'autoMRE', 'autoMRE_IGN', 'autoFC'].map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.reps); }
+  constructor(run) {
+    super(run, 100, 'Reps.', 'Number of repetitions');
+  }
+  options = [
+    100,
+    200,
+    500,
+    1000,
+    10000,
+    'autoMR',
+    'autoMRE',
+    'autoMRE_IGN',
+    'autoFC',
+  ].map((value) => ({ value, title: value }));
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.reps);
+  }
 }
 
 class NumRepetitionsNg extends Option {
-  constructor(run) { super(run, 100, 'Reps.', 'Number of repetitions'); }
-  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.repsNg); }
+  constructor(run) {
+    super(run, 100, 'Reps.', 'Number of repetitions');
+  }
+  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map((value) => ({
+    value,
+    title: value,
+  }));
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.repsNg);
+  }
 }
 
 //TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
 class BranchLength extends Option {
-  constructor(run) { super(run, false, 'BS brL', 'Compute branch lengths', 'Optimize model parameters and branch lengths for the given input tree'); }
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.brL); }
+  constructor(run) {
+    super(
+      run,
+      false,
+      'BS brL',
+      'Compute branch lengths',
+      'Optimize model parameters and branch lengths for the given input tree'
+    );
+  }
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.brL);
+  }
 }
 
 class SHlike extends Option {
-  constructor(run) { super(run, false, 'SH-like', 'Compute log-likelihood test', 'Shimodaira-Hasegawa-like procedure'); }
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.SHlike); }
+  constructor(run) {
+    super(
+      run,
+      false,
+      'SH-like',
+      'Compute log-likelihood test',
+      'Shimodaira-Hasegawa-like procedure'
+    );
+  }
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.SHlike);
+  }
 }
 
 class CombinedOutput extends Option {
-  constructor(run) { super(run, false, 'Combined output', 'Concatenate output trees'); }
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.combinedOutput); }
-  @computed get isUsed() { return this.value && !this.notAvailable }
+  constructor(run) {
+    super(run, false, 'Combined output', 'Concatenate output trees');
+  }
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.combinedOutput);
+  }
+  @computed get isUsed() {
+    return this.value && !this.notAvailable;
+  }
 }
 
 class StartingTree extends Option {
-  constructor(run) { super(run, 'Maximum parsimony', 'Starting tree', ''); }
-  options = ['Maximum parsimony', 'User defined'].map(value => ({ value, title: value }));
-  @computed get notAvailable() { return !this.run.analysisOption.params.includes(params.startingTree); }
+  constructor(run) {
+    super(run, 'Maximum parsimony', 'Starting tree', '');
+  }
+  options = ['Maximum parsimony', 'User defined'].map((value) => ({
+    value,
+    title: value,
+  }));
+  @computed get notAvailable() {
+    return !this.run.analysisOption.params.includes(params.startingTree);
+  }
 }
 
 class OutGroup extends Option {
@@ -440,40 +530,88 @@ class SubstitutionAscertainment extends Option {
 }
 
 class AAMatrixName extends Option {
-  constructor(run) { super(run, 'BLOSUM62', 'Matrix name', 'Amino Acid Substitution Matrix name'); }
-  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(value => ({ value, title: value }));
-  @computed get notAvailable() { return this.run.dataType !== 'protein'; }
+  constructor(run) {
+    super(
+      run,
+      'BLOSUM62',
+      'Matrix name',
+      'Amino Acid Substitution Matrix name'
+    );
+  }
+  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
+    (value) => ({ value, title: value })
+  );
+  @computed get notAvailable() {
+    return this.run.dataType !== 'protein';
+  }
 }
 
 class EstimatedFrequencies extends Option {
-  constructor(run) { super(run, false, 'ML Freq.', 'Estimated base frequencies', 'Use estimated base frequencies instead of empirical.'); }
-  @computed get notAvailable() { return this.run.dataType === 'protein' || this.run.usesRaxmlNg; }
+  constructor(run) {
+    super(
+      run,
+      false,
+      'ML Freq.',
+      'Estimated base frequencies',
+      'Use estimated base frequencies instead of empirical.'
+    );
+  }
+  @computed get notAvailable() {
+    return this.run.dataType === 'protein' || this.run.usesRaxmlNg;
+  }
 }
 
 class BaseFrequencies extends Option {
-  constructor(run) { super(run, 'default', 'Base frequencies', 'Empirical, ML estimated or model based base frequencies'); }
+  constructor(run) {
+    super(
+      run,
+      'default',
+      'Base frequencies',
+      'Empirical, ML estimated or model based base frequencies'
+    );
+  }
   options = [
     { title: 'From model', value: 'default' },
     { title: 'Empirical', value: 'F' },
     { title: 'Estimated (ML)', value: 'X' },
-  ]
-  @computed get notAvailable() { return this.run.dataType !== 'protein' || this.run.usesRaxmlNg; }
+  ];
+  @computed get notAvailable() {
+    return this.run.dataType !== 'protein' || this.run.usesRaxmlNg;
+  }
 }
 
 class MultistateModel extends Option {
-  constructor(run) { super(run, 'GTR', 'Multistate model'); }
-  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(value => ({ value, title: value }));
-  @computed get notAvailable() { return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg; }
+  constructor(run) {
+    super(run, 'GTR', 'Multistate model');
+  }
+  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
+    (value) => ({ value, title: value })
+  );
+  @computed get notAvailable() {
+    return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg;
+  }
 }
 
 class TreeFile extends Option {
-  constructor(run) { super(run, '', 'Tree', ''); }
+  constructor(run) {
+    super(run, '', 'Tree', '');
+  }
   @observable filePath = '';
-  @computed get haveFile() { return !!this.filePath; }
-  @computed get filename() { return parsePath(this.filePath).basename; }
-  @computed get name() { return parsePath(this.filePath).name; }
-  @computed get dir() { return parsePath(this.filePath).dir; }
-  @action setFilePath = (filePath) => { this.filePath = filePath; }
+  @computed get haveFile() {
+    return !!this.filePath;
+  }
+  @computed get filename() {
+    return parsePath(this.filePath).basename;
+  }
+  @computed get name() {
+    return parsePath(this.filePath).name;
+  }
+  @computed get dir() {
+    return parsePath(this.filePath).dir;
+  }
+  @action setFilePath = (filePath) => {
+    this.filePath = filePath;
+  };
   @action openFolder = () => {
     shell.showItemInFolder(this.filePath);
   };
@@ -482,13 +620,16 @@ class TreeFile extends Option {
   };
   @action remove = () => {
     this.setFilePath('');
-  }
+  };
 }
 
 class Tree extends TreeFile {
   @computed get notAvailable() {
-    return !(this.run.analysisOption.params.includes(params.tree) ||
-    (!this.run.startingTree.notAvailable && this.run.startingTree.value === 'User defined'));
+    return !(
+      this.run.analysisOption.params.includes(params.tree) ||
+      (!this.run.startingTree.notAvailable &&
+        this.run.startingTree.value === 'User defined')
+    );
   }
 }
 
@@ -647,13 +788,8 @@ class Run extends StoreBase {
   outputNameAvailable = promisedComputed(
     { ok: false, resultFilenames: [] },
     async () => {
-      const {
-        id,
-        outputDir,
-        outputName,
-        outputNamePlaceholder,
-        atomAfterRun,
-      } = this;
+      const { id, outputDir, outputName, outputNamePlaceholder, atomAfterRun } =
+        this;
       const defaultValue = {
         id,
         outputDir,
@@ -1645,7 +1781,7 @@ class Run extends StoreBase {
       default:
     }
     // Remove items that are only empty strings
-    cmdArgs.forEach(args => _.remove(args, n => n === ''));
+    cmdArgs.forEach((args) => _.remove(args, (n) => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 

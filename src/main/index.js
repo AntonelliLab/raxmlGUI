@@ -40,19 +40,19 @@ const installExtensions = async () => {
     default: installExtension,
     REACT_DEVELOPER_TOOLS,
     MOBX_DEVTOOLS,
-  } = require("electron-devtools-installer");
+  } = require('electron-devtools-installer');
   const extensions = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS];
-  extensions.map(id =>
-    installExtension(id, true)
-      .then(name => console.log(`Added Extension:  ${name}`))
-      .catch(err => console.log("An error occurred: ", err))
+  extensions.map((id) =>
+    installExtension(id)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err))
   );
 };
 
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
-const isDevMode = isDev && process.argv.indexOf("--noDevServer") === -1;
+const isDevMode = isDev && process.argv.indexOf('--noDevServer') === -1;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -62,30 +62,33 @@ let progressBar;
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for update...');
 });
-autoUpdater.on('update-available', info => {
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Found Updates',
-    message: 'An update for RAxML-GUI is available, do you want to update now and restart?',
-    buttons: ['Yes', 'No'],
-    cancelId: 1
-  })
-    .then(r => {
+autoUpdater.on('update-available', (info) => {
+  dialog
+    .showMessageBox({
+      type: 'info',
+      title: 'Found Updates',
+      message:
+        'An update for RAxML-GUI is available, do you want to update now and restart?',
+      buttons: ['Yes', 'No'],
+      cancelId: 1,
+    })
+    .then((r) => {
       // Button index
       if (r.response === 0) {
         progressBar = new ProgressBar({
           text: 'Downloading the update for the app',
           browserWindow: {
             webPreferences: {
-                nodeIntegration: true
-            }
-        }});
+              nodeIntegration: true,
+            },
+          },
+        });
         progressBar
-          .on('completed', function() {
+          .on('completed', function () {
             console.info(`completed...`);
             progressBar.detail = 'Download completed. Exiting...';
           })
-          .on('aborted', function() {
+          .on('aborted', function () {
             console.info(`aborted...`);
           });
         autoUpdater.downloadUpdate();
@@ -93,17 +96,17 @@ autoUpdater.on('update-available', info => {
     });
   log.info('Update available.');
 });
-autoUpdater.on('update-not-available', info => {
+autoUpdater.on('update-not-available', (info) => {
   log.info('Update not available.');
 });
-autoUpdater.on('error', error => {
+autoUpdater.on('error', (error) => {
   log.info('Error in auto-updater. ' + error);
   dialog.showErrorBox(
     'Error: ',
     error == null ? 'unknown' : (error.stack || error).toString()
   );
 });
-autoUpdater.on('download-progress', progressObj => {
+autoUpdater.on('download-progress', (progressObj) => {
   let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message =
@@ -115,15 +118,16 @@ autoUpdater.on('download-progress', progressObj => {
     ')';
   log.info(log_message);
 });
-autoUpdater.on('update-downloaded', info => {
+autoUpdater.on('update-downloaded', (info) => {
   progressBar.setCompleted();
-  dialog.showMessageBox({
-    title: 'Install Updates',
-    message: 'Updates downloaded, the application will now quit to update...'
-  })
-    .then(() => {
-      setImmediate(() => autoUpdater.quitAndInstall())
+  dialog
+    .showMessageBox({
+      title: 'Install Updates',
+      message: 'Updates downloaded, the application will now quit to update...',
     })
+    .then(() => {
+      setImmediate(() => autoUpdater.quitAndInstall());
+    });
   log.info('Update downloaded');
 });
 
@@ -135,7 +139,7 @@ function initialize() {
   const shouldQuit = makeSingleInstance();
   if (shouldQuit) return app.quit();
 
-  function createMainWindow () {
+  function createMainWindow() {
     // Window options for the main window
     const mainWindowOptions = {
       width: 1280,
@@ -151,8 +155,8 @@ function initialize() {
         contextIsolation: false, // Needed to expose ipcRenderer from preload script
         // preload: path.join(app.getAppPath(), 'src', 'main', 'preload.js'),
         enableRemoteModule: true,
-        allowEval: false
-      }
+        allowEval: false,
+      },
     };
 
     if (process.platform === 'linux') {
@@ -164,12 +168,14 @@ function initialize() {
     mainWindow = new BrowserWindow(mainWindowOptions);
 
     // and load the index.html of the app.
-    const startUrl = process.env.ELECTRON_START_URL || url.format({
-      // pathname: path.join(__dirname, '..', 'build', 'index.html'),
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file:',
-      slashes: true
-    });
+    const startUrl =
+      process.env.ELECTRON_START_URL ||
+      url.format({
+        // pathname: path.join(__dirname, '..', 'build', 'index.html'),
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file:',
+        slashes: true,
+      });
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.
@@ -183,8 +189,8 @@ function initialize() {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
-      mainWindow = null
-    })
+      mainWindow = null;
+    });
 
     // TODO: Use 'ready-to-show' event
     // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
@@ -220,7 +226,7 @@ function initialize() {
 
     autoUpdater.autoDownload = false;
     autoUpdater.checkForUpdates();
-  })
+  });
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
