@@ -72,7 +72,6 @@ class Raxml extends React.Component {
         >
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
-          <div style={{ flexGrow: 1 }} />
           {run.modelTestIsRunningOnAlignment ? (
             <Button
               size="small"
