@@ -20,6 +20,13 @@ in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [2.0.7] - 2022-02-22
+### Changed
+- Updated to include the latest binaries for raxml-ng on Mac and Linux (1.1.0).
+- Allow copy RAxML command
+### Fixed
+- Fixed Linux issue running raxml-ng binaries
+
 ## [2.0.6] - 2021-10-05
 ### Changed
 - Updated to include the latest binaries for raxml-ng on Mac and Linux (1.0.3).
