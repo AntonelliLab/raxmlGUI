@@ -381,7 +381,10 @@ class SubstitutionMatrix extends Option {
     if (!modelSettings) {
       return [];
     }
-    return modelSettings.options.map((value) => ({ value, title: value }));
+    return modelSettings.options.map((value) => ({
+      value,
+      title: value === 'GTR' ? value : `${value} + GAMMA`,
+    }));
   }
   @computed get notAvailable() {
     return (
