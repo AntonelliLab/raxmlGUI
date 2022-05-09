@@ -19,7 +19,13 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
-
+## [2.0.8] - 2022-05-09
+### Changed
+- Updated example files
+### Fixed
+- Left aligned Run buttom to always be visible
+- Made substitution model options available also on selecting GTRCAT for raxml 8.x
+- Added GAMMA to non-GTR model labels for raxml 8.x
 ## [2.0.7] - 2022-02-22
 ### Changed
 - Updated to include the latest binaries for raxml-ng on Mac and Linux (1.1.0).
