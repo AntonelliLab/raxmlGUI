@@ -392,10 +392,6 @@ class SubstitutionMatrix extends Option {
       this.run.dataType === 'binary' ||
       this.run.dataType === 'protein' ||
       this.run.dataType === 'multistate' ||
-      ((this.run.dataType === 'dna' ||
-        this.run.dataType === 'rna' ||
-        this.run.dataType === 'nucleotide') &&
-        this.run.substitutionRate.isCAT) ||
       this.run.usesRaxmlNg
     );
   }
@@ -454,6 +450,12 @@ class SubstitutionRate extends Option {
         this.run.substitutionMatrix.notGTR) ||
       this.run.usesRaxmlNg
     );
+  }
+  @computed get cmdValue() {
+    if (this.run.substitutionMatrix.notGTR) {
+      return 'GAMMA';
+    }
+    return this.value;
   }
   @computed get isCAT() {
     return this.value === 'CAT';
@@ -1056,7 +1058,7 @@ class Run extends StoreBase {
     let model =
       this.substitutionAscertainment.cmdValue +
       this.substitutionMatrix.cmdValue +
-      this.substitutionRate.value +
+      this.substitutionRate.cmdValue +
       this.substitutionI.cmdValue;
     if (this.dataType === 'protein') {
       model += this.alignments[0].aaMatrixName;
