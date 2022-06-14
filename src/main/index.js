@@ -35,19 +35,19 @@ const BrowserWindow = electron.BrowserWindow;
 // Module to show dialogs
 const dialog = electron.dialog;
 
-const installExtensions = async () => {
-  const {
-    default: installExtension,
-    REACT_DEVELOPER_TOOLS,
-    MOBX_DEVTOOLS,
-  } = require('electron-devtools-installer');
-  const extensions = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS];
-  extensions.map((id) =>
-    installExtension(id)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err))
-  );
-};
+// const installExtensions = async () => {
+//   const {
+//     default: installExtension,
+//     REACT_DEVELOPER_TOOLS,
+//     MOBX_DEVTOOLS,
+//   } = require('electron-devtools-installer');
+//   const extensions = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS];
+//   extensions.map((id) =>
+//     installExtension(id)
+//       .then((name) => console.log(`Added Extension:  ${name}`))
+//       .catch((err) => console.log('An error occurred: ', err))
+//   );
+// };
 
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from
@@ -219,9 +219,9 @@ function initialize() {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
-    if (isDevMode) {
-      await installExtensions();
-    }
+    // if (isDevMode) {
+    //   await installExtensions();
+    // }
     createMainWindow();
 
     autoUpdater.autoDownload = false;
