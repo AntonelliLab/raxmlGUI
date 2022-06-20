@@ -42,3 +42,7 @@ jobs:
           APPLEID: ${{ secrets.apple_id }}
           APPLEIDPASS: ${{ secrets.apple_id_pass }}
           APPLEIDTEAM: ${{ secrets.apple_id_team }}
+          SENTRY_URL: ${{ secrets.sentry_url }}
+          SENTRY_ORG: ${{ secrets.org }}
+          SENTRY_PROJECT: ${{ secrets.project }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.auth_token }}
