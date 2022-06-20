@@ -98,6 +98,7 @@
     "@babel/plugin-proposal-class-properties": "^7.17.12",
     "@babel/preset-env": "^7.18.2",
     "@sentry/cli": "^2.2.0",
+    "@sentry/webpack-plugin": "^1.18.9",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "download": "^8.0.0",
@@ -124,10 +125,12 @@
     "commonSourceDirectory": "src/common",
     "staticSourceDirectory": "static",
     "main": {
-      "sourceDirectory": "src/main"
+      "sourceDirectory": "src/main",
+      "webpackConfig": "webpack.config.js"
     },
     "renderer": {
-      "sourceDirectory": null
+      "sourceDirectory": null,
+      "webpackConfig": "webpack.config.js"
     }
   },
   "build": {
