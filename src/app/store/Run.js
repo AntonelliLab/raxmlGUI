@@ -71,16 +71,30 @@ const winBinaries =
         },
       ];
 
+const likelyARM = os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
+const armBinaries = [
+  { name: 'modeltest-ng-ARM64', multithreaded: true, version: '0.1.7' },
+  {
+    name: 'raxml-ng-ARM64',
+    multithreaded: true,
+    version: '1.1.0',
+    initial: true,
+  },
+];
+const x64Binaries = [
+  { name: 'modeltest-ng', multithreaded: true, version: '0.1.7' },
+  {
+    name: 'raxml-ng',
+    multithreaded: true,
+    version: '1.1.0',
+    initial: true,
+  },
+];
+
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
-      { name: 'modeltest-ng', multithreaded: true, version: '0.1.7' },
-      {
-        name: 'raxml-ng',
-        multithreaded: true,
-        version: '1.1.0',
-        initial: true,
-      },
+      ...!likelyARM ? x64Binaries : armBinaries,
       { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
       { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
