@@ -323,6 +323,7 @@ class Alignment extends StoreBase {
 
   @action
   runModelTest = () => {
+    this.crashMe();
     this.modeltestLoading = true;
     ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
       id: this.id,
