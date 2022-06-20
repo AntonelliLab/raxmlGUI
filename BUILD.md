@@ -14,7 +14,8 @@ From [electron.build publish](https://www.electron.build/configuration/publish#r
 The benefit of this workflow is that it allows you to always have the latest artifacts, and the release can be published once it is ready.
 5. Update CHANGELOG and the download links in `docs/_layouts/default.html` to the new version.
 5. Bump the version in package.json to use for the next draft and push to update the download links on the github page.
-
+6. Uploading Debug Information
+To get symbolicated stack traces for native crashes, you have to upload debug symbols to Sentry. Sentry Wizard creates a convenient sentry-symbols.js script that will upload the Electron symbols for you. After installing the SDK and every time you upgrade the Electron version, run this script:
 
 ## Homepage
 
