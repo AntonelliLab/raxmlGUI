@@ -136,10 +136,11 @@ export default function typecheckAlignment(alignment) {
         'Illegal mix of data types among sequences:',
         sequenceDataTypes
       );
-      throw new Error(
-        `Invalid alignment: sequences must be of same data type, but found [${Array.from(
+      throw new UserFixError(
+        `Your alignment is a mix of different data types, namely = ${Array.from(
           dataTypes.keys()
-        )}].`
+        )}. 
+        Please use only the same type for one alignment or combine several files.`
       );
     }
   }
