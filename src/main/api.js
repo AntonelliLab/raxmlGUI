@@ -25,6 +25,7 @@ import UserFixError from '../common/errors';
 
 Sentry.init({
   dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
+  maxValueLength: 2000,
 });
 
 const fs = _fs.promises;
@@ -265,6 +266,7 @@ ipcMain.on(
       const error = new UserFixError(
         `The input file does not exist '${inputPath}': ${err.message}`
       );
+      Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
       return;
     }
@@ -279,6 +281,7 @@ ipcMain.on(
       const error = new Error(
         `Error trying to write to output file '${resultFilePath}': ${err.message}`
       );
+      Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
       return;
     } finally {
@@ -310,6 +313,7 @@ ipcMain.on(
       const error = new Error(
         `Error trying to execute raxml binary '${binaryPath}': ${err.message}`
       );
+      Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
       return;
     }
@@ -331,6 +335,7 @@ ipcMain.on(
           console.log(stdout, stderr);
         } catch (err) {
           console.error('Flag check run error:', err);
+          Sentry.captureException(err);
           send(event, ipc.RUN_ERROR, { id, error: err });
           return;
         }
@@ -347,6 +352,7 @@ ipcMain.on(
         }
       } catch (err) {
         console.error('Run error:', err);
+        Sentry.captureException(err);
         send(event, ipc.RUN_ERROR, { id, error: err });
         return;
       }
@@ -440,7 +446,7 @@ async function runProcess(
 
       proc.stdout.on('data', (buffer) => {
         const content = String(buffer);
-        // console.log('on stdout:', content);
+        console.log('on stdout:', content);
         onStdOut(content);
         send(event, ipc.RUN_STDOUT, { id, content });
       });
