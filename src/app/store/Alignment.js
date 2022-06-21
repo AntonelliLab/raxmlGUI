@@ -330,6 +330,7 @@ class Alignment extends StoreBase {
       outputDir: this.run.outputDir,
       dataType: this.dataType,
       numThreads: this.run.numThreads.value,
+      binaryName: this.run.modeltestName,
     });
   };
 

@@ -710,6 +710,7 @@ class Run extends StoreBase {
     this.outputNamePlaceholder = `${id}`;
     this.atomAfterRun = createAtom('AfterRun');
     this.atomFinished = createAtom('finished');
+    this.modeltestName = binaries.filter((b) => b.name.includes('modeltest'))[0].name;
   }
 
   id = 0;

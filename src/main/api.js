@@ -684,7 +684,7 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
 });
 
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
-  const { id, filePath, outputDir, dataType, numThreads } = payload;
+  const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
   const { dir, name } = parsePath(filePath);
 
   const outputPath = path.join(outputDir, `RAxML_GUI_ModelTest_${name}`);
@@ -712,7 +712,6 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
 
   console.log(`Alignment '${id}': Run modeltest with args ${args}...`);
 
-  const binaryName = 'modeltest-ng';
   const stdOuts = [];
   const onStdOut = (content) => {
     stdOuts.push(content);
