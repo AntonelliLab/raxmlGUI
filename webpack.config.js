@@ -1,5 +1,7 @@
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
+const package = require('./package.json');
+
 module.exports = {
   // other webpack configuration
   devtool: 'source-map',
@@ -10,7 +12,7 @@ module.exports = {
       authToken: process.env.SENTRY_AUTH_TOKEN,
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
-      release: process.env.SENTRY_RELEASE,
+      release: `${package.productName}@${package.version}`,
 
       // other SentryWebpackPlugin configuration
       include: '.',
