@@ -41,11 +41,12 @@ const winBinaries =
           multithreaded: false,
           version: '8.2.10',
         },
-        {
-          name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
-          multithreaded: true,
-          version: '8.2.10',
-        },
+        // TODO: Crashes on Win7, disabled for now
+        // {
+        //   name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
+        //   multithreaded: true,
+        //   version: '8.2.10',
+        // },
         {
           name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe',
           multithreaded: true,
