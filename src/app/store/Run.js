@@ -977,19 +977,11 @@ class Run extends StoreBase {
   }
 
   @computed get usesRaxmlNg() {
-    switch (this.binary.value) {
-      case 'raxml-ng':
-        return true;
-      default:
-        return false;
-    }
+    return this.binary.value.includes('raxml-ng');
   }
 
   @computed get usesModeltestNg() {
-    if (this.binary.value.includes('modeltest-ng')) {
-      return true;
-    }
-    return false;
+    return this.binary.value.includes('modeltest-ng');
   }
 
   @computed get modelTestCanRun() {
