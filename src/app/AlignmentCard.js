@@ -158,6 +158,7 @@ function _ModelTestButton({ alignment }) {
       }}
       loading={alignment.modeltestLoading}
       onClick={alignment.runModelTest}
+      disabled={alignment.modeltestDisabled}
     >
       Run ModelTest
     </LoadingButton>

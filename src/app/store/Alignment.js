@@ -13,6 +13,8 @@ import * as raxmlNgSettings from '../../settings/raxmlng';
 import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
+import os from 'os';
+import electronutil from 'electron-util';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -237,6 +239,10 @@ class Alignment extends StoreBase {
     this.ngAscertainmentBias = new RaxmlNgModelASC(this);
     this.partition = new Partition(this);
 
+    const [majorVersion, minorVersion] = os.release().split('.');
+    this.modeltestDisabled =
+      electronutil.is.windows && majorVersion === '6' && minorVersion === '1';
+
     this.listen();
   }
 
@@ -387,7 +393,7 @@ class Alignment extends StoreBase {
     }
     // I couldnt find information if ModelTest checks for ASC_
     this.run.substitutionAscertainment.setValue('none');
-    
+
     // Check for invariant sites
     if (/I$/.test(model)) {
       this.run.substitutionI.setValue('+I (ML estimate)');

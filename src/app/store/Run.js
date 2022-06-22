@@ -34,7 +34,8 @@ const winBinaries =
   majorVersion === '6' && minorVersion === '1'
     ? [
         // TODO: add raxml ng windows exe
-        { name: 'modeltest-ng.exe', version: '0.1.7' },
+        // TODO: Crashes on Win7, disabled for now
+        // { name: 'modeltest-ng.exe', version: '0.1.7' },
         { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
         {
           name: 'raxmlHPC-SSE3_Win7.exe',
@@ -711,7 +712,7 @@ class Run extends StoreBase {
     this.outputNamePlaceholder = `${id}`;
     this.atomAfterRun = createAtom('AfterRun');
     this.atomFinished = createAtom('finished');
-    this.modeltestName = binaries.filter((b) => b.name.includes('modeltest'))[0].name;
+    this.modeltestName = binaries.filter((b) => b.name.includes('modeltest'))[0]?.name;
   }
 
   id = 0;
@@ -990,7 +991,6 @@ class Run extends StoreBase {
   }
 
   @computed get modelTestIsRunningOnAlignment() {
-    // return this.alignments.some(alignment => alignment.modeltestLoading);
     const running = this.alignments.some(
       (alignment) => alignment.modeltestLoading
     );
