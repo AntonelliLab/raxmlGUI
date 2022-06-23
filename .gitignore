@@ -32,3 +32,6 @@ RAxML_*
 *.raxml.*
 *.reduced
 *_concat.*
+
+# environment
+sentry.properties
