@@ -19,6 +19,15 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
+## [2.0.9] - 2022-06-30
+### Added
+- Added substantially more logging in case an error occurrs
+### Changed
+- Some maintenance and smaller UI updates
+### Removed
+- Removed ModelTest from Windows 7 and lower
+### Fixed
+- Fixed problems using RAxML and ModelTest with Mac M1 laptops
 ## [2.0.8] - 2022-05-09
 ### Changed
 - Updated example files
