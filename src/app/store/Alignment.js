@@ -330,6 +330,7 @@ class Alignment extends StoreBase {
 
   @action
   runModelTest = () => {
+    // Show an error if there are not enough sequences and dont start the run
     if (this.numSequences < 3) {
       this.run.parent.onError(
         new UserFixError(

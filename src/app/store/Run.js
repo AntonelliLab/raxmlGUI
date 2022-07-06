@@ -18,6 +18,7 @@ import { quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
 import _ from 'lodash';
+import UserFixError from '../../common/errors';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -1855,9 +1856,14 @@ Results saved to: ${this.outputDir}
       finalAlignment,
     } = this;
 
+    // Less than 4 sequences and RAxML would error out
     if (this.finalAlignment.numSequences <= 3) {
-      // TODO: how to throw error here
-      // throw new UserFixError('To start a run with RAxML the final alignment needs to have at least three sequences.');
+      this.parent.onError(
+        new UserFixError(
+          'To start a run with RAxML the final alignment needs to have at least four sequences.'
+        )
+      );
+      return;
     }
 
     console.log(`Start run ${id} with args ${args}`);
