@@ -358,7 +358,7 @@ const App = () => {
                 RAxML
               </Typography>
               <div className={classes.ioItem}>
-                <Raxml run={run} store={store}/>
+                <Raxml run={run} store={store} />
               </div>
             </Box>
             <Box
@@ -406,7 +406,7 @@ const App = () => {
                 className={classes.statusFeedback}
                 href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
               >
-                Please send us feedback!
+                For questions or suggestions contact us!
               </a>
             </Box>
           </Toolbar>
