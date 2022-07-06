@@ -15,6 +15,7 @@ import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import os from 'os';
 import electronutil from 'electron-util';
+import UserFixError from '../../common/errors';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -329,6 +330,14 @@ class Alignment extends StoreBase {
 
   @action
   runModelTest = () => {
+    if (this.numSequences < 3) {
+      this.run.parent.onError(
+        new UserFixError(
+          'ModelTest can only be run on alignments with more than two sequences.'
+        )
+      );
+      return;
+    }
     this.modeltestLoading = true;
     ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
       id: this.id,

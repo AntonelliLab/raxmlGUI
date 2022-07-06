@@ -27,15 +27,15 @@ class RunList extends AppStore {
   @action
   addRun = () => {
     let maxId = 0;
-    this.runs.forEach(run => (maxId = Math.max(run.id, maxId)));
+    this.runs.forEach((run) => (maxId = Math.max(run.id, maxId)));
     this.runs.push(new Run(this, maxId + 1));
     this.activeIndex = this.runs.length - 1;
   };
 
   @action
-  deleteRun = run => {
+  deleteRun = (run) => {
     run.dispose();
-    const runIndex = this.runs.findIndex(m => m.id === run.id);
+    const runIndex = this.runs.findIndex((m) => m.id === run.id);
     this.runs.splice(runIndex, 1);
     if (this.runs.length === 0) {
       this.runs.push(new Run(this, 1));
@@ -44,7 +44,7 @@ class RunList extends AppStore {
   };
 
   @action
-  setActive = index => {
+  setActive = (index) => {
     this.activeIndex = index;
   };
 
@@ -54,32 +54,42 @@ class RunList extends AppStore {
   };
 
   @action
-  onError = (event, { error }) => {
+  onError = (error) => {
+    this.error = error;
+  };
+
+  @action
+  onUnhandledError = (event, { error }) => {
     console.log(`Unhandled error:`, error);
     this.error = error;
   };
 
   @action
   onBackboneConstraint = (event, params) => {
-    this.activeRun.useBackboneConstraint = !this.activeRun.useBackboneConstraint;
+    this.activeRun.useBackboneConstraint =
+      !this.activeRun.useBackboneConstraint;
   };
 
   @action
   onMultifurcatingConstraint = (event, params) => {
-    this.activeRun.useMultifurcatingConstraint = !this.activeRun.useMultifurcatingConstraint;
+    this.activeRun.useMultifurcatingConstraint =
+      !this.activeRun.useMultifurcatingConstraint;
   };
 
   listen = () => {
-    this.listenTo(ipc.UNHANDLED_ERROR, this.onError);
+    this.listenTo(ipc.UNHANDLED_ERROR, this.onUnhandledError);
     this.listenTo(ipc.ADD_RUN, this.addRun);
     this.listenTo(ipc.REMOVE_RUN, this.deleteActive);
     this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
-    this.listenTo(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT, this.onMultifurcatingConstraint);
-  }
+    this.listenTo(
+      ipc.TOGGLE_MULTIFURCATING_CONSTRAINT,
+      this.onMultifurcatingConstraint
+    );
+  };
 
   generateReport = ({ maxStdoutLength = 200 } = {}) => {
     return this.activeRun.generateReport({ maxStdoutLength });
-  }
+  };
 }
 
 export default RunList;
