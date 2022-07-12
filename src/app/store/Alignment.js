@@ -658,8 +658,8 @@ class FinalAlignment {
 
   @computed get hasInvariantSites() {
     // If any one of the alignments has invariant sites return true
-    for (let i = 0; i < this.numAlignments; i++) {
-      if (this.run.alignments[i].hasInvariantSites) {
+    for (const alignment of this.run.alignments) {
+      if (alignment.hasInvariantSites) {
         return true;
       }
     }

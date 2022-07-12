@@ -47,19 +47,16 @@ export function findInvalidCharacter(code, dataType) {
   }
 }
 
-function isInvariant(code) {
-  const firstSite = code[0];
-  for (const site of code) {
-    if (site !== firstSite) {
-      return false;
+function hasInvariantSites(length, sequences) {
+  for (let i = 0; i < length; i++) {
+    const variantsAtPosition = [];
+    for (const sequence of sequences) {
+      const site = sequence.code[i];
+      if (!variantsAtPosition.includes(site)) {
+        variantsAtPosition.push(site)
+      }
     }
-  }
-  return true;
-}
-
-function hasInvariantSites(sequences) {
-  for (const seq of sequences) {
-    if (isInvariant(seq.code)) {
+    if (variantsAtPosition.length <= 1) {
       return true;
     }
   }
@@ -160,7 +157,7 @@ export default function typecheckAlignment(alignment) {
       );
     }
   });
-  alignment.hasInvariantSites = hasInvariantSites(alignment.sequences);
+  alignment.hasInvariantSites = hasInvariantSites(alignment.length, alignment.sequences);
   alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
   return alignment;
