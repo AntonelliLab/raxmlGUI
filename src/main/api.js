@@ -380,6 +380,36 @@ ipcMain.on(
       await fs.rename(infoPath, newPath);
     }
 
+    // Rename the raxml-ng output files to add .tre or .txt extension
+    if (usesRaxmlNg) {
+      console.log(
+        `Renaming raxml-ng output files to add .tre or .txt extension...`
+      );
+      const anyMatch = new RegExp(`${outputName}.raxml`);
+      const filenames = await fs.readdir(outputDir);
+      const outputFiles = filenames.filter((filename) => anyMatch.test(filename));
+      const rbaMatch = new RegExp(`${outputName}.raxml.rba`);
+      const bestModelMatch = new RegExp(`${outputName}.raxml.bestModel`);
+      const logMatch = new RegExp(`${outputName}.raxml.log`);
+      const aPMatch = new RegExp(`${outputName}.raxml.ancestralProbs`);
+      const aSMatch = new RegExp(`${outputName}.raxml.ancestralStates`);
+      let renamedFiles = outputFiles.map((f) => {
+        if (rbaMatch.test(f)) {
+          return f;
+        }
+        if (bestModelMatch.test(f) || logMatch.test(f) || aPMatch.test(f) || aSMatch.test(f)) {
+          return f += '.txt';
+        }
+        return f += '.tre';
+      });
+      for (let i = 0; i < outputFiles.length; i++) {
+        const infoPath = path.join(outputDir, outputFiles[i]);
+        const newPath = path.join(outputDir, renamedFiles[i]);
+        await fs.rename(infoPath, newPath);
+      }
+    }
+
+
     const nextFilenames = await fs.readdir(outputDir);
     const resultFilenames = nextFilenames.filter((filename) =>
       filename.includes(outputName)
