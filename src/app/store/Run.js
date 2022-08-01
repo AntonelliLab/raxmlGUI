@@ -12,6 +12,7 @@ import fs from 'fs';
 import os from 'os';
 
 import Alignment, { FinalAlignment } from './Alignment';
+import AstralTree from './AstralTree';
 import Option from './Option';
 import StoreBase from './StoreBase';
 import { quote } from '../../common/utils';
@@ -781,7 +782,9 @@ class Run extends StoreBase {
     this.outputNamePlaceholder = `${id}`;
     this.atomAfterRun = createAtom('AfterRun');
     this.atomFinished = createAtom('finished');
-    this.modeltestName = binaries.filter((b) => b.name.includes('modeltest'))[0]?.name;
+    this.modeltestName = binaries.filter((b) =>
+      b.name.includes('modeltest')
+    )[0]?.name;
   }
 
   id = 0;
@@ -971,6 +974,10 @@ class Run extends StoreBase {
     return this.alignments.length > 0;
   }
 
+  @computed get hasAstralTree() {
+    return !!this.astralTree;
+  }
+
   @computed get taxons() {
     return this.haveAlignments ? this.alignments[0].taxons : [];
   }
@@ -1003,7 +1010,7 @@ class Run extends StoreBase {
 
   @computed get startDisabled() {
     return (
-      this.alignments.length === 0 ||
+      (this.alignments.length === 0 && !this.hasAstralTree) ||
       !this.ok ||
       this.running ||
       !this.finalAlignment.partition.isComplete ||
@@ -1055,6 +1062,26 @@ class Run extends StoreBase {
     return this.binary.value.includes('modeltest-ng');
   }
 
+  @computed get inputIsAlignment() {
+    return this.usesModeltest || this.usesRaxml;
+  }
+
+  @computed get inputIsTree() {
+    return this.usesAstral;
+  }
+  
+  @computed get usesModeltest() {
+    return this.binary.type === 'modeltest';
+  }
+
+  @computed get usesRaxml() {
+    return this.binary.type === 'raxml';
+  }
+
+  @computed get usesAstral() {
+    return this.binary.type === 'astral';
+  }
+
   @computed get modelTestCanRun() {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
   }
@@ -1071,6 +1098,9 @@ class Run extends StoreBase {
   };
 
   @computed get args() {
+    if (this.usesAstral) {
+      return this.astralArgs();
+    }
     if (this.usesModeltestNg) {
       return this.modeltestNgArgs();
     }
@@ -1148,6 +1178,16 @@ class Run extends StoreBase {
     }
     return model;
   }
+
+  astralArgs = () => {
+    const first = [];
+    first.push('-i', quote(this.astralTree?.path));
+    first.push(
+      '-o',
+      quote(join(this.outputDir, `ASTRAL_${this.outputNameSafe}.tre`))
+    );
+    return [first];
+  };
 
   modeltestNgArgs = () => {
     const first = [];
@@ -1868,6 +1908,11 @@ class Run extends StoreBase {
   };
 
   @computed get command() {
+    if (this.usesAstral) {
+      return this.args
+        .map((cmdArgs) => `java -jar ${this.binary.value} ${cmdArgs.join(' ')}`)
+        .join(' &&\\\n');
+    }
     return this.args
       .map((cmdArgs) => `${this.binary.value} ${cmdArgs.join(' ')}`)
       .join(' &&\\\n');
@@ -1909,6 +1954,17 @@ Results saved to: ${this.outputDir}
     }
   };
 
+  startAstral = async () => {
+    const { id, binary, args } = this;
+    console.log(`Start astral run ${id}`);
+    this.running = true;
+    ipcRenderer.send(ipc.ASTRAL_REQUEST, {
+      id,
+      binaryName: binary.value,
+      args,
+    });
+  };
+
   @action
   start = async () => {
     const {
@@ -1924,6 +1980,11 @@ Results saved to: ${this.outputDir}
       finalAlignment,
     } = this;
 
+    // If binary is astral use start in seperate function
+    if (this.usesAstral) {
+      return this.startAstral();
+    }
+
     // Less than 4 sequences and RAxML would error out
     if (this.finalAlignment.numSequences <= 3) {
       this.parent.onError(
@@ -1934,17 +1995,18 @@ Results saved to: ${this.outputDir}
       return;
     }
 
-    console.log(`Start run ${id} with args ${args}`);
     this.running = true;
     if (this.outputName !== this.outputNameSafe) {
       this.outputName = this.outputNameSafe;
     }
+
     if (this.finalAlignment.numAlignments > 1) {
       await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
     } else if (!this.finalAlignment.partition.isDefault) {
       await this.finalAlignment.writePartition();
     }
     await this.writeSettings();
+    console.log(`Start run ${id} with args ${args}`);
     ipcRenderer.send(ipc.RUN_START, {
       id,
       args,
@@ -1972,6 +2034,7 @@ Results saved to: ${this.outputDir}
   };
 
   @observable alignments = [];
+  @observable astralTree = undefined;
   @observable code = undefined;
   @observable data = '';
   @observable path = undefined;
@@ -2001,7 +2064,13 @@ Results saved to: ${this.outputDir}
     ipcRenderer.send(ipc.ALIGNMENT_SELECT, this.id);
   };
 
+  @action
+  loadAstralTree = () => {
+    ipcRenderer.send(ipc.ASTRAL_FILE_SELECT, this.id);
+  };
+
   haveAlignment = (id) => {
+    // TODO: Input.js queries without id, doe it work as expected? Later queries with path instead of id
     return this.alignments.findIndex((alignment) => alignment.id === id) >= 0;
   };
 
@@ -2018,6 +2087,17 @@ Results saved to: ${this.outputDir}
         }
       }
     });
+  };
+
+  @action
+  addAstralFiles = ({ path }) => {
+    if (!this.hasAstralTree) {
+      this.astralTree = new AstralTree(this, path);
+      this.setOutputName(this.astralTree.name);
+      if (!this.outputDir) {
+        this.setOutputDir(this.astralTree.dir);
+      }
+    }
   };
 
   @action
@@ -2038,8 +2118,20 @@ Results saved to: ${this.outputDir}
     }
   };
 
+  @action
+  removeAstralTree = () => {
+    this.astralTree = null;
+  };
+
   @computed get canLoadAlignment() {
-    return !this.havePartitionFile;
+    return (
+      (this.binary.type === 'raxml' || this.binary.type === 'modeltest') &&
+      !this.havePartitionFile
+    );
+  }
+
+  @computed get canLoadAstralTree() {
+    return this.usesAstral && !this.hasAstralTree;
   }
 
   @observable partitionFile = '';
@@ -2080,6 +2172,17 @@ Results saved to: ${this.outputDir}
   };
 
   @action
+  clearStderr = () => {
+    this.stderr = '';
+  };
+
+  @action
+  clearConsole = () => {
+    this.clearStdout();
+    this.clearStderr();
+  };
+
+  @action
   clearError = () => {
     this.error = null;
   };
@@ -2099,12 +2202,14 @@ Results saved to: ${this.outputDir}
     this.listenTo(ipc.TREE_SELECTED, this.onTreeSelected);
     this.listenTo(ipc.PARTITION_FILE_SELECTED, this.onPartitionSelected);
     this.listenTo(ipc.ALIGNMENT_SELECTED, this.onAlignmentAdded);
+    this.listenTo(ipc.ASTRAL_FILE_SELECTED, this.onAstralFileAdded);
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
     this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
     this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
     this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
+    this.listenTo(ipc.ASTRAL_SUCCESS, this.onAstralFinished);
   };
 
   // -----------------------------------------------------------
@@ -2138,6 +2243,13 @@ Results saved to: ${this.outputDir}
   };
 
   @action
+  onAstralFileAdded = (event, { id, file }) => {
+    if (id === this.id) {
+      this.addAstralFiles(file);
+    }
+  };
+
+  @action
   onOutputDirSelected = (event, { id, outputDir }) => {
     if (id === this.id) {
       this.setOutputDir(outputDir);
@@ -2165,6 +2277,18 @@ Results saved to: ${this.outputDir}
       this.running = true;
       this.finished = false;
       this.error = null;
+    }
+  };
+
+  @action
+  onAstralFinished = (event, { id, exitCode }) => {
+    if (id === this.id) {
+      console.log(`Process ${id} finished with exitCode '${exitCode}'`);
+      this.resultDir = this.outputDir;
+      this.atomFinished.reportChanged();
+      this.finished = true;
+      this.exitCode = exitCode;
+      this.afterRun();
     }
   };
 
