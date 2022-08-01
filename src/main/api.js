@@ -426,9 +426,8 @@ ipcMain.on(
 
 ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   const id = arg;
-  console.log(`Cancel raxml process ${id}...`);
+  console.log(`Cancel run process ${id}...`);
   cancelProcess(id);
-  // send(event, ipc.RUN_CLOSED, { id });
 });
 
 function cancelProcess(id) {
@@ -767,12 +766,6 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
     exitCode
   });
 });
-
-ipcMain.on(ipc.ASTRAL_CANCEL, (event, id) => {
-  console.log(`Cancel ASTRAL process ${id}...`);
-  cancelProcess(id);
-});
-
 
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;

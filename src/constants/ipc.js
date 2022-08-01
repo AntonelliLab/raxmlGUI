@@ -42,7 +42,6 @@ export const LIGHT_MODE = 'LIGHT_MODE';
 export const DARK_MODE = 'DARK_MODE';
 export const RELOAD = 'RELOAD';
 export const ASTRAL_REQUEST = 'ASTRAL_REQUEST';
-export const ASTRAL_CANCEL = 'ASTRAL_CANCEL';
 export const ASTRAL_SUCCESS = 'ASTRAL_SUCCESS';
 export const ASTRAL_FILE_SELECT = 'ASTRAL_FILE_SELECT';
 export const ASTRAL_FILE_SELECTED = 'ASTRAL_FILE_SELECTED';
