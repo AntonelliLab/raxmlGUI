@@ -441,17 +441,12 @@ function cancelProcess(id) {
 }
 
 function spawnProcess(binaryDir, binaryName, args) {
-  // const binaryDir = path.dirname(binaryPath);
-  // const binaryName = path.basename(binaryPath);
   const binaryPath = path.join(binaryDir, binaryName);
 
   const proc = childProcess.execFile(
     get_space_safe_binary_path(binaryPath),
     args,
     {
-      // stdio: 'pipe',
-      // cwd: os.homedir(),
-      // env: { PATH: binaryDir },
       shell: electronUtil.is.windows,
     }
   );
@@ -698,6 +693,31 @@ ipcMain.on(ipc.ALIGNMENT_SELECT, (event, runId) => {
     });
 });
 
+// Open a dialog to select astral input trees
+ipcMain.on(ipc.ASTRAL_FILE_SELECT, (event, runId) => {
+  dialog
+    .showOpenDialog({
+      title: 'Select an input trees file',
+      properties: ['openFile'],
+    })
+    .then((result) => {
+      console.debug(ipc.ASTRAL_FILE_SELECTED, result);
+      if (result.canceled) {
+        return;
+      }
+      const files = result.filePaths.map((filePath) => {
+        return {
+          path: filePath,
+          name: path.basename(filePath),
+        };
+      });
+      send(event, ipc.ASTRAL_FILE_SELECTED, { id: runId, file: files[0] });
+    })
+    .catch((err) => {
+      console.debug(ipc.ASTRAL_FILE_SELECTED, err);
+    });
+});
+
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   // __static is defined by electron-webpack
   const dir = path.join(__static, 'example-files');
@@ -714,12 +734,51 @@ ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
   });
 });
 
+ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
+  const { id, binaryName, args } = payload;
+  const javaBin = 'java';
+
+  const [arg] = args;
+  // TODO: push to front ?
+  arg.splice(0, 0, '-jar', quote(path.join(binaryDir, binaryName)));
+
+  let exitCode = 0;
+  try {
+    console.log('arg', arg)
+    console.log(`ASTRAL?`);
+    exitCode = await runProcess(id, event, '', javaBin, arg);
+    if (exitCode !== 0) {
+      if (exitCode === 'SIGTERM') {
+        // Cancelled
+        return;
+      }
+      throw new Error(
+        `Error trying to run ASTRAL, exited with code '${exitCode}'.`
+      );
+    }
+  } catch (err) {
+    console.error('ASTRAL run error:', err);
+    send(event, ipc.RUN_ERROR, { id, error: err });
+    return;
+  }
+
+  send(event, ipc.ASTRAL_SUCCESS, {
+    id,
+    exitCode
+  });
+});
+
+ipcMain.on(ipc.ASTRAL_CANCEL, (event, id) => {
+  console.log(`Cancel ASTRAL process ${id}...`);
+  cancelProcess(id);
+});
+
+
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
   const { dir, name } = parsePath(filePath);
 
   const outputPath = path.join(outputDir, `RAxML_GUI_ModelTest_${name}`);
-
   try {
     // Remove binary checkpoint as that may be invalid
     await fs.unlink(`${outputPath}.ckp`);
