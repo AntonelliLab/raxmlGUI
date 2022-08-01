@@ -1,7 +1,5 @@
 import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
-import * as ipc from '../../constants/ipc';
-import parsePath from 'parse-filepath';
 import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
@@ -10,11 +8,13 @@ import intersection from 'lodash/intersection';
 import os from 'os';
 import electronutil from 'electron-util';
 
+import * as ipc from '../../constants/ipc';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
+import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
 
@@ -136,10 +136,24 @@ class MultistateNumber extends Option {
 }
 
 
-class Alignment extends StoreBase {
-  run = null;
+class Alignment extends InputFile {
+  constructor(run, path) {
+    super(run, path);
+    this.substitutionModel = new RaxmlNgAlignmentSubstitutionModel(this);
+    this.multistateNumber = new MultistateNumber(this);
+    this.ngStationaryFrequencies = new RaxmlNgModelF(this);
+    this.ngInvariantSites = new RaxmlNgModelI(this);
+    this.ngRateHeterogeneity = new RaxmlNgModelG(this);
+    this.ngAscertainmentBias = new RaxmlNgModelASC(this);
+    this.partition = new Partition(this);
 
-  @observable path = '';
+    const [majorVersion, minorVersion] = os.release().split('.');
+    this.modeltestDisabled =
+      electronutil.is.windows && majorVersion === '6' && minorVersion === '1';
+
+    this.listen();
+  }
+
   @observable error = null;
 
   @observable dataType = undefined;
@@ -229,62 +243,13 @@ class Alignment extends StoreBase {
     return partitionFileText;
   }
 
-  constructor(run, path) {
-    super();
-    this.run = run;
-    this.path = path;
-    this.substitutionModel = new RaxmlNgAlignmentSubstitutionModel(this);
-    this.multistateNumber = new MultistateNumber(this);
-    this.ngStationaryFrequencies = new RaxmlNgModelF(this);
-    this.ngInvariantSites = new RaxmlNgModelI(this);
-    this.ngRateHeterogeneity = new RaxmlNgModelG(this);
-    this.ngAscertainmentBias = new RaxmlNgModelASC(this);
-    this.partition = new Partition(this);
-
-    const [majorVersion, minorVersion] = os.release().split('.');
-    this.modeltestDisabled =
-      electronutil.is.windows && majorVersion === '6' && minorVersion === '1';
-
-    this.listen();
-  }
-
   @computed get ngSubstitutionModelCmd() {
     return `${this.substitutionModel.cmdValue}${this.ngStationaryFrequencies.cmdValue}${this.ngInvariantSites.cmdValue}${this.ngRateHeterogeneity.cmdValue}${this.ngAscertainmentBias.cmdValue}`;
   }
 
   @computed
-  get id() {
-    return `${this.run.id}_${this.path}`;
-  }
-
-  @computed
   get numSites() {
     return this.length;
-  }
-
-  @computed
-  get name() {
-    return parsePath(this.path).name;
-  }
-
-  @computed
-  get dir() {
-    return parsePath(this.path).dir;
-  }
-
-  @computed
-  get base() {
-    return parsePath(this.path).base;
-  }
-
-  @computed
-  get filename() {
-    return parsePath(this.path).base;
-  }
-
-  @computed
-  get ok() {
-    return this.path !== '';
   }
 
   @computed
@@ -540,16 +505,6 @@ class Alignment extends StoreBase {
   @action clearModified = () => {
     this.showModifiedSnack = false;
     this.showModifiedDialog = false;
-  };
-
-  @action
-  openFile = () => {
-    ipcRenderer.send(ipc.FILE_OPEN, this.path);
-  };
-
-  @action
-  showFileInFolder = () => {
-    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
   };
 
   @action
