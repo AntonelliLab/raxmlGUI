@@ -201,23 +201,11 @@ function AlignmentCard({ className, alignment }) {
     </span>
   );
 
-  // const Type = alignment.typecheckingComplete ? (
-  //   <span>{ dataType }</span>
-  // ) : (
-  //   <span>{ alignment.parsingComplete ? 'Checking...' : 'Pending...' }</span>
-  // );
-
   const Type = dataType ? (
     <Chip classes={{ root: classes.chip }} label={dataType} />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
   );
-
-  // const Check = alignment.checkRunComplete ? (
-  //   <span>{ alignment.checkRunSuccess ? 'ok' : 'failed' }</span>
-  // ) : (
-  //   <span>{ alignment.typecheckingComplete ? 'Checking...' : 'Pending...' }</span>
-  // );
 
   const Content = (
     <div className={classes.content}>
@@ -276,11 +264,6 @@ function AlignmentCard({ className, alignment }) {
       </div>
     </div>
   );
-  // <div className={classes.remove}>
-  //   <Button variant="outlined" color="default" onClick={alignment.remove}>
-  //     <IconDelete />
-  //   </Button>
-  // </div>
 
   return (
     <Card className={classNames(className, classes.AlignmentCard)}>
