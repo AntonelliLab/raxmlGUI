@@ -369,9 +369,9 @@ const App = () => {
                 className={`${classes.verticalHeading} ${classes.consoleHeading}`}
               >
                 Console
-                {run.stdout === '' ? null : (
+                {(run.stdout === '' && run.stderr === '') ? null : (
                   <DeleteIcon
-                    onClick={run.clearStdout}
+                    onClick={run.clearConsole}
                     className={classes.deleteIcon}
                     title="Clear console"
                   />
