@@ -149,7 +149,7 @@ function initialize() {
       backgroundColor: '#333',
       resizable: true,
       webPreferences: {
-        backgroundThrottling: false, //TODO: Skip this if it doesn't affect raxml performance
+        backgroundThrottling: false,
         // nodeIntegration: isDevMode,
         nodeIntegration: true,
         contextIsolation: false, // Needed to expose ipcRenderer from preload script

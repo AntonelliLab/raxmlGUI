@@ -738,7 +738,6 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
   const javaBin = 'java';
 
   const [arg] = args;
-  // TODO: push to front ?
   arg.splice(0, 0, '-jar', quote(path.join(binaryDir, binaryName)));
 
   let exitCode = 0;

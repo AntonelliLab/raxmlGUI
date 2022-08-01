@@ -13,7 +13,6 @@ export const isFasta = (lines) => {
   return false;
 }
 
-//TODO: Create FastaParserError class
 export const parse = (lines) => {
 
   if (!isFasta(lines)) {

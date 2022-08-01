@@ -2206,7 +2206,6 @@ Results saved to: ${this.outputDir}
     this.listenTo(ipc.OUTPUT_DIR_SELECTED, this.onOutputDirSelected);
     this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
     this.listenTo(ipc.RUN_STDERR, this.onRunStderr);
-    this.listenTo(ipc.RUN_STARTED, this.onRunStarted);
     this.listenTo(ipc.RUN_FINISHED, this.onRunFinished);
     this.listenTo(ipc.RUN_ERROR, this.onRunError);
     this.listenTo(ipc.ASTRAL_SUCCESS, this.onAstralFinished);
@@ -2267,16 +2266,6 @@ Results saved to: ${this.outputDir}
   onRunStderr = (event, { id, content }) => {
     if (id === this.id) {
       this.stderr += content;
-    }
-  };
-
-  @action
-  onRunStarted = (event, { id }) => {
-    if (id === this.id) {
-      console.log(`Process ${id} started...`);
-      this.running = true;
-      this.finished = false;
-      this.error = null;
     }
   };
 
