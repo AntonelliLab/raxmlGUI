@@ -37,11 +37,17 @@ const winBinaries =
         // TODO: add raxml ng windows exe
         // TODO: Crashes on Win7, disabled for now
         // { name: 'modeltest-ng.exe', version: '0.1.7' },
-        { name: 'raxmlHPC_Win7.exe', multithreaded: false, version: '8.2.10' },
+        {
+          name: 'raxmlHPC_Win7.exe',
+          multithreaded: false,
+          version: '8.2.10',
+          type: 'raxml',
+        },
         {
           name: 'raxmlHPC-SSE3_Win7.exe',
           multithreaded: false,
           version: '8.2.10',
+          type: 'raxml',
         },
         // TODO: Crashes on Win7, disabled for now
         // {
@@ -54,57 +60,116 @@ const winBinaries =
           multithreaded: true,
           version: '8.2.10',
           initial: true,
+          type: 'raxml',
+        },
+        {
+          name: 'astral.5.7.8.jar',
+          multithreaded: false,
+          version: '5.7.8',
+          type: 'astral',
         },
       ]
     : [
         // TODO: add raxml ng windows exe
-        { name: 'modeltest-ng.exe', version: '0.1.7' },
-        { name: 'raxmlHPC.exe', multithreaded: false, version: '8.2.12' },
-        { name: 'raxmlHPC-SSE3.exe', multithreaded: false, version: '8.2.12' },
+        { name: 'modeltest-ng.exe', version: '0.1.7', type: 'modeltest' },
+        {
+          name: 'raxmlHPC.exe',
+          multithreaded: false,
+          version: '8.2.12',
+          type: 'raxml',
+        },
+        {
+          name: 'raxmlHPC-SSE3.exe',
+          multithreaded: false,
+          version: '8.2.12',
+          type: 'raxml',
+        },
         {
           name: 'raxmlHPC-PTHREADS-AVX.exe',
           multithreaded: true,
           version: '8.2.12',
+          type: 'raxml',
         },
         {
           name: 'raxmlHPC-PTHREADS-SSE3.exe',
           multithreaded: true,
           version: '8.2.12',
           initial: true,
+          type: 'raxml',
+        },
+        {
+          name: 'astral.5.7.8.jar',
+          multithreaded: false,
+          version: '5.7.8',
+          type: 'astral',
         },
       ];
 
 const likelyARM = os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
 const armBinaries = [
-  { name: 'modeltest-ng-ARM64', multithreaded: true, version: '0.1.7' },
+  {
+    name: 'modeltest-ng-ARM64',
+    multithreaded: true,
+    version: '0.1.7',
+    type: 'modeltest',
+  },
   {
     name: 'raxml-ng-ARM64',
     multithreaded: true,
     version: '1.1.0',
     initial: true,
+    type: 'raxml',
   },
 ];
 const x64Binaries = [
-  { name: 'modeltest-ng', multithreaded: true, version: '0.1.7' },
+  {
+    name: 'modeltest-ng',
+    multithreaded: true,
+    version: '0.1.7',
+    type: 'modeltest',
+  },
   {
     name: 'raxml-ng',
     multithreaded: true,
     version: '1.1.0',
     initial: true,
+    type: 'raxml',
   },
 ];
 
 const allBinaries = electronutil.is.windows
   ? winBinaries
   : [
-      ...!likelyARM ? x64Binaries : armBinaries,
-      { name: 'raxmlHPC', multithreaded: false, version: '8.2.12' },
-      { name: 'raxmlHPC-SSE3', multithreaded: false, version: '8.2.12' },
-      { name: 'raxmlHPC-PTHREADS-AVX', multithreaded: true, version: '8.2.12' },
+      ...(!likelyARM ? x64Binaries : armBinaries),
+      {
+        name: 'raxmlHPC',
+        multithreaded: false,
+        version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-SSE3',
+        multithreaded: false,
+        version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-PTHREADS-AVX',
+        multithreaded: true,
+        version: '8.2.12',
+        type: 'raxml',
+      },
       {
         name: 'raxmlHPC-PTHREADS-SSE3',
         multithreaded: true,
         version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'astral.5.7.8.jar',
+        multithreaded: false,
+        version: '5.7.8',
+        type: 'astral',
       },
     ];
 
@@ -217,6 +282,9 @@ class Binary extends Option {
   options = binaries.map(({ name }) => ({ value: name, title: name }));
   @computed get version() {
     return binaries.filter((b) => b.name === this.value)[0].version;
+  }
+  @computed get type() {
+    return binaries.filter((b) => b.name === this.value)[0].type;
   }
 }
 
