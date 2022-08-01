@@ -85,7 +85,7 @@ function AstralTreeCard({ className, astralTree }) {
         avatar={
           <Chip
             className={classes.chip}
-            label={"TODO"}
+            label={"trees"}
             color="secondary"
           />
         }
@@ -124,7 +124,7 @@ function AstralTreeCard({ className, astralTree }) {
           </div>
         }
         title={astralTree.filename}
-        subheader={'TODO'}
+        subheader={'Input trees'}
         style={{ paddingBottom: 4 }}
       />
       <CardContent>{Content}</CardContent>
