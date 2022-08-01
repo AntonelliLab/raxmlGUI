@@ -7,14 +7,15 @@ import fs from 'fs';
 import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
+import os from 'os';
+import electronutil from 'electron-util';
+
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
-import os from 'os';
-import electronutil from 'electron-util';
 import UserFixError from '../../common/errors';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
