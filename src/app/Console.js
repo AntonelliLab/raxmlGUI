@@ -68,7 +68,8 @@ class Console extends React.Component {
         ref={this.onMountStdoutContainer}
       >
         <div>
-          <code className={classes.code}>{run.stdout}</code>
+          {run.stdout && <code className={classes.code}>{run.stdout}</code>}
+          {run.stderr && <code className={classes.code}>{run.stderr}</code>}
         </div>
       </div>
     );

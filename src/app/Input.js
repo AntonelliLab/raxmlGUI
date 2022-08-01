@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import Button from '@material-ui/core/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
+import AstralTreeCard from './AstralTreeCard';
 import PartitionFileCard from './PartitionFileCard';
 import Box from '@material-ui/core/Box';
 import TreeCard from './TreeCard';
@@ -100,7 +101,12 @@ const Input = ({ run }) => {
   // const SelectNumRuns = run.
   return (
     <Box display="flex" flexDirection="column" className={classes.Input}>
-      <Box display="flex" mb={1} alignItems="center" className={classes.alignmentList}>
+      <Box
+        display="flex"
+        mb={1}
+        alignItems="center"
+        className={classes.alignmentList}
+      >
         <Dropzone
           noClick
           onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}
@@ -108,17 +114,34 @@ const Input = ({ run }) => {
           {({ getRootProps, getInputProps }) => (
             <div {...getRootProps()}>
               <Box display="flex" alignItems="center">
-                {run.alignments.map((alignment) => (
-                  <AlignmentCard
-                    key={alignment.path}
-                    alignment={alignment}
+                {run.inputIsAlignment
+                  ? run.alignments.map((alignment) => (
+                      <AlignmentCard
+                        key={alignment.path}
+                        alignment={alignment}
+                        className="alignment"
+                      />
+                    ))
+                  : null}
+                {run.inputIsTree && run.hasAstralTree ? (
+                  <AstralTreeCard
+                    astralTree={run.astralTree}
                     className="alignment"
                   />
-                ))}
+                ) : null}
                 <Box paddingX={1}>
                   <PartitionFileCard run={run} />
                 </Box>
-                { run.canLoadAlignment && !run.canLoadPartitionFile ? (
+                {run.canLoadAstralTree ? (
+                  <Button
+                    variant="outlined"
+                    className={`alignment ${classes.addAlignment}`}
+                    onClick={run.loadAstralTree}
+                  >
+                    Load input trees
+                  </Button>
+                ) : null}
+                {run.canLoadAlignment && !run.canLoadPartitionFile ? (
                   <Button
                     variant="outlined"
                     className={`alignment ${classes.addAlignment}`}
@@ -137,8 +160,13 @@ const Input = ({ run }) => {
           )}
         </Dropzone>
 
-        { run.canLoadAlignment && run.canLoadPartitionFile ? (
-          <Box display="flex" flexDirection="column" alignItems="center" style={{ height: '200px' }}>
+        {run.canLoadAlignment && run.canLoadPartitionFile ? (
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            style={{ height: '200px' }}
+          >
             <Button
               variant="outlined"
               className={classes.addAlignmentOrPartition}

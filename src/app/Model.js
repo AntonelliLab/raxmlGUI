@@ -30,7 +30,17 @@ const Model = ({ run }) => {
     return (
       <div className={classes.Model}>
         <Typography variant="body1">
-          Select the best-fit model of evolution for a single DNA or protein alignment
+          Select the best-fit model of evolution for a single DNA or protein
+          alignment
+        </Typography>
+      </div>
+    );
+  }
+  if (run.usesAstral) {
+    return (
+      <div className={classes.Model}>
+        <Typography variant="body1">
+          Calculate species tree from a set of gene trees
         </Typography>
       </div>
     );
