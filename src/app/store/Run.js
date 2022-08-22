@@ -6,7 +6,6 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
-import electronutil from 'electron-util';
 import util from 'util';
 import fs from 'fs';
 import os from 'os';
@@ -15,7 +14,7 @@ import Alignment, { FinalAlignment } from './Alignment';
 import AstralTree from './AstralTree';
 import Option from './Option';
 import StoreBase from './StoreBase';
-import { quote } from '../../common/utils';
+import { is, quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
 import _ from 'lodash';
@@ -138,7 +137,7 @@ const x64Binaries = [
   },
 ];
 
-const allBinaries = electronutil.is.windows
+const allBinaries = is.windows
   ? winBinaries
   : [
       ...(!likelyARM ? x64Binaries : armBinaries),
@@ -1069,7 +1068,7 @@ class Run extends StoreBase {
   @computed get inputIsTree() {
     return this.usesAstral;
   }
-  
+
   @computed get usesModeltest() {
     return this.binary.type === 'modeltest';
   }
