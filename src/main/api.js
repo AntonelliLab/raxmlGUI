@@ -11,20 +11,18 @@ import path from 'path';
 import util from 'util';
 import _fs from 'fs';
 import childProcess from 'child_process';
-import isDev from 'electron-is-dev';
 import { serializeError } from 'serialize-error';
-import { activeWindow } from 'electron-util';
 import parsePath from 'parse-filepath';
-import electronUtil from 'electron-util';
 import * as Sentry from '@sentry/electron';
 
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
-import { quote } from '../common/utils';
+import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
+import { activeWindow } from './utils/utils';
 
 
-electronUtil.is.development ? null : Sentry.init({
+is.development ? null : Sentry.init({
   dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
   maxValueLength: 2000,
 });
@@ -33,7 +31,7 @@ const fs = _fs.promises;
 
 const get_space_safe_binary_path = (bin_path) => {
   // For Windows users with spaces in user dir
-  return electronUtil.is.windows ? `"${bin_path}"` : bin_path;
+  return is.windows ? `"${bin_path}"` : bin_path;
 };
 
 function handleError(title, error) {
@@ -215,18 +213,18 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
 // Function to combine multiple output trees into one file
 async function combineOutput(outputDir, outputFilename) {
   // Use type command on windows, cat on Mac or Linux
-  const command = electronUtil.is.windows ? 'type' : 'cat';
+  const command = is.windows ? 'type' : 'cat';
   const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, {
     cwd: outputDir,
-    shell: electronUtil.is.windows,
+    shell: is.windows,
   });
   console.log(stdout, stderr);
 }
 
 const binParentDir = app.isPackaged
   ? ''
-  : electronUtil.platform({
+  : platform({
       macos: 'Mac',
       windows: 'Windows',
       linux: 'Linux',
@@ -302,7 +300,7 @@ ipcMain.on(
         usesModeltestNg ? ['--version'] : ['-v'],
         {
           // env: { PATH: binaryDir },
-          shell: electronUtil.is.windows,
+          shell: is.windows,
         }
       );
       console.log(stdout);
@@ -323,14 +321,14 @@ ipcMain.on(
     // "The file RAxML_flagCheck RAxML wants to open for writing or appending can not be opened [mode: wb], exiting ..."
     // TODO: this is just skipping a check when raxml-ng is used. Maybe make the "Sanity check" option compulsory here
     const checkFlags =
-      isDev && !electronUtil.is.windows && !usesRaxmlNg && !usesModeltestNg;
+      is.development && !is.windows && !usesRaxmlNg && !usesModeltestNg;
     if (checkFlags) {
       for (const arg of args) {
         try {
           const { stdout, stderr } = await exec(
             `"${binaryPath}" ${arg.join(' ')} --flag-check`,
             {
-              shell: electronUtil.is.windows,
+              shell: is.windows,
             }
           );
           console.log(stdout, stderr);
@@ -446,7 +444,7 @@ function spawnProcess(binaryDir, binaryName, args) {
     get_space_safe_binary_path(binaryPath),
     args,
     {
-      shell: electronUtil.is.windows,
+      shell: is.windows,
     }
   );
   return proc;
@@ -541,7 +539,7 @@ async function readalGetFormat(alignmentPath) {
   //TODO: Wrap readalPath in quotes?!
   const childCmd = `${readalPath} -in ${alignmentPath} -type -format`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: electronUtil.is.windows,
+    shell: is.windows,
   });
   console.log('Readal stderr', stderr);
   const replaced = stdout.replace(alignmentPath, '');
@@ -562,7 +560,7 @@ async function convertAlignment(alignmentPath) {
   //TODO: Wrap readalPath in quotes?!
   const childCmd = `${readalPath} -in ${alignmentPath} -out ${newPath} -fasta`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: electronUtil.is.windows,
+    shell: is.windows,
   });
   console.log(stdout, stderr);
   return newPath;

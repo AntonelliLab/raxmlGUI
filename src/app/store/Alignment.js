@@ -6,7 +6,6 @@ import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 import os from 'os';
-import electronutil from 'electron-util';
 
 import * as ipc from '../../constants/ipc';
 import Option from './Option';
@@ -17,6 +16,7 @@ import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
+import { is } from '../../common/utils';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
@@ -149,7 +149,7 @@ class Alignment extends InputFile {
 
     const [majorVersion, minorVersion] = os.release().split('.');
     this.modeltestDisabled =
-      electronutil.is.windows && majorVersion === '6' && minorVersion === '1';
+      is.windows && majorVersion === '6' && minorVersion === '1';
 
     this.listen();
   }

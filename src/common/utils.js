@@ -1,7 +1,86 @@
-import { openNewGitHubIssue, debugInfo, activeWindow, is } from 'electron-util';
+import electron from 'electron';
 import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
 import * as ipc from 'electron-better-ipc';
+
+import { activeWindow } from '../main/utils/utils';
+
+function newGithubIssueUrl(options = {}) {
+  let repoUrl;
+  if (options.repoUrl) {
+    repoUrl = options.repoUrl;
+  } else if (options.user && options.repo) {
+    repoUrl = `https://github.com/${options.user}/${options.repo}`;
+  } else {
+    throw new Error(
+      'You need to specify either the `repoUrl` option or both the `user` and `repo` options'
+    );
+  }
+
+  const url = new URL(`${repoUrl}/issues/new`);
+
+  const types = [
+    'body',
+    'title',
+    'labels',
+    'template',
+    'milestone',
+    'assignee',
+    'projects',
+  ];
+
+  for (const type of types) {
+    let value = options[type];
+    if (value === undefined) {
+      continue;
+    }
+
+    if (type === 'labels' || type === 'projects') {
+      if (!Array.isArray(value)) {
+        throw new TypeError(`The \`${type}\` option should be an array`);
+      }
+
+      value = value.join(',');
+    }
+
+    url.searchParams.set(type, value);
+  }
+
+  return url.toString();
+}
+
+export const is = {
+  macos: process.platform === 'darwin',
+  linux: process.platform === 'linux',
+  windows: process.platform === 'win32',
+  main: process.type === 'browser',
+  renderer: process.type === 'renderer',
+  development: process.env.NODE_ENV === 'development',
+  macAppStore: process.mas === true,
+  windowsStore: process.windowsStore === true,
+};
+
+export const platform = (object) => {
+  let { platform } = process;
+  if (is.macos) {
+    platform = 'macos';
+  } else if (is.windows) {
+    platform = 'windows';
+  }
+  const fn = platform in object ? object[platform] : object.default;
+  return typeof fn === 'function' ? fn() : fn;
+};
+
+// TODO: Had to replace this debug info on renderer, because electron remote module is no longer available.
+// If needed, one would need to use the context bridge
+export const debugInfo = () =>
+  is.main
+    ? `${electron.app.getName()} ${electron.app.getVersion()}
+Electron ${node.electronVersion}
+${process.platform} ${os.release()}
+Locale: ${electron.app.getLocale()}
+`.trim()
+    : `Debug info not available in renderer.`;
 
 if (is.renderer) {
   ipc.ipcRenderer.answerMain('get-state-report', async () => {
@@ -67,6 +146,11 @@ ${stringify(activeState)}
 
 Process: ${is.renderer ? 'renderer' : 'main'}
 ${debugInfo()}`);
+
+const openNewGitHubIssue = (options) => {
+  const url = newGithubIssueUrl(options);
+  electron.shell.openExternal(url);
+};
 
 export const reportIssueToGitHub = async (error) => {
   const activeState = await getActiveState();

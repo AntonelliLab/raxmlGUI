@@ -1,15 +1,15 @@
 import electron from 'electron';
 import path from 'path';
 import url from 'url';
-import isDev from 'electron-is-dev';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import ProgressBar from 'electron-progressbar';
 
-const debug = require('electron-debug');
-
 import './api';
 import MenuBuilder from './menu';
+import { is } from '../common/utils';
+
+// TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
@@ -23,10 +23,6 @@ autoUpdater.logger.transports.file.level = 'info';
 // Fixes this error: https://github.com/electron-userland/electron-builder/issues/5717
 autoUpdater.autoInstallOnAppQuit = false;
 log.info('App starting...');
-
-debug({
-  // isEnabled: true, // override default disabled in production
-});
 
 // Module to control application life.
 const app = electron.app;
@@ -52,7 +48,7 @@ const dialog = electron.dialog;
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
-const isDevMode = isDev && process.argv.indexOf('--noDevServer') === -1;
+const isDevMode = is.development && process.argv.indexOf('--noDevServer') === -1;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
