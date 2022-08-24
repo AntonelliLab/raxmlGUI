@@ -227,6 +227,8 @@ GEM
     multipart-post (2.1.1)
     nokogiri (1.12.5-x86_64-darwin)
       racc (~> 1.4)
+    nokogiri (1.12.5-x86_64-linux)
+      racc (~> 1.4)
     octokit (4.21.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
@@ -259,7 +261,7 @@ GEM
     thread_safe (0.3.6)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     tzinfo-data (1.2021.5)
       tzinfo (>= 1.0.0)
@@ -273,6 +275,7 @@ GEM
 PLATFORMS
   x86_64-darwin-17
   x86_64-darwin-19
+  x86_64-linux
 
 DEPENDENCIES
   github-pages
