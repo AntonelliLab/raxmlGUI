@@ -714,6 +714,10 @@ class TreeFile extends Option {
 }
 
 class Tree extends TreeFile {
+  constructor(run) {
+    super(run);
+  }
+
   @computed get notAvailable() {
     return !(
       this.run.analysisOption.params.includes(params.tree) ||
@@ -724,6 +728,10 @@ class Tree extends TreeFile {
 }
 
 class BackboneConstraintTree extends TreeFile {
+  constructor(run) {
+    super(run);
+  }
+
   @computed get isSet() {
     return this.run.useBackboneConstraint && this.haveFile;
   }
@@ -748,6 +756,10 @@ class BackboneConstraintTree extends TreeFile {
 }
 
 class MultifurcatingConstraintTree extends TreeFile {
+  constructor(run) {
+    super(run);
+  }
+
   @computed get isSet() {
     return this.run.useMultifurcatingConstraint && this.haveFile;
   }
