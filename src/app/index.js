@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { ThemeProvider } from '@material-ui/styles';
-import * as Sentry from '@sentry/electron';
+import * as Sentry from '@sentry/electron/renderer';
 
 import theme from './theme';
 import App from './App';
