@@ -19,6 +19,10 @@ for any bug fixes.
 in case of vulnerabilities.
 
 ## [Unreleased] - YYYY-MM-DD
+### Added
+- Added support for species tree from gene trees inference using ASTRAL
+### Changed
+- Performance and security updates
 ## [2.0.9] - 2022-06-30
 ### Added
 - Added substantially more logging in case an error occurrs
