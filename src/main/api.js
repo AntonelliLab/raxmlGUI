@@ -13,7 +13,7 @@ import _fs from 'fs';
 import childProcess from 'child_process';
 import { serializeError } from 'serialize-error';
 import parsePath from 'parse-filepath';
-import * as Sentry from '@sentry/electron';
+import * as Sentry from '@sentry/electron/main';
 
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
