@@ -95,9 +95,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Input = ({ run }) => {
-
   const classes = useStyles();
-
+  // run.hasAstralTree is the condition on which to show an astral tree card
+  // For some reason when changed in the mobx store a rerender is not triggered with this boolean with the conditional below alone
+  // With this if the component rerenders as should be
+  if (run.hasAstralTree) {
+    console.log('run.hasAstralTree :>> ', run.hasAstralTree);
+  }
   // const SelectNumRuns = run.
   return (
     <Box display="flex" flexDirection="column" className={classes.Input}>
