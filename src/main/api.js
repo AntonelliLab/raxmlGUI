@@ -536,8 +536,7 @@ async function execProcess(binaryPath, args) {
 // Function to get an alignment format with readal
 async function readalGetFormat(alignmentPath) {
   const readalPath = path.resolve(binaryDir, 'readal');
-  //TODO: Wrap readalPath in quotes?!
-  const childCmd = `${readalPath} -in ${alignmentPath} -type -format`;
+  const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -type -format`;
   const { stdout, stderr } = await exec(childCmd, {
     shell: is.windows,
   });
@@ -557,8 +556,7 @@ async function readalGetFormat(alignmentPath) {
 async function convertAlignment(alignmentPath) {
   const readalPath = path.resolve(binaryDir, 'readal');
   const newPath = alignmentPath.replace(path.extname(alignmentPath), '.fas');
-  //TODO: Wrap readalPath in quotes?!
-  const childCmd = `${readalPath} -in ${alignmentPath} -out ${newPath} -fasta`;
+  const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -out ${quote(newPath)} -fasta`;
   const { stdout, stderr } = await exec(childCmd, {
     shell: is.windows,
   });
