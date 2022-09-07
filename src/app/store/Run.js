@@ -62,12 +62,13 @@ const winBinaries =
           initial: true,
           type: 'raxml',
         },
-        {
-          name: 'astral.5.7.8.jar',
-          multithreaded: false,
-          version: '5.7.8',
-          type: 'astral',
-        },
+        // TODO: put back in Astral
+        // {
+        //   name: 'astral.5.7.8.jar',
+        //   multithreaded: false,
+        //   version: '5.7.8',
+        //   type: 'astral',
+        // },
       ]
     : [
         // TODO: add raxml ng windows exe
@@ -97,12 +98,13 @@ const winBinaries =
           initial: true,
           type: 'raxml',
         },
-        {
-          name: 'astral.5.7.8.jar',
-          multithreaded: false,
-          version: '5.7.8',
-          type: 'astral',
-        },
+        // TODO: put back in Astral
+        // {
+        //   name: 'astral.5.7.8.jar',
+        //   multithreaded: false,
+        //   version: '5.7.8',
+        //   type: 'astral',
+        // },
       ];
 
 const likelyARM = os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
@@ -165,12 +167,13 @@ const allBinaries = is.windows
         version: '8.2.12',
         type: 'raxml',
       },
-      {
-        name: 'astral.5.7.8.jar',
-        multithreaded: false,
-        version: '5.7.8',
-        type: 'astral',
-      },
+      // TODO: put back in Astral
+      // {
+      //   name: 'astral.5.7.8.jar',
+      //   multithreaded: false,
+      //   version: '5.7.8',
+      //   type: 'astral',
+      // },
     ];
 
 const binaries = allBinaries.filter(({ multithreaded }) =>
