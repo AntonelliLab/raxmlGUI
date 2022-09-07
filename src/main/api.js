@@ -205,7 +205,7 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       ok: false,
       notice: error.message,
       error,
-      resultFilenames,
+      resultFilenames: [],
     });
   }
 });
