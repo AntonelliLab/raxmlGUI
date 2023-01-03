@@ -18,10 +18,10 @@ title: raxmlGUI 2.0
 description: >- # this means to ignore newlines until "baseurl:"
   raxmlGUI 2.0 - a new user-friendly program integrating RAxML-NG
   and ModelTest-NG for cutting-edge phylogenetic analysis
-baseurl: "raxmlGUI" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: 'raxmlGUI' # the subpath of your site, e.g. /blog
+url: '' # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
-github_username:  jekyll
+github_username: jekyll
 
 # Build settings
 markdown: kramdown
@@ -43,6 +43,6 @@ plugins:
 
 show_downloads: true
 show_view_on_github: false
-google_analytics: UA-149851800-1
+google_analytics: G-CTQV0QGSWX
 
 github: [metadata]

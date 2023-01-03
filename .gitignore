@@ -14,9 +14,12 @@
 # misc
 .DS_Store
 
+# package manager
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.yarn
+.yarnrc.yml
 
 # external dependencies
 /static/bin
