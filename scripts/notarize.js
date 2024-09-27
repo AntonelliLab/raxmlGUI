@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { notarize } = require('electron-notarize');
+const { notarize } = require('@electron/notarize');
 
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
@@ -9,7 +9,7 @@ exports.default = async function notarizing(context) {
 
   const appleId = process.env.APPLEID;
   const appleIdPassword = process.env.APPLEIDPASS;
-  const ascProvider = process.env.APPLEIDTEAM;
+  const teamId = process.env.APPLEIDTEAM;
 
   if (!appleId) {
     console.log(
@@ -25,7 +25,7 @@ exports.default = async function notarizing(context) {
     console.log('Johannes: This binary is not ready for release.');
     return;
   }
-  if (!ascProvider) {
+  if (!teamId) {
     console.log(
       'Johannes: Skipping notarization of app because no AppleID team number is given.'
     );
@@ -41,6 +41,6 @@ exports.default = async function notarizing(context) {
     appPath: `${appOutDir}/${appName}.app`,
     appleId,
     appleIdPassword,
-    ascProvider,
+    teamId,
   });
 };
