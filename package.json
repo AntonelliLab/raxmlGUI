@@ -88,7 +88,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.2",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "react-split-pane": "^0.1.92",
     "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.21",
@@ -107,12 +107,12 @@
     "electron-builder": "^24.13.3",
     "electron-download": "^4.1.1",
     "electron-webpack": "^2.8.2",
-    "nodemon": "^2.0.19",
+    "nodemon": "^3.1.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "shx": "^0.3.4",
     "typescript": "^4.8.3",
-    "wait-on": "^6.0.1"
+    "wait-on": "^8.0.1"
   },
   "browserslist": [
     ">0.2%",
