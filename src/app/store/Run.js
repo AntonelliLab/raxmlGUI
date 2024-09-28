@@ -114,14 +114,7 @@ const armBinaries = [
     multithreaded: true,
     version: '0.1.7',
     type: 'modeltest',
-  },
-  {
-    name: 'raxml-ng-ARM64',
-    multithreaded: true,
-    version: '1.1.0',
-    initial: true,
-    type: 'raxml',
-  },
+  }
 ];
 const x64Binaries = [
   {
@@ -129,20 +122,20 @@ const x64Binaries = [
     multithreaded: true,
     version: '0.1.7',
     type: 'modeltest',
-  },
-  {
-    name: 'raxml-ng',
-    multithreaded: true,
-    version: '1.1.0',
-    initial: true,
-    type: 'raxml',
-  },
+  }
 ];
 
 const allBinaries = is.windows
   ? winBinaries
   : [
       ...(!likelyARM ? x64Binaries : armBinaries),
+      {
+        name: 'raxml-ng',
+        multithreaded: true,
+        version: '1.2.2',
+        initial: true,
+        type: 'raxml',
+      },
       {
         name: 'raxmlHPC',
         multithreaded: false,
