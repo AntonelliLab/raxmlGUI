@@ -101,7 +101,7 @@
     "@sentry/cli": "^2.5.2",
     "@sentry/webpack-plugin": "^1.19.0",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.2",
+    "dotenv": "^16.4.5",
     "download": "^8.0.0",
     "electron": "^22.3.27",
     "electron-builder": "^24.13.3",
