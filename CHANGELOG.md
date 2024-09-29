@@ -21,6 +21,11 @@ in case of vulnerabilities.
 ## [Unreleased] - YYYY-MM-DD
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
+## [2.0.13] - 2024-09-29
+### Changed
+- Performance and security updates
+### Removed
+- Dropping Windows 7/8/8.1 Support
 ## [2.0.12] - 2024-09-29
 ### Changed
 - Performance and security updates
