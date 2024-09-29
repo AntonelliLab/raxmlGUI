@@ -21,6 +21,9 @@ in case of vulnerabilities.
 ## [Unreleased] - YYYY-MM-DD
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
+## [2.0.11] - 2024-09-29
+### Changed
+- Performance and security updates
 ## [2.0.11] - 2024-09-28
 ### Changed
 - Updated to include the latest binaries for raxml-ng on Mac and Linux (1.2.2).
