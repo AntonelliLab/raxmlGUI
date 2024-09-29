@@ -103,7 +103,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "download": "^8.0.0",
-    "electron": "^26.6.10",
+    "electron": "^32.1.2",
     "electron-builder": "^24.13.3",
     "electron-download": "^4.1.1",
     "electron-webpack": "^2.8.2",
