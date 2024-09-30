@@ -279,7 +279,7 @@ function AlignmentCard({ className, alignment }) {
               aria-label="remove-alignment"
               title="Remove alignment"
             >
-              <IconButton onClick={alignment.remove}>
+              <IconButton onClick={alignment.remove} size="large">
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
@@ -288,7 +288,7 @@ function AlignmentCard({ className, alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 
@@ -394,7 +394,7 @@ function FinalAlignmentCard({ className, alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 

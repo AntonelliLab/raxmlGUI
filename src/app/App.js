@@ -284,7 +284,7 @@ const App = () => {
               {TabItems}
             </Tabs>
             <Toolbar variant="dense" className={classes.Toolbar}>
-              <IconButton onClick={store.addRun}>
+              <IconButton onClick={store.addRun} size="large">
                 <IconAdd />
               </IconButton>
             </Toolbar>

@@ -110,7 +110,7 @@ function TreeCard({ className, tree }) {
               aria-owns={anchorEl ? 'tree-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 
