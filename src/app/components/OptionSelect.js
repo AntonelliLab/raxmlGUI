@@ -32,7 +32,6 @@ const OptionSelect = observer(({ option, className }) => {
   return (
     <FormControl variant="standard" className={className} title={option.hoverInfo}>
       <Select
-        variant="standard"
         value={option.value}
         onChange={(e) => option.setValue(e.target.value)}
         inputProps={{
