@@ -28,13 +28,21 @@ function LoadingButton(props) {
   return (
     <div className={clsx(classes.wrapper, className)}>
       <Button
+        variant="contained"
         disabled={disabled}
+        classes={{
+          root: classes.primaryButton,
+        }}
         {...buttonProps}
       >
         { props.children }
       </Button>
       {loading && (
-        <CircularProgress size={24} className={classes.progress} {...progressProps} />
+        <CircularProgress
+          size={24}
+          className={classes.progress}
+          {...progressProps}
+        />
       )}
     </div>
   );

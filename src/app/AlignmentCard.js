@@ -150,12 +150,7 @@ function _ModelTestButton({ alignment }) {
   }
   return (
     <LoadingButton
-      variant="contained"
-      color="default"
       style={{ marginLeft: 10 }}
-      classes={{
-        root: classes.primaryButton,
-      }}
       loading={alignment.modeltestLoading}
       onClick={alignment.runModelTest}
       disabled={alignment.modeltestDisabled}
