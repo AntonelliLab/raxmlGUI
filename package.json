@@ -83,7 +83,7 @@
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
     "prismjs": "^1.29.0",
-    "prismjs-bibtex": "^2.0.1",
+    "prismjs-bibtex": "^2.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

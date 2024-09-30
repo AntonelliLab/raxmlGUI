@@ -11317,7 +11317,7 @@ pretty-format@^28.1.3:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
-prismjs-bibtex@^2.0.1:
+prismjs-bibtex@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/prismjs-bibtex/-/prismjs-bibtex-2.1.0.tgz#ed4184c4330f22ca3abd1e2fc5c671b9ab21bb3c"
   integrity sha512-08BQ/ivW3490taBizaTNMVBqVnxpkhoFVTyKIpwPZqSt+3egoWKrVsJjeexz41MGNzpZA37klXZ6fFRW+H8r9w==
