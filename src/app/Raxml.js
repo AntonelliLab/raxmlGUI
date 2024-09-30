@@ -2,15 +2,15 @@ import React from 'react';
 import { clipboard } from 'electron';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import { withStyles } from '@mui/styles';
 import OptionSelect from './components/OptionSelect';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import LoadingButton from './components/LoadingButton';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const styles = (theme) => ({
   Raxml: {

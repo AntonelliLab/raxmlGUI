@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import ErrorDialog from './ErrorDialog';
 
 class ErrorBoundary extends React.Component {

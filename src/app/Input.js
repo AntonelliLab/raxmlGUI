@@ -1,14 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
-import Button from '@material-ui/core/Button';
+import { makeStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import AstralTreeCard from './AstralTreeCard';
 import PartitionFileCard from './PartitionFileCard';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
 
 const useStyles = makeStyles(theme => ({
