@@ -29,10 +29,10 @@ import Box from '@mui/material/Box';
 const InputSwitch = withStyles((theme) => ({
   switchBase: {
     color: theme.palette.input.secondaryText,
-    '&$checked': {
+    '&.Mui-checked': {
       color: theme.palette.input.dark,
     },
-    '&$checked + $track': {
+    '&.Mui-checked + .Mui-track': {
       backgroundColor: theme.palette.input.dark,
     },
   },
