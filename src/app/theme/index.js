@@ -1,8 +1,8 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 
 const darkTheme = {
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       background: 'hsl(29, 5%, 5%)',
       border: 'hsl(29, 80%, 38%)',
@@ -105,7 +105,7 @@ const darkTheme = {
 
 const lightTheme = {
   palette: {
-    type: 'light',
+    mode: 'light',
     primary: {
       background: 'hsl(29, 99%, 99%)',
       border: 'hsl(29, 80%, 87%)',
@@ -208,6 +208,6 @@ const lightTheme = {
 };
 
 export default {
-  light: createTheme(lightTheme),
-  dark: createTheme(darkTheme)
+  light: createTheme(adaptV4Theme(lightTheme)),
+  dark: createTheme(adaptV4Theme(darkTheme))
 };

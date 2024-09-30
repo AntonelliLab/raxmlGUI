@@ -92,7 +92,7 @@ function AstralTreeCard({ className, astralTree }) {
         action={
           <div>
             <Tooltip aria-label="remove-astralTree" title="Remove input trees">
-              <IconButton onClick={astralTree.remove}>
+              <IconButton onClick={astralTree.remove} size="large">
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
@@ -101,7 +101,7 @@ function AstralTreeCard({ className, astralTree }) {
               aria-owns={anchorEl ? 'astralTree-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 

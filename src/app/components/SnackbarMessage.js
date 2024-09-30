@@ -73,7 +73,12 @@ function SnackbarMessage(props) {
         </span>
       }
       action={onClose ? [
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+        <IconButton
+          key="close"
+          aria-label="close"
+          color="inherit"
+          onClick={onClose}
+          size="large">
           <CloseIcon className={classes.icon} />
         </IconButton>,
       ] : null }

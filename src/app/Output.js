@@ -44,9 +44,10 @@ const Output = ({ run }) => {
   const haveResult = resultFilenames.length > 0;
 
   return (
-    <div className={classes.Output}>
+    (<div className={classes.Output}>
       <Box component="form" mt={1} mb={2} display="flex" flexDirection="column" className={classes.form} noValidate autoComplete="off">
         <TextField
+          variant="standard"
           id="output-dir"
           helperText="Select output directory"
           fullWidth
@@ -55,24 +56,25 @@ const Output = ({ run }) => {
           onClick={run.selectOutputDir}
           InputProps={{
             readOnly: true,
-          }}
-        />
+          }} />
         <TextField
+          variant="standard"
           id="output-name"
           helperText={run.outputNameNotice || "Select output name"}
           className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
           onChange={e => run.setOutputName(e.target.value)}
-          error={!run.outputNameOk}
-        />
+          error={!run.outputNameOk} />
       </Box>
-
       <Box mt={1} display="flex" flexDirection="column" alignItems="stretch" className={classes.result}>
       { haveResult ? <Typography>Result for output id '{run.outputName}' </Typography> : null }
       { resultFilenames.map(filename =>
-        <Link key={filename} className={classes.resultFilenameRow}
-          onClick={() => run.openFile(join(run.outputDir, filename))}>
+        <Link
+          key={filename}
+          className={classes.resultFilenameRow}
+          onClick={() => run.openFile(join(run.outputDir, filename))}
+          underline="hover">
           <FileIcon/>
           <span className={classes.resultFilename}>{filename}</span>
         </Link>
@@ -83,7 +85,7 @@ const Output = ({ run }) => {
           <Button onClick={run.openOutputDir} variant="outlined">Open folder</Button>
         </Box>
       ) : null }
-    </div>
+    </div>)
   );
 };
 

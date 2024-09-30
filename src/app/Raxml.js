@@ -73,22 +73,12 @@ class Raxml extends React.Component {
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
           {run.modelTestIsRunningOnAlignment ? (
-            <Button
-              size="small"
-              variant="outlined"
-              color="default"
-              onClick={run.cancelModeltestOnAlignment}
-            >
+            <Button size="small" variant="outlined" onClick={run.cancelModeltestOnAlignment}>
               Cancel modeltest
             </Button>
           ) : null}
           {run.running ? (
-            <Button
-              size="small"
-              variant="outlined"
-              color="default"
-              onClick={run.cancel}
-            >
+            <Button size="small" variant="outlined" onClick={run.cancel}>
               Cancel
             </Button>
           ) : null}
@@ -112,7 +102,7 @@ class Raxml extends React.Component {
               <IconButton
                 style={{ position: 'absolute', right: 0 }}
                 onClick={this.copyCommand}
-              >
+                size="large">
                 <FileCopyIcon />
               </IconButton>
             </Tooltip>

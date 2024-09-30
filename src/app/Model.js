@@ -79,12 +79,12 @@ const Model = ({ run }) => {
         <OptionSelect option={run.outGroup} />
         {run.haveRandomSeed ? (
           <TextField
+            variant="standard"
             helperText="Seed"
             title="Random seed"
             style={{ width: 60 }}
             value={run.randomSeed}
-            onChange={(e) => run.setRandomSeed(e.target.value)}
-          />
+            onChange={(e) => run.setRandomSeed(e.target.value)} />
         ) : null}
       </Box>
       <Box

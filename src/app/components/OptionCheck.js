@@ -11,7 +11,7 @@ const OptionCheck = observer(({ option, className }) => {
     return null;
   }
   return (
-    <FormControl title={option.hoverInfo}>
+    <FormControl variant="standard" title={option.hoverInfo}>
       <FormControlLabel
         className={className}
         control={

@@ -16,6 +16,7 @@ const OptionSelect = observer(({ option, className }) => {
     // No options to change to, render as a text field instead.
     return (
       <TextField
+        variant="standard"
         id={option.title}
         helperText={option.title}
         className={className}
@@ -24,14 +25,14 @@ const OptionSelect = observer(({ option, className }) => {
         error={option.error}
         InputProps={{
           readOnly: true,
-        }}
-      />
-    )
+        }} />
+    );
   }
 
   return (
-    <FormControl className={className} title={option.hoverInfo}>
+    <FormControl variant="standard" className={className} title={option.hoverInfo}>
       <Select
+        variant="standard"
         value={option.value}
         onChange={(e) => option.setValue(e.target.value)}
         inputProps={{
@@ -39,8 +40,7 @@ const OptionSelect = observer(({ option, className }) => {
           id: option.title,
         }}
         error={option.error}
-        multiple={option.multiple}
-      >
+        multiple={option.multiple}>
         {option.options.map(({ value, title }, index) => (
           <MenuItem key={index} value={value}>
             {title}

@@ -150,7 +150,7 @@ function PartitionEditor({ alignment }) {
           />
         </form>
       </Box>
-      <Grid container spacing={1} justify="flex-end" sx={{ width: '100%' }}>
+      <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
           <Grid item>
             <Button variant="outlined" title="Clear partition entries" onClick={partition.reset}>Reset</Button>
