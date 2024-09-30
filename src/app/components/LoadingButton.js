@@ -10,7 +10,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
   },
   progress: {
-    // color: green[500],
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -22,8 +21,8 @@ const useStyles = makeStyles(theme => ({
 
 function LoadingButton(props) {
   const classes = useStyles();
-  const { loading, noDisabled, className, buttonClassName, progressProps = {}, ...buttonProps } = props;
-  const disabled = !noDisabled && (loading || buttonProps.disabled);
+  const { loading, className, ...buttonProps } = props;
+  const disabled = (loading || buttonProps.disabled);
 
   return (
     <div className={clsx(classes.wrapper, className)}>
@@ -41,7 +40,6 @@ function LoadingButton(props) {
         <CircularProgress
           size={24}
           className={classes.progress}
-          {...progressProps}
         />
       )}
     </div>
@@ -52,14 +50,7 @@ LoadingButton.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
   loading: PropTypes.bool,
-  buttonClassName: PropTypes.string,
-  progressProps: PropTypes.object,
   noDisabled: PropTypes.bool,
 };
-
-// LoadingButton.defaultProps = {
-//   buttonProps: {},
-//   progressProps: {},
-// }
 
 export default LoadingButton;
