@@ -90,7 +90,7 @@ function PartitionEditor({ alignment }) {
   const { partToAdd } = partition;
 
   return (
-    <Box p={4} pt={2} className={classes.Partition}>
+    (<Box p={4} pt={2} className={classes.Partition}>
       <Typography variant="h6">Partition editor</Typography>
       <Box mb={2} sx={{ width: '100%' }}>
         <LinearProgress variant="determinate" color="primary" value={partition.progress} />
@@ -101,25 +101,25 @@ function PartitionEditor({ alignment }) {
       </Box>
       <Box>
         <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.type} className={classes.type} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.aaType} className={classes.aaType} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.name} className={classes.name} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.start} className={classes.start} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.end} className={classes.end} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.codon} className={classes.codon} />
           </Grid>
-          <Grid item>
+          <Grid>
             <Button variant="outlined" disabled={partition.addPartDisabled} onClick={handleAdd}>Add</Button>
           </Grid>
         </Grid>
@@ -152,15 +152,15 @@ function PartitionEditor({ alignment }) {
       </Box>
       <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
-          <Grid item>
+          <Grid>
             <Button variant="outlined" title="Clear partition entries" onClick={partition.reset}>Reset</Button>
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <Button variant="outlined" onClick={alignment.hidePartition}>Back</Button>
         </Grid>
       </Grid>
-    </Box>
+    </Box>)
   );
 }
 
