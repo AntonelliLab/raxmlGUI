@@ -10,7 +10,7 @@ import CardActions from '@mui/material/CardActions';
 import OptionTextField from './components/OptionTextField';
 import OptionSelect from './components/OptionSelect';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
