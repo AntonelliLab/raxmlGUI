@@ -123,9 +123,11 @@ function PartitionEditor({ alignment }) {
             margin="normal"
             helperText={alignment.partitionHelperText || ''}
             variant="outlined"
-            InputProps={{
-              classes: {
-                input: 'pre',
+            slotProps={{
+              input: {
+                classes: {
+                  input: 'pre',
+                }
               }
             }}
           />

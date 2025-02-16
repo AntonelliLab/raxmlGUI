@@ -15,7 +15,7 @@ const OptionSelect = observer(({ option, className }) => {
   if (option.options.length === 1) {
     // No options to change to, render as a text field instead.
     return (
-      <TextField
+      (<TextField
         variant="standard"
         id={option.title}
         helperText={option.title}
@@ -23,9 +23,11 @@ const OptionSelect = observer(({ option, className }) => {
         value={option.value}
         placeholder={option.placeholder}
         error={option.error}
-        InputProps={{
-          readOnly: true,
-        }} />
+        slotProps={{
+          input: {
+            readOnly: true,
+          }
+        }} />)
     );
   }
 

@@ -54,8 +54,10 @@ const Output = ({ run }) => {
           className={classes.formItem}
           value={run.outputDir}
           onClick={run.selectOutputDir}
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            }
           }} />
         <TextField
           variant="standard"
