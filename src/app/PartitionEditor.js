@@ -58,29 +58,10 @@ const useStyles = makeStyles(theme => ({
 
 function PartitionEditor({ alignment }) {
   const classes = useStyles();
-  // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
-  // const [partitionText, setPartitionText] = React.useState(
-  //   alignment.partitionFileContent
-  // );
-
-  // function handleChange(event) {
-  //   setPartitionText(event.target.value);
-  // }
 
   function handleAdd(event) {
     alignment.partition.addPart();
   }
-
-  // function onClickCancel(event) {
-  //   alignment.setShowPartition(false);
-  // }
-
-  // function onClickSave(event) {
-  //   alignment.setPartitionText(partitionText);
-  //   alignment.setShowPartition(false);
-  // }
-
-  // const hasChange = partitionText !== alignment.partitionText;
 
   if (!alignment.showPartition) {
     return null;
@@ -184,7 +165,6 @@ const useStylesOnCard = makeStyles(theme => ({
   },
   form: {},
   textField: {
-    // height: 80,
     width: 250,
     padding: 0,
     marginTop: 10,
