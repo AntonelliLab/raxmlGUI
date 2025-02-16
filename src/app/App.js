@@ -15,6 +15,7 @@ import IconAdd from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { Typography } from '@mui/material';
 import Modal from '@mui/material/Modal';
 
@@ -27,7 +28,6 @@ import store from './store';
 import PartitionEditor from './PartitionEditor';
 import CitationModal from './CitationModal';
 
-import SnackbarMessage from './components/SnackbarMessage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
@@ -240,11 +240,13 @@ const App = () => {
         open={run.showModifiedSnack}
         onClose={run.clearShowModified}
       >
-        <SnackbarMessage
+        <Alert
           onClose={run.clearShowModified}
-          variant={'info'}
-          message={message}
-        />
+          severity="info"
+          sx={{ width: '100%' }}
+        >
+          {message}
+        </Alert>
       </Snackbar>
     );
   }
@@ -260,11 +262,13 @@ const App = () => {
         open={store.showAppSnack}
         onClose={store.clearAppSnack}
       >
-        <SnackbarMessage
+        <Alert
           onClose={store.clearAppSnack}
-          variant={'info'}
-          message={message}
-        />
+          severity="info"
+          sx={{ width: '100%' }}
+        >
+          {message}
+        </Alert>
       </Snackbar>
     );
   }
@@ -369,7 +373,7 @@ const App = () => {
                 className={`${classes.verticalHeading} ${classes.consoleHeading}`}
               >
                 Console
-                {(run.stdout === '' && run.stderr === '') ? null : (
+                {run.stdout === '' && run.stderr === '' ? null : (
                   <DeleteIcon
                     onClick={run.clearConsole}
                     className={classes.deleteIcon}
@@ -421,15 +425,17 @@ const App = () => {
             autoHideDuration={6000}
             onClose={run.clearFinished}
           >
-            <SnackbarMessage
+            <Alert
               onClose={run.clearFinished}
-              variant={run.exitCode === 0 ? 'success' : 'info'}
-              message={
+              severity={run.exitCode === 0 ? 'success' : 'info'}
+              sx={{ width: '100%' }}
+            >
+              {
                 run.exitCode === 0
                   ? 'Calculation finished!'
                   : `Calculation cancelled!`
               }
-            />
+            </Alert>
           </Snackbar>
           {fileModifiedSnack(run)}
           {appSnack(store)}

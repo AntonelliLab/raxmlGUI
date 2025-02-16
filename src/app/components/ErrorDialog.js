@@ -12,8 +12,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import { ipcRenderer } from 'electron';
-import SnackbarMessage from './SnackbarMessage';
 import { reportIssueToGitHub, getMailtoLinkToReportError } from '../../common/utils';
 import * as ipc from '../../constants/ipc';
 
@@ -77,7 +77,12 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
       Please help us solve the issue by reporting it.
     </DialogContentText>
   ) : (
-    <SnackbarMessage variant="success" message="Thanks for reporting the issue!"/>
+    <Alert
+      severity="success"
+      sx={{ width: '100%' }}
+    >
+      Thanks for reporting the issue!
+    </Alert>
   );
 
   const GenericErrorDialog = (
