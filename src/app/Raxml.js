@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import { withStyles } from '@mui/styles';
 import OptionSelect from './components/OptionSelect';
 import Box from '@mui/material/Box';
-import LoadingButton from './components/LoadingButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -82,13 +81,15 @@ class Raxml extends React.Component {
               Cancel
             </Button>
           ) : null}
-          <LoadingButton
+          <Button
+            variant="outlined"
             loading={run.running}
+            loadingPosition="end"
             disabled={run.startDisabled}
             onClick={run.start}
           >
             Run
-          </LoadingButton>
+          </Button>
         </Box>
 
         <Box paddingBottom={1}>

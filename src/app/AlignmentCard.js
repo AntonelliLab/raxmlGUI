@@ -20,8 +20,8 @@ import Typography from '@mui/material/Typography';
 import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
 import CardActions from '@mui/material/CardActions';
-import LoadingButton from './components/LoadingButton';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 const InputSwitch = withStyles((theme) => ({
   switchBase: {
@@ -146,14 +146,15 @@ function _ModelTestButton({ alignment }) {
     return null;
   }
   return (
-    <LoadingButton
-      style={{ marginLeft: 10 }}
+    <Button
+      variant='outlined'
       loading={alignment.modeltestLoading}
+      loadingPosition="end"
       onClick={alignment.runModelTest}
       disabled={alignment.modeltestDisabled}
     >
       Run ModelTest
-    </LoadingButton>
+    </Button>
   );
 }
 _ModelTestButton.propTypes = {
