@@ -153,6 +153,21 @@
       "sign": false
     },
     "mac": {
+      "mergeASARs": false,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],      
       "category": "public.app-category.education",
       "hardenedRuntime": true,
       "entitlements": "public/entitlements.mac.inherit.plist",
