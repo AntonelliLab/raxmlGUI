@@ -185,7 +185,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   Modal: {
-    top: `50%`,
     margin: 'auto',
     display: 'flex',
     alignItems: 'center',

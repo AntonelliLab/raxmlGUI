@@ -8,8 +8,8 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import ToggleButton from '@mui/lab/ToggleButton';
-import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import CodeHighlight from './components/CodeHighlight';
 
