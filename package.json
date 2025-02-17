@@ -167,7 +167,8 @@
             "universal"
           ]
         }
-      ],      
+      ],
+      "x64ArchFiles": "**/static/bin/*",
       "category": "public.app-category.education",
       "hardenedRuntime": true,
       "entitlements": "public/entitlements.mac.inherit.plist",
