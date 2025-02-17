@@ -1,16 +1,13 @@
 import electron from 'electron';
 import path from 'path';
 import url from 'url';
-import log from 'electron-log/main';
+import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import ProgressBar from 'electron-progressbar';
 
 import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
-
-// It preloads electron-log IPC code in renderer processes
-log.initialize();
 
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 
