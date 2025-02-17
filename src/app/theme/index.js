@@ -5,13 +5,12 @@ const darkTheme = {
     mode: 'dark',
     primary: {
       background: 'hsl(29, 5%, 5%)',
-      border: 'hsl(29, 80%, 38%)',
-      main: 'hsl(29, 80%, 30%)',
-      contrastText: '#ddd',
+      main: 'hsl(0, 0.00%, 100.00%)',
+      contrastText: '#000',
     },
     secondary: {
-      main: 'hsl(29, 80%, 30%)',
-      contrastText: '#ddd',
+      main: 'hsl(0, 0.00%, 76.50%)',
+      contrastText: '#333',
     },
     model: {
       background: 'hsla(33, 27%, 10%, 1)',
@@ -95,12 +94,12 @@ const darkTheme = {
     // Used by the functions below to shift a color's luminance by approximately
     // two indexes within its tonal palette.
     // E.g., shift from Red 500 to Red 300 or Red 700.
-    tonalOffset: 0.2
+    tonalOffset: 0.2,
   },
   // Migration to typography v2
   typography: {
-    useNextVariants: true
-  }
+    useNextVariants: true,
+  },
 };
 
 const lightTheme = {
@@ -108,13 +107,12 @@ const lightTheme = {
     mode: 'light',
     primary: {
       background: 'hsl(29, 99%, 99%)',
-      border: 'hsl(29, 80%, 87%)',
-      main: 'hsl(29, 80%, 50%)',
+      border: 'hsl(0, 0.00%, 0.00%)',
+      main: 'hsl(0, 0.00%, 0.00%)',
       contrastText: '#333',
     },
     secondary: {
-      main: 'hsl(29, 80%, 50%)',
-      // main: 'hsl(180, 50%, 50%)',
+      main: 'hsl(0, 0.00%, 76.50%)',
       contrastText: '#333',
     },
     model: {
