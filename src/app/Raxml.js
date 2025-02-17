@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { FormHelperText } from '@mui/material';
 
 const styles = (theme) => ({
   Raxml: {
@@ -110,7 +111,7 @@ class Raxml extends React.Component {
             </Tooltip>
             <Typography variant="body1">{run.command}</Typography>
           </Box>
-          <p className="MuiFormHelperText-root">Command</p>
+          <FormHelperText>Command</FormHelperText>
         </Box>
       </div>
     );

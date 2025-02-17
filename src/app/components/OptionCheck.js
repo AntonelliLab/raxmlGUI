@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { FormControl, FormHelperText } from '@mui/material';
+import { FormControl } from '@mui/material';
 
 
 const OptionCheck = observer(({ option, className }) => {
