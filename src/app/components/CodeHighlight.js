@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import Prism from 'prismjs';
 import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';

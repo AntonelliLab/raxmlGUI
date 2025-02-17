@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Link, Typography } from '@material-ui/core';
-import FileIcon from '@material-ui/icons/InsertDriveFileSharp';
+import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { Link, Typography } from '@mui/material';
+import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import { join } from 'path';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,35 +44,39 @@ const Output = ({ run }) => {
   const haveResult = resultFilenames.length > 0;
 
   return (
-    <div className={classes.Output}>
+    (<div className={classes.Output}>
       <Box component="form" mt={1} mb={2} display="flex" flexDirection="column" className={classes.form} noValidate autoComplete="off">
         <TextField
+          variant="standard"
           id="output-dir"
           helperText="Select output directory"
           fullWidth
           className={classes.formItem}
           value={run.outputDir}
           onClick={run.selectOutputDir}
-          InputProps={{
-            readOnly: true,
-          }}
-        />
+          slotProps={{
+            input: {
+              readOnly: true,
+            }
+          }} />
         <TextField
+          variant="standard"
           id="output-name"
           helperText={run.outputNameNotice || "Select output name"}
           className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
           onChange={e => run.setOutputName(e.target.value)}
-          error={!run.outputNameOk}
-        />
+          error={!run.outputNameOk} />
       </Box>
-
       <Box mt={1} display="flex" flexDirection="column" alignItems="stretch" className={classes.result}>
       { haveResult ? <Typography>Result for output id '{run.outputName}' </Typography> : null }
       { resultFilenames.map(filename =>
-        <Link key={filename} className={classes.resultFilenameRow}
-          onClick={() => run.openFile(join(run.outputDir, filename))}>
+        <Link
+          key={filename}
+          className={classes.resultFilenameRow}
+          onClick={() => run.openFile(join(run.outputDir, filename))}
+          underline="hover">
           <FileIcon/>
           <span className={classes.resultFilename}>{filename}</span>
         </Link>
@@ -83,7 +87,7 @@ const Output = ({ run }) => {
           <Button onClick={run.openOutputDir} variant="outlined">Open folder</Button>
         </Box>
       ) : null }
-    </div>
+    </div>)
   );
 };
 

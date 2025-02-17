@@ -2,21 +2,22 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
 import SplitPane from 'react-split-pane';
-import { makeStyles } from '@material-ui/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import IconAdd from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/DeleteForever';
-import Box from '@material-ui/core/Box';
-import Snackbar from '@material-ui/core/Snackbar';
-import { Typography } from '@material-ui/core';
-import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@mui/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import IconAdd from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/DeleteForever';
+import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import { Typography } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 import Model from './Model';
 import Input from './Input';
@@ -27,7 +28,6 @@ import store from './store';
 import PartitionEditor from './PartitionEditor';
 import CitationModal from './CitationModal';
 
-import SnackbarMessage from './components/SnackbarMessage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
@@ -185,7 +185,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   Modal: {
-    top: `50%`,
     margin: 'auto',
     display: 'flex',
     alignItems: 'center',
@@ -240,11 +239,13 @@ const App = () => {
         open={run.showModifiedSnack}
         onClose={run.clearShowModified}
       >
-        <SnackbarMessage
+        <Alert
           onClose={run.clearShowModified}
-          variant={'info'}
-          message={message}
-        />
+          severity="info"
+          sx={{ width: '100%' }}
+        >
+          {message}
+        </Alert>
       </Snackbar>
     );
   }
@@ -260,11 +261,13 @@ const App = () => {
         open={store.showAppSnack}
         onClose={store.clearAppSnack}
       >
-        <SnackbarMessage
+        <Alert
           onClose={store.clearAppSnack}
-          variant={'info'}
-          message={message}
-        />
+          severity="info"
+          sx={{ width: '100%' }}
+        >
+          {message}
+        </Alert>
       </Snackbar>
     );
   }
@@ -284,7 +287,7 @@ const App = () => {
               {TabItems}
             </Tabs>
             <Toolbar variant="dense" className={classes.Toolbar}>
-              <IconButton onClick={store.addRun}>
+              <IconButton onClick={store.addRun} size="large">
                 <IconAdd />
               </IconButton>
             </Toolbar>
@@ -369,7 +372,7 @@ const App = () => {
                 className={`${classes.verticalHeading} ${classes.consoleHeading}`}
               >
                 Console
-                {(run.stdout === '' && run.stderr === '') ? null : (
+                {run.stdout === '' && run.stderr === '' ? null : (
                   <DeleteIcon
                     onClick={run.clearConsole}
                     className={classes.deleteIcon}
@@ -421,15 +424,17 @@ const App = () => {
             autoHideDuration={6000}
             onClose={run.clearFinished}
           >
-            <SnackbarMessage
+            <Alert
               onClose={run.clearFinished}
-              variant={run.exitCode === 0 ? 'success' : 'info'}
-              message={
+              severity={run.exitCode === 0 ? 'success' : 'info'}
+              sx={{ width: '100%' }}
+            >
+              {
                 run.exitCode === 0
                   ? 'Calculation finished!'
                   : `Calculation cancelled!`
               }
-            />
+            </Alert>
           </Snackbar>
           {fileModifiedSnack(run)}
           {appSnack(store)}

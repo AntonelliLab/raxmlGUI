@@ -1,11 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
 
 const OptionSelect = observer(({ option, className }) => {
@@ -15,22 +15,24 @@ const OptionSelect = observer(({ option, className }) => {
   if (option.options.length === 1) {
     // No options to change to, render as a text field instead.
     return (
-      <TextField
+      (<TextField
+        variant="standard"
         id={option.title}
         helperText={option.title}
         className={className}
         value={option.value}
         placeholder={option.placeholder}
         error={option.error}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-    )
+        slotProps={{
+          input: {
+            readOnly: true,
+          }
+        }} />)
+    );
   }
 
   return (
-    <FormControl className={className} title={option.hoverInfo}>
+    <FormControl variant="standard" className={className} title={option.hoverInfo}>
       <Select
         value={option.value}
         onChange={(e) => option.setValue(e.target.value)}
@@ -39,8 +41,7 @@ const OptionSelect = observer(({ option, className }) => {
           id: option.title,
         }}
         error={option.error}
-        multiple={option.multiple}
-      >
+        multiple={option.multiple}>
         {option.options.map(({ value, title }, index) => (
           <MenuItem key={index} value={value}>
             {title}

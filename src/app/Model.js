@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
-import Box from '@material-ui/core/Box';
+import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
 import OptionSelect from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles(theme => ({
   Model: {
@@ -79,12 +79,12 @@ const Model = ({ run }) => {
         <OptionSelect option={run.outGroup} />
         {run.haveRandomSeed ? (
           <TextField
+            variant="standard"
             helperText="Seed"
             title="Random seed"
             style={{ width: 60 }}
             value={run.randomSeed}
-            onChange={(e) => run.setRandomSeed(e.target.value)}
-          />
+            onChange={(e) => run.setRandomSeed(e.target.value)} />
         ) : null}
       </Box>
       <Box

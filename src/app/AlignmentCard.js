@@ -1,38 +1,35 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { makeStyles, withStyles } from '@mui/styles';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import classNames from 'classnames';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import Switch from '@material-ui/core/Switch';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Tooltip from '@material-ui/core/Tooltip';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Chip from '@mui/material/Chip';
+import Switch from '@mui/material/Switch';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import OptionSelect from './components/OptionSelect';
 import OptionTextField from './components/OptionTextField';
-import CardActions from '@material-ui/core/CardActions';
-import LoadingButton from './components/LoadingButton';
-import Box from '@material-ui/core/Box';
+import CardActions from '@mui/material/CardActions';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 const InputSwitch = withStyles((theme) => ({
   switchBase: {
     color: theme.palette.input.secondaryText,
-    '&$checked': {
+    '&.Mui-checked': {
       color: theme.palette.input.dark,
     },
-    '&$checked + $track': {
+    '&.Mui-checked + .Mui-track': {
       backgroundColor: theme.palette.input.dark,
     },
   },
@@ -149,19 +146,17 @@ function _ModelTestButton({ alignment }) {
     return null;
   }
   return (
-    <LoadingButton
-      variant="contained"
-      color="default"
+    <Button
       style={{ marginLeft: 10 }}
-      classes={{
-        root: classes.primaryButton,
-      }}
+      className={classes.primaryButton}
+      variant="contained"
       loading={alignment.modeltestLoading}
+      loadingPosition="end"
       onClick={alignment.runModelTest}
       disabled={alignment.modeltestDisabled}
     >
       Run ModelTest
-    </LoadingButton>
+    </Button>
   );
 }
 _ModelTestButton.propTypes = {
@@ -279,7 +274,7 @@ function AlignmentCard({ className, alignment }) {
               aria-label="remove-alignment"
               title="Remove alignment"
             >
-              <IconButton onClick={alignment.remove}>
+              <IconButton onClick={alignment.remove} size="large">
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
@@ -288,7 +283,7 @@ function AlignmentCard({ className, alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 
@@ -394,7 +389,7 @@ function FinalAlignmentCard({ className, alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-            >
+              size="large">
               <MoreVertIcon />
             </IconButton>
 

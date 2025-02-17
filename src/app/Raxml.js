@@ -2,15 +2,15 @@ import React from 'react';
 import { clipboard } from 'electron';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import { withStyles } from '@mui/styles';
 import OptionSelect from './components/OptionSelect';
-import Box from '@material-ui/core/Box';
-import LoadingButton from './components/LoadingButton';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { FormHelperText } from '@mui/material';
 
 const styles = (theme) => ({
   Raxml: {
@@ -76,34 +76,26 @@ class Raxml extends React.Component {
             <Button
               size="small"
               variant="outlined"
-              color="default"
               onClick={run.cancelModeltestOnAlignment}
             >
               Cancel modeltest
             </Button>
           ) : null}
           {run.running ? (
-            <Button
-              size="small"
-              variant="outlined"
-              color="default"
-              onClick={run.cancel}
-            >
+            <Button size="small" variant="outlined" onClick={run.cancel}>
               Cancel
             </Button>
           ) : null}
-          <LoadingButton
+          <Button
             variant="contained"
-            color="default"
-            classes={{
-              root: classes.primaryButton,
-            }}
+            color='secondary'
             loading={run.running}
+            loadingPosition="end"
             disabled={run.startDisabled}
             onClick={run.start}
           >
             Run
-          </LoadingButton>
+          </Button>
         </Box>
 
         <Box paddingBottom={1}>
@@ -112,13 +104,14 @@ class Raxml extends React.Component {
               <IconButton
                 style={{ position: 'absolute', right: 0 }}
                 onClick={this.copyCommand}
+                size="large"
               >
                 <FileCopyIcon />
               </IconButton>
             </Tooltip>
             <Typography variant="body1">{run.command}</Typography>
           </Box>
-          <p className="MuiFormHelperText-root">Command</p>
+          <FormHelperText>Command</FormHelperText>
         </Box>
       </div>
     );

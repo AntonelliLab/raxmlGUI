@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 
 const OptionTextField = observer(({ option, className }) => {
   if (option.notAvailable) {
@@ -9,6 +9,7 @@ const OptionTextField = observer(({ option, className }) => {
   }
   return (
     <TextField
+      variant="standard"
       id={option.title}
       helperText={option.title}
       title={option.hoverInfo}
@@ -17,8 +18,7 @@ const OptionTextField = observer(({ option, className }) => {
       value={option.value}
       placeholder={option.placeholder}
       onChange={(e) => option.setValue(e.target.value)}
-      error={option.haveError}
-    />
+      error={option.haveError} />
   );
 });
 

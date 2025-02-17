@@ -1,18 +1,18 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
+import { makeStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
 import OptionTextField from './components/OptionTextField';
 import OptionSelect from './components/OptionSelect';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid2';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles(theme => ({
   Partition: {
@@ -58,29 +58,10 @@ const useStyles = makeStyles(theme => ({
 
 function PartitionEditor({ alignment }) {
   const classes = useStyles();
-  // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
-  // const [partitionText, setPartitionText] = React.useState(
-  //   alignment.partitionFileContent
-  // );
-
-  // function handleChange(event) {
-  //   setPartitionText(event.target.value);
-  // }
 
   function handleAdd(event) {
     alignment.partition.addPart();
   }
-
-  // function onClickCancel(event) {
-  //   alignment.setShowPartition(false);
-  // }
-
-  // function onClickSave(event) {
-  //   alignment.setPartitionText(partitionText);
-  //   alignment.setShowPartition(false);
-  // }
-
-  // const hasChange = partitionText !== alignment.partitionText;
 
   if (!alignment.showPartition) {
     return null;
@@ -90,7 +71,7 @@ function PartitionEditor({ alignment }) {
   const { partToAdd } = partition;
 
   return (
-    <Box p={4} pt={2} className={classes.Partition}>
+    (<Box p={4} pt={2} className={classes.Partition}>
       <Typography variant="h6">Partition editor</Typography>
       <Box mb={2} sx={{ width: '100%' }}>
         <LinearProgress variant="determinate" color="primary" value={partition.progress} />
@@ -101,25 +82,25 @@ function PartitionEditor({ alignment }) {
       </Box>
       <Box>
         <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.type} className={classes.type} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.aaType} className={classes.aaType} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.name} className={classes.name} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.start} className={classes.start} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionTextField option={partToAdd.end} className={classes.end} />
           </Grid>
-          <Grid item>
+          <Grid>
             <OptionSelect option={partToAdd.codon} className={classes.codon} />
           </Grid>
-          <Grid item>
+          <Grid>
             <Button variant="outlined" disabled={partition.addPartDisabled} onClick={handleAdd}>Add</Button>
           </Grid>
         </Grid>
@@ -142,25 +123,27 @@ function PartitionEditor({ alignment }) {
             margin="normal"
             helperText={alignment.partitionHelperText || ''}
             variant="outlined"
-            InputProps={{
-              classes: {
-                input: 'pre',
+            slotProps={{
+              input: {
+                classes: {
+                  input: 'pre',
+                }
               }
             }}
           />
         </form>
       </Box>
-      <Grid container spacing={1} justify="flex-end" sx={{ width: '100%' }}>
+      <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
-          <Grid item>
+          <Grid>
             <Button variant="outlined" title="Clear partition entries" onClick={partition.reset}>Reset</Button>
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <Button variant="outlined" onClick={alignment.hidePartition}>Back</Button>
         </Grid>
       </Grid>
-    </Box>
+    </Box>)
   );
 }
 
@@ -184,7 +167,6 @@ const useStylesOnCard = makeStyles(theme => ({
   },
   form: {},
   textField: {
-    // height: 80,
     width: 250,
     padding: 0,
     marginTop: 10,
@@ -239,6 +221,7 @@ function PartitionOnCard({ alignment }) {
         <Button
           aria-label="Save"
           variant="contained"
+          color="secondary"
           disabled={!hasChange}
           onClick={onClickSave}
         >

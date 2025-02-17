@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Box } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
+import { Box } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContentText from '@mui/material/DialogContentText';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import { ipcRenderer } from 'electron';
-import SnackbarMessage from './SnackbarMessage';
 import { reportIssueToGitHub, getMailtoLinkToReportError } from '../../common/utils';
 import * as ipc from '../../constants/ipc';
 
@@ -52,22 +52,35 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
 
   const CloseAction = (
     <DialogActions>
-      <Button onClick={closeHandler} variant="contained" color="primary">
+      <Button onClick={closeHandler} variant="outlined">
         {closeMessage}
       </Button>
     </DialogActions>
   );
 
-  const Actions = reported ? CloseAction : (
+  const Actions = reported ? (
+    CloseAction
+  ) : (
     <DialogActions>
-      <Button onClick={closeHandler} color="secondary">
-        { closeMessage }
-      </Button>
-      <Button href={mailtoContent} onClick={handleReportToMail} variant="contained" color="primary" autoFocus>
+      <Button
+        href={mailtoContent}
+        onClick={handleReportToMail}
+        variant="contained"
+        color="secondary"
+        autoFocus
+      >
         Report issue on mail
       </Button>
-      <Button onClick={handleReportToGithub} variant="contained" color="primary" autoFocus>
+      <Button
+        onClick={handleReportToGithub}
+        variant="contained"
+        color="secondary"
+        autoFocus
+      >
         Report issue on GitHub
+      </Button>
+      <Button onClick={closeHandler} variant="outlined">
+        {closeMessage}
       </Button>
     </DialogActions>
   );
@@ -77,7 +90,12 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
       Please help us solve the issue by reporting it.
     </DialogContentText>
   ) : (
-    <SnackbarMessage variant="success" message="Thanks for reporting the issue!"/>
+    <Alert
+      severity="success"
+      sx={{ width: '100%' }}
+    >
+      Thanks for reporting the issue!
+    </Alert>
   );
 
   const GenericErrorDialog = (
