@@ -148,6 +148,7 @@ function _ModelTestButton({ alignment }) {
   return (
     <Button
       style={{ marginLeft: 10 }}
+      className={classes.primaryButton}
       variant="contained"
       loading={alignment.modeltestLoading}
       loadingPosition="end"
