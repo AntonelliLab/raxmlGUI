@@ -82,7 +82,7 @@ class Raxml extends React.Component {
             </Button>
           ) : null}
           <Button
-            variant="outlined"
+            variant="contained"
             loading={run.running}
             loadingPosition="end"
             disabled={run.startDisabled}

@@ -147,7 +147,8 @@ function _ModelTestButton({ alignment }) {
   }
   return (
     <Button
-      variant='outlined'
+      style={{ marginLeft: 10 }}
+      variant="contained"
       loading={alignment.modeltestLoading}
       loadingPosition="end"
       onClick={alignment.runModelTest}
