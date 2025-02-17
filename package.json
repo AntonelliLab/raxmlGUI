@@ -57,8 +57,8 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.19.0",
     "@craco/craco": "^7.1.0",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.4",
     "@mui/lab": "^6.0.0-beta.27",
     "@mui/material": "^6.4.4",
