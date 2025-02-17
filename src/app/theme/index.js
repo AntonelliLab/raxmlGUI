@@ -5,11 +5,11 @@ const darkTheme = {
     mode: 'dark',
     primary: {
       background: 'hsl(29, 5%, 5%)',
-      main: 'hsl(0, 0.00%, 100.00%)',
-      contrastText: '#000',
+      main: 'hsl(0, 0%, 100%)',
+      contrastText: '#ddd',
     },
     secondary: {
-      main: 'hsl(0, 0.00%, 76.50%)',
+      main: 'hsl(0, 0%, 76%)',
       contrastText: '#333',
     },
     model: {
@@ -107,12 +107,12 @@ const lightTheme = {
     mode: 'light',
     primary: {
       background: 'hsl(29, 99%, 99%)',
-      border: 'hsl(0, 0.00%, 0.00%)',
-      main: 'hsl(0, 0.00%, 0.00%)',
+      border: 'hsl(0, 0%, 0%)',
+      main: 'hsl(0, 0%, 0%)',
       contrastText: '#333',
     },
     secondary: {
-      main: 'hsl(0, 0.00%, 76.50%)',
+      main: 'hsl(0, 0%, 76%)',
       contrastText: '#333',
     },
     model: {
