@@ -45,7 +45,7 @@ export default function ModifiedDialog({ show, onClose, messages }) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} variant="contained" color="primary">
+        <Button onClick={onClose} variant="outlined">
           Close
         </Button>
       </DialogActions>

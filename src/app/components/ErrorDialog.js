@@ -52,22 +52,35 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
 
   const CloseAction = (
     <DialogActions>
-      <Button onClick={closeHandler} variant="contained" color="primary">
+      <Button onClick={closeHandler} variant="outlined">
         {closeMessage}
       </Button>
     </DialogActions>
   );
 
-  const Actions = reported ? CloseAction : (
+  const Actions = reported ? (
+    CloseAction
+  ) : (
     <DialogActions>
-      <Button onClick={closeHandler} color="secondary">
-        { closeMessage }
-      </Button>
-      <Button href={mailtoContent} onClick={handleReportToMail} variant="contained" color="primary" autoFocus>
+      <Button
+        href={mailtoContent}
+        onClick={handleReportToMail}
+        variant="contained"
+        color="secondary"
+        autoFocus
+      >
         Report issue on mail
       </Button>
-      <Button onClick={handleReportToGithub} variant="contained" color="primary" autoFocus>
+      <Button
+        onClick={handleReportToGithub}
+        variant="contained"
+        color="secondary"
+        autoFocus
+      >
         Report issue on GitHub
+      </Button>
+      <Button onClick={closeHandler} variant="outlined">
+        {closeMessage}
       </Button>
     </DialogActions>
   );

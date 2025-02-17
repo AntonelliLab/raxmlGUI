@@ -221,6 +221,7 @@ function PartitionOnCard({ alignment }) {
         <Button
           aria-label="Save"
           variant="contained"
+          color="secondary"
           disabled={!hasChange}
           onClick={onClickSave}
         >

@@ -77,6 +77,7 @@ function CitationModal({ citation }) {
           <Button
             aria-label="Copy to clipboard"
             variant="contained"
+            color="secondary"
             onClick={citation.copyToClipboard}
             style={{ marginRight: 10 }}
           >
