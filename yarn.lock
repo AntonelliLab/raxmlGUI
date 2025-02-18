@@ -5909,10 +5909,10 @@ electron-webpack@^2.8.2:
     webpack-merge "^4.2.2"
     yargs "^15.3.1"
 
-electron@^32.1.2:
-  version "32.1.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-32.1.2.tgz#84d1efd95d41224e58a6a9bbd1db4ba80154fc02"
-  integrity sha512-CXe6doFzhmh1U7daOvUzmF6Cj8hssdYWMeEPRnRO6rB9/bbwMlWctcQ7P8NJXhLQ88/vYUJQrJvlJPh8qM0BRQ==
+electron@^32.3.1:
+  version "32.3.1"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-32.3.1.tgz#05d362874ff4e666418e0ec2e2caae16da306f8f"
+  integrity sha512-gjHN9NagNajvllKrTZVwGuCqX1hPF7OI6hkCDFRCbqT5Zr05d17qjDhjyTNBmTca2DpvZIYQMRbqieNCcglVYQ==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^20.9.0"
