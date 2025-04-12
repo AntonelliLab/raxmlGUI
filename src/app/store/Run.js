@@ -2309,7 +2309,7 @@ Results saved to: ${this.outputDir}
     this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
-  generateReport = ({ maxStdoutLength = 200 } = {}) => {
+  generateReport = ({ maxStdoutLength = 1000 } = {}) => {
     const { command, stdout } = this;
     return {
       command,

@@ -87,7 +87,7 @@ class RunList extends AppStore {
     );
   };
 
-  generateReport = ({ maxStdoutLength = 200 } = {}) => {
+  generateReport = ({ maxStdoutLength = 1000 } = {}) => {
     return this.activeRun.generateReport({ maxStdoutLength });
   };
 }
