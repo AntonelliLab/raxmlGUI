@@ -10,8 +10,9 @@ import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
+import { webUtils } from 'electron';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   Input: {
     width: '100%',
   },
@@ -91,7 +92,6 @@ const useStyles = makeStyles(theme => ({
     transform: 'translateZ(0)',
     width: 500,
   },
-
 }));
 
 const Input = ({ run }) => {
@@ -113,7 +113,14 @@ const Input = ({ run }) => {
       >
         <Dropzone
           noClick
-          onDrop={(acceptedFiles) => run.addAlignments(acceptedFiles)}
+          onDrop={(acceptedFiles) => {
+            const droppedPathes = acceptedFiles.map((file) => {
+              return {
+                path: webUtils.getPathForFile(file),
+              };
+            });
+            run.addAlignments(droppedPathes);
+          }}
         >
           {({ getRootProps, getInputProps }) => (
             <div {...getRootProps()}>
@@ -268,7 +275,6 @@ const Input = ({ run }) => {
 // <Box mt={1} display="flex">
 // { run.ok ? null : run.missing }
 // </Box>
-
 
 Input.propTypes = {
   run: PropTypes.object.isRequired,
