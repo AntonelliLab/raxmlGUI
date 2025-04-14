@@ -22,10 +22,11 @@ in case of vulnerabilities.
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
 
-## [Unreleased] - YYYY-MM-DD
+## [2.0.15] - 2025-04-14
 ### Changed
 - Performance and security updates
-
+### Fixed
+- Error when dragging and dropping alignments in the app
 ## [2.0.14] - 2025-02-28
 ### Changed
 - Performance and security updates
