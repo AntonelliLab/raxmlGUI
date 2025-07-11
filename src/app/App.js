@@ -13,6 +13,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import IconAdd from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -388,6 +390,14 @@ const App = () => {
         </SplitPane>
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
+            <IconButton
+              onClick={() => store.config.setDarkMode(!store.config.isDarkMode)}
+              size="small"
+              title={store.config.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              sx={{ mr: 2, color: 'inherit' }}
+            >
+              {store.config.isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+            </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
               <div className={classes.statusVersion}>
