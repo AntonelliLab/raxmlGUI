@@ -22,6 +22,11 @@ in case of vulnerabilities.
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
 
+## [2.0.16] - 2025-07-12
+### Changed
+- Performance and security updates
+### Added
+- Dark mode switcher to toolbar
 ## [2.0.15] - 2025-04-14
 ### Changed
 - Performance and security updates
