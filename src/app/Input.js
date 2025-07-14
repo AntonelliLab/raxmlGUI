@@ -47,9 +47,6 @@ const useStyles = makeStyles((theme) => ({
     width: '380px',
     height: '100px',
   },
-  finalInput: {
-    padding: '10px',
-  },
   concatenatedAlignment: {
     width: '550px',
     height: '200px',
@@ -261,7 +258,7 @@ const Input = ({ run }) => {
       )}
 
       {run.alignments.length <= 1 ? null : (
-        <Box className={classes.finalInput}>
+        <Box sx={{ padding: '10px' }}>
           <Typography variant="h5">Concatenated alignment</Typography>
           <FinalAlignmentCard
             alignment={run.finalAlignment}
