@@ -46,8 +46,9 @@ function TreeCard({ className, tree }) {
             color="secondary"
             sx={{
               height: '30px',
-              backgroundColor: (theme) => theme.palette.input.dark,
-              border: (theme) => `1px solid ${theme.palette.input.light}`,
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
             }}
           />
         }
