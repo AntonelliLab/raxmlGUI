@@ -56,9 +56,7 @@ const Model = ({ run }) => {
         display="flex"
         alignItems="start"
         sx={{
-          '& > *': {
-            marginRight: '10px',
-          }
+          gap: '10px',
         }}
         noValidate
         autoComplete="off"
@@ -79,9 +77,7 @@ const Model = ({ run }) => {
         display="flex"
         alignItems="start"
         sx={{
-          '& > *': {
-            marginRight: '10px',
-          }
+          gap: '10px',
         }}
         noValidate
         autoComplete="off"
@@ -104,9 +100,7 @@ const Model = ({ run }) => {
         display="flex"
         alignItems="start"
         sx={{
-          '& > *': {
-            marginRight: '10px',
-          }
+          gap: '10px',
         }}
         noValidate
         autoComplete="off"
@@ -121,9 +115,7 @@ const Model = ({ run }) => {
         display="flex"
         alignItems="start"
         sx={{
-          '& > *': {
-            marginRight: '10px',
-          }
+          gap: '10px',
         }}
         noValidate
         autoComplete="off"
