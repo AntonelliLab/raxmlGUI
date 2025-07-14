@@ -302,91 +302,91 @@ const App = () => {
           minSize={100}
           style={{ position: 'static' }}
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            className={clsx(classes.ioContainer, classes.leftPanel)}
-          >
             <Box
               display="flex"
-              className={`${classes.ioWrapper} ${classes.input}`}
+              flexDirection="column"
+              className={clsx(classes.ioContainer, classes.leftPanel)}
             >
-              <Typography
-                className={`${classes.verticalHeading} ${classes.inputHeading}`}
+              <Box
+                display="flex"
+                className={`${classes.ioWrapper} ${classes.input}`}
               >
-                Input
-              </Typography>
-              <div className={clsx(classes.ioItem, classes.inputContainer)}>
-                <Input run={run} />
-              </div>
-            </Box>
-            <Box
-              display="flex"
-              className={`${classes.ioWrapper} ${classes.model}`}
-            >
-              <Typography
-                className={`${classes.verticalHeading} ${classes.modelHeading}`}
+                <Typography
+                  className={`${classes.verticalHeading} ${classes.inputHeading}`}
+                >
+                  Input
+                </Typography>
+                <div className={clsx(classes.ioItem, classes.inputContainer)}>
+                  <Input run={run} />
+                </div>
+              </Box>
+              <Box
+                display="flex"
+                className={`${classes.ioWrapper} ${classes.model}`}
               >
-                Analysis
-              </Typography>
-              <div className={clsx(classes.ioItem, classes.modelContainer)}>
-                <Model run={run} />
-              </div>
-            </Box>
-            <Box
-              display="flex"
-              className={`${classes.ioWrapper} ${classes.output}`}
-            >
-              <Typography
-                className={`${classes.verticalHeading} ${classes.outputHeading}`}
+                <Typography
+                  className={`${classes.verticalHeading} ${classes.modelHeading}`}
+                >
+                  Analysis
+                </Typography>
+                <div className={clsx(classes.ioItem, classes.modelContainer)}>
+                  <Model run={run} />
+                </div>
+              </Box>
+              <Box
+                display="flex"
+                className={`${classes.ioWrapper} ${classes.output}`}
               >
-                Output
-              </Typography>
-              <div className={clsx(classes.ioItem, classes.outputContainer)}>
-                <Output run={run} />
-              </div>
+                <Typography
+                  className={`${classes.verticalHeading} ${classes.outputHeading}`}
+                >
+                  Output
+                </Typography>
+                <div className={clsx(classes.ioItem, classes.outputContainer)}>
+                  <Output run={run} />
+                </div>
+              </Box>
             </Box>
-          </Box>
 
-          <Box
-            display="flex"
-            flexDirection="column"
-            className={clsx(classes.ioContainer, classes.rightPanel)}
-          >
             <Box
               display="flex"
-              className={`${classes.ioWrapper} ${classes.raxml}`}
+              flexDirection="column"
+              className={clsx(classes.ioContainer, classes.rightPanel)}
             >
-              <Typography
-                className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
+              <Box
+                display="flex"
+                className={`${classes.ioWrapper} ${classes.raxml}`}
               >
-                RAxML
-              </Typography>
-              <div className={classes.ioItem}>
-                <Raxml run={run} store={store} />
-              </div>
-            </Box>
-            <Box
-              display="flex"
-              className={`${classes.ioWrapper} ${classes.console}`}
-            >
-              <Typography
-                className={`${classes.verticalHeading} ${classes.consoleHeading}`}
+                <Typography
+                  className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
+                >
+                  RAxML
+                </Typography>
+                <div className={classes.ioItem}>
+                  <Raxml run={run} store={store} />
+                </div>
+              </Box>
+              <Box
+                display="flex"
+                className={`${classes.ioWrapper} ${classes.console}`}
               >
-                Console
-                {run.stdout === '' && run.stderr === '' ? null : (
-                  <DeleteIcon
-                    onClick={run.clearConsole}
-                    className={classes.deleteIcon}
-                    title="Clear console"
-                  />
-                )}
-              </Typography>
-              <div className={classes.ioItem}>
-                <Console run={run} />
-              </div>
+                <Typography
+                  className={`${classes.verticalHeading} ${classes.consoleHeading}`}
+                >
+                  Console
+                  {run.stdout === '' && run.stderr === '' ? null : (
+                    <DeleteIcon
+                      onClick={run.clearConsole}
+                      className={classes.deleteIcon}
+                      title="Clear console"
+                    />
+                  )}
+                </Typography>
+                <div className={classes.ioItem}>
+                  <Console run={run} />
+                </div>
+              </Box>
             </Box>
-          </Box>
         </SplitPane>
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
