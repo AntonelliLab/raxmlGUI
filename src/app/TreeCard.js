@@ -1,10 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import classNames from 'classnames';
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import Menu from '@mui/material/Menu';
@@ -12,75 +10,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-
-const useStyles = makeStyles(theme => ({
-  TreeCard: {
-    backgroundColor: theme.palette.input.main,
-    border: `1px solid ${theme.palette.input.light}`,
-  },
-  heading: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  content: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  name: {
-    marginRight: theme.spacing(1),
-  },
-  chip: {
-    height: '30px',
-    backgroundColor: theme.palette.input.dark,
-    border: `1px solid ${theme.palette.input.light}`,
-  },
-  link: {
-    cursor: 'pointer',
-    color: theme.palette.secondary.main
-  },
-  secondaryText: {
-    color: theme.palette.input.secondaryText,
-  },
-  divider: {
-    margin: '0 4px',
-  },
-  fileInfo: {
-    color: '#ccc',
-    fontSize: '0.75em',
-    marginTop: '0.25em',
-    overflowWrap: 'break-word',
-  },
-  path: {
-    cursor: 'pointer',
-    color: theme.palette.secondary.main,
-    marginLeft: 4,
-  },
-  button: {
-    margin: theme.spacing(1),
-  },
-  rightIcon: {
-    marginLeft: theme.spacing(1),
-  },
-  iconSmall: {
-    fontSize: 20,
-  },
-  outputButton: {
-    marginLeft: theme.spacing(1),
-  },
-  loading: {
-    marginLeft: '10px',
-  },
-  remove: {
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'flex-end',
-  }
-
-}));
+import Box from '@mui/material/Box';
 
 function TreeCard({ className, tree }) {
-
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -99,13 +31,28 @@ function TreeCard({ className, tree }) {
   }
 
   return (
-    <Card className={classNames(className, classes.TreeCard)} raised>
+    <Card
+      className={className}
+      raised
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.main,
+        border: (theme) => `1px solid ${theme.palette.input.light}`,
+      }}
+    >
       <CardHeader
         avatar={
-          <Chip classes={{ colorSecondary: classes.chip }} label="tree" color="secondary" />
+          <Chip
+            label="tree"
+            color="secondary"
+            sx={{
+              height: '30px',
+              backgroundColor: (theme) => theme.palette.input.dark,
+              border: (theme) => `1px solid ${theme.palette.input.light}`,
+            }}
+          />
         }
         action={
-          <div>
+          <Box>
             <IconButton
               aria-owns={anchorEl ? 'tree-menu' : undefined}
               aria-haspopup="true"
@@ -119,18 +66,18 @@ function TreeCard({ className, tree }) {
               <MenuItem onClick={closeMenuAndRun(tree.openFolder)}>Show folder</MenuItem>
               <MenuItem onClick={closeMenuAndRun(tree.remove)}>Remove</MenuItem>
             </Menu>
-          </div>
+          </Box>
         }
         title={ tree.name }
         subheader={ '' }
       />
-      <div>
+      <Box>
         { tree.loading ? (
-          <div className={classes.loading}>
+          <Box sx={{ marginLeft: '10px' }}>
             <CircularProgress variant="indeterminate" />
-          </div>
+          </Box>
         ) : null }
-      </div>
+      </Box>
       <CardContent>
       </CardContent>
     </Card>
