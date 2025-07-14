@@ -64,6 +64,7 @@
     "@mui/material": "^6.5.0",
     "@mui/styles": "^6.5.0",
     "@sentry/electron": "^4.0.2",
+    "allotment": "^1.20.4",
     "classnames": "^2.3.2",
     "clean-stack": "3.0.1",
     "clsx": "^1.2.1",
@@ -91,7 +92,6 @@
     "react-dom": "^18.3.1",
     "react-dropzone": "14.2.10",
     "react-scripts": "^5.0.1",
-    "react-split-pane": "^0.1.92",
     "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.21",
     "yup": "^0.32.11"
