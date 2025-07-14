@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
-import SplitPane from 'react-split-pane';
+import { Allotment } from 'allotment';
+import 'allotment/dist/style.css';
 import { makeStyles } from '@mui/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
@@ -42,8 +43,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     height: '100vh',
     backgroundColor: theme.palette.primary.background,
-  },
-  splitPane: {
   },
   ioContainer: {
     // height: 'calc(100vh - 20px)',
@@ -296,12 +295,8 @@ const App = () => {
           </AppBar>
         )}
 
-        <SplitPane
-          split="vertical"
-          size={640}
-          minSize={100}
-          style={{ position: 'static' }}
-        >
+        <Allotment defaultSizes={[640, 400]} minSize={100}>
+          <Allotment.Pane>
             <Box
               display="flex"
               flexDirection="column"
@@ -347,7 +342,9 @@ const App = () => {
                 </div>
               </Box>
             </Box>
+          </Allotment.Pane>
 
+          <Allotment.Pane>
             <Box
               display="flex"
               flexDirection="column"
@@ -387,7 +384,8 @@ const App = () => {
                 </div>
               </Box>
             </Box>
-        </SplitPane>
+          </Allotment.Pane>
+        </Allotment>
         <AppBar position="fixed" color="primary" className={classes.statusBar}>
           <Toolbar className={classes.statusToolbar}>
             <IconButton
