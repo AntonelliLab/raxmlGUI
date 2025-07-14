@@ -6,7 +6,7 @@ import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';
 import 'prismjs/themes/prism-okaidia.css'; // coy, dark, funky, okaidia, solarizedlight, tomorrow, twilight
 
-function CodeHighlight({ code, language, className }) {
+function CodeHighlight({ code, language, className, sx }) {
   const codeNode = useRef(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ function CodeHighlight({ code, language, className }) {
   }, [code, language]);
 
   return (
-    <Box component="pre" className={className}>
+    <Box component="pre" className={className} sx={sx}>
       <Box
         component="code"
         ref={codeNode}
@@ -37,6 +37,7 @@ CodeHighlight.propTypes = {
   code: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
   className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 export default CodeHighlight;
