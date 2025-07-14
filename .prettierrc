@@ -13,5 +13,5 @@
   "useTabs": false,
   "semi": true,
   "bracketSpacing": true,
-  "jsxBracketSameLine": false
+  "bracketSameLine": false
 }
