@@ -106,7 +106,10 @@ const Input = ({ run }) => {
         >
           {({ getRootProps, getInputProps }) => (
             <div {...getRootProps()}>
-              <Box display="flex" alignItems="center">
+              <Box
+                display="flex"
+                alignItems="center"
+              >
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
                       <AlignmentCard
