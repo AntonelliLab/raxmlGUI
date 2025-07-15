@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import AstralTreeCard from './AstralTreeCard';
@@ -12,49 +11,7 @@ import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
-const useStyles = makeStyles((theme) => ({
-  resultingPartitionCard: {
-    width: '350px',
-    height: '200px',
-  },
-  output: {
-    marginTop: '20px',
-  },
-  fileInfo: {
-    fontSize: '0.75em',
-    marginTop: '0.25em',
-    overflowWrap: 'break-word',
-  },
-  path: {
-    cursor: 'pointer',
-    color: theme.palette.secondary.main,
-    marginLeft: 4,
-  },
-  button: {
-    margin: theme.spacing(1),
-  },
-  rightIcon: {
-    marginLeft: theme.spacing(1),
-  },
-  iconSmall: {
-    fontSize: 20,
-  },
-  outputButton: {
-    marginLeft: theme.spacing(1),
-  },
-  outputDir: {
-    // flex: 'flex-grow',
-  },
-  gridList: {
-    flexWrap: 'nowrap',
-    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
-    transform: 'translateZ(0)',
-    width: 500,
-  },
-}));
-
 const Input = ({ run }) => {
-  const classes = useStyles();
   // run.hasAstralTree is the condition on which to show an astral tree card
   // For some reason when changed in the mobx store a rerender is not triggered with this boolean with the conditional below alone
   // With this if the component rerenders as should be
