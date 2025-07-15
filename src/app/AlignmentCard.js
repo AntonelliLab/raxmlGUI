@@ -40,10 +40,6 @@ const InputSwitch = withStyles((theme) => ({
 // const useStyles = makeStyles(theme => ({
 const useStyles = makeStyles((theme) => {
   return {
-    AlignmentCard: {
-      backgroundColor: theme.palette.input.light,
-      border: `1px solid ${theme.palette.input.border}`,
-    },
     cardHeaderRoot: {
       overflow: "hidden"
     },
