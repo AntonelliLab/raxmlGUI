@@ -109,6 +109,7 @@ const Input = ({ run }) => {
               <Box
                 display="flex"
                 alignItems="center"
+                sx={{ gap: '10px' }}
               >
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
