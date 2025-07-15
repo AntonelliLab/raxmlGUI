@@ -35,10 +35,6 @@ const useStyles = makeStyles((theme) => ({
   alignments: {
     display: 'flex',
   },
-  addAlignment: {
-    width: '200px',
-    height: '200px',
-  },
   addAlignmentOrPartition: {
     minWidth: '200px',
     flexGrow: 1,
@@ -135,7 +131,10 @@ const Input = ({ run }) => {
                 {run.canLoadAstralTree ? (
                   <Button
                     variant="outlined"
-                    className={`alignment ${classes.addAlignment}`}
+                    sx={{
+                      width: '200px',
+                      height: '200px',
+                    }}
                     onClick={run.loadAstralTree}
                   >
                     Load input trees
@@ -144,7 +143,10 @@ const Input = ({ run }) => {
                 {run.canLoadAlignment && !run.canLoadPartitionFile ? (
                   <Button
                     variant="outlined"
-                    className={`alignment ${classes.addAlignment}`}
+                    sx={{
+                      width: '200px',
+                      height: '200px',
+                    }}
                     onClick={run.loadAlignmentFiles}
                     title={
                       run.haveAlignments
