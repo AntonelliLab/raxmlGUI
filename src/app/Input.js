@@ -116,7 +116,10 @@ const Input = ({ run }) => {
                       <AlignmentCard
                         key={alignment.path}
                         alignment={alignment}
-                        className="alignment"
+                        sx={{
+                          width: '550px',
+                          height: '200px',
+                        }}
                       />
                     ))
                   : null}
