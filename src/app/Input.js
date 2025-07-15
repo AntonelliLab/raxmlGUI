@@ -13,10 +13,6 @@ import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
 const useStyles = makeStyles((theme) => ({
-  addAlignmentOrPartition: {
-    minWidth: '200px',
-    flexGrow: 1,
-  },
   resultingPartitionCard: {
     width: '350px',
     height: '200px',
@@ -164,7 +160,10 @@ const Input = ({ run }) => {
           >
             <Button
               variant="outlined"
-              className={classes.addAlignmentOrPartition}
+              sx={{
+                minWidth: '200px',
+                flexGrow: 1,
+              }}
               onClick={run.loadAlignmentFiles}
               title="Concatenate new alignments and automatically generate a partition"
             >
@@ -173,7 +172,10 @@ const Input = ({ run }) => {
             <Box paddingX={2}>OR</Box>
             <Button
               variant="outlined"
-              className={classes.addAlignmentOrPartition}
+              sx={{
+                minWidth: '200px',
+                flexGrow: 1,
+              }}
               onClick={run.loadPartitionFile}
               title="Load a partition file for the current alignment"
             >
