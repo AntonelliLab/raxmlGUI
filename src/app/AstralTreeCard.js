@@ -20,10 +20,6 @@ import Box from '@mui/material/Box';
 // const useStyles = makeStyles(theme => ({
 const useStyles = makeStyles((theme) => {
   return {
-    AstralTreeCard: {
-      backgroundColor: theme.palette.input.light,
-      border: `1px solid ${theme.palette.input.border}`,
-    },
     cardHeaderRoot: {
       overflow: "hidden"
     },
@@ -33,7 +29,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-function AstralTreeCard({ className, astralTree }) {
+function AstralTreeCard({ sx, astralTree }) {
   const { } = astralTree;
 
   const classes = useStyles();
@@ -71,7 +67,15 @@ function AstralTreeCard({ className, astralTree }) {
   );
 
   return (
-    <Card className={classNames(className, classes.AstralTreeCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        width: '550px',
+        height: '200px',
+        ...sx,
+      }}
+    >
       <CardHeader
         classes={{
           root: classes.cardHeaderRoot,
@@ -135,7 +139,7 @@ function AstralTreeCard({ className, astralTree }) {
 
 AstralTreeCard.propTypes = {
   astralTree: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 const AstralTreeCardObserver = observer(AstralTreeCard);
