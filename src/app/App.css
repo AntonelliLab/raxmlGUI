@@ -6,12 +6,3 @@
   height: 100vh;
   overflow-y: auto;
 }
-
-.alignment {
-  width: 550px;
-  height: 200px;
-}
-
-.alignment + .alignment {
-  margin-left: 10px;
-}
