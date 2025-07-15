@@ -342,7 +342,7 @@ function AlignmentCard({ className, alignment }) {
   );
 }
 
-function FinalAlignmentCard({ className, alignment }) {
+function FinalAlignmentCard({ sx, alignment }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -374,7 +374,13 @@ function FinalAlignmentCard({ className, alignment }) {
   );
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        ...sx,
+      }}
+    >
       <CardHeader
         avatar={
           <Chip
@@ -453,7 +459,7 @@ AlignmentCard.propTypes = {
 
 FinalAlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 const AlignmentCardObserver = observer(AlignmentCard);

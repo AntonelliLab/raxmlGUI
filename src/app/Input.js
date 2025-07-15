@@ -47,10 +47,6 @@ const useStyles = makeStyles((theme) => ({
     width: '380px',
     height: '100px',
   },
-  concatenatedAlignment: {
-    width: '550px',
-    height: '200px',
-  },
   resultingPartitionCard: {
     width: '350px',
     height: '200px',
@@ -262,7 +258,10 @@ const Input = ({ run }) => {
           <Typography variant="h5">Concatenated alignment</Typography>
           <FinalAlignmentCard
             alignment={run.finalAlignment}
-            className={classes.concatenatedAlignment}
+            sx={{
+              width: '550px',
+              height: '200px',
+            }}
           />
         </Box>
       )}
