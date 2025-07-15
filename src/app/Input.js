@@ -220,7 +220,14 @@ const Input = ({ run }) => {
         </Box>
       )}
       {run.backboneConstraint.notAvailable ? null : (
-        <Box className={classes.treeList}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            padding: '10px',
+          }}
+        >
           <Box sx={{ display: 'flex' }}>
             {run.backboneConstraint.haveFile ? (
               <TreeCard
@@ -246,7 +253,14 @@ const Input = ({ run }) => {
         </Box>
       )}
       {run.multifurcatingConstraint.notAvailable ? null : (
-        <Box className={classes.treeList}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            padding: '10px',
+          }}
+        >
           <Box sx={{ display: 'flex' }}>
             {run.multifurcatingConstraint.haveFile ? (
               <TreeCard
