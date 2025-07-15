@@ -13,9 +13,6 @@ import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
 const useStyles = makeStyles((theme) => ({
-  Input: {
-    width: '100%',
-  },
   alignmentList: {
     display: 'flex',
     width: '100%',
@@ -89,7 +86,11 @@ const Input = ({ run }) => {
   }
   // const SelectNumRuns = run.
   return (
-    <Box display="flex" flexDirection="column" className={classes.Input}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      sx={{ width: '100%' }}
+    >
       <Box
         display="flex"
         mb={1}
