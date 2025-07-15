@@ -30,11 +30,6 @@ const useStyles = makeStyles((theme) => {
     cardHeaderContent: {
       overflow: "hidden"
     },
-    content: {
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '-10px',
-    },
   };
 });
 
@@ -60,13 +55,19 @@ function AstralTreeCard({ className, astralTree }) {
   }
 
   const Content = (
-    <div className={classes.content}>
-      <div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '-10px',
+      }}
+    >
+      <Box>
         <Box display="flex" flexWrap="wrap" alignItems="center">
 
         </Box>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   return (
