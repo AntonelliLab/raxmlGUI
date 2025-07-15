@@ -13,13 +13,6 @@ import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
 const useStyles = makeStyles((theme) => ({
-  treeList: {
-    display: 'flex',
-    flexWrap: 'nowrap',
-    overflowX: 'auto',
-    // borderLeft: `5px solid ${theme.palette.secondary.main}`,
-    padding: '10px',
-  },
   addAlignmentOrPartition: {
     minWidth: '200px',
     flexGrow: 1,
@@ -194,8 +187,15 @@ const Input = ({ run }) => {
       </Box>
 
       {run.tree.notAvailable ? null : (
-        <Box className={classes.treeList}>
-          <div className={classes.alignments}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            padding: '10px',
+          }}
+        >
+          <Box sx={{ display: 'flex' }}>
             {run.tree.haveFile ? (
               <TreeCard
                 tree={run.tree}
@@ -216,7 +216,7 @@ const Input = ({ run }) => {
                 Add Tree
               </Button>
             )}
-          </div>
+          </Box>
         </Box>
       )}
       {run.backboneConstraint.notAvailable ? null : (
