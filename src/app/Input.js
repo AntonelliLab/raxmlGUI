@@ -20,9 +20,6 @@ const useStyles = makeStyles((theme) => ({
     // borderLeft: `5px solid ${theme.palette.secondary.main}`,
     padding: '10px',
   },
-  alignments: {
-    display: 'flex',
-  },
   addAlignmentOrPartition: {
     minWidth: '200px',
     flexGrow: 1,
