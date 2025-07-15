@@ -223,7 +223,10 @@ const Input = ({ run }) => {
             ) : (
               <Button
                 variant="outlined"
-                className={classes.treeCard}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
                 onClick={run.loadBackboneConstraintFile}
               >
                 Add Backbone Constraint
@@ -243,7 +246,10 @@ const Input = ({ run }) => {
             ) : (
               <Button
                 variant="outlined"
-                className={classes.treeCard}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
                 onClick={run.loadMultifurcatingConstraintFile}
               >
                 Add Multifurcating Constraint
