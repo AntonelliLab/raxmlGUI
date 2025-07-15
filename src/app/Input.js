@@ -224,7 +224,7 @@ const Input = ({ run }) => {
       )}
       {run.backboneConstraint.notAvailable ? null : (
         <Box className={classes.treeList}>
-          <div className={classes.alignments}>
+          <Box sx={{ display: 'flex' }}>
             {run.backboneConstraint.haveFile ? (
               <TreeCard
                 tree={run.backboneConstraint}
@@ -245,7 +245,7 @@ const Input = ({ run }) => {
                 Add Backbone Constraint
               </Button>
             )}
-          </div>
+          </Box>
         </Box>
       )}
       {run.multifurcatingConstraint.notAvailable ? null : (
