@@ -165,7 +165,7 @@ _ModelTestButton.propTypes = {
 
 const ModelTestButton = observer(_ModelTestButton);
 
-function AlignmentCard({ className, alignment }) {
+function AlignmentCard({ alignment }) {
   const { dataType, numSequences, length } = alignment;
 
   const classes = useStyles();
@@ -261,7 +261,14 @@ function AlignmentCard({ className, alignment }) {
   );
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        width: '550px',
+        height: '200px',
+      }}
+    >
       <CardHeader
         classes={{
           root: classes.cardHeaderRoot,
@@ -454,7 +461,6 @@ function FinalAlignmentCard({ sx, alignment }) {
 
 AlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
 };
 
 FinalAlignmentCard.propTypes = {
