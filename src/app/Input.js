@@ -13,15 +13,6 @@ import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
 const useStyles = makeStyles((theme) => ({
-  alignmentList: {
-    display: 'flex',
-    width: '100%',
-    flexWrap: 'nowrap',
-    overflowX: 'auto',
-    // borderLeft: `5px solid ${theme.palette.primary.main}`,
-    // paddingLeft: 10,
-    padding: '10px',
-  },
   treeList: {
     display: 'flex',
     flexWrap: 'nowrap',
@@ -95,7 +86,12 @@ const Input = ({ run }) => {
         display="flex"
         mb={1}
         alignItems="center"
-        className={classes.alignmentList}
+        sx={{
+          width: '100%',
+          flexWrap: 'nowrap',
+          overflowX: 'auto',
+          padding: '10px',
+        }}
       >
         <Dropzone
           noClick
