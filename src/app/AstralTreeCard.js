@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-function AstralTreeCard({ sx, astralTree }) {
+function AstralTreeCard({ astralTree }) {
   const { } = astralTree;
 
   const classes = useStyles();
@@ -73,7 +73,6 @@ function AstralTreeCard({ sx, astralTree }) {
         border: (theme) => `1px solid ${theme.palette.input.border}`,
         width: '550px',
         height: '200px',
-        ...sx,
       }}
     >
       <CardHeader
@@ -139,7 +138,6 @@ function AstralTreeCard({ sx, astralTree }) {
 
 AstralTreeCard.propTypes = {
   astralTree: PropTypes.object.isRequired,
-  sx: PropTypes.object,
 };
 
 const AstralTreeCardObserver = observer(AstralTreeCard);

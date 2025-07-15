@@ -122,7 +122,6 @@ const Input = ({ run }) => {
                 {run.inputIsTree && run.hasAstralTree ? (
                   <AstralTreeCard
                     astralTree={run.astralTree}
-                    className="alignment"
                   />
                 ) : null}
                 <Box paddingX={1}>
