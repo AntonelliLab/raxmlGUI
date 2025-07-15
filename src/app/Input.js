@@ -43,10 +43,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: '200px',
     flexGrow: 1,
   },
-  treeCard: {
-    width: '380px',
-    height: '100px',
-  },
   resultingPartitionCard: {
     width: '350px',
     height: '200px',
@@ -199,11 +195,20 @@ const Input = ({ run }) => {
         <Box className={classes.treeList}>
           <div className={classes.alignments}>
             {run.tree.haveFile ? (
-              <TreeCard tree={run.tree} className={classes.treeCard} />
+              <TreeCard
+                tree={run.tree}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
+              />
             ) : (
               <Button
                 variant="outlined"
-                className={classes.treeCard}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
                 onClick={run.loadTreeFile}
               >
                 Add Tree
@@ -218,7 +223,10 @@ const Input = ({ run }) => {
             {run.backboneConstraint.haveFile ? (
               <TreeCard
                 tree={run.backboneConstraint}
-                className={classes.treeCard}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
               />
             ) : (
               <Button
@@ -241,7 +249,10 @@ const Input = ({ run }) => {
             {run.multifurcatingConstraint.haveFile ? (
               <TreeCard
                 tree={run.multifurcatingConstraint}
-                className={classes.treeCard}
+                sx={{
+                  width: '380px',
+                  height: '100px',
+                }}
               />
             ) : (
               <Button

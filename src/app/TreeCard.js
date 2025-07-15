@@ -12,7 +12,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 
-function TreeCard({ className, tree }) {
+function TreeCard({ sx, tree }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -32,11 +32,11 @@ function TreeCard({ className, tree }) {
 
   return (
     <Card
-      className={className}
       raised
       sx={{
         backgroundColor: (theme) => theme.palette.input.main,
         border: (theme) => `1px solid ${theme.palette.input.light}`,
+        ...sx,
       }}
     >
       <CardHeader
@@ -89,7 +89,7 @@ function TreeCard({ className, tree }) {
 
 TreeCard.propTypes = {
   tree: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 export default observer(TreeCard);
