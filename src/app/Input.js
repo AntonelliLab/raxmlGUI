@@ -250,7 +250,7 @@ const Input = ({ run }) => {
       )}
       {run.multifurcatingConstraint.notAvailable ? null : (
         <Box className={classes.treeList}>
-          <div className={classes.alignments}>
+          <Box sx={{ display: 'flex' }}>
             {run.multifurcatingConstraint.haveFile ? (
               <TreeCard
                 tree={run.multifurcatingConstraint}
@@ -271,7 +271,7 @@ const Input = ({ run }) => {
                 Add Multifurcating Constraint
               </Button>
             )}
-          </div>
+          </Box>
         </Box>
       )}
 
