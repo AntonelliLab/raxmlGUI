@@ -35,12 +35,6 @@ const useStyles = makeStyles((theme) => {
       alignItems: 'center',
       marginLeft: '-10px',
     },
-    chip: {
-      height: '30px',
-      color: theme.palette.input.contrastText,
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-    },
   };
 });
 
@@ -84,7 +78,12 @@ function AstralTreeCard({ className, astralTree }) {
         }}
         avatar={
           <Chip
-            className={classes.chip}
+            sx={{
+              height: '30px',
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+            }}
             label={"trees"}
             color="secondary"
           />
