@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -35,58 +35,6 @@ const InputSwitch = withStyles((theme) => ({
   checked: {},
   track: {},
 }))(Switch);
-
-// const useStyles = makeStyles(theme => ({
-const useStyles = makeStyles((theme) => {
-  return {
-    heading: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    name: {
-      marginRight: theme.spacing(1),
-    },
-    link: {
-      cursor: 'pointer',
-      color: theme.palette.secondary.main,
-    },
-    divider: {
-      margin: '0 4px',
-    },
-    fileInfo: {
-      color: '#ccc',
-      fontSize: '0.75em',
-      marginTop: '0.25em',
-      overflowWrap: 'break-word',
-    },
-    path: {
-      cursor: 'pointer',
-      color: theme.palette.secondary.main,
-      marginLeft: 4,
-    },
-    button: {
-      margin: theme.spacing(1),
-    },
-    rightIcon: {
-      marginLeft: theme.spacing(1),
-    },
-    iconSmall: {
-      fontSize: 20,
-    },
-    outputButton: {
-      marginLeft: theme.spacing(1),
-    },
-    remove: {
-      flexGrow: 1,
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-    selectWide: {
-      marginLeft: '10px',
-      minWidth: '200px',
-    },
-  };
-});
 
 function _ModelTestButton({ alignment }) {
   if (!alignment.modelTestCanRun) {
