@@ -40,12 +40,6 @@ const InputSwitch = withStyles((theme) => ({
 // const useStyles = makeStyles(theme => ({
 const useStyles = makeStyles((theme) => {
   return {
-    cardHeaderRoot: {
-      overflow: "hidden"
-    },
-    cardHeaderContent: {
-      overflow: "hidden"
-    },
     heading: {
       display: 'flex',
       alignItems: 'center',
@@ -273,9 +267,11 @@ function AlignmentCard({ alignment }) {
       }}
     >
       <CardHeader
-        classes={{
-          root: classes.cardHeaderRoot,
-          content: classes.cardHeaderContent,
+        sx={{
+          overflow: 'hidden',
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden',
+          },
         }}
         avatar={Type}
         action={
