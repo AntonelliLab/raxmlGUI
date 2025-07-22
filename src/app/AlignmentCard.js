@@ -62,9 +62,6 @@ const useStyles = makeStyles((theme) => {
       cursor: 'pointer',
       color: theme.palette.secondary.main,
     },
-    secondaryText: {
-      color: theme.palette.primary.secondaryText,
-    },
     divider: {
       margin: '0 4px',
     },
@@ -177,13 +174,19 @@ function AlignmentCard({ alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       {numSequences} sequences of length {length}
-    </span>
+    </Box>
   ) : (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </span>
+    </Box>
   );
 
   const Type = dataType ? (
@@ -367,15 +370,21 @@ function FinalAlignmentCard({ sx, alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       {alignment.numSequences} sequences of length {alignment.length} from{' '}
       {alignment.numAlignments} alignment
       {alignment.numAlignments > 1 ? 's' : ''}
-    </span>
+    </Box>
   ) : (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </span>
+    </Box>
   );
 
   return (
