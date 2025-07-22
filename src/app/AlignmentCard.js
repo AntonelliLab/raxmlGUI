@@ -398,7 +398,12 @@ function FinalAlignmentCard({ sx, alignment }) {
       <CardHeader
         avatar={
           <Chip
-            className={classes.chip}
+            sx={{
+              height: '30px',
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+            }}
             label={alignment.dataType}
             color="secondary"
           />
