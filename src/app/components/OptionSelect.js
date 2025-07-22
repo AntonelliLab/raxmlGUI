@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
 
-const OptionSelect = observer(({ option, className, sx }) => {
+const OptionSelect = observer(({ option, sx }) => {
   if (option.notAvailable || option.options.length === 0) {
     return null;
   }
@@ -19,7 +19,6 @@ const OptionSelect = observer(({ option, className, sx }) => {
         variant="standard"
         id={option.title}
         helperText={option.title}
-        className={className}
         sx={sx}
         value={option.value}
         placeholder={option.placeholder}
@@ -33,7 +32,7 @@ const OptionSelect = observer(({ option, className, sx }) => {
   }
 
   return (
-    <FormControl variant="standard" className={className} sx={sx} title={option.hoverInfo}>
+    <FormControl variant="standard" sx={sx} title={option.hoverInfo}>
       <Select
         value={option.value}
         onChange={(e) => option.setValue(e.target.value)}
@@ -56,7 +55,6 @@ const OptionSelect = observer(({ option, className, sx }) => {
 
 OptionSelect.propTypes = {
   option: PropTypes.object.isRequired,
-  className: PropTypes.string,
   sx: PropTypes.object,
 };
 
