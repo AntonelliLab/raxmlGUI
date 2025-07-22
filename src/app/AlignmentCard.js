@@ -58,12 +58,6 @@ const useStyles = makeStyles((theme) => {
     name: {
       marginRight: theme.spacing(1),
     },
-    chip: {
-      height: '30px',
-      color: theme.palette.input.contrastText,
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-    },
     link: {
       cursor: 'pointer',
       color: theme.palette.secondary.main,
@@ -193,7 +187,15 @@ function AlignmentCard({ alignment }) {
   );
 
   const Type = dataType ? (
-    <Chip classes={{ root: classes.chip }} label={dataType} />
+    <Chip
+      sx={{
+        height: '30px',
+        color: (theme) => theme.palette.input.contrastText,
+        backgroundColor: (theme) => theme.palette.input.main,
+        border: (theme) => `1px solid ${theme.palette.input.darker}`,
+      }}
+      label={dataType}
+    />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
   );
