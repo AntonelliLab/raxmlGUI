@@ -74,14 +74,6 @@ const useStyles = makeStyles((theme) => {
     button: {
       margin: theme.spacing(1),
     },
-    primaryButton: {
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-      color: theme.palette.input.contrastText,
-      '&:hover': {
-        backgroundColor: theme.palette.input.main,
-      },
-    },
     rightIcon: {
       marginLeft: theme.spacing(1),
     },
@@ -114,8 +106,15 @@ function _ModelTestButton({ alignment }) {
   }
   return (
     <Button
-      style={{ marginLeft: 10 }}
-      className={classes.primaryButton}
+      sx={{
+        marginLeft: '10px',
+        backgroundColor: (theme) => theme.palette.input.main,
+        border: (theme) => `1px solid ${theme.palette.input.darker}`,
+        color: (theme) => theme.palette.input.contrastText,
+        '&:hover': {
+          backgroundColor: (theme) => theme.palette.input.main,
+        },
+      }}
       variant="contained"
       loading={alignment.modeltestLoading}
       loadingPosition="end"
