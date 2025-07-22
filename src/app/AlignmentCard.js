@@ -103,9 +103,6 @@ const useStyles = makeStyles((theme) => {
     outputButton: {
       marginLeft: theme.spacing(1),
     },
-    loading: {
-      marginLeft: '10px',
-    },
     remove: {
       flexGrow: 1,
       display: 'flex',
@@ -327,9 +324,9 @@ function AlignmentCard({ alignment }) {
       />
       <Box>
         {alignment.loading ? (
-          <div className={classes.loading}>
+          <Box sx={{ marginLeft: '10px' }}>
             <CircularProgress variant="indeterminate" />
-          </div>
+          </Box>
         ) : null}
       </Box>
       <CardContent>{Content}</CardContent>
