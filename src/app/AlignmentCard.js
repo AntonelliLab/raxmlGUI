@@ -88,10 +88,6 @@ const useStyles = makeStyles((theme) => {
       display: 'flex',
       justifyContent: 'flex-end',
     },
-    select: {
-      marginLeft: '10px',
-      minWidth: '150px',
-    },
     selectWide: {
       marginLeft: '10px',
       minWidth: '200px',
@@ -195,27 +191,45 @@ function AlignmentCard({ alignment }) {
           <Box display="flex">
             <Box display="flex" flexWrap="wrap" alignItems="center">
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.substitutionModel}
               />
               <OptionTextField
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.multistateNumber}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngStationaryFrequencies}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngInvariantSites}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngRateHeterogeneity}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngAscertainmentBias}
               />
               <ModelTestButton alignment={alignment} />
@@ -225,7 +239,10 @@ function AlignmentCard({ alignment }) {
           <Box display="flex" flexWrap="wrap" alignItems="center">
             {alignment.modelExtra ? (
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={{
                   ...alignment.modelExtra,
                   setValue: alignment.modelExtra.onChange,
