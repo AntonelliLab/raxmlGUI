@@ -337,7 +337,6 @@ function AlignmentCard({ alignment }) {
 }
 
 function FinalAlignmentCard({ sx, alignment }) {
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
