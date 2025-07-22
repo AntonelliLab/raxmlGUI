@@ -5,7 +5,6 @@ import { makeStyles, withStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import classNames from 'classnames';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Switch from '@mui/material/Switch';
@@ -90,7 +89,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 function _ModelTestButton({ alignment }) {
-  const classes = useStyles();
   if (!alignment.modelTestCanRun) {
     return null;
   }
@@ -124,7 +122,6 @@ const ModelTestButton = observer(_ModelTestButton);
 function AlignmentCard({ alignment }) {
   const { dataType, numSequences, length } = alignment;
 
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
