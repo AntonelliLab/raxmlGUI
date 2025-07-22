@@ -325,13 +325,13 @@ function AlignmentCard({ alignment }) {
         title={alignment.filename}
         subheader={Size}
       />
-      <div>
+      <Box>
         {alignment.loading ? (
           <div className={classes.loading}>
             <CircularProgress variant="indeterminate" />
           </div>
         ) : null}
-      </div>
+      </Box>
       <CardContent>{Content}</CardContent>
       <CardActions>
         {alignment.partition.isComplete || alignment.showPartition ? null : (
