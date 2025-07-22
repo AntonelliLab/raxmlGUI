@@ -50,11 +50,6 @@ const useStyles = makeStyles((theme) => {
       display: 'flex',
       alignItems: 'center',
     },
-    content: {
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '-10px',
-    },
     name: {
       marginRight: theme.spacing(1),
     },
@@ -204,8 +199,14 @@ function AlignmentCard({ alignment }) {
   );
 
   const Content = (
-    <div className={classes.content}>
-      <div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '-10px',
+      }}
+    >
+      <Box>
         {alignment.run.usesRaxmlNg ? (
           <Box display="flex">
             <Box display="flex" flexWrap="wrap" alignItems="center">
@@ -257,8 +258,8 @@ function AlignmentCard({ alignment }) {
             <ModelTestButton alignment={alignment} />
           </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   return (
