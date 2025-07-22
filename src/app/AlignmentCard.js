@@ -66,10 +66,6 @@ const useStyles = makeStyles((theme) => {
       marginTop: '0.25em',
       overflowWrap: 'break-word',
     },
-    partitionFileContainer: {
-      overflowY: 'auto',
-      height: 50,
-    },
     partitionFileContent: {
       color: theme.palette.primary.contrastText,
       fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
@@ -458,11 +454,16 @@ function FinalAlignmentCard({ sx, alignment }) {
             </Typography>
           }
         />
-        <div className={classes.partitionFileContainer}>
           <code className={classes.partitionFileContent}>
+        <Box
+          sx={{
+            overflowY: 'auto',
+            height: 50,
+          }}
+        >
             {alignment.partition.text}
           </code>
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );
