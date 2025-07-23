@@ -15,12 +15,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles(theme => ({
-  Partition: {
-    backgroundColor: theme.palette.input.background,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start'
-  },
   formControl: {
     marginLeft: 5,
     marginRight: 10
@@ -53,7 +47,16 @@ function PartitionEditor({ alignment }) {
   const { partToAdd } = partition;
 
   return (
-    (<Box p={4} pt={2} className={classes.Partition}>
+    (<Box
+      p={4}
+      pt={2}
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.background,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start'
+      }}
+    >
       <Typography variant="h6">Partition editor</Typography>
       <Box mb={2} sx={{ width: '100%' }}>
         <LinearProgress variant="determinate" color="primary" value={partition.progress} />
