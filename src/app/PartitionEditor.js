@@ -112,15 +112,12 @@ function PartitionEditor({ alignment }) {
         </Box>
       </Box>
       <Box mt={2} sx={{ width: '100%' }}>
-          <TextField
-            className="pre"
-            slotProps={{
-              input: {
-                classes: {
-                  input: 'pre',
-                }
+        <TextField
           sx={{
             width: '100%',
+            '& .MuiInputBase-input': {
+              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+            },
           }}
           id="partition"
           label="Partition"
@@ -132,9 +129,6 @@ function PartitionEditor({ alignment }) {
           margin="normal"
           helperText={alignment.partitionHelperText || ''}
           variant="outlined"
-              }
-            }
-          }}
         />
       </Box>
       <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
