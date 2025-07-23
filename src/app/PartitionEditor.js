@@ -115,21 +115,21 @@ function PartitionEditor({ alignment }) {
           <TextField
             className="pre"
             style={{ width: '100%' }}
-            id="partition"
-            label="Partition"
-            disabled={partition.isDefault}
-            multiline
-            rows="6"
-            value={partition.text}
-            onChange={() => {}}
-            margin="normal"
-            helperText={alignment.partitionHelperText || ''}
-            variant="outlined"
             slotProps={{
               input: {
                 classes: {
                   input: 'pre',
                 }
+          id="partition"
+          label="Partition"
+          disabled={partition.isDefault}
+          multiline
+          rows="6"
+          value={partition.text}
+          onChange={() => {}}
+          margin="normal"
+          helperText={alignment.partitionHelperText || ''}
+          variant="outlined"
               }
             }
           }}
