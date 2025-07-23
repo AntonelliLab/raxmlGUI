@@ -8,7 +8,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 
-function PartitionFileCard({ className, run }) {
+function PartitionFileCard({ run }) {
   if (!run.havePartitionFile) {
     return null;
   }
@@ -84,7 +84,6 @@ function PartitionFileCard({ className, run }) {
 
 PartitionFileCard.propTypes = {
   run: PropTypes.object.isRequired,
-  className: PropTypes.string,
 };
 
 const PartitionFileCardObserver = observer(PartitionFileCard);
