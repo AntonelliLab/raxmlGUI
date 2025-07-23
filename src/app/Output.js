@@ -20,10 +20,6 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(3),
     },
   },
-  result: {
-    // maxHeight: 200,
-    // overflowY: 'auto',
-  },
 }));
 
 const Output = ({ run }) => {
@@ -57,7 +53,7 @@ const Output = ({ run }) => {
           onChange={e => run.setOutputName(e.target.value)}
           error={!run.outputNameOk} />
       </Box>
-      <Box mt={1} display="flex" flexDirection="column" alignItems="stretch" className={classes.result}>
+      <Box mt={1} display="flex" flexDirection="column" alignItems="stretch">
       { haveResult ? <Typography>Result for output id '{run.outputName}' </Typography> : null }
       { resultFilenames.map(filename =>
         <Link
