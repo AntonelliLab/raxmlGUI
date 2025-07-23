@@ -12,13 +12,6 @@ import CardContent from '@mui/material/CardContent';
 // const useStyles = makeStyles(theme => ({
 const useStyles = makeStyles((theme) => {
   return {
-    PartitionFileCard: {
-      backgroundColor: theme.palette.input.light,
-      border: `1px solid ${theme.palette.input.border}`,
-      height: '200px',
-      display: 'flex',
-      flexDirection: 'column',
-    },
     deleteChip: {
       backgroundColor: 'transparent',
       border: 'none',
@@ -44,7 +37,15 @@ function PartitionFileCard({ className, run }) {
   }
 
   return (
-    <Card className={classNames(className, classes.PartitionFileCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        height: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <CardHeader
         avatar={
           <Chip
