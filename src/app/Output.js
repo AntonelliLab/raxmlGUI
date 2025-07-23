@@ -10,12 +10,6 @@ import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import { join } from 'path';
 
 const useStyles = makeStyles((theme) => ({
-  form: {
-    width: '100%',
-    '& > *:not(:first-child)': {
-      marginTop: theme.spacing(3),
-    },
-  },
 }));
 
 const Output = ({ run }) => {
@@ -26,13 +20,25 @@ const Output = ({ run }) => {
   const haveResult = resultFilenames.length > 0;
 
   return (
-      <Box component="form" mt={1} mb={2} display="flex" flexDirection="column" className={classes.form} noValidate autoComplete="off">
     (<Box
       sx={{
         width: '100%',
         padding: '10px',
       }}
     >
+      <Box
+        component="form"
+        mt={1}
+        mb={2}
+        display="flex"
+        flexDirection="column"
+        sx={{
+          width: '100%',
+          gap: 3,
+        }}
+        noValidate
+        autoComplete="off"
+      >
         <TextField
           variant="standard"
           id="output-dir"
