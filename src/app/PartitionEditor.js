@@ -158,13 +158,6 @@ PartitionEditor.propTypes = {
 const PartitionEditorObserver = observer(PartitionEditor);
 
 const useStylesOnCard = makeStyles(theme => ({
-  partition: {
-    padding: 0,
-    marginTop: -30,
-    backgroundColor: 'rgba(0,0,0,0)', // transparent background
-    display: 'flex',
-    alignItems: 'flex-start'
-  },
   content: {
     padding: 0
   },
@@ -200,7 +193,6 @@ function PartitionOnCard({ alignment }) {
   const hasChange = partitionText !== alignment.partitionText;
 
   return (
-    <Card className={classes.partition} elevation={0}>
       <CardContent className={classes.content}>
         <form className={classes.form} noValidate autoComplete="off">
           <TextField
@@ -216,6 +208,16 @@ function PartitionOnCard({ alignment }) {
             variant="outlined"
           />
         </form>
+    <Card
+      sx={{
+        padding: 0,
+        marginTop: -30,
+        backgroundColor: 'rgba(0,0,0,0)', // transparent background
+        display: 'flex',
+        alignItems: 'flex-start'
+      }}
+      elevation={0}
+    >
       </CardContent>
       <CardActions>
         <Button aria-label="Cancel" variant="outlined" onClick={onClickCancel}>
