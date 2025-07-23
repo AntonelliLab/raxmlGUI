@@ -36,9 +36,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1)
   },
-  type: {
-    width: 100,
-  },
   aaType: {
     width: 120,
   },
@@ -83,7 +80,10 @@ function PartitionEditor({ alignment }) {
       <Box>
         <Grid container spacing={1} alignItems="flex-end">
           <Grid>
-            <OptionSelect option={partToAdd.type} className={classes.type} />
+            <OptionSelect
+              option={partToAdd.type}
+              sx={{ width: 100 }}
+            />
           </Grid>
           <Grid>
             <OptionSelect option={partToAdd.aaType} className={classes.aaType} />
