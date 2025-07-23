@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
@@ -14,27 +13,7 @@ import Grid from '@mui/material/Grid2';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    marginLeft: 5,
-    marginRight: 10
-  },
-  content: {
-    padding: 0
-  },
-  textField: {
-    // height: 80,
-    width: 250,
-    padding: 0,
-    marginTop: 10,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-}));
-
 function PartitionEditor({ alignment }) {
-  const classes = useStyles();
-
   function handleAdd(event) {
     alignment.partition.addPart();
   }
