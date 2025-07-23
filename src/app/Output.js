@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -9,13 +8,7 @@ import { Link, Typography } from '@mui/material';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import { join } from 'path';
 
-const useStyles = makeStyles((theme) => ({
-}));
-
 const Output = ({ run }) => {
-
-  const classes = useStyles();
-
   const { resultFilenames } = run;
   const haveResult = resultFilenames.length > 0;
 
