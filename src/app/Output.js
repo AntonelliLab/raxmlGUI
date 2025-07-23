@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(3),
     },
   },
-  formItem: {},
   result: {
     // maxHeight: 200,
     // overflowY: 'auto',
@@ -42,7 +41,6 @@ const Output = ({ run }) => {
           id="output-dir"
           helperText="Select output directory"
           fullWidth
-          className={classes.formItem}
           value={run.outputDir}
           onClick={run.selectOutputDir}
           slotProps={{
@@ -54,7 +52,6 @@ const Output = ({ run }) => {
           variant="standard"
           id="output-name"
           helperText={run.outputNameNotice || "Select output name"}
-          className={classes.formItem}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
           onChange={e => run.setOutputName(e.target.value)}
