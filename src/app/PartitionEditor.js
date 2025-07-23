@@ -112,7 +112,6 @@ function PartitionEditor({ alignment }) {
         </Box>
       </Box>
       <Box mt={2} sx={{ width: '100%' }}>
-        <form className={classes.form} noValidate autoComplete="off">
           <TextField
             className="pre"
             style={{ width: '100%' }}
@@ -134,7 +133,6 @@ function PartitionEditor({ alignment }) {
               }
             }}
           />
-        </form>
       </Box>
       <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
@@ -190,7 +188,6 @@ function PartitionOnCard({ alignment }) {
   const hasChange = partitionText !== alignment.partitionText;
 
   return (
-        <form className={classes.form} noValidate autoComplete="off">
           <TextField
             id="partition"
             label="Partition"
@@ -203,7 +200,6 @@ function PartitionOnCard({ alignment }) {
             helperText={alignment.partitionHelperText || ''}
             variant="outlined"
           />
-        </form>
     <Card
       sx={{
         padding: 0,
