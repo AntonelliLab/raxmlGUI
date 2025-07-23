@@ -1,29 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import classNames from 'classnames';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-
-// const useStyles = makeStyles(theme => ({
-const useStyles = makeStyles((theme) => {
-  return {
-    path: {
-      cursor: 'pointer',
-      color: theme.palette.secondary.main,
-      marginLeft: 4,
-    },
-  };
-});
-
+import Box from '@mui/material/Box';
 
 function PartitionFileCard({ className, run }) {
-  const classes = useStyles();
-
   if (!run.havePartitionFile) {
     return null;
   }
