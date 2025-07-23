@@ -33,10 +33,6 @@ const useStyles = makeStyles((theme) => {
     deleteChipIcon: {
       opacity: 1,
     },
-    partitionFileContainer: {
-      overflowY: 'auto',
-      height: '150px',
-    },
     partitionFileContent: {
       color: theme.palette.primary.contrastText,
       fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
@@ -88,11 +84,16 @@ function PartitionFileCard({ className, run }) {
         style={{ paddingBottom: 4 }}
       />
       <CardContent style={{ flexGrow: 1, paddingTop: 5, paddingBottom: 5 }}>
-        <div className={classes.partitionFileContainer}>
           <code className={classes.partitionFileContent}>
+        <Box
+          sx={{
+            overflowY: 'auto',
+            height: '150px',
+          }}
+        >
             { run.partitionFileContent }
           </code>
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );
