@@ -25,12 +25,6 @@ const useStyles = makeStyles((theme) => ({
     // maxHeight: 200,
     // overflowY: 'auto',
   },
-  resultFilenameRow: {
-    color: theme.palette.primary.contrastText,
-    display: 'flex',
-    alignItems: 'flex-end',
-    cursor: 'pointer',
-  },
   resultFilename: {
     color: theme.palette.primary.contrastText,
   },
@@ -74,7 +68,12 @@ const Output = ({ run }) => {
       { resultFilenames.map(filename =>
         <Link
           key={filename}
-          className={classes.resultFilenameRow}
+          sx={{
+            color: (theme) => theme.palette.primary.contrastText,
+            display: 'flex',
+            alignItems: 'flex-end',
+            cursor: 'pointer',
+          }}
           onClick={() => run.openFile(join(run.outputDir, filename))}
           underline="hover">
           <FileIcon/>
