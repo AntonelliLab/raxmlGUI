@@ -36,21 +36,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1)
   },
-  aaType: {
-    width: 120,
-  },
-  name: {
-    width: 200,
-  },
-  start: {
-    width: 70,
-  },
-  end: {
-    width: 70,
-  },
-  codon: {
-    width: 200,
-  },
 }));
 
 function PartitionEditor({ alignment }) {
@@ -86,19 +71,34 @@ function PartitionEditor({ alignment }) {
             />
           </Grid>
           <Grid>
-            <OptionSelect option={partToAdd.aaType} className={classes.aaType} />
+            <OptionSelect
+              option={partToAdd.aaType}
+              sx={{ width: 120 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.name} className={classes.name} />
+            <OptionTextField
+              option={partToAdd.name}
+              sx={{ width: 200 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.start} className={classes.start} />
+            <OptionTextField
+              option={partToAdd.start}
+              sx={{ width: 70 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.end} className={classes.end} />
+            <OptionTextField
+              option={partToAdd.end}
+              sx={{ width: 70 }}
+            />
           </Grid>
           <Grid>
-            <OptionSelect option={partToAdd.codon} className={classes.codon} />
+            <OptionSelect
+              option={partToAdd.codon}
+              sx={{ width: 200 }}
+            />
           </Grid>
           <Grid>
             <Button variant="outlined" disabled={partition.addPartDisabled} onClick={handleAdd}>Add</Button>
