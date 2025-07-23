@@ -19,12 +19,6 @@ const useStyles = makeStyles((theme) => {
       display: 'flex',
       flexDirection: 'column',
     },
-    chip: {
-      height: '30px',
-      color: theme.palette.input.contrastText,
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-    },
     deleteChip: {
       backgroundColor: 'transparent',
       border: 'none',
@@ -54,7 +48,12 @@ function PartitionFileCard({ className, run }) {
       <CardHeader
         avatar={
           <Chip
-            className={classes.chip}
+            sx={{
+              height: '30px',
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+            }}
             label="Partition"
             color="secondary"
           />
