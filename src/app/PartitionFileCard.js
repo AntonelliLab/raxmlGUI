@@ -12,14 +12,6 @@ import CardContent from '@mui/material/CardContent';
 // const useStyles = makeStyles(theme => ({
 const useStyles = makeStyles((theme) => {
   return {
-    deleteChip: {
-      backgroundColor: 'transparent',
-      border: 'none',
-      marginRight: -5,
-    },
-    deleteChipIcon: {
-      opacity: 1,
-    },
     path: {
       cursor: 'pointer',
       color: theme.palette.secondary.main,
@@ -62,9 +54,13 @@ function PartitionFileCard({ className, run }) {
         action={
           <div>
             <Chip
-              classes={{
-                root: classes.deleteChip,
-                deleteIcon: classes.deleteChipIcon,
+              sx={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                marginRight: '-5px',
+                '& .MuiChip-deleteIcon': {
+                  opacity: 1,
+                },
               }}
               deleteIcon={<DeleteForeverIcon />}
               onDelete={run.removePartitionFile}
