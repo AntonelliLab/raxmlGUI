@@ -25,9 +25,6 @@ const useStyles = makeStyles((theme) => ({
     // maxHeight: 200,
     // overflowY: 'auto',
   },
-  resultFilename: {
-    color: theme.palette.primary.contrastText,
-  },
 }));
 
 const Output = ({ run }) => {
@@ -77,7 +74,14 @@ const Output = ({ run }) => {
           onClick={() => run.openFile(join(run.outputDir, filename))}
           underline="hover">
           <FileIcon/>
-          <span className={classes.resultFilename}>{filename}</span>
+          <Box
+            component="span"
+            sx={{
+              color: (theme) => theme.palette.primary.contrastText,
+            }}
+          >
+            {filename}
+          </Box>
         </Link>
       )}
       </Box>
