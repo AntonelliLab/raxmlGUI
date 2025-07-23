@@ -114,12 +114,14 @@ function PartitionEditor({ alignment }) {
       <Box mt={2} sx={{ width: '100%' }}>
           <TextField
             className="pre"
-            style={{ width: '100%' }}
             slotProps={{
               input: {
                 classes: {
                   input: 'pre',
                 }
+          sx={{
+            width: '100%',
+          }}
           id="partition"
           label="Partition"
           disabled={partition.isDefault}
