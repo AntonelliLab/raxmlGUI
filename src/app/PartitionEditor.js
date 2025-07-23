@@ -131,8 +131,9 @@ function PartitionEditor({ alignment }) {
                   input: 'pre',
                 }
               }
-            }}
-          />
+            }
+          }}
+        />
       </Box>
       <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
@@ -155,18 +156,7 @@ PartitionEditor.propTypes = {
 
 const PartitionEditorObserver = observer(PartitionEditor);
 
-const useStylesOnCard = makeStyles(theme => ({
-  form: {},
-  textField: {
-    width: 250,
-    padding: 0,
-    marginTop: 10,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  }
-}));
 function PartitionOnCard({ alignment }) {
-  const classes = useStylesOnCard();
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
   const [partitionText, setPartitionText] = React.useState(
     alignment.partitionFileContent
@@ -188,18 +178,6 @@ function PartitionOnCard({ alignment }) {
   const hasChange = partitionText !== alignment.partitionText;
 
   return (
-          <TextField
-            id="partition"
-            label="Partition"
-            multiline
-            rows="3"
-            value={partitionText}
-            onChange={handleChange}
-            className={classes.textField}
-            margin="normal"
-            helperText={alignment.partitionHelperText || ''}
-            variant="outlined"
-          />
     <Card
       sx={{
         padding: 0,
@@ -211,6 +189,24 @@ function PartitionOnCard({ alignment }) {
       elevation={0}
     >
       <CardContent sx={{ padding: 0 }}>
+        <TextField
+          id="partition"
+          label="Partition"
+          multiline
+          rows="3"
+          value={partitionText}
+          onChange={handleChange}
+          sx={{
+            width: 250,
+            padding: 0,
+            marginTop: '10px',
+            marginLeft: 1,
+            marginRight: 1
+          }}
+          margin="normal"
+          helperText={alignment.partitionHelperText || ''}
+          variant="outlined"
+        />
       </CardContent>
       <CardActions>
         <Button aria-label="Cancel" variant="outlined" onClick={onClickCancel}>
