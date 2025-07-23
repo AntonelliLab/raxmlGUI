@@ -33,14 +33,6 @@ const useStyles = makeStyles((theme) => {
     deleteChipIcon: {
       opacity: 1,
     },
-    partitionFileContent: {
-      color: theme.palette.primary.contrastText,
-      fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-      fontSize: '12px',
-      height: '100%',
-      overflowWrap: 'break-word',
-      whiteSpace: 'pre-wrap',
-    },
     path: {
       cursor: 'pointer',
       color: theme.palette.secondary.main,
@@ -84,15 +76,25 @@ function PartitionFileCard({ className, run }) {
         style={{ paddingBottom: 4 }}
       />
       <CardContent style={{ flexGrow: 1, paddingTop: 5, paddingBottom: 5 }}>
-          <code className={classes.partitionFileContent}>
         <Box
           sx={{
             overflowY: 'auto',
             height: '150px',
           }}
         >
+          <Box
+            component="code"
+            sx={{
+              color: (theme) => theme.palette.primary.contrastText,
+              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontSize: '12px',
+              height: '100%',
+              overflowWrap: 'break-word',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
             { run.partitionFileContent }
-          </code>
+          </Box>
         </Box>
       </CardContent>
     </Card>
