@@ -107,9 +107,6 @@ const useStyles = makeStyles(theme => ({
   rightPanel: {
     borderLeft: '1px solid #ccc',
   },
-  ioWrapper: {
-    width: '100%',
-  },
   ioItem: {
     width: '100%',
     height: '100%',
@@ -119,9 +116,6 @@ const useStyles = makeStyles(theme => ({
     borderTop: '2px solid #ccc',
     borderBottom: '2px solid #ccc',
     backgroundColor: theme.palette.model.background,
-  },
-  input: {
-    backgroundColor: theme.palette.input.background,
   },
   output: {
     flexGrow: 1,
@@ -304,7 +298,10 @@ const App = () => {
             >
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.input}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.input.background,
+                }}
               >
                 <Typography
                   className={`${classes.verticalHeading} ${classes.inputHeading}`}
