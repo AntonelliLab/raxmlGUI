@@ -79,11 +79,6 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     overflowX: 'hidden',
   },
-  model: {
-    borderTop: '2px solid #ccc',
-    borderBottom: '2px solid #ccc',
-    backgroundColor: theme.palette.model.background,
-  },
   verticalHeading: {
     writingMode: 'vertical-rl',
     textOrientation: 'upright',
@@ -128,14 +123,6 @@ const useStyles = makeStyles(theme => ({
   },
   outputContainer: {
     // backgroundColor: theme.palette.output.dark,
-  },
-  raxml: {
-    backgroundColor: theme.palette.raxml.background,
-  },
-  console: {
-    backgroundColor: theme.palette.console.background,
-    height: '100%',
-    borderTop: '2px solid #ccc',
   },
 }));
 
@@ -266,7 +253,12 @@ const App = () => {
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.model}`}
+                sx={{
+                  width: '100%',
+                  borderTop: '2px solid #ccc',
+                  borderBottom: '2px solid #ccc',
+                  backgroundColor: (theme) => theme.palette.model.background,
+                }}
               >
                 <Typography
                   className={`${classes.verticalHeading} ${classes.modelHeading}`}
@@ -305,7 +297,10 @@ const App = () => {
             >
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.raxml}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.raxml.background,
+                }}
               >
                 <Typography
                   className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
@@ -318,7 +313,12 @@ const App = () => {
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.console}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.console.background,
+                  height: '100%',
+                  borderTop: '2px solid #ccc',
+                }}
               >
                 <Typography
                   className={`${classes.verticalHeading} ${classes.consoleHeading}`}
