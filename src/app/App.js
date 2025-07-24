@@ -117,10 +117,6 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '2px solid #ccc',
     backgroundColor: theme.palette.model.background,
   },
-  output: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.output.background,
-  },
   verticalHeading: {
     writingMode: 'vertical-rl',
     textOrientation: 'upright',
@@ -327,7 +323,11 @@ const App = () => {
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.output}`}
+                sx={{
+                  width: '100%',
+                  flexGrow: 1,
+                  backgroundColor: (theme) => theme.palette.output.background,
+                }}
               >
                 <Typography
                   className={`${classes.verticalHeading} ${classes.outputHeading}`}
