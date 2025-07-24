@@ -6,20 +6,6 @@ import clsx from 'clsx';
 
 
 const styles = theme => ({
-  Console: {
-    color: theme.palette.console.contrastText,
-    background: theme.palette.console.background,
-    // flexGrow: 1,
-    // padding: '0 4px',
-    padding: '10px',
-    width: '100% ',
-    height: '100%',
-  },
-  stdoutContainer: {
-    overflowY: 'auto',
-    height: '100%',
-    position: 'relative',
-  },
   code: {
     color: theme.palette.console.contrastText,
     fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
@@ -63,15 +49,23 @@ class Console extends React.Component {
   render() {
     const { run, classes } = this.props;
     return (
-      <div
-        className={clsx(classes.Console, classes.stdoutContainer)}
+      <Box
         ref={this.onMountStdoutContainer}
+        sx={{
+          color: (theme) => theme.palette.console.contrastText,
+          background: (theme) => theme.palette.console.background,
+          padding: '10px',
+          width: '100%',
+          height: '100%',
+          overflowY: 'auto',
+          position: 'relative',
+        }}
       >
         <div>
           {run.stdout && <code className={classes.code}>{run.stdout}</code>}
           {run.stderr && <code className={classes.code}>{run.stderr}</code>}
         </div>
-      </div>
+      </Box>
     );
   }
 }
