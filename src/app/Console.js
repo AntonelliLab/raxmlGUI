@@ -1,23 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
-
-
-const styles = theme => ({
-  code: {
-    color: theme.palette.console.contrastText,
-    fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-    fontSize: '12px',
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
-    // overflowWrap: 'anywhere', // currently not available in Chrome
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all',
-  }
-});
+import Box from '@mui/material/Box';
 
 @observer
 class Console extends React.Component {
@@ -47,7 +31,7 @@ class Console extends React.Component {
   };
 
   render() {
-    const { run, classes } = this.props;
+    const { run } = this.props;
     return (
       <Box
         ref={this.onMountStdoutContainer}
@@ -62,8 +46,40 @@ class Console extends React.Component {
         }}
       >
         <div>
-          {run.stdout && <code className={classes.code}>{run.stdout}</code>}
-          {run.stderr && <code className={classes.code}>{run.stderr}</code>}
+          {run.stdout && (
+            <Box
+              component="code"
+              sx={{
+                color: (theme) => theme.palette.console.contrastText,
+                fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+                fontSize: '12px',
+                height: '100%',
+                position: 'absolute',
+                width: '100%',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+              }}
+            >
+              {run.stdout}
+            </Box>
+          )}
+          {run.stderr && (
+            <Box
+              component="code"
+              sx={{
+                color: (theme) => theme.palette.console.contrastText,
+                fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+                fontSize: '12px',
+                height: '100%',
+                position: 'absolute',
+                width: '100%',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+              }}
+            >
+              {run.stderr}
+            </Box>
+          )}
         </div>
       </Box>
     );
@@ -74,4 +90,4 @@ Console.propTypes = {
   run: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Console);
+export default Console;
