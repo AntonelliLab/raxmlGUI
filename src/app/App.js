@@ -146,12 +146,6 @@ const useStyles = makeStyles(theme => ({
       color: '#999',
     },
   },
-  Modal: {
-    margin: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
 }));
 
 const App = () => {
@@ -475,7 +469,12 @@ const App = () => {
             aria-labelledby="show-partition"
             open={true}
             onClose={run.hidePartition}
-            className={classes.Modal}
+            sx={{
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <div id="show-partition">
               <PartitionEditor alignment={run.showPartitionFor} />
@@ -487,7 +486,12 @@ const App = () => {
             aria-labelledby="show-citation"
             open={true}
             onClose={store.citation.hide}
-            className={classes.Modal}
+            sx={{
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <div id="show-citation">
               <CitationModal citation={store.citation} />
