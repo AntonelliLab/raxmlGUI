@@ -71,9 +71,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  statusVersion: {
-    marginRight: 20,
-  },
   statusCite: {
     color: theme.palette.status.contrastText,
     cursor: 'pointer',
@@ -395,12 +392,12 @@ const App = () => {
             </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
-              <div className={classes.statusVersion}>
+              <Box sx={{ marginRight: '20px' }}>
                 raxmlGUI {store.version}
-              </div>
-              <div className={classes.statusVersion}>
+              </Box>
+              <Box sx={{ marginRight: '20px' }}>
                 {binary.value} {binary.version}
-              </div>
+              </Box>
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Box display="flex">
