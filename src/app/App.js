@@ -71,11 +71,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  statusCite: {
-    color: theme.palette.status.contrastText,
-    cursor: 'pointer',
-    marginLeft: 20,
-  },
   statusFeedback: {
     color: theme.palette.status.contrastText,
     marginLeft: 20,
@@ -401,14 +396,19 @@ const App = () => {
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Box display="flex">
-              <span
-                className={classes.statusCite}
+              <Box
+                component="span"
+                sx={{
+                  color: (theme) => theme.palette.status.contrastText,
+                  cursor: 'pointer',
+                  marginLeft: '20px',
+                }}
                 onClick={store.citation.show}
               >
                 How to cite?
-              </span>
               <a
                 className={classes.statusFeedback}
+              </Box>
                 href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
               >
                 For questions or suggestions contact us!
