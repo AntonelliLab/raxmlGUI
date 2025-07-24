@@ -13,11 +13,6 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
 
 const styles = (theme) => ({
-  Raxml: {
-    padding: '10px',
-    width: '100%',
-    flexShrink: 0,
-  },
   button: {
     marginRight: theme.spacing(1),
   },
@@ -50,7 +45,13 @@ class Raxml extends React.Component {
     const { classes, run } = this.props;
 
     return (
-      <div className={classes.Raxml}>
+      <Box
+        sx={{
+          padding: '10px',
+          width: '100%',
+          flexShrink: 0,
+        }}
+      >
         <Box
           component="form"
           mt={1}
@@ -108,7 +109,7 @@ class Raxml extends React.Component {
           </Box>
           <FormHelperText>Command</FormHelperText>
         </Box>
-      </div>
+      </Box>
     );
   }
 }
