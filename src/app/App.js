@@ -36,7 +36,6 @@ import ModifiedDialog from './components/ModifiedDialog';
 
 import './App.css';
 
-// Styled components for main layout
 const VerticalHeading = styled(Typography)(({ theme }) => ({
   writingMode: 'vertical-rl',
   textOrientation: 'upright',
@@ -82,7 +81,7 @@ const App = () => {
   ));
 
   function fileModifiedSnack(run) {
-    let message = "Something happened"
+    let message = 'Something happened';
     if (run.converted) {
       message = `Converted your ${run.convertedAlignmentFrom} alignment into fasta!`;
     }
@@ -389,10 +388,18 @@ const App = () => {
             <IconButton
               onClick={() => store.config.setDarkMode(!store.config.isDarkMode)}
               size="small"
-              title={store.config.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              title={
+                store.config.isDarkMode
+                  ? 'Switch to Light Mode'
+                  : 'Switch to Dark Mode'
+              }
               sx={{ mr: 2, color: 'inherit' }}
             >
-              {store.config.isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+              {store.config.isDarkMode ? (
+                <LightModeIcon fontSize="small" />
+              ) : (
+                <DarkModeIcon fontSize="small" />
+              )}
             </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
@@ -444,11 +451,9 @@ const App = () => {
               severity={run.exitCode === 0 ? 'success' : 'info'}
               sx={{ width: '100%' }}
             >
-              {
-                run.exitCode === 0
-                  ? 'Calculation finished!'
-                  : `Calculation cancelled!`
-              }
+              {run.exitCode === 0
+                ? 'Calculation finished!'
+                : `Calculation cancelled!`}
             </Alert>
           </Snackbar>
           {fileModifiedSnack(run)}
