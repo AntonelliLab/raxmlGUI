@@ -38,22 +38,6 @@ import ModifiedDialog from './components/ModifiedDialog';
 import './App.css';
 
 const useStyles = makeStyles(theme => ({
-  ioContainer: {
-    // height: 'calc(100vh - 20px)',
-    height: '100%',
-    overflowY: 'auto',
-    paddingBottom: '20px',
-  },
-  leftPanel: {
-  },
-  rightPanel: {
-    borderLeft: '1px solid #ccc',
-  },
-  ioItem: {
-    width: '100%',
-    height: '100%',
-    overflowX: 'hidden',
-  },
   verticalHeading: {
     writingMode: 'vertical-rl',
     textOrientation: 'upright',
@@ -89,9 +73,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.console.main,
     // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
     zIndex: 10,
-  },
-  inputContainer: {
-    // backgroundColor: theme.palette.input.dark,
   },
   modelContainer: {
     // backgroundColor: theme.palette.model.dark,
@@ -238,7 +219,11 @@ const App = () => {
             <Box
               display="flex"
               flexDirection="column"
-              className={clsx(classes.ioContainer, classes.leftPanel)}
+              sx={{
+                height: '100%',
+                overflowY: 'auto',
+                paddingBottom: '20px',
+              }}
             >
               <Box
                 display="flex"
@@ -255,10 +240,16 @@ const App = () => {
                   }}
                 >
                   Input
-                <div className={clsx(classes.ioItem, classes.inputContainer)}>
                 </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Input run={run} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
@@ -310,7 +301,12 @@ const App = () => {
             <Box
               display="flex"
               flexDirection="column"
-              className={clsx(classes.ioContainer, classes.rightPanel)}
+              sx={{
+                height: '100%',
+                overflowY: 'auto',
+                paddingBottom: '20px',
+                borderLeft: '1px solid #ccc'
+              }}
             >
               <Box
                 display="flex"
