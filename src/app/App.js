@@ -38,12 +38,6 @@ import ModifiedDialog from './components/ModifiedDialog';
 import './App.css';
 
 const useStyles = makeStyles(theme => ({
-  App: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    backgroundColor: theme.palette.primary.background,
-  },
   ioContainer: {
     // height: 'calc(100vh - 20px)',
     height: '100%',
@@ -205,7 +199,14 @@ const App = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className={classes.App}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          backgroundColor: (theme) => theme.palette.primary.background,
+        }}
+      >
         {store.runs.length <= 1 ? null : (
           <AppBar
             position="static"
@@ -518,7 +519,7 @@ const App = () => {
           </Modal>
         ) : null}
         <ErrorDialog error={store.error} onClose={store.clearError} />
-      </div>
+      </Box>
     </React.Fragment>
   );
 };
