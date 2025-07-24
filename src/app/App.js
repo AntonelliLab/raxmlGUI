@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import { styled } from '@mui/material/styles';
