@@ -50,10 +50,6 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     paddingBottom: '20px',
   },
-  statusFeedback: {
-    color: theme.palette.status.contrastText,
-    marginLeft: 20,
-  },
   AppBar: {
     display: 'flex',
     flexDirection: 'row',
@@ -422,13 +418,17 @@ const App = () => {
                 onClick={store.citation.show}
               >
                 How to cite?
-              <a
-                className={classes.statusFeedback}
               </Box>
+              <Box
+                component="a"
                 href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
+                sx={{
+                  color: (theme) => theme.palette.status.contrastText,
+                  marginLeft: '20px',
+                }}
               >
                 For questions or suggestions contact us!
-              </a>
+              </Box>
             </Box>
           </Toolbar>
         </AppBar>
