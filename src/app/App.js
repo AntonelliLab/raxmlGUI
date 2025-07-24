@@ -325,10 +325,16 @@ const App = () => {
                   }}
                 >
                   RAxML
-                <div className={classes.ioItem}>
                 </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Raxml run={run} store={store} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
