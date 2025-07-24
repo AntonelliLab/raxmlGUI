@@ -61,9 +61,7 @@ class Raxml extends React.Component {
           autoComplete="off"
           alignItems="center"
           sx={{
-            '& > *+*': {
-              marginLeft: '20px',
-            },
+            gap: '20px',
           }}
         >
           <OptionSelect option={run.binary} />
