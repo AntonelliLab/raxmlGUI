@@ -18,12 +18,6 @@ const styles = (theme) => ({
     width: '100%',
     flexShrink: 0,
   },
-  form: {
-    // '& > *:not(:first-child)': {
-    '& > *+*': {
-      marginLeft: '20px',
-    },
-  },
   formItem: {
     // marginRight: '20px',
   },
@@ -65,10 +59,14 @@ class Raxml extends React.Component {
           mt={1}
           mb={2}
           display="flex"
-          className={classes.form}
           noValidate
           autoComplete="off"
           alignItems="center"
+          sx={{
+            '& > *+*': {
+              marginLeft: '20px',
+            },
+          }}
         >
           <OptionSelect className={classes.formItem} option={run.binary} />
           <OptionSelect className={classes.formItem} option={run.numThreads} />
