@@ -99,6 +99,7 @@ const useStyles = makeStyles(theme => ({
   outputContainer: {
     // backgroundColor: theme.palette.output.dark,
   },
+// Styled components for main layout
 const VerticalHeading = styled(Typography)(({ theme }) => ({
   writingMode: 'vertical-rl',
   textOrientation: 'upright',
