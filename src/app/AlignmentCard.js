@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -22,8 +22,8 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
-const InputSwitch = withStyles((theme) => ({
-  switchBase: {
+const InputSwitch = styled(Switch)(({ theme }) => ({
+  '& .MuiSwitch-switchBase': {
     color: theme.palette.input.secondaryText,
     '&.Mui-checked': {
       color: theme.palette.input.dark,
@@ -32,9 +32,7 @@ const InputSwitch = withStyles((theme) => ({
       backgroundColor: theme.palette.input.dark,
     },
   },
-  checked: {},
-  track: {},
-}))(Switch);
+}));
 
 function _ModelTestButton({ alignment }) {
   if (!alignment.modelTestCanRun) {
