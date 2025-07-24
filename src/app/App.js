@@ -55,9 +55,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     backgroundColor: theme.palette.input.background,
   },
-  Toolbar: {
-    minHeight: 0
-  },
   tab: {
     display: 'flex',
     alignItems: 'center',
@@ -220,7 +217,7 @@ const App = () => {
             >
               {TabItems}
             </Tabs>
-            <Toolbar variant="dense" className={classes.Toolbar}>
+            <Toolbar variant="dense" sx={{ minHeight: 0 }}>
               <IconButton onClick={store.addRun} size="large">
                 <IconAdd />
               </IconButton>
