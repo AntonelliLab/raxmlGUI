@@ -137,11 +137,6 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     borderTop: '2px solid #ccc',
   },
-  deleteIcon: {
-    '&:hover': {
-      color: '#999',
-    },
-  },
 }));
 
 const App = () => {
@@ -332,7 +327,11 @@ const App = () => {
                   {run.stdout === '' && run.stderr === '' ? null : (
                     <DeleteIcon
                       onClick={run.clearConsole}
-                      className={classes.deleteIcon}
+                      sx={{
+                        '&:hover': {
+                          color: '#999',
+                        },
+                      }}
                       title="Clear console"
                     />
                   )}
