@@ -18,9 +18,6 @@ const styles = (theme) => ({
     width: '100%',
     flexShrink: 0,
   },
-  formItem: {
-    // marginRight: '20px',
-  },
   button: {
     marginRight: theme.spacing(1),
   },
@@ -68,8 +65,8 @@ class Raxml extends React.Component {
             },
           }}
         >
-          <OptionSelect className={classes.formItem} option={run.binary} />
-          <OptionSelect className={classes.formItem} option={run.numThreads} />
+          <OptionSelect option={run.binary} />
+          <OptionSelect option={run.numThreads} />
           {run.modelTestIsRunningOnAlignment ? (
             <Button
               size="small"
