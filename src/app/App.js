@@ -197,7 +197,8 @@ const App = () => {
               display: 'flex',
               flexDirection: 'row',
               backgroundColor: (theme) => theme.palette.input.background,
-              borderBottom: (theme) => `1px solid ${theme.palette.status.border}`,
+              borderBottom: (theme) =>
+                `1px solid ${theme.palette.status.border}`,
             }}
           >
             <Tabs
