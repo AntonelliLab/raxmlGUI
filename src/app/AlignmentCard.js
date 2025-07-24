@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -21,18 +20,6 @@ import OptionTextField from './components/OptionTextField';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-
-const InputSwitch = styled(Switch)(({ theme }) => ({
-  '& .MuiSwitch-switchBase': {
-    color: theme.palette.input.secondaryText,
-    '&.Mui-checked': {
-      color: theme.palette.input.dark,
-    },
-    '&.Mui-checked + .Mui-track': {
-      backgroundColor: theme.palette.input.dark,
-    },
-  },
-}));
 
 function _ModelTestButton({ alignment }) {
   if (!alignment.modelTestCanRun) {
@@ -384,7 +371,7 @@ function FinalAlignmentCard({ sx, alignment }) {
         <FormControlLabel
           title="Use union (on) or intersection (off) of taxons from all alignments"
           control={
-            <InputSwitch
+            <Switch
               checked={alignment.fillTaxonGapsWithEmptySeqeunces}
               onChange={(event) => {
                 alignment.setFillTaxonGapsWithEmptySeqeunces(
@@ -392,6 +379,14 @@ function FinalAlignmentCard({ sx, alignment }) {
                 );
               }}
               value="fillTaxonGapsWithEmptySeqeunces"
+              sx={{
+                '& .MuiSwitch-switchBase': {
+                  color: (theme) => theme.palette.input.secondaryText,
+                  '&.Mui-checked': {
+                    color: (theme) => theme.palette.input.dark,
+                  },
+                },
+              }}
             />
           }
           label={
