@@ -50,17 +50,6 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     paddingBottom: '20px',
   },
-  tab: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 40px',
-    position: 'relative'
-  },
-  tabChip: {
-    border: 'none',
-  },
-  tabIcon: {
-  },
   leftPanel: {
   },
   rightPanel: {
@@ -125,14 +114,20 @@ const App = () => {
     <Tab
       key={run.id}
       icon={
-        <span className={classes.tab}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 40px',
+            position: 'relative',
+          }}
+        >
           <Chip
-            classes={{ root: classes.tabChip }}
+            sx={{ border: 'none' }}
             icon={
               <CircularProgress
                 color="inherit"
                 size={20}
-                className={classes.tabIcon}
                 variant={run.running ? 'indeterminate' : 'determinate'}
                 value={0}
               />
@@ -143,7 +138,7 @@ const App = () => {
             }}
             variant="outlined"
           />
-        </span>
+        </Box>
       }
     />
   ));
