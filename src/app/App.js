@@ -34,8 +34,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
 
-import './App.css';
-
 const VerticalHeading = styled(Typography)(({ theme }) => ({
   writingMode: 'vertical-rl',
   textOrientation: 'upright',
