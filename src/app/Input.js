@@ -256,9 +256,6 @@ const Input = ({ run }) => {
     </Box>
   );
 };
-// <Box mt={1} display="flex">
-// { run.ok ? null : run.missing }
-// </Box>
 
 Input.propTypes = {
   run: PropTypes.object.isRequired,
