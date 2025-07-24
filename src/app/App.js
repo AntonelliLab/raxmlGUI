@@ -363,10 +363,16 @@ const App = () => {
                       title="Clear console"
                     />
                   )}
-                <div className={classes.ioItem}>
                 </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Console run={run} />
-                </div>
+                </Box>
               </Box>
             </Box>
           </Allotment.Pane>
