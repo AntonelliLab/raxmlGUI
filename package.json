@@ -67,7 +67,6 @@
     "allotment": "^1.20.4",
     "classnames": "^2.3.2",
     "clean-stack": "3.0.1",
-    "clsx": "^1.2.1",
     "computed-async-mobx": "^4.2.0",
     "cpus": "^1.0.3",
     "d3-array": "^3.2.4",
