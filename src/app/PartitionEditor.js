@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
@@ -14,51 +13,7 @@ import Grid from '@mui/material/Grid2';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles(theme => ({
-  Partition: {
-    backgroundColor: theme.palette.input.background,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start'
-  },
-  formControl: {
-    marginLeft: 5,
-    marginRight: 10
-  },
-  content: {
-    padding: 0
-  },
-  textField: {
-    // height: 80,
-    width: 250,
-    padding: 0,
-    marginTop: 10,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  type: {
-    width: 100,
-  },
-  aaType: {
-    width: 120,
-  },
-  name: {
-    width: 200,
-  },
-  start: {
-    width: 70,
-  },
-  end: {
-    width: 70,
-  },
-  codon: {
-    width: 200,
-  },
-}));
-
 function PartitionEditor({ alignment }) {
-  const classes = useStyles();
-
   function handleAdd(event) {
     alignment.partition.addPart();
   }
@@ -71,7 +26,16 @@ function PartitionEditor({ alignment }) {
   const { partToAdd } = partition;
 
   return (
-    (<Box p={4} pt={2} className={classes.Partition}>
+    (<Box
+      p={4}
+      pt={2}
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.background,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start'
+      }}
+    >
       <Typography variant="h6">Partition editor</Typography>
       <Box mb={2} sx={{ width: '100%' }}>
         <LinearProgress variant="determinate" color="primary" value={partition.progress} />
@@ -83,22 +47,40 @@ function PartitionEditor({ alignment }) {
       <Box>
         <Grid container spacing={1} alignItems="flex-end">
           <Grid>
-            <OptionSelect option={partToAdd.type} className={classes.type} />
+            <OptionSelect
+              option={partToAdd.type}
+              sx={{ width: 100 }}
+            />
           </Grid>
           <Grid>
-            <OptionSelect option={partToAdd.aaType} className={classes.aaType} />
+            <OptionSelect
+              option={partToAdd.aaType}
+              sx={{ width: 120 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.name} className={classes.name} />
+            <OptionTextField
+              option={partToAdd.name}
+              sx={{ width: 200 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.start} className={classes.start} />
+            <OptionTextField
+              option={partToAdd.start}
+              sx={{ width: 70 }}
+            />
           </Grid>
           <Grid>
-            <OptionTextField option={partToAdd.end} className={classes.end} />
+            <OptionTextField
+              option={partToAdd.end}
+              sx={{ width: 70 }}
+            />
           </Grid>
           <Grid>
-            <OptionSelect option={partToAdd.codon} className={classes.codon} />
+            <OptionSelect
+              option={partToAdd.codon}
+              sx={{ width: 200 }}
+            />
           </Grid>
           <Grid>
             <Button variant="outlined" disabled={partition.addPartDisabled} onClick={handleAdd}>Add</Button>
@@ -109,29 +91,24 @@ function PartitionEditor({ alignment }) {
         </Box>
       </Box>
       <Box mt={2} sx={{ width: '100%' }}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            className="pre"
-            style={{ width: '100%' }}
-            id="partition"
-            label="Partition"
-            disabled={partition.isDefault}
-            multiline
-            rows="6"
-            value={partition.text}
-            onChange={() => {}}
-            margin="normal"
-            helperText={alignment.partitionHelperText || ''}
-            variant="outlined"
-            slotProps={{
-              input: {
-                classes: {
-                  input: 'pre',
-                }
-              }
-            }}
-          />
-        </form>
+        <TextField
+          sx={{
+            width: '100%',
+            '& .MuiInputBase-input': {
+              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+            },
+          }}
+          id="partition"
+          label="Partition"
+          disabled={partition.isDefault}
+          multiline
+          rows="6"
+          value={partition.text}
+          onChange={() => {}}
+          margin="normal"
+          helperText={alignment.partitionHelperText || ''}
+          variant="outlined"
+        />
       </Box>
       <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
         { partition.isDefault ? null : (
@@ -154,28 +131,7 @@ PartitionEditor.propTypes = {
 
 const PartitionEditorObserver = observer(PartitionEditor);
 
-const useStylesOnCard = makeStyles(theme => ({
-  partition: {
-    padding: 0,
-    marginTop: -30,
-    backgroundColor: 'rgba(0,0,0,0)', // transparent background
-    display: 'flex',
-    alignItems: 'flex-start'
-  },
-  content: {
-    padding: 0
-  },
-  form: {},
-  textField: {
-    width: 250,
-    padding: 0,
-    marginTop: 10,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  }
-}));
 function PartitionOnCard({ alignment }) {
-  const classes = useStylesOnCard();
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
   const [partitionText, setPartitionText] = React.useState(
     alignment.partitionFileContent
@@ -197,22 +153,35 @@ function PartitionOnCard({ alignment }) {
   const hasChange = partitionText !== alignment.partitionText;
 
   return (
-    <Card className={classes.partition} elevation={0}>
-      <CardContent className={classes.content}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            id="partition"
-            label="Partition"
-            multiline
-            rows="3"
-            value={partitionText}
-            onChange={handleChange}
-            className={classes.textField}
-            margin="normal"
-            helperText={alignment.partitionHelperText || ''}
-            variant="outlined"
-          />
-        </form>
+    <Card
+      sx={{
+        padding: 0,
+        marginTop: -30,
+        backgroundColor: 'rgba(0,0,0,0)', // transparent background
+        display: 'flex',
+        alignItems: 'flex-start'
+      }}
+      elevation={0}
+    >
+      <CardContent sx={{ padding: 0 }}>
+        <TextField
+          id="partition"
+          label="Partition"
+          multiline
+          rows="3"
+          value={partitionText}
+          onChange={handleChange}
+          sx={{
+            width: 250,
+            padding: 0,
+            marginTop: '10px',
+            marginLeft: 1,
+            marginRight: 1
+          }}
+          margin="normal"
+          helperText={alignment.partitionHelperText || ''}
+          variant="outlined"
+        />
       </CardContent>
       <CardActions>
         <Button aria-label="Cancel" variant="outlined" onClick={onClickCancel}>

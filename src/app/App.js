@@ -1,9 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import clsx from 'clsx';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
@@ -37,175 +36,35 @@ import ModifiedDialog from './components/ModifiedDialog';
 
 import './App.css';
 
-const useStyles = makeStyles((theme) => ({
-  App: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    backgroundColor: theme.palette.primary.background,
-  },
-  ioContainer: {
-    // height: 'calc(100vh - 20px)',
-    height: '100%',
-    overflowY: 'auto',
-    paddingBottom: '20px',
-  },
-  statusBar: {
-    top: 'auto',
-    bottom: 0,
-    height: 20,
-    minHeight: 20,
-    width: '100%',
-    margin: 0,
-    padding: 0,
-    backgroundColor: theme.palette.status.main,
-    borderTop: `1px solid ${theme.palette.status.border}`,
-    color: theme.palette.status.contrastText,
-    fontSize: 12,
-  },
-  statusToolbar: {
-    minHeight: 20,
-    margin: 0,
-    padding: '0 8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  statusVersion: {
-    marginRight: 20,
-  },
-  statusCite: {
-    color: theme.palette.status.contrastText,
-    cursor: 'pointer',
-    marginLeft: 20,
-  },
-  statusFeedback: {
-    color: theme.palette.status.contrastText,
-    marginLeft: 20,
-  },
-  AppBar: {
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: theme.palette.input.background,
-  },
-  Toolbar: {
-    minHeight: 0,
-  },
-  tab: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 40px',
-    position: 'relative',
-  },
-  tabChip: {
-    border: 'none',
-  },
-  tabIcon: {},
-  leftPanel: {},
-  rightPanel: {
-    borderLeft: '1px solid #ccc',
-  },
-  ioWrapper: {
-    width: '100%',
-  },
-  ioItem: {
-    width: '100%',
-    height: '100%',
-    overflowX: 'hidden',
-  },
-  model: {
-    borderTop: '2px solid #ccc',
-    borderBottom: '2px solid #ccc',
-    backgroundColor: theme.palette.model.background,
-  },
-  input: {
-    backgroundColor: theme.palette.input.background,
-  },
-  output: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.output.background,
-  },
-  verticalHeading: {
-    writingMode: 'vertical-rl',
-    textOrientation: 'upright',
-    // textAlign: 'right',
-    // transform: 'rotate(180deg)',
-    // textAlign: 'center',
-    padding: '10px 5px',
-    // fontWeight: 'bold',
-    letterSpacing: '0.25em',
-    textTransform: 'uppercase',
-    borderRight: '1px solid #ccc',
-  },
-  inputHeading: {
-    backgroundColor: theme.palette.input.main,
-    borderRight: `1px solid ${theme.palette.input.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.input.shadow}`,
-  },
-  modelHeading: {
-    backgroundColor: theme.palette.model.main,
-    borderRight: `1px solid ${theme.palette.model.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.model.shadow}`,
-  },
-  outputHeading: {
-    backgroundColor: theme.palette.output.main,
-    borderRight: `1px solid ${theme.palette.output.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.output.shadow}`,
-  },
-  raxmlHeading: {
-    backgroundColor: theme.palette.raxml.main,
-    // boxShadow: `2px 0 5px ${theme.palette.raxml.shadow}`,
-  },
-  consoleHeading: {
-    backgroundColor: theme.palette.console.main,
-    // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
-    zIndex: 10,
-  },
-  inputContainer: {
-    // backgroundColor: theme.palette.input.dark,
-  },
-  modelContainer: {
-    // backgroundColor: theme.palette.model.dark,
-  },
-  outputContainer: {
-    // backgroundColor: theme.palette.output.dark,
-  },
-  raxml: {
-    backgroundColor: theme.palette.raxml.background,
-  },
-  console: {
-    backgroundColor: theme.palette.console.background,
-    height: '100%',
-    borderTop: '2px solid #ccc',
-  },
-  deleteIcon: {
-    '&:hover': {
-      color: '#999',
-    },
-  },
-  Modal: {
-    margin: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+const VerticalHeading = styled(Typography)(({ theme }) => ({
+  writingMode: 'vertical-rl',
+  textOrientation: 'upright',
+  padding: '10px 5px',
+  letterSpacing: '0.25em',
+  textTransform: 'uppercase',
+  borderRight: '1px solid #ccc',
 }));
 
 const App = () => {
-  const classes = useStyles();
 
   const TabItems = store.runs.map((run) => (
     <Tab
       key={run.id}
       icon={
-        <span className={classes.tab}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 40px',
+            position: 'relative',
+          }}
+        >
           <Chip
-            classes={{ root: classes.tabChip }}
+            sx={{ border: 'none' }}
             icon={
               <CircularProgress
                 color="inherit"
                 size={20}
-                className={classes.tabIcon}
                 variant={run.running ? 'indeterminate' : 'determinate'}
                 value={0}
               />
@@ -216,7 +75,7 @@ const App = () => {
             }}
             variant="outlined"
           />
-        </span>
+        </Box>
       }
     />
   ));
@@ -276,16 +135,33 @@ const App = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className={classes.App}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          backgroundColor: (theme) => theme.palette.primary.background,
+        }}
+      >
         {store.runs.length <= 1 ? null : (
-          <AppBar position="static" elevation={1} className={classes.AppBar}>
+          <AppBar
+            position="static"
+            elevation={1}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              backgroundColor: (theme) => theme.palette.input.background,
+              borderBottom: (theme) =>
+                `1px solid ${theme.palette.status.border}`,
+            }}
+          >
             <Tabs
               value={store.activeIndex}
               onChange={(event, value) => store.setActive(value)}
             >
               {TabItems}
             </Tabs>
-            <Toolbar variant="dense" className={classes.Toolbar}>
+            <Toolbar variant="dense" sx={{ minHeight: 0 }}>
               <IconButton onClick={store.addRun} size="large">
                 <IconAdd />
               </IconButton>
@@ -298,46 +174,92 @@ const App = () => {
             <Box
               display="flex"
               flexDirection="column"
-              className={clsx(classes.ioContainer, classes.leftPanel)}
+              sx={{
+                height: '100%',
+                overflowY: 'auto',
+                paddingBottom: '20px',
+              }}
             >
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.input}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.input.background,
+                }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.inputHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.input.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.input.border}`,
+                  }}
                 >
                   Input
-                </Typography>
-                <div className={clsx(classes.ioItem, classes.inputContainer)}>
+                </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Input run={run} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.model}`}
+                sx={{
+                  width: '100%',
+                  borderTop: '2px solid #ccc',
+                  borderBottom: '2px solid #ccc',
+                  backgroundColor: (theme) => theme.palette.model.background,
+                }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.modelHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.model.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.model.border}`,
+                  }}
                 >
                   Analysis
-                </Typography>
-                <div className={clsx(classes.ioItem, classes.modelContainer)}>
+                </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Model run={run} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.output}`}
+                sx={{
+                  width: '100%',
+                  flexGrow: 1,
+                  backgroundColor: (theme) => theme.palette.output.background,
+                }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.outputHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.output.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.output.border}`,
+                  }}
                 >
                   Output
-                </Typography>
-                <div className={clsx(classes.ioItem, classes.outputContainer)}>
+                </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Output run={run} />
-                </div>
+                </Box>
               </Box>
             </Box>
           </Allotment.Pane>
@@ -346,46 +268,123 @@ const App = () => {
             <Box
               display="flex"
               flexDirection="column"
-              className={clsx(classes.ioContainer, classes.rightPanel)}
+              sx={{
+                height: '100%',
+                overflowY: 'auto',
+                paddingBottom: '20px',
+                borderLeft: '1px solid #ccc'
+              }}
             >
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.raxml}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.raxml.background,
+                }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.raxml.main,
+                  }}
                 >
                   RAxML
-                </Typography>
-                <div className={classes.ioItem}>
+                </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Raxml run={run} store={store} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
-                className={`${classes.ioWrapper} ${classes.console}`}
+                sx={{
+                  width: '100%',
+                  backgroundColor: (theme) => theme.palette.console.background,
+                  height: '100%',
+                  borderTop: '2px solid #ccc',
+                }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.consoleHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.console.main,
+                    zIndex: 10,
+                  }}
                 >
                   Console
                   {run.stdout === '' && run.stderr === '' ? null : (
                     <DeleteIcon
                       onClick={run.clearConsole}
-                      className={classes.deleteIcon}
+                      sx={{
+                        '&:hover': {
+                          color: '#999',
+                        },
+                      }}
                       title="Clear console"
                     />
                   )}
-                </Typography>
-                <div className={classes.ioItem}>
+                </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Console run={run} />
-                </div>
+                </Box>
               </Box>
             </Box>
           </Allotment.Pane>
         </Allotment>
-        <AppBar position="fixed" color="primary" className={classes.statusBar}>
-          <Toolbar className={classes.statusToolbar}>
+        <AppBar
+          position="fixed"
+          color="primary"
+          sx={{
+            top: 'auto',
+            bottom: 0,
+            height: 20,
+            minHeight: 20,
+            width: '100%',
+            margin: 0,
+            padding: 0,
+            backgroundColor: (theme) => theme.palette.status.main,
+            borderTop: (theme) => `1px solid ${theme.palette.status.border}`,
+            color: (theme) => theme.palette.status.contrastText,
+            fontSize: 12,
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: '20px !important',
+              height: '20px !important',
+              margin: 0,
+              padding: '0 8px !important',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              // Override Material-UI's default Toolbar height (64px) and padding (24px) with !important
+              '&.MuiToolbar-root': {
+                minHeight: '20px !important',
+                height: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+              '& .MuiToolbar-regular': {
+                minHeight: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+              '& .MuiToolbar-dense': {
+                minHeight: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+            }}
+          >
             <IconButton
               onClick={() => store.config.setDarkMode(!store.config.isDarkMode)}
               size="small"
@@ -404,27 +403,36 @@ const App = () => {
             </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
-              <div className={classes.statusVersion}>
+              <Box sx={{ marginRight: '20px' }}>
                 raxmlGUI {store.version}
-              </div>
-              <div className={classes.statusVersion}>
+              </Box>
+              <Box sx={{ marginRight: '20px' }}>
                 {binary.value} {binary.version}
-              </div>
+              </Box>
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Box display="flex">
-              <span
-                className={classes.statusCite}
+              <Box
+                component="span"
+                sx={{
+                  color: (theme) => theme.palette.status.contrastText,
+                  cursor: 'pointer',
+                  marginLeft: '20px',
+                }}
                 onClick={store.citation.show}
               >
                 How to cite?
-              </span>
-              <a
-                className={classes.statusFeedback}
+              </Box>
+              <Box
+                component="a"
                 href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
+                sx={{
+                  color: (theme) => theme.palette.status.contrastText,
+                  marginLeft: '20px',
+                }}
               >
                 For questions or suggestions contact us!
-              </a>
+              </Box>
             </Box>
           </Toolbar>
         </AppBar>
@@ -463,7 +471,12 @@ const App = () => {
             aria-labelledby="show-partition"
             open={true}
             onClose={run.hidePartition}
-            className={classes.Modal}
+            sx={{
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <div id="show-partition">
               <PartitionEditor alignment={run.showPartitionFor} />
@@ -475,7 +488,12 @@ const App = () => {
             aria-labelledby="show-citation"
             open={true}
             onClose={store.citation.hide}
-            className={classes.Modal}
+            sx={{
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <div id="show-citation">
               <CitationModal citation={store.citation} />
@@ -483,7 +501,7 @@ const App = () => {
           </Modal>
         ) : null}
         <ErrorDialog error={store.error} onClose={store.clearError} />
-      </div>
+      </Box>
     </React.Fragment>
   );
 };

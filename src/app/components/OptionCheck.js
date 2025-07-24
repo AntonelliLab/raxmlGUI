@@ -6,14 +6,13 @@ import Checkbox from '@mui/material/Checkbox';
 import { FormControl } from '@mui/material';
 
 
-const OptionCheck = observer(({ option, className }) => {
+const OptionCheck = observer(({ option, sx }) => {
   if (option.notAvailable) {
     return null;
   }
   return (
-    <FormControl variant="standard" title={option.hoverInfo}>
+    <FormControl variant="standard" sx={sx} title={option.hoverInfo}>
       <FormControlLabel
-        className={className}
         control={
           <Checkbox
             checked={option.value}
@@ -30,7 +29,7 @@ const OptionCheck = observer(({ option, className }) => {
 
 OptionCheck.propTypes = {
   option: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 export default OptionCheck;

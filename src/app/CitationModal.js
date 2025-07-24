@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -13,31 +12,25 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import CodeHighlight from './components/CodeHighlight';
 
-const useStyles = makeStyles(theme => ({
-  CitationModal: {
-    backgroundColor: theme.palette.output.background,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    maxWidth: '700px'
-  },
-  content: {
-    maxHeight: '600px',
-    overflowY: 'auto'
-  },
-  code: {
-    backgroundColor: theme.palette.console.background,
-    borderRadius: '4px',
-    padding: '4px'
-  }
-}));
-
 function CitationModal({ citation }) {
-  const classes = useStyles();
 
   return (
-    <Card className={classes.CitationModal} elevation={0}>
-      <CardContent className={classes.content}>
+    <Card
+      elevation={0}
+      sx={{
+        backgroundColor: (theme) => theme.palette.output.background,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        maxWidth: '700px'
+      }}
+    >
+      <CardContent
+        sx={{
+          maxHeight: '600px',
+          overflowY: 'auto'
+        }}
+      >
         <Typography variant="h4">How to cite?</Typography>
         <Box>
           Please include the following references in your preferred format:
@@ -67,19 +60,23 @@ function CitationModal({ citation }) {
             <CodeHighlight
               code={article[citation.format]}
               language={citation.format}
-              className={classes.code}
+              sx={{
+                backgroundColor: (theme) => theme.palette.output.background,
+                borderRadius: '4px',
+                padding: '4px'
+              }}
             />
           </Box>
         ))}
       </CardContent>
-      <CardActions style={{ width: '100%' }}>
+      <CardActions sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" sx={{ width: '100%' }}>
           <Button
             aria-label="Copy to clipboard"
             variant="contained"
             color="secondary"
             onClick={citation.copyToClipboard}
-            style={{ marginRight: 10 }}
+            sx={{ marginRight: 10 }}
           >
             Copy to clipboard
           </Button>

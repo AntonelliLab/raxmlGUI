@@ -1,11 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles, withStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import classNames from 'classnames';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Switch from '@mui/material/Switch';
@@ -23,132 +21,21 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
-const InputSwitch = withStyles((theme) => ({
-  switchBase: {
-    color: theme.palette.input.secondaryText,
-    '&.Mui-checked': {
-      color: theme.palette.input.dark,
-    },
-    '&.Mui-checked + .Mui-track': {
-      backgroundColor: theme.palette.input.dark,
-    },
-  },
-  checked: {},
-  track: {},
-}))(Switch);
-
-// const useStyles = makeStyles(theme => ({
-const useStyles = makeStyles((theme) => {
-  return {
-    AlignmentCard: {
-      backgroundColor: theme.palette.input.light,
-      border: `1px solid ${theme.palette.input.border}`,
-    },
-    cardHeaderRoot: {
-      overflow: "hidden"
-    },
-    cardHeaderContent: {
-      overflow: "hidden"
-    },
-    heading: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    content: {
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '-10px',
-    },
-    name: {
-      marginRight: theme.spacing(1),
-    },
-    chip: {
-      height: '30px',
-      color: theme.palette.input.contrastText,
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-    },
-    link: {
-      cursor: 'pointer',
-      color: theme.palette.secondary.main,
-    },
-    secondaryText: {
-      color: theme.palette.primary.secondaryText,
-    },
-    divider: {
-      margin: '0 4px',
-    },
-    fileInfo: {
-      color: '#ccc',
-      fontSize: '0.75em',
-      marginTop: '0.25em',
-      overflowWrap: 'break-word',
-    },
-    partitionFileContainer: {
-      overflowY: 'auto',
-      height: 50,
-    },
-    partitionFileContent: {
-      color: theme.palette.primary.contrastText,
-      fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-      fontSize: '10px',
-      height: '100%',
-      overflowWrap: 'break-word',
-      whiteSpace: 'pre-wrap',
-    },
-    path: {
-      cursor: 'pointer',
-      color: theme.palette.secondary.main,
-      marginLeft: 4,
-    },
-    button: {
-      margin: theme.spacing(1),
-    },
-    primaryButton: {
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-      color: theme.palette.input.contrastText,
-      '&:hover': {
-        backgroundColor: theme.palette.input.main,
-      },
-    },
-    rightIcon: {
-      marginLeft: theme.spacing(1),
-    },
-    iconSmall: {
-      fontSize: 20,
-    },
-    outputButton: {
-      marginLeft: theme.spacing(1),
-    },
-    loading: {
-      marginLeft: '10px',
-    },
-    remove: {
-      flexGrow: 1,
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-    select: {
-      marginLeft: '10px',
-      minWidth: '150px',
-    },
-    selectWide: {
-      marginLeft: '10px',
-      minWidth: '200px',
-    },
-  };
-});
-
 function _ModelTestButton({ alignment }) {
-  const classes = useStyles();
   if (!alignment.modelTestCanRun) {
     return null;
   }
   return (
     <Button
-      style={{ marginLeft: 10 }}
-      className={classes.primaryButton}
+      sx={{
+        marginLeft: '10px',
+        backgroundColor: (theme) => theme.palette.input.main,
+        border: (theme) => `1px solid ${theme.palette.input.darker}`,
+        color: (theme) => theme.palette.input.contrastText,
+        '&:hover': {
+          backgroundColor: (theme) => theme.palette.input.main,
+        },
+      }}
       variant="contained"
       loading={alignment.modeltestLoading}
       loadingPosition="end"
@@ -165,10 +52,9 @@ _ModelTestButton.propTypes = {
 
 const ModelTestButton = observer(_ModelTestButton);
 
-function AlignmentCard({ className, alignment }) {
+function AlignmentCard({ alignment }) {
   const { dataType, numSequences, length } = alignment;
 
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -187,49 +73,87 @@ function AlignmentCard({ className, alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       {numSequences} sequences of length {length}
-    </span>
+    </Box>
   ) : (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </span>
+    </Box>
   );
 
   const Type = dataType ? (
-    <Chip classes={{ root: classes.chip }} label={dataType} />
+    <Chip
+      sx={{
+        height: '30px',
+        color: (theme) => theme.palette.input.contrastText,
+        backgroundColor: (theme) => theme.palette.input.main,
+        border: (theme) => `1px solid ${theme.palette.input.darker}`,
+      }}
+      label={dataType}
+    />
   ) : (
     <CircularProgress variant="indeterminate" size={20} />
   );
 
   const Content = (
-    <div className={classes.content}>
-      <div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '-10px',
+      }}
+    >
+      <Box>
         {alignment.run.usesRaxmlNg ? (
           <Box display="flex">
             <Box display="flex" flexWrap="wrap" alignItems="center">
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.substitutionModel}
               />
               <OptionTextField
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.multistateNumber}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngStationaryFrequencies}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngInvariantSites}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngRateHeterogeneity}
               />
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={alignment.ngAscertainmentBias}
               />
               <ModelTestButton alignment={alignment} />
@@ -239,7 +163,10 @@ function AlignmentCard({ className, alignment }) {
           <Box display="flex" flexWrap="wrap" alignItems="center">
             {alignment.modelExtra ? (
               <OptionSelect
-                className={classes.select}
+                sx={{
+                  marginLeft: '10px',
+                  minWidth: '150px',
+                }}
                 option={{
                   ...alignment.modelExtra,
                   setValue: alignment.modelExtra.onChange,
@@ -256,16 +183,25 @@ function AlignmentCard({ className, alignment }) {
             <ModelTestButton alignment={alignment} />
           </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        width: '550px',
+        height: '200px',
+      }}
+    >
       <CardHeader
-        classes={{
-          root: classes.cardHeaderRoot,
-          content: classes.cardHeaderContent,
+        sx={{
+          overflow: 'hidden',
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden',
+          },
         }}
         avatar={Type}
         action={
@@ -316,13 +252,13 @@ function AlignmentCard({ className, alignment }) {
         title={alignment.filename}
         subheader={Size}
       />
-      <div>
+      <Box>
         {alignment.loading ? (
-          <div className={classes.loading}>
+          <Box sx={{ marginLeft: '10px' }}>
             <CircularProgress variant="indeterminate" />
-          </div>
+          </Box>
         ) : null}
-      </div>
+      </Box>
       <CardContent>{Content}</CardContent>
       <CardActions>
         {alignment.partition.isComplete || alignment.showPartition ? null : (
@@ -342,8 +278,7 @@ function AlignmentCard({ className, alignment }) {
   );
 }
 
-function FinalAlignmentCard({ className, alignment }) {
-  const classes = useStyles();
+function FinalAlignmentCard({ sx, alignment }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -362,23 +297,40 @@ function FinalAlignmentCard({ className, alignment }) {
   }
 
   const Size = alignment.parsingComplete ? (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       {alignment.numSequences} sequences of length {alignment.length} from{' '}
       {alignment.numAlignments} alignment
       {alignment.numAlignments > 1 ? 's' : ''}
-    </span>
+    </Box>
   ) : (
-    <span className={classes.secondaryText}>
+    <Box
+      component="span"
+      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+    >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </span>
+    </Box>
   );
 
   return (
-    <Card className={classNames(className, classes.AlignmentCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        ...sx,
+      }}
+    >
       <CardHeader
         avatar={
           <Chip
-            className={classes.chip}
+            sx={{
+              height: '30px',
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+            }}
             label={alignment.dataType}
             color="secondary"
           />
@@ -419,7 +371,7 @@ function FinalAlignmentCard({ className, alignment }) {
         <FormControlLabel
           title="Use union (on) or intersection (off) of taxons from all alignments"
           control={
-            <InputSwitch
+            <Switch
               checked={alignment.fillTaxonGapsWithEmptySeqeunces}
               onChange={(event) => {
                 alignment.setFillTaxonGapsWithEmptySeqeunces(
@@ -427,6 +379,14 @@ function FinalAlignmentCard({ className, alignment }) {
                 );
               }}
               value="fillTaxonGapsWithEmptySeqeunces"
+              sx={{
+                '& .MuiSwitch-switchBase': {
+                  color: (theme) => theme.palette.input.secondaryText,
+                  '&.Mui-checked': {
+                    color: (theme) => theme.palette.input.dark,
+                  },
+                },
+              }}
             />
           }
           label={
@@ -435,11 +395,26 @@ function FinalAlignmentCard({ className, alignment }) {
             </Typography>
           }
         />
-        <div className={classes.partitionFileContainer}>
-          <code className={classes.partitionFileContent}>
+        <Box
+          sx={{
+            overflowY: 'auto',
+            height: 50,
+          }}
+        >
+          <Box
+            component="code"
+            sx={{
+              color: (theme) => theme.palette.primary.contrastText,
+              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontSize: '10px',
+              height: '100%',
+              overflowWrap: 'break-word',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
             {alignment.partition.text}
-          </code>
-        </div>
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -448,12 +423,11 @@ function FinalAlignmentCard({ className, alignment }) {
 
 AlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
 };
 
 FinalAlignmentCard.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 const AlignmentCardObserver = observer(AlignmentCard);

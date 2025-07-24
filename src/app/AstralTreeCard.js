@@ -1,11 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import classNames from 'classnames';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
@@ -17,37 +15,9 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
-// const useStyles = makeStyles(theme => ({
-const useStyles = makeStyles((theme) => {
-  return {
-    AstralTreeCard: {
-      backgroundColor: theme.palette.input.light,
-      border: `1px solid ${theme.palette.input.border}`,
-    },
-    cardHeaderRoot: {
-      overflow: "hidden"
-    },
-    cardHeaderContent: {
-      overflow: "hidden"
-    },
-    content: {
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '-10px',
-    },
-    chip: {
-      height: '30px',
-      color: theme.palette.input.contrastText,
-      backgroundColor: theme.palette.input.main,
-      border: `1px solid ${theme.palette.input.darker}`,
-    },
-  };
-});
-
-function AstralTreeCard({ className, astralTree }) {
+function AstralTreeCard({ astralTree }) {
   const { } = astralTree;
 
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -66,25 +36,45 @@ function AstralTreeCard({ className, astralTree }) {
   }
 
   const Content = (
-    <div className={classes.content}>
-      <div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '-10px',
+      }}
+    >
+      <Box>
         <Box display="flex" flexWrap="wrap" alignItems="center">
 
         </Box>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   return (
-    <Card className={classNames(className, classes.AstralTreeCard)}>
+    <Card
+      sx={{
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        width: '550px',
+        height: '200px',
+      }}
+    >
       <CardHeader
-        classes={{
-          root: classes.cardHeaderRoot,
-          content: classes.cardHeaderContent,
+        sx={{
+          overflow: 'hidden',
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden',
+          },
         }}
         avatar={
           <Chip
-            className={classes.chip}
+            sx={{
+              height: '30px',
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+            }}
             label={"trees"}
             color="secondary"
           />
@@ -135,7 +125,6 @@ function AstralTreeCard({ className, astralTree }) {
 
 AstralTreeCard.propTypes = {
   astralTree: PropTypes.object.isRequired,
-  className: PropTypes.string,
 };
 
 const AstralTreeCardObserver = observer(AstralTreeCard);

@@ -3,7 +3,6 @@ import { clipboard } from 'electron';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
-import { withStyles } from '@mui/styles';
 import OptionSelect from './components/OptionSelect';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -11,41 +10,6 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
-
-const styles = (theme) => ({
-  Raxml: {
-    padding: '10px',
-    width: '100%',
-    flexShrink: 0,
-  },
-  form: {
-    // '& > *:not(:first-child)': {
-    '& > *+*': {
-      marginLeft: '20px',
-    },
-  },
-  formItem: {
-    // marginRight: '20px',
-  },
-  button: {
-    marginRight: theme.spacing(1),
-  },
-  run: {
-    marginTop: '20px',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  code: {
-    color: theme.palette.console.contrastText,
-    fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-    fontSize: '12px',
-    height: '100%',
-    width: '100%',
-    // overflowWrap: 'anywhere', // currently not available in Chrome
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all',
-  },
-});
 
 @observer
 class Raxml extends React.Component {
@@ -56,22 +20,30 @@ class Raxml extends React.Component {
   };
 
   render() {
-    const { classes, run } = this.props;
+    const { run } = this.props;
 
     return (
-      <div className={classes.Raxml}>
+      <Box
+        sx={{
+          padding: '10px',
+          width: '100%',
+          flexShrink: 0,
+        }}
+      >
         <Box
           component="form"
           mt={1}
           mb={2}
           display="flex"
-          className={classes.form}
           noValidate
           autoComplete="off"
           alignItems="center"
+          sx={{
+            gap: '20px',
+          }}
         >
-          <OptionSelect className={classes.formItem} option={run.binary} />
-          <OptionSelect className={classes.formItem} option={run.numThreads} />
+          <OptionSelect option={run.binary} />
+          <OptionSelect option={run.numThreads} />
           {run.modelTestIsRunningOnAlignment ? (
             <Button
               size="small"
@@ -82,7 +54,7 @@ class Raxml extends React.Component {
             </Button>
           ) : null}
           {run.running ? (
-            <Button size="small" variant="outlined" onClick={run.cancel}>
+            <Button variant="outlined" onClick={run.cancel}>
               Cancel
             </Button>
           ) : null}
@@ -113,14 +85,13 @@ class Raxml extends React.Component {
           </Box>
           <FormHelperText>Command</FormHelperText>
         </Box>
-      </div>
+      </Box>
     );
   }
 }
 
 Raxml.propTypes = {
-  classes: PropTypes.object.isRequired,
   run: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Raxml);
+export default Raxml;

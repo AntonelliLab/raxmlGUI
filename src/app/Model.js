@@ -1,59 +1,63 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import Box from '@mui/material/Box';
 import OptionSelect from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles(theme => ({
-  Model: {
-    padding: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  form: {
-    '& > *': {
-      marginRight: '10px',
-    }
-  },
-}));
-
 const Model = ({ run }) => {
-
-  const classes = useStyles();
 
   // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top
   if (run.usesModeltestNg) {
     return (
-      <div className={classes.Model}>
+      <Box
+        sx={{
+          padding: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Typography variant="body1">
           Select the best-fit model of evolution for a single DNA or protein
           alignment
         </Typography>
-      </div>
+      </Box>
     );
   }
   if (run.usesAstral) {
     return (
-      <div className={classes.Model}>
+      <Box
+        sx={{
+          padding: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Typography variant="body1">
           Calculate species tree from a set of gene trees
         </Typography>
-      </div>
+      </Box>
     );
   }
   return (
-    <div className={classes.Model}>
+    <Box
+      sx={{
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Box
         component="form"
         mt={1}
         mb={2}
         display="flex"
         alignItems="start"
-        className={classes.form}
+        sx={{
+          gap: '10px',
+        }}
         noValidate
         autoComplete="off"
       >
@@ -72,7 +76,9 @@ const Model = ({ run }) => {
         mb={2}
         display="flex"
         alignItems="start"
-        className={classes.form}
+        sx={{
+          gap: '10px',
+        }}
         noValidate
         autoComplete="off"
       >
@@ -82,7 +88,7 @@ const Model = ({ run }) => {
             variant="standard"
             helperText="Seed"
             title="Random seed"
-            style={{ width: 60 }}
+            sx={{ width: 60 }}
             value={run.randomSeed}
             onChange={(e) => run.setRandomSeed(e.target.value)} />
         ) : null}
@@ -93,7 +99,9 @@ const Model = ({ run }) => {
         mb={2}
         display="flex"
         alignItems="start"
-        className={classes.form}
+        sx={{
+          gap: '10px',
+        }}
         noValidate
         autoComplete="off"
       >
@@ -106,7 +114,9 @@ const Model = ({ run }) => {
         mb={2}
         display="flex"
         alignItems="start"
-        className={classes.form}
+        sx={{
+          gap: '10px',
+        }}
         noValidate
         autoComplete="off"
       >
@@ -116,7 +126,7 @@ const Model = ({ run }) => {
         <OptionCheck option={run.estimatedFrequencies} />
         <OptionSelect option={run.baseFrequencies} />
       </Box>
-    </div>
+    </Box>
   );
 };
 

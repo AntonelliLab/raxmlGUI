@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 
-const OptionTextField = observer(({ option, className }) => {
+const OptionTextField = observer(({ option, sx }) => {
   if (option.notAvailable) {
     return null;
   }
@@ -14,7 +14,7 @@ const OptionTextField = observer(({ option, className }) => {
       helperText={option.title}
       title={option.hoverInfo}
       disabled={option.disabled}
-      className={className}
+      sx={sx}
       value={option.value}
       placeholder={option.placeholder}
       onChange={(e) => option.setValue(e.target.value)}
@@ -24,7 +24,7 @@ const OptionTextField = observer(({ option, className }) => {
 
 OptionTextField.propTypes = {
   option: PropTypes.object.isRequired,
-  className: PropTypes.string,
+  sx: PropTypes.object,
 };
 
 export default OptionTextField;
