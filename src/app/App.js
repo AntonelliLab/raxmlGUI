@@ -105,6 +105,13 @@ const useStyles = makeStyles(theme => ({
   outputContainer: {
     // backgroundColor: theme.palette.output.dark,
   },
+const VerticalHeading = styled(Typography)(({ theme }) => ({
+  writingMode: 'vertical-rl',
+  textOrientation: 'upright',
+  padding: '10px 5px',
+  letterSpacing: '0.25em',
+  textTransform: 'uppercase',
+  borderRight: '1px solid #ccc',
 }));
 
 const App = () => {
@@ -238,12 +245,16 @@ const App = () => {
                   backgroundColor: (theme) => theme.palette.input.background,
                 }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.inputHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.input.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.input.border}`,
+                  }}
                 >
                   Input
-                </Typography>
                 <div className={clsx(classes.ioItem, classes.inputContainer)}>
+                </VerticalHeading>
                   <Input run={run} />
                 </div>
               </Box>
@@ -256,12 +267,16 @@ const App = () => {
                   backgroundColor: (theme) => theme.palette.model.background,
                 }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.modelHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.model.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.model.border}`,
+                  }}
                 >
                   Analysis
-                </Typography>
                 <div className={clsx(classes.ioItem, classes.modelContainer)}>
+                </VerticalHeading>
                   <Model run={run} />
                 </div>
               </Box>
@@ -273,12 +288,16 @@ const App = () => {
                   backgroundColor: (theme) => theme.palette.output.background,
                 }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.outputHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.output.main,
+                    borderRight: (theme) =>
+                      `1px solid ${theme.palette.output.border}`,
+                  }}
                 >
                   Output
-                </Typography>
                 <div className={clsx(classes.ioItem, classes.outputContainer)}>
+                </VerticalHeading>
                   <Output run={run} />
                 </div>
               </Box>
@@ -298,12 +317,14 @@ const App = () => {
                   backgroundColor: (theme) => theme.palette.raxml.background,
                 }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.raxmlHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.raxml.main,
+                  }}
                 >
                   RAxML
-                </Typography>
                 <div className={classes.ioItem}>
+                </VerticalHeading>
                   <Raxml run={run} store={store} />
                 </div>
               </Box>
@@ -316,8 +337,11 @@ const App = () => {
                   borderTop: '2px solid #ccc',
                 }}
               >
-                <Typography
-                  className={`${classes.verticalHeading} ${classes.consoleHeading}`}
+                <VerticalHeading
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.console.main,
+                    zIndex: 10,
+                  }}
                 >
                   Console
                   {run.stdout === '' && run.stderr === '' ? null : (
@@ -331,8 +355,8 @@ const App = () => {
                       title="Clear console"
                     />
                   )}
-                </Typography>
                 <div className={classes.ioItem}>
+                </VerticalHeading>
                   <Console run={run} />
                 </div>
               </Box>
