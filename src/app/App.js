@@ -50,11 +50,6 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     paddingBottom: '20px',
   },
-  AppBar: {
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: theme.palette.input.background,
-  },
   tab: {
     display: 'flex',
     alignItems: 'center',
@@ -210,7 +205,16 @@ const App = () => {
       <CssBaseline />
       <div className={classes.App}>
         {store.runs.length <= 1 ? null : (
-          <AppBar position="static" elevation={1} className={classes.AppBar}>
+          <AppBar
+            position="static"
+            elevation={1}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              backgroundColor: (theme) => theme.palette.input.background,
+              borderBottom: (theme) => `1px solid ${theme.palette.status.border}`,
+            }}
+          >
             <Tabs
               value={store.activeIndex}
               onChange={(event, value) => store.setActive(value)}
