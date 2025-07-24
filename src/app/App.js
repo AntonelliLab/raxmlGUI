@@ -50,27 +50,6 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     paddingBottom: '20px',
   },
-  statusBar: {
-    top: 'auto',
-    bottom: 0,
-    height: 20,
-    minHeight: 20,
-    width: '100%',
-    margin: 0,
-    padding: 0,
-    backgroundColor: theme.palette.status.main,
-    borderTop: `1px solid ${theme.palette.status.border}`,
-    color: theme.palette.status.contrastText,
-    fontSize: 12,
-  },
-  statusToolbar: {
-    minHeight: 20,
-    margin: 0,
-    padding: '0 8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   statusFeedback: {
     color: theme.palette.status.contrastText,
     marginLeft: 20,
@@ -375,8 +354,51 @@ const App = () => {
             </Box>
           </Allotment.Pane>
         </Allotment>
-        <AppBar position="fixed" color="primary" className={classes.statusBar}>
-          <Toolbar className={classes.statusToolbar}>
+        <AppBar
+          position="fixed"
+          color="primary"
+          sx={{
+            top: 'auto',
+            bottom: 0,
+            height: 20,
+            minHeight: 20,
+            width: '100%',
+            margin: 0,
+            padding: 0,
+            backgroundColor: (theme) => theme.palette.status.main,
+            borderTop: (theme) => `1px solid ${theme.palette.status.border}`,
+            color: (theme) => theme.palette.status.contrastText,
+            fontSize: 12,
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: '20px !important',
+              height: '20px !important',
+              margin: 0,
+              padding: '0 8px !important',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              // Override Material-UI's default Toolbar height (64px) and padding (24px) with !important
+              '&.MuiToolbar-root': {
+                minHeight: '20px !important',
+                height: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+              '& .MuiToolbar-regular': {
+                minHeight: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+              '& .MuiToolbar-dense': {
+                minHeight: '20px !important',
+                paddingLeft: '8px !important',
+                paddingRight: '8px !important',
+              },
+            }}
+          >
             <IconButton
               onClick={() => store.config.setDarkMode(!store.config.isDarkMode)}
               size="small"
