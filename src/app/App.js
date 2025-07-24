@@ -74,9 +74,6 @@ const useStyles = makeStyles(theme => ({
     // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
     zIndex: 10,
   },
-  modelContainer: {
-    // backgroundColor: theme.palette.model.dark,
-  },
   outputContainer: {
     // backgroundColor: theme.palette.output.dark,
   },
@@ -269,10 +266,16 @@ const App = () => {
                   }}
                 >
                   Analysis
-                <div className={clsx(classes.ioItem, classes.modelContainer)}>
                 </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Model run={run} />
-                </div>
+                </Box>
               </Box>
               <Box
                 display="flex"
