@@ -1,9 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import clsx from 'clsx';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
@@ -37,43 +36,6 @@ import ModifiedDialog from './components/ModifiedDialog';
 
 import './App.css';
 
-const useStyles = makeStyles(theme => ({
-  verticalHeading: {
-    writingMode: 'vertical-rl',
-    textOrientation: 'upright',
-    // textAlign: 'right',
-    // transform: 'rotate(180deg)',
-    // textAlign: 'center',
-    padding: '10px 5px',
-    // fontWeight: 'bold',
-    letterSpacing: '0.25em',
-    textTransform: 'uppercase',
-    borderRight: '1px solid #ccc',
-  },
-  inputHeading: {
-    backgroundColor: theme.palette.input.main,
-    borderRight: `1px solid ${theme.palette.input.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.input.shadow}`,
-  },
-  modelHeading: {
-    backgroundColor: theme.palette.model.main,
-    borderRight: `1px solid ${theme.palette.model.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.model.shadow}`,
-  },
-  outputHeading: {
-    backgroundColor: theme.palette.output.main,
-    borderRight: `1px solid ${theme.palette.output.border}`,
-    // boxShadow: `2px 0 5px ${theme.palette.output.shadow}`,
-  },
-  raxmlHeading: {
-    backgroundColor: theme.palette.raxml.main,
-    // boxShadow: `2px 0 5px ${theme.palette.raxml.shadow}`,
-  },
-  consoleHeading: {
-    backgroundColor: theme.palette.console.main,
-    // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
-    zIndex: 10,
-  },
 // Styled components for main layout
 const VerticalHeading = styled(Typography)(({ theme }) => ({
   writingMode: 'vertical-rl',
@@ -85,7 +47,6 @@ const VerticalHeading = styled(Typography)(({ theme }) => ({
 }));
 
 const App = () => {
-  const classes = useStyles();
 
   const TabItems = store.runs.map((run) => (
     <Tab
