@@ -74,9 +74,6 @@ const useStyles = makeStyles(theme => ({
     // boxShadow: `2px 0 5px ${theme.palette.console.shadow}`,
     zIndex: 10,
   },
-  outputContainer: {
-    // backgroundColor: theme.palette.output.dark,
-  },
 // Styled components for main layout
 const VerticalHeading = styled(Typography)(({ theme }) => ({
   writingMode: 'vertical-rl',
@@ -293,10 +290,16 @@ const App = () => {
                   }}
                 >
                   Output
-                <div className={clsx(classes.ioItem, classes.outputContainer)}>
                 </VerticalHeading>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowX: 'hidden',
+                  }}
+                >
                   <Output run={run} />
-                </div>
+                </Box>
               </Box>
             </Box>
           </Allotment.Pane>
