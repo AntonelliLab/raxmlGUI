@@ -13,6 +13,7 @@ const Console = ({ run }) => {
     stdoutContainerRef.current.scrollTop = diff;
   }, []);
 
+  // Every time the component updates, scroll to the bottom
   useEffect(() => {
     scrollConsoleToBottom();
   });
