@@ -40,10 +40,9 @@ const Console = observer(({ run }) => {
           position: 'relative',
         }}
       >
-        <div>
-        </div>
       </Box>
   return (
+      <div>
         {run.stdout && (
           <Box
             component="code"
@@ -78,6 +77,7 @@ const Console = observer(({ run }) => {
             {run.stderr}
           </Box>
         )}
+      </div>
   );
 });
 
