@@ -1,15 +1,11 @@
-import React from 'react';
-import { observer } from 'mobx-react';
+import React, { useRef, useEffect, useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 
-@observer
-class Console extends React.Component {
-  keepToBottom = true;
+const Console = observer(({ run }) => {
+  const stdoutContainerRef = useRef(null);
 
-  onMountStdoutContainer = el => {
-    this.stdoutContainer = el;
-  };
 
   componentDidUpdate() {
     if (this.keepToBottom) {
@@ -30,7 +26,6 @@ class Console extends React.Component {
     this.stdoutContainer.scrollTop = diff;
   };
 
-  render() {
     const { run } = this.props;
     return (
       <Box
@@ -82,9 +77,9 @@ class Console extends React.Component {
           )}
         </div>
       </Box>
-    );
-  }
-}
+  return (
+  );
+});
 
 Console.propTypes = {
   run: PropTypes.object.isRequired
