@@ -26,8 +26,6 @@ const Console = observer(({ run }) => {
     this.stdoutContainer.scrollTop = diff;
   };
 
-    const { run } = this.props;
-    return (
   return (
     <Box
       ref={stdoutContainerRef}
