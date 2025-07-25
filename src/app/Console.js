@@ -6,13 +6,6 @@ import Box from '@mui/material/Box';
 const Console = observer(({ run }) => {
   const stdoutContainerRef = useRef(null);
 
-
-  componentDidUpdate() {
-    if (this.keepToBottom) {
-      this.scrollConsoleToBottom();
-    }
-  }
-
   const scrollConsoleToBottom = useCallback(() => {
     if (!stdoutContainerRef.current) return;
     const { scrollHeight, clientHeight } = stdoutContainerRef.current;
@@ -20,6 +13,9 @@ const Console = observer(({ run }) => {
     stdoutContainerRef.current.scrollTop = diff;
   }, []);
 
+  useEffect(() => {
+    scrollConsoleToBottom();
+  }); // No dependency array = runs after every render (like componentDidUpdate)
   return (
     <Box
       ref={stdoutContainerRef}
