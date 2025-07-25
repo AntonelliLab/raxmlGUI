@@ -77,7 +77,6 @@
     "filenamify": "^4.3.0",
     "lodash": "^4.17.21",
     "mobx": "^5.15.7",
-    "mobx-react": "^6.3.1",
     "mobx-react-lite": "^2.2.2",
     "mobx-utils": "^5.6.2",
     "parse-filepath": "^1.0.2",
