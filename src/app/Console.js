@@ -13,13 +13,6 @@ const Console = observer(({ run }) => {
     }
   }
 
-  isAtBottom = () => {
-    const { scrollTop, scrollHeight, clientHeight } = this.stdoutContainer;
-    const diff = scrollHeight - clientHeight;
-    const scrollIsAtBottom = scrollTop === diff;
-    return scrollIsAtBottom;
-  };
-
   const scrollConsoleToBottom = useCallback(() => {
     if (!stdoutContainerRef.current) return;
     const { scrollHeight, clientHeight } = stdoutContainerRef.current;
