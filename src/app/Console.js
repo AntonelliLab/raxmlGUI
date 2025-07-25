@@ -15,7 +15,8 @@ const Console = observer(({ run }) => {
 
   useEffect(() => {
     scrollConsoleToBottom();
-  }); // No dependency array = runs after every render (like componentDidUpdate)
+  });
+
   return (
     <Box
       ref={stdoutContainerRef}
