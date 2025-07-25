@@ -58,26 +58,26 @@ const Console = observer(({ run }) => {
               {run.stdout}
             </Box>
           )}
-          {run.stderr && (
-            <Box
-              component="code"
-              sx={{
-                color: (theme) => theme.palette.console.contrastText,
-                fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
-                fontSize: '12px',
-                height: '100%',
-                position: 'absolute',
-                width: '100%',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
-              }}
-            >
-              {run.stderr}
-            </Box>
-          )}
         </div>
       </Box>
   return (
+        {run.stderr && (
+          <Box
+            component="code"
+            sx={{
+              color: (theme) => theme.palette.console.contrastText,
+              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontSize: '12px',
+              height: '100%',
+              position: 'absolute',
+              width: '100%',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-all',
+            }}
+          >
+            {run.stderr}
+          </Box>
+        )}
   );
 });
 
