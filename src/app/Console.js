@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 
-const Console = observer(({ run }) => {
+const Console = ({ run }) => {
   const stdoutContainerRef = useRef(null);
 
   const scrollConsoleToBottom = useCallback(() => {
@@ -68,10 +68,10 @@ const Console = observer(({ run }) => {
       </div>
     </Box>
   );
-});
+};
 
 Console.propTypes = {
   run: PropTypes.object.isRequired
 };
 
-export default Console;
+export default observer(Console);
