@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Chip from '@mui/material/Chip';

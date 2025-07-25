@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { clipboard } from 'electron';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import OptionSelect from './components/OptionSelect';
@@ -11,16 +11,11 @@ import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
 
-@observer
-class Raxml extends React.Component {
-  copyCommand = () => {
-    const { run, store } = this.props;
+const Raxml = ({ run, store }) => {
+  const copyCommand = useCallback(() => {
     clipboard.writeText(run.command);
     store.setAppSnack();
-  };
-
-  render() {
-    const { run } = this.props;
+  }, [run.command, store]);
 
     return (
       <Box
@@ -75,7 +70,7 @@ class Raxml extends React.Component {
             <Tooltip aria-label="copy-command" title="Copy command">
               <IconButton
                 style={{ position: 'absolute', right: 0 }}
-                onClick={this.copyCommand}
+                onClick={copyCommand}
                 size="large"
               >
                 <FileCopyIcon />
@@ -87,11 +82,11 @@ class Raxml extends React.Component {
         </Box>
       </Box>
     );
-  }
-}
+};
 
 Raxml.propTypes = {
   run: PropTypes.object.isRequired,
+  store: PropTypes.object.isRequired,
 };
 
-export default Raxml;
+export default observer(Raxml);

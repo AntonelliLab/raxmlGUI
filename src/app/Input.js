@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
@@ -256,9 +256,6 @@ const Input = ({ run }) => {
     </Box>
   );
 };
-// <Box mt={1} display="flex">
-// { run.ok ? null : run.missing }
-// </Box>
 
 Input.propTypes = {
   run: PropTypes.object.isRequired,
