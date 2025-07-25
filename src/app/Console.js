@@ -20,11 +20,12 @@ const Console = observer(({ run }) => {
     return scrollIsAtBottom;
   };
 
-  scrollConsoleToBottom = () => {
-    const { scrollHeight, clientHeight } = this.stdoutContainer;
+  const scrollConsoleToBottom = useCallback(() => {
+    if (!stdoutContainerRef.current) return;
+    const { scrollHeight, clientHeight } = stdoutContainerRef.current;
     const diff = scrollHeight - clientHeight;
-    this.stdoutContainer.scrollTop = diff;
-  };
+    stdoutContainerRef.current.scrollTop = diff;
+  }, []);
 
   return (
     <Box
