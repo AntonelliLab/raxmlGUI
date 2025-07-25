@@ -28,20 +28,19 @@ const Console = observer(({ run }) => {
 
     const { run } = this.props;
     return (
-      <Box
-        ref={this.onMountStdoutContainer}
-        sx={{
-          color: (theme) => theme.palette.console.contrastText,
-          background: (theme) => theme.palette.console.background,
-          padding: '10px',
-          width: '100%',
-          height: '100%',
-          overflowY: 'auto',
-          position: 'relative',
-        }}
-      >
-      </Box>
   return (
+    <Box
+      ref={stdoutContainerRef}
+      sx={{
+        color: (theme) => theme.palette.console.contrastText,
+        background: (theme) => theme.palette.console.background,
+        padding: '10px',
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto',
+        position: 'relative',
+      }}
+    >
       <div>
         {run.stdout && (
           <Box
@@ -78,6 +77,7 @@ const Console = observer(({ run }) => {
           </Box>
         )}
       </div>
+    </Box>
   );
 });
 
