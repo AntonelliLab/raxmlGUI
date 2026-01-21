@@ -75,7 +75,7 @@
     "electron-store": "^8.1.0",
     "electron-updater": "^5.2.4",
     "filenamify": "^4.3.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "mobx": "^5.15.7",
     "mobx-react-lite": "^2.2.2",
     "mobx-utils": "^5.6.2",
