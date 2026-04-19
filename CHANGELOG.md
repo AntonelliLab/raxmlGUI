@@ -22,6 +22,9 @@ in case of vulnerabilities.
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
 
+## [2.0.17] - 2026-04-19
+### Changed
+- Performance and security updates
 ## [2.0.16] - 2025-07-12
 ### Changed
 - Performance and security updates
