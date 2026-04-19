@@ -25,7 +25,7 @@ in case of vulnerabilities.
 ### Changed
 - Performance and security updates
 ### Removed
-- Dropping macOS 10.13 / 10.14 support
+- Dropping macOS 11 support
 
 ## [2.0.17] - 2026-04-19
 ### Changed
