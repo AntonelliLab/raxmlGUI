@@ -6712,10 +6712,10 @@ electron-webpack@^2.8.2:
     webpack-merge "^4.2.2"
     yargs "^15.3.1"
 
-electron@^37.2.1:
-  version "37.2.1"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-37.2.1.tgz#33fd942fb4199d955e675be79ecabc01d52bc355"
-  integrity sha512-ae2EbzRNqIAHlftfCHtbbt6EgJUW8+zxWLONqNnn2iSrLF0O/pbxbff3xcpZYPpmFBs4uqjoi+s4QS7DQ+zZ/w==
+electron@^38.0.0:
+  version "38.8.6"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-38.8.6.tgz#887cd895eb66fd33c978f7225f83f29bdca72d0a"
+  integrity sha512-lyBhcVi9QYAZL6FO6r5twAWAjWnYomo3iVDvrb5SJZlq928BGemHOKG0tPIq41NOLaCu9f3XdEEjMkjQPjprRg==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^22.7.7"
