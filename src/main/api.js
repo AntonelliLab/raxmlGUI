@@ -6,7 +6,6 @@ import {
   Notification,
   BrowserWindow,
 } from 'electron';
-import _ from 'lodash';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
