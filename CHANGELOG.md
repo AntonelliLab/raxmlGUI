@@ -18,10 +18,14 @@ for any bug fixes.
 ### Security
 in case of vulnerabilities.
 
-## [Unreleased] - YYYY-MM-DD
+## [Potential updates] - YYYY-MM-DD
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
-
+## [Unreleased] - YYYY-MM-DD
+### Changed
+- Performance and security updates
+### Removed
+- Dropping macOS 10.13 / 10.14 support
 ## [2.0.16] - 2025-07-12
 ### Changed
 - Performance and security updates
