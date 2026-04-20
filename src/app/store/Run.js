@@ -17,7 +17,7 @@ import StoreBase from './StoreBase';
 import { is, quote } from '../../common/utils';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
-import _ from 'lodash';
+import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
 
 const readFile = util.promisify(fs.readFile);
@@ -1405,7 +1405,7 @@ class Run extends StoreBase {
       default:
     }
     // Remove items that are only empty strings
-    cmdArgs.forEach((args) => _.remove(args, (n) => n === ''));
+    cmdArgs.forEach((args) => remove(args, (n) => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
@@ -1898,7 +1898,7 @@ class Run extends StoreBase {
       default:
     }
     // Remove items that are only empty strings
-    cmdArgs.forEach((args) => _.remove(args, (n) => n === ''));
+    cmdArgs.forEach((args) => remove(args, (n) => n === ''));
     return cmdArgs.filter((args) => args.length > 0);
   };
 
