@@ -20,6 +20,7 @@ const Console = ({ run }) => {
 
   return (
     <Box
+      data-testid="console-output"
       ref={stdoutContainerRef}
       sx={{
         color: (theme) => theme.palette.console.contrastText,

@@ -27,6 +27,7 @@ function _ModelTestButton({ alignment }) {
   }
   return (
     <Button
+      data-testid="run-modeltest"
       sx={{
         marginLeft: '10px',
         backgroundColor: (theme) => theme.palette.input.main,

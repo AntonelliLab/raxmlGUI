@@ -54,6 +54,7 @@ const Raxml = ({ run, store }) => {
             </Button>
           ) : null}
           <Button
+            data-testid="run-analysis"
             variant="contained"
             color='secondary'
             loading={run.running}
