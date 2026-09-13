@@ -14,7 +14,7 @@ This is a an [Electron](https://electronjs.org/) App that was bootstrapped with 
 E2e tests use [Playwright](https://playwright.dev/) to drive the real Electron app against the CRA dev server and the bundled RAxML binaries. Specs in `e2e/` load the dev prefilled nucleotide alignment and check the UI and output files:
 
 - `modeltest-then-raxml-ng.spec.js` — ModelTest, then a full raxml-ng analysis
-- `raxmlHPC.spec.js` — classic raxmlHPC (ML + rapid bootstrap)
+- `raxmlHPC.spec.js` — classic raxmlHPC (ML search)
 
 Download binaries once, then run:
 
