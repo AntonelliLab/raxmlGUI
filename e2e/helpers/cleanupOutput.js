@@ -17,15 +17,13 @@ async function cleanupOutputFiles(outputDir, outputId) {
     throw error;
   }
 
-  const prefixes = [
-    outputId,
-    `RAxML_GUI_Settings_${outputId}`,
-    'RAxML_GUI_ModelTest_nucleotide',
-  ];
-
   await Promise.all(
     entries
-      .filter((entry) => prefixes.some((prefix) => entry.startsWith(prefix)))
+      .filter(
+        (entry) =>
+          entry.includes(outputId) ||
+          entry.startsWith('RAxML_GUI_ModelTest_nucleotide')
+      )
       .map((entry) => fs.rm(path.join(outputDir, entry), { force: true }))
   );
 }
