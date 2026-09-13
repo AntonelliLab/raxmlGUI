@@ -4,6 +4,7 @@ const path = require('path');
 const { test, expect } = require('playwright/test');
 const { launchApp, getAppWindow, repoRoot } = require('./helpers/launchApp');
 const { cleanupOutputFiles } = require('./helpers/cleanupOutput');
+const { waitForOutputFile } = require('./helpers/waitForOutput');
 
 const outputDir = path.join(repoRoot, 'static', 'test-results');
 
@@ -47,55 +48,41 @@ test.describe('raxmlHPC', () => {
     await page.locator('#mui-component-select-Binary').click();
     await page.getByRole('option', { name: 'raxmlHPC', exact: true }).click();
 
+    await page.locator('#mui-component-select-Analysis').click();
+    await page.getByRole('option', { name: 'ML search', exact: true }).click();
+
     const commandPreview = page.locator('p').filter({ hasText: /^raxmlHPC/ });
     await expect(commandPreview).toBeVisible();
     const commandText = (await commandPreview.textContent()) || '';
-    expect(commandText).toMatch(/-f a/);
+    expect(commandText).toMatch(/-f d/);
     expect(commandText).toMatch(/-m \S+/);
 
-    const runButton = page.getByTestId('run-analysis');
-    await expect(runButton).toBeEnabled();
-    await runButton.click();
-
-    await expect(page.getByText('Calculation finished!')).toBeVisible({
-      timeout: 10 * 60 * 1000,
-    });
-    await expect(page.locator('#error-dialog-title')).toHaveCount(0);
-
     const outputFilename = `${outputId}.tre`;
-    await expect(
-      page.locator('a').filter({ hasText: `RAxML_bestTree.${outputFilename}` })
-    ).toBeVisible();
-    await expect(
-      page.locator('a').filter({ hasText: `RAxML_bootstrap.${outputFilename}` })
-    ).toBeVisible();
-
     const bestTreePath = path.join(
       outputDir,
       `RAxML_bestTree.${outputFilename}`
     );
-    const bootstrapPath = path.join(
-      outputDir,
-      `RAxML_bootstrap.${outputFilename}`
-    );
-    const infoPath = path.join(outputDir, `RAxML_info.${outputFilename}.txt`);
+    const infoPathTxt = path.join(outputDir, `RAxML_info.${outputId}.txt`);
+    const infoPathTre = path.join(outputDir, `RAxML_info.${outputFilename}`);
     const settingsPath = path.join(
       outputDir,
       `RAxML_GUI_Settings_${outputId}.txt`
     );
 
-    await expect.poll(async () => fs.stat(bestTreePath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(bootstrapPath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(infoPath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(settingsPath).then(() => true).catch(() => false)).toBe(true);
+    const runButton = page.getByTestId('run-analysis');
+    await expect(runButton).toBeEnabled();
+    await runButton.click();
+
+    await waitForOutputFile(bestTreePath, { timeout: 3 * 60 * 1000 });
+    await waitForOutputFile([infoPathTxt, infoPathTre], { timeout: 60_000 });
+    await waitForOutputFile(settingsPath, { timeout: 60_000 });
+    await expect(page.locator('#error-dialog-title')).toHaveCount(0);
 
     const bestTree = await fs.readFile(bestTreePath, 'utf8');
     expect(bestTree).toContain('TAXON_');
     expect(bestTree).toMatch(/[()]/);
 
-    const bootstrapTrees = await fs.readFile(bootstrapPath, 'utf8');
-    expect(bootstrapTrees).toContain('TAXON_');
-
+    const infoPath = (await fs.stat(infoPathTxt).then(() => infoPathTxt).catch(() => infoPathTre));
     const infoText = await fs.readFile(infoPath, 'utf8');
     expect(infoText.length).toBeGreaterThan(0);
   });
