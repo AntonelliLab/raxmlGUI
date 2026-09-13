@@ -35,6 +35,7 @@ const dialog = electron.dialog;
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
 const isDevMode = is.development && process.argv.indexOf('--noDevServer') === -1;
+const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -162,7 +163,7 @@ function initialize() {
 
     // Open the DevTools.
     // TODO: make conditional as in app.ready
-    if (isDevMode) {
+    if (isDevMode && !isE2eMode) {
       mainWindow.webContents.openDevTools();
     }
 
@@ -206,8 +207,10 @@ function initialize() {
     // }
     createMainWindow();
 
-    autoUpdater.autoDownload = false;
-    autoUpdater.checkForUpdates();
+    if (!isE2eMode) {
+      autoUpdater.autoDownload = false;
+      autoUpdater.checkForUpdates();
+    }
   });
 
   // Quit when all windows are closed.
