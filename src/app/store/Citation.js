@@ -210,4 +210,3 @@ ER  - `,
     console.log('Copied citation to clipboard');
   };
 }
-

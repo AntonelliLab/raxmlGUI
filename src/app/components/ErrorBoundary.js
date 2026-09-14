@@ -22,7 +22,7 @@ class ErrorBoundary extends React.Component {
 
   handleClose = () => {
     this.setState({ error: null });
-  }
+  };
 
   render() {
     const { error } = this.state;
@@ -36,7 +36,7 @@ class ErrorBoundary extends React.Component {
         <Box p={1}>
           <Typography variant="body1">Oops! Something went wrong.</Typography>
         </Box>
-        <ErrorDialog error={error} onClose={this.handleClose} needReload/>
+        <ErrorDialog error={error} onClose={this.handleClose} needReload />
       </Box>
     );
   }

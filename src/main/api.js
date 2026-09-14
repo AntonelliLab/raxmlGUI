@@ -20,11 +20,12 @@ import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
 
-
-is.development ? null : Sentry.init({
-  dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-  maxValueLength: 2000,
-});
+is.development
+  ? null
+  : Sentry.init({
+      dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
+      maxValueLength: 2000,
+    });
 
 const fs = _fs.promises;
 
@@ -73,7 +74,7 @@ function send(event, channel, data) {
   }
   return event.sender.send(
     channel,
-    Object.assign({}, data, { error: serializeError(data.error) })
+    Object.assign({}, data, { error: serializeError(data.error) }),
   );
 }
 
@@ -179,10 +180,10 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       filename.startsWith(`RAxML_GUI_ModelTest_${outputNameUnused}.`) ||
       filename.startsWith(`RAxML_GUI_Settings_${outputNameUnused}.`);
     const resultFilenamesAdditional = filenames.filter(
-      filterResultFilenamesAdditional
+      filterResultFilenamesAdditional,
     );
     const resultFilenames = resultFilenamesMain.concat(
-      resultFilenamesAdditional
+      resultFilenamesAdditional,
     );
     let counter = 1;
     const matchCounterName = /(\w+)_\d+$/.exec(outputName);
@@ -252,7 +253,7 @@ ipcMain.on(
       usesRaxmlNg,
       usesModeltestNg,
       inputPath,
-    }
+    },
   ) => {
     cancelProcess(id);
 
@@ -260,7 +261,7 @@ ipcMain.on(
 
     console.log(
       `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`,
-      args
+      args,
     );
 
     // Check for deleted input file
@@ -269,7 +270,7 @@ ipcMain.on(
       // The check succeeded
     } catch (err) {
       const error = new UserFixError(
-        `The input file does not exist '${inputPath}': ${err.message}`
+        `The input file does not exist '${inputPath}': ${err.message}`,
       );
       Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
@@ -284,7 +285,7 @@ ipcMain.on(
     } catch (err) {
       console.error('Error writing to output file:', err);
       const error = new Error(
-        `Error trying to write to output file '${resultFilePath}': ${err.message}`
+        `Error trying to write to output file '${resultFilePath}': ${err.message}`,
       );
       Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
@@ -294,7 +295,7 @@ ipcMain.on(
         fs.unlink(resultFilePath);
       } catch (err) {
         console.error(
-          `Error trying to unlink temporary result file: ${err.message}`
+          `Error trying to unlink temporary result file: ${err.message}`,
         );
       }
     }
@@ -307,7 +308,7 @@ ipcMain.on(
         {
           // env: { PATH: binaryDir },
           shell: is.windows,
-        }
+        },
       );
       console.log(stdout);
       if (stderr) {
@@ -316,7 +317,7 @@ ipcMain.on(
     } catch (err) {
       console.error('Error executing binary:', err);
       const error = new Error(
-        `Error trying to execute raxml binary '${binaryPath}': ${err.message}`
+        `Error trying to execute raxml binary '${binaryPath}': ${err.message}`,
       );
       Sentry.captureException(err);
       send(event, ipc.RUN_ERROR, { id, error });
@@ -335,7 +336,7 @@ ipcMain.on(
             `"${binaryPath}" ${arg.join(' ')} --flag-check`,
             {
               shell: is.windows,
-            }
+            },
           );
           console.log(stdout, stderr);
         } catch (err) {
@@ -370,7 +371,7 @@ ipcMain.on(
 
     // Rename the RAxML_info.\*.tre into RAxML_info.\*.txt
     console.log(
-      `Renaming info file 'RAxML_info\.${outputName}\.tre' -> 'RAxML_info\.${outputName}\.txt'...`
+      `Renaming info file 'RAxML_info\.${outputName}\.tre' -> 'RAxML_info\.${outputName}\.txt'...`,
     );
     const anyMatch = new RegExp(`RAxML_info\.${outputName}\.tre`);
     const filenames = await fs.readdir(outputDir);
@@ -379,7 +380,7 @@ ipcMain.on(
       const infoPath = path.join(outputDir, infoFiles[i]);
       const newPath = path.join(
         outputDir,
-        infoFiles[i].replace('.tre', '.txt')
+        infoFiles[i].replace('.tre', '.txt'),
       );
       await fs.rename(infoPath, newPath);
     }
@@ -387,11 +388,13 @@ ipcMain.on(
     // Rename the raxml-ng output files to add .tre or .txt extension
     if (usesRaxmlNg) {
       console.log(
-        `Renaming raxml-ng output files to add .tre or .txt extension...`
+        `Renaming raxml-ng output files to add .tre or .txt extension...`,
       );
       const anyMatch = new RegExp(`${outputName}.raxml`);
       const filenames = await fs.readdir(outputDir);
-      const outputFiles = filenames.filter((filename) => anyMatch.test(filename));
+      const outputFiles = filenames.filter((filename) =>
+        anyMatch.test(filename),
+      );
       const rbaMatch = new RegExp(`${outputName}.raxml.rba`);
       const bestModelMatch = new RegExp(`${outputName}.raxml.bestModel`);
       const logMatch = new RegExp(`${outputName}.raxml.log`);
@@ -401,10 +404,15 @@ ipcMain.on(
         if (rbaMatch.test(f)) {
           return f;
         }
-        if (bestModelMatch.test(f) || logMatch.test(f) || aPMatch.test(f) || aSMatch.test(f)) {
-          return f += '.txt';
+        if (
+          bestModelMatch.test(f) ||
+          logMatch.test(f) ||
+          aPMatch.test(f) ||
+          aSMatch.test(f)
+        ) {
+          return (f += '.txt');
         }
-        return f += '.tre';
+        return (f += '.tre');
       });
       for (let i = 0; i < outputFiles.length; i++) {
         const infoPath = path.join(outputDir, outputFiles[i]);
@@ -413,10 +421,9 @@ ipcMain.on(
       }
     }
 
-
     const nextFilenames = await fs.readdir(outputDir);
     const resultFilenames = nextFilenames.filter((filename) =>
-      filename.includes(outputName)
+      filename.includes(outputName),
     );
 
     send(event, ipc.RUN_FINISHED, {
@@ -425,7 +432,7 @@ ipcMain.on(
       resultFilenames,
       exitCode,
     });
-  }
+  },
 );
 
 ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
@@ -451,7 +458,7 @@ function spawnProcess(binaryDir, binaryName, args) {
     args,
     {
       shell: is.windows,
-    }
+    },
   );
   return proc;
 }
@@ -462,7 +469,7 @@ async function runProcess(
   binaryDir,
   binaryName,
   args,
-  { onStdOut = () => {}, onStdErr = () => {} } = {}
+  { onStdOut = () => {}, onStdErr = () => {} } = {},
 ) {
   return new Promise((resolve, reject) => {
     cancelProcess(id);
@@ -493,7 +500,7 @@ async function runProcess(
         }
         console.log(
           `Process finished with event '${message}' and error/code/signal:`,
-          signal || code
+          signal || code,
         );
         exited = true;
         delete state.processes[id];
@@ -517,8 +524,8 @@ async function runProcess(
           new Error(
             `Exited with code ${
               signal || code
-            }. Check console output for more information.`
-          )
+            }. Check console output for more information.`,
+          ),
         );
       };
 
@@ -616,9 +623,8 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
         console.log(message);
         // Add a digit to the end of the second sequence
         identicalCounter++;
-        alignment.sequences[
-          index
-        ].taxon = `${sequence.taxon}_${identicalCounter}`;
+        alignment.sequences[index].taxon =
+          `${sequence.taxon}_${identicalCounter}`;
         modified = true;
         modificationMessages.push(message);
       }
@@ -628,7 +634,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
       // Test white-space characters and excluded characters above
       const testInvalid = new RegExp(
         `[\\s${excludedCharacters.map((c) => `\\${c}`).join('')}]`,
-        'g'
+        'g',
       );
       if (testInvalid.test(sequence.taxon)) {
         const message = `Illegal characters in sequence name = taxon '${sequence.taxon}' found.`;
@@ -636,7 +642,7 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
         // Replace the invalid characters in taxon names with underscores
         alignment.sequences[index].taxon = sequence.taxon.replace(
           testInvalid,
-          '_'
+          '_',
         );
         modified = true;
         modificationMessages.push(message);
@@ -744,7 +750,7 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
 
   let exitCode = 0;
   try {
-    console.log('arg', arg)
+    console.log('arg', arg);
     console.log(`ASTRAL?`);
     exitCode = await runProcess(id, event, '', javaBin, arg);
     if (exitCode !== 0) {
@@ -753,7 +759,7 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
         return;
       }
       throw new Error(
-        `Error trying to run ASTRAL, exited with code '${exitCode}'.`
+        `Error trying to run ASTRAL, exited with code '${exitCode}'.`,
       );
     }
   } catch (err) {
@@ -764,7 +770,7 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
 
   send(event, ipc.ASTRAL_SUCCESS, {
     id,
-    exitCode
+    exitCode,
   });
 });
 
@@ -812,7 +818,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
         return;
       }
       throw new Error(
-        `Error trying to run modeltest-ng, exited with code '${exitCode}'.`
+        `Error trying to run modeltest-ng, exited with code '${exitCode}'.`,
       );
     }
   } catch (err) {
@@ -828,17 +834,19 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   try {
     // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use AICc.
     const cmdRaxml = commands.filter((cmd) =>
-      cmd.startsWith('  > raxmlHPC-SSE3')
+      cmd.startsWith('  > raxmlHPC-SSE3'),
     )[2];
     const cmdRaxmlNG = commands.filter((cmd) =>
-      cmd.startsWith('  > raxml-ng')
+      cmd.startsWith('  > raxml-ng'),
     )[2];
 
     const modelRaxml = /-m (\S+)/.exec(cmdRaxml)[1];
     const extraFlag = /--(\S+)/.exec(cmdRaxml)?.[0];
     const modelRaxmlNG = /--model (\S+)/.exec(cmdRaxmlNG)[1];
 
-    console.log(`-> raxml: ${modelRaxml}, extraFlag: ${extraFlag}, raxml-ng: ${modelRaxmlNG}`);
+    console.log(
+      `-> raxml: ${modelRaxml}, extraFlag: ${extraFlag}, raxml-ng: ${modelRaxmlNG}`,
+    );
 
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
       id,
@@ -852,7 +860,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
     console.error(`Couldn't parse best models from modeltest-ng output:`, err);
     console.log('output:', commands);
     const error = new Error(
-      `Couldn't parse best models from modeltest-ng output. Check alignment log.`
+      `Couldn't parse best models from modeltest-ng output. Check alignment log.`,
     );
     error.name = 'Modeltest error';
     send(event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error });
@@ -877,7 +885,7 @@ ipcMain.on(ipc.TREE_SELECT, (event, params) => {
         if (filePaths.length === 0) {
           return;
         }
-      }
+      },
     )
     .then((result) => {
       console.debug(ipc.TREE_SELECT, result);

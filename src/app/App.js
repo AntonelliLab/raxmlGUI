@@ -44,7 +44,6 @@ const VerticalHeading = styled(Typography)(({ theme }) => ({
 }));
 
 const App = () => {
-
   const TabItems = store.runs.map((run) => (
     <Tab
       key={run.id}
@@ -270,7 +269,7 @@ const App = () => {
                 height: '100%',
                 overflowY: 'auto',
                 paddingBottom: '20px',
-                borderLeft: '1px solid #ccc'
+                borderLeft: '1px solid #ccc',
               }}
             >
               <Box
@@ -401,9 +400,7 @@ const App = () => {
             </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
-              <Box sx={{ marginRight: '20px' }}>
-                raxmlGUI {store.version}
-              </Box>
+              <Box sx={{ marginRight: '20px' }}>raxmlGUI {store.version}</Box>
               <Box sx={{ marginRight: '20px' }}>
                 {binary.value} {binary.version}
               </Box>

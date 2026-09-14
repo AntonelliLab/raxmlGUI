@@ -22,9 +22,9 @@ async function cleanupOutputFiles(outputDir, outputId) {
       .filter(
         (entry) =>
           entry.includes(outputId) ||
-          entry.startsWith('RAxML_GUI_ModelTest_nucleotide')
+          entry.startsWith('RAxML_GUI_ModelTest_nucleotide'),
       )
-      .map((entry) => fs.rm(path.join(outputDir, entry), { force: true }))
+      .map((entry) => fs.rm(path.join(outputDir, entry), { force: true })),
   );
 }
 

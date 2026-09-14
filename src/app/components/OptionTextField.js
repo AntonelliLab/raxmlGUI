@@ -18,7 +18,8 @@ const OptionTextField = observer(({ option, sx }) => {
       value={option.value}
       placeholder={option.placeholder}
       onChange={(e) => option.setValue(e.target.value)}
-      error={option.haveError} />
+      error={option.haveError}
+    />
   );
 });
 

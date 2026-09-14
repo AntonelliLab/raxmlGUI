@@ -38,7 +38,8 @@ const Console = ({ run }) => {
             component="code"
             sx={{
               color: (theme) => theme.palette.console.contrastText,
-              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontFamily:
+                'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
               height: '100%',
               position: 'absolute',
@@ -55,7 +56,8 @@ const Console = ({ run }) => {
             component="code"
             sx={{
               color: (theme) => theme.palette.console.contrastText,
-              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontFamily:
+                'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
               height: '100%',
               position: 'absolute',
@@ -73,7 +75,7 @@ const Console = ({ run }) => {
 };
 
 Console.propTypes = {
-  run: PropTypes.object.isRequired
+  run: PropTypes.object.isRequired,
 };
 
 export default observer(Console);

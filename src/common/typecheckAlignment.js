@@ -53,7 +53,7 @@ function hasInvariantSites(length, sequences) {
     for (const sequence of sequences) {
       const site = sequence.code[i];
       if (!variantsAtPosition.includes(site)) {
-        variantsAtPosition.push(site)
+        variantsAtPosition.push(site);
       }
     }
     if (variantsAtPosition.length <= 1) {
@@ -115,7 +115,7 @@ export default function typecheckAlignment(alignment) {
     console.log('At least one sequence have only unknown characters');
     if (dataTypes.size === 0) {
       throw new Error(
-        `Invalid alignment: cannot determine data type because all ${numSequencesTypechecked} sequences are of type unknown`
+        `Invalid alignment: cannot determine data type because all ${numSequencesTypechecked} sequences are of type unknown`,
       );
     }
   }
@@ -123,7 +123,7 @@ export default function typecheckAlignment(alignment) {
   if (dataTypes.size > 1) {
     // Only valid case with different types is binary and multistate as [01] is a subset of [012].
     const isMultistate = !sequenceDataTypes.find(
-      (type) => type !== 'binary' && type !== 'multistate'
+      (type) => type !== 'binary' && type !== 'multistate',
     );
     if (isMultistate) {
       dataType = 'multistate';
@@ -131,13 +131,13 @@ export default function typecheckAlignment(alignment) {
       dataType = 'invalid';
       console.log(
         'Illegal mix of data types among sequences:',
-        sequenceDataTypes
+        sequenceDataTypes,
       );
       throw new UserFixError(
         `Your alignment is a mix of different data types, namely = ${Array.from(
-          dataTypes.keys()
+          dataTypes.keys(),
         )}. 
-        Please use only the same type for one alignment or combine several files.`
+        Please use only the same type for one alignment or combine several files.`,
       );
     }
   }
@@ -153,11 +153,14 @@ export default function typecheckAlignment(alignment) {
           invalidSiteIndex + 1
         } in sequence ${
           index + 1
-        } (${sample}) for inferred data type '${dataType}'`
+        } (${sample}) for inferred data type '${dataType}'`,
       );
     }
   });
-  alignment.hasInvariantSites = hasInvariantSites(alignment.length, alignment.sequences);
+  alignment.hasInvariantSites = hasInvariantSites(
+    alignment.length,
+    alignment.sequences,
+  );
   alignment.dataType = dataType;
   alignment.typecheckingComplete = true;
   return alignment;

@@ -11,14 +11,14 @@ const subMenuFile = {
       accelerator: 'CmdOrCtrl+T',
       click() {
         BrowserWindow.getFocusedWindow().webContents.send(ipc.ADD_RUN);
-      }
+      },
     },
     {
       label: 'Close Tab',
       accelerator: 'CmdOrCtrl+W',
       click() {
         BrowserWindow.getFocusedWindow().webContents.send(ipc.REMOVE_RUN);
-      }
+      },
     },
     {
       label: 'Theme',
@@ -29,7 +29,7 @@ const subMenuFile = {
           checked: !store.get('darkMode'),
           click() {
             BrowserWindow.getFocusedWindow().webContents.send(ipc.LIGHT_MODE);
-          }
+          },
         },
         {
           label: 'Dark mode',
@@ -37,10 +37,10 @@ const subMenuFile = {
           checked: store.get('darkMode'),
           click() {
             BrowserWindow.getFocusedWindow().webContents.send(ipc.DARK_MODE);
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   ],
 };
 

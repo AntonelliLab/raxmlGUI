@@ -6,7 +6,7 @@ const subMenuDeveloper = {
       label: 'Force Error',
       click() {
         throw new Error('Testing Error');
-      }
+      },
     },
     { type: 'separator' },
     { role: 'toggledevtools' },
@@ -17,8 +17,8 @@ const subMenuDeveloper = {
     { role: 'zoomin' },
     { role: 'zoomout' },
     { type: 'separator' },
-    { role: 'togglefullscreen' }
-  ]
+    { role: 'togglefullscreen' },
+  ],
 };
 
 export default subMenuDeveloper;

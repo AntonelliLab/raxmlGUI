@@ -61,7 +61,7 @@ test.describe('ModelTest then raxml-ng', () => {
     expect(commandText).not.toMatch(/--model GTR(\s|$)/);
 
     const modeltestFiles = (await fs.readdir(outputDir)).filter((filename) =>
-      filename.startsWith('RAxML_GUI_ModelTest_nucleotide')
+      filename.startsWith('RAxML_GUI_ModelTest_nucleotide'),
     );
     expect(modeltestFiles.length).toBeGreaterThan(0);
 
@@ -74,33 +74,84 @@ test.describe('ModelTest then raxml-ng', () => {
     });
     await expect(page.locator('#error-dialog-title')).toHaveCount(0);
 
-    await expect(page.getByText(`Result for output id '${outputId}'`)).toBeVisible();
-    await expect(page.getByText(`${outputId}.raxml.bestTree.tre`)).toBeVisible();
+    await expect(
+      page.getByText(`Result for output id '${outputId}'`),
+    ).toBeVisible();
+    await expect(
+      page.getByText(`${outputId}.raxml.bestTree.tre`),
+    ).toBeVisible();
     await expect(page.getByText(`${outputId}.raxml.support.tre`)).toBeVisible();
-    await expect(page.getByText(`${outputId}.raxml.bootstraps.tre`)).toBeVisible();
+    await expect(
+      page.getByText(`${outputId}.raxml.bootstraps.tre`),
+    ).toBeVisible();
 
     const bestTreePath = path.join(outputDir, `${outputId}.raxml.bestTree.tre`);
     const supportTreePath = path.join(
       outputDir,
-      `${outputId}.raxml.support.tre`
+      `${outputId}.raxml.support.tre`,
     );
     const bootstrapsTreePath = path.join(
       outputDir,
-      `${outputId}.raxml.bootstraps.tre`
+      `${outputId}.raxml.bootstraps.tre`,
     );
     const logPath = path.join(outputDir, `${outputId}.raxml.log.txt`);
-    const bestModelPath = path.join(outputDir, `${outputId}.raxml.bestModel.txt`);
+    const bestModelPath = path.join(
+      outputDir,
+      `${outputId}.raxml.bestModel.txt`,
+    );
     const settingsPath = path.join(
       outputDir,
-      `RAxML_GUI_Settings_${outputId}.txt`
+      `RAxML_GUI_Settings_${outputId}.txt`,
     );
 
-    await expect.poll(async () => fs.stat(bestTreePath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(supportTreePath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(bootstrapsTreePath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(logPath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(bestModelPath).then(() => true).catch(() => false)).toBe(true);
-    await expect.poll(async () => fs.stat(settingsPath).then(() => true).catch(() => false)).toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(bestTreePath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(supportTreePath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(bootstrapsTreePath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(logPath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(bestModelPath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
+    await expect
+      .poll(async () =>
+        fs
+          .stat(settingsPath)
+          .then(() => true)
+          .catch(() => false),
+      )
+      .toBe(true);
 
     const bestTree = await fs.readFile(bestTreePath, 'utf8');
     expect(bestTree).toContain('TAXON_');

@@ -24,7 +24,9 @@ async function waitForOutputFile(filePaths, { timeout = 10 * 60 * 1000 } = {}) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
-  throw new Error(`Timed out waiting for output file: ${candidates.join(' or ')}`);
+  throw new Error(
+    `Timed out waiting for output file: ${candidates.join(' or ')}`,
+  );
 }
 
 module.exports = {

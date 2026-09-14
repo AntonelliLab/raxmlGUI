@@ -24,7 +24,7 @@ export const secondaryStructureOptions = [
   'S7F',
   'S16', // default
   'S16A',
-  'S16B'
+  'S16B',
 ];
 
 // -f
@@ -68,11 +68,16 @@ export const algorithmOptions = [
   'w',
   'W',
   'x',
-  'y'
+  'y',
 ];
 
 // -I
-export const bootstoppingOptions = ['autoFC', 'autoMR', 'autoMRE', 'autoMRE_IGN'];
+export const bootstoppingOptions = [
+  'autoFC',
+  'autoMR',
+  'autoMRE',
+  'autoMRE_IGN',
+];
 
 // -J
 export const consensusTreeOptions = ['MR', 'MRE', 'STRICT', 'T_'];
@@ -81,7 +86,7 @@ export const consensusTreeOptions = ['MR', 'MRE', 'STRICT', 'T_'];
 export const kMultistateSubstitutionModelOptions = {
   argument: 'K',
   default: 'GTR',
-  options: ['ORDERED', 'MK', 'GTR']
+  options: ['ORDERED', 'MK', 'GTR'],
 };
 
 // -m
@@ -106,11 +111,7 @@ export const mixedSubstitutionModelOptions = {
 
 export const mixedSubstitutionMatrixOptions = {
   default: 'GTR',
-  options: [
-    'GTR',
-    'BIN',
-    'MULTI',
-  ],
+  options: ['GTR', 'BIN', 'MULTI'],
 };
 
 // -m
@@ -131,9 +132,7 @@ export const binarySubstitutionModelOptions = {
 export const binarySubstitutionMatrixOptions = {
   argument: 'm',
   default: 'BIN',
-  options: [
-    'BIN',
-  ],
+  options: ['BIN'],
 };
 
 // -m
@@ -191,16 +190,14 @@ export const multistateSubstitutionModelOptions = {
     'ASC_MULTICAT',
     'MULTIGAMMA',
     'MULTIGAMMAI',
-    'ASC_MULTIGAMMA'
-  ]
+    'ASC_MULTIGAMMA',
+  ],
 };
 
 // -m
 export const multistateSubstitutionMatrixOptions = {
   default: 'MULTI',
-  options: [
-    'MULTI',
-  ],
+  options: ['MULTI'],
 };
 
 // -m
@@ -213,8 +210,8 @@ export const aminoAcidSubstitutionModelOptions = {
     'ASC_PROTCAT',
     'PROTGAMMA',
     'PROTGAMMAI',
-    'ASC_PROTGAMMA'
-  ]
+    'ASC_PROTGAMMA',
+  ],
 };
 
 // -m
@@ -248,18 +245,18 @@ export const aminoAcidSubstitutionMatrixOptions = {
     'LG4X',
     'PROT_FILE',
     'GTR_UNLINKED',
-    'GTR'
-  ]
+    'GTR',
+  ],
 };
 
 export const modelOptions = {
-  'protein': aminoAcidSubstitutionModelOptions,
-  'binary': binarySubstitutionModelOptions,
-  'mixed': mixedSubstitutionModelOptions,
-  'multistate': multistateSubstitutionModelOptions,
-  'dna': nucleotideSubstitutionModelOptions,
-  'rna': nucleotideSubstitutionModelOptions,
-  'nucleotide': nucleotideSubstitutionModelOptions,
+  protein: aminoAcidSubstitutionModelOptions,
+  binary: binarySubstitutionModelOptions,
+  mixed: mixedSubstitutionModelOptions,
+  multistate: multistateSubstitutionModelOptions,
+  dna: nucleotideSubstitutionModelOptions,
+  rna: nucleotideSubstitutionModelOptions,
+  nucleotide: nucleotideSubstitutionModelOptions,
 };
 
 export const matrixOptions = {
@@ -272,12 +269,11 @@ export const matrixOptions = {
   nucleotide: nucleotideSubstitutionMatrixOptions,
 };
 
-
 // -N
 export const numberRunsOptions = {
   argument: 'N',
   default: 1,
-  options: [1, 10, 20, 50, 100, 500]
+  options: [1, 10, 20, 50, 100, 500],
 };
 
 // -N
@@ -293,19 +289,24 @@ export const numberRepsOptions = {
     'autoMR',
     'autoMRE',
     'autoMRE_IGN',
-    'autoFC'
-  ]
+    'autoFC',
+  ],
 };
 
 // --asc-corr
 export const asscertainmentBiasCorrectionOptions = [
   'lewis',
   'felsenstein',
-  'stamatakis'
+  'stamatakis',
 ];
 
 // --auto-prot
-export const automaticProteinModelSelectionOptions = ['ml', 'bic', 'aic', 'aicc'];
+export const automaticProteinModelSelectionOptions = [
+  'ml',
+  'bic',
+  'aic',
+  'aicc',
+];
 
 /*
     Boolean settings
@@ -339,7 +340,7 @@ export const intermediateTreesToFileOption = OFF;
 // default OFF
 export const printBranchLengthsBootstrapOption = {
   argument: 'k',
-  default: OFF
+  default: OFF,
 };
 
 // -M
@@ -403,7 +404,7 @@ export const kimuraOption = OFF;
 export const randomSeedBootstrapOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
-  max: 256
+  max: 256,
 };
 
 // -c
@@ -411,7 +412,7 @@ export const distinctRateCatgeoriesOption = {
   min: 0,
   // TODO calc max (FF - FFFFFF)
   max: 256,
-  defaultValue: 25
+  defaultValue: 25,
 };
 
 // -p
@@ -419,7 +420,7 @@ export const randomSeedParsimonyOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
   max: 256,
-  defaultValue: Date.now()
+  defaultValue: Date.now(),
 };
 
 // -T
@@ -427,7 +428,7 @@ export const numberThreadsOption = {
   argument: 'T',
   min: 1,
   // TODO does a max and default value make sense?
-  defaultValue: 1
+  defaultValue: 1,
   // TODO max value has to be checked dynamically with number of CPUs present
 };
 
@@ -436,14 +437,14 @@ export const randomSeedRapidBootstrapOption = {
   min: 1,
   // TODO calc max (FF - FFFFFF)
   max: 256,
-  defaultValue: Date.now()
+  defaultValue: Date.now(),
 };
 
 // --epa-keep-placements
 export const epaKeepPlacementsOption = {
   min: 1,
   // TODO what is max
-  defaultValue: 7
+  defaultValue: 7,
 };
 
 /*
@@ -454,7 +455,7 @@ export const epaKeepPlacementsOption = {
 export const bootstopCutoffOption = {
   min: 0,
   max: 1,
-  defaultValue: 0.03
+  defaultValue: 0.03,
 };
 
 // -e
@@ -462,21 +463,21 @@ export const modelOptimizationPrecisionOption = {
   // TODO check min max
   min: 0.0,
   max: 0.1,
-  defaultValue: 0.1
+  defaultValue: 0.1,
 };
 
 // TODO not sure if this is a double setting, not specified in help
 // -G
 export const evolutionaryPlacementAlgorithmOption = {
   min: 0.0,
-  max: 1.0
+  max: 1.0,
 };
 
 // --epa-prob-threshold
 export const epaPropThresholdOption = {
   min: 0.0,
   max: 1.0,
-  defaultValue: 0.01
+  defaultValue: 0.01,
 };
 
 /*

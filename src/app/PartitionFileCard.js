@@ -67,14 +67,15 @@ function PartitionFileCard({ run }) {
             component="code"
             sx={{
               color: (theme) => theme.palette.primary.contrastText,
-              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontFamily:
+                'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
               height: '100%',
               overflowWrap: 'break-word',
               whiteSpace: 'pre-wrap',
             }}
           >
-            { run.partitionFileContent }
+            {run.partitionFileContent}
           </Box>
         </Box>
       </CardContent>

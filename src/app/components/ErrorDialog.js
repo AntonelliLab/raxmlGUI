@@ -14,12 +14,15 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { ipcRenderer } from 'electron';
-import { reportIssueToGitHub, getMailtoLinkToReportError } from '../../common/utils';
+import {
+  reportIssueToGitHub,
+  getMailtoLinkToReportError,
+} from '../../common/utils';
 import * as ipc from '../../constants/ipc';
 
 const handleReload = () => {
   ipcRenderer.send(ipc.RELOAD);
-}
+};
 
 export default function ErrorDialog({ error, onClose, needReload, title }) {
   const [reported, setReported] = React.useState(false);
@@ -31,17 +34,19 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
   const handleReportToGithub = () => {
     reportIssueToGitHub(error);
     setReported(true);
-  }
+  };
 
   const handleReportToMail = () => {
     setReported(true);
-  }
+  };
 
   const mailtoContent = getMailtoLinkToReportError(error);
 
-  const closeMessage = needReload ? (
-    reported ? 'Reload' : 'Ignore and reload'
-  ) : 'Close';
+  const closeMessage = needReload
+    ? reported
+      ? 'Reload'
+      : 'Ignore and reload'
+    : 'Close';
 
   const resetAndClose = () => {
     setReported(false);
@@ -90,10 +95,7 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
       Please help us solve the issue by reporting it.
     </DialogContentText>
   ) : (
-    <Alert
-      severity="success"
-      sx={{ width: '100%' }}
-    >
+    <Alert severity="success" sx={{ width: '100%' }}>
       Thanks for reporting the issue!
     </Alert>
   );
@@ -168,4 +170,4 @@ ErrorDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   needReload: PropTypes.bool,
   title: PropTypes.string,
-}
+};

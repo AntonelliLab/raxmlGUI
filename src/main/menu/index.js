@@ -18,9 +18,9 @@ const menuTemplate = [
         accelerator: 'CmdOrCtrl+S',
         click() {
           saveScreenshot();
-        }
+        },
       },
-    ]
+    ],
   },
 ];
 
@@ -50,8 +50,8 @@ export default class MenuBuilder {
           { role: 'hideothers' },
           { role: 'unhide' },
           { type: 'separator' },
-          { role: 'quit' }
-        ]
+          { role: 'quit' },
+        ],
       });
     }
 
@@ -70,8 +70,8 @@ export default class MenuBuilder {
           label: 'Inspect element',
           click: () => {
             this.mainWindow.inspectElement(x, y);
-          }
-        }
+          },
+        },
       ]).popup(this.mainWindow);
     });
   }

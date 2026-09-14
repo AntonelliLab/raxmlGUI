@@ -14,9 +14,9 @@ const subMenuAnalysis = {
           checked: false,
           click() {
             BrowserWindow.getFocusedWindow().webContents.send(
-              ipc.TOGGLE_BACKBONE_CONSTRAINT
+              ipc.TOGGLE_BACKBONE_CONSTRAINT,
             );
-          }
+          },
         },
         {
           label: 'Use multifurcating constraint',
@@ -24,13 +24,13 @@ const subMenuAnalysis = {
           checked: false,
           click() {
             BrowserWindow.getFocusedWindow().webContents.send(
-              ipc.TOGGLE_MULTIFURCATING_CONSTRAINT
+              ipc.TOGGLE_MULTIFURCATING_CONSTRAINT,
             );
-          }
-        }
-      ]
-    }
-  ]
+          },
+        },
+      ],
+    },
+  ],
 };
 
 export default subMenuAnalysis;

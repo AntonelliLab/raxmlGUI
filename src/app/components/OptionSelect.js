@@ -7,7 +7,6 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
-
 const OptionSelect = observer(({ option, sx }) => {
   if (option.notAvailable || option.options.length === 0) {
     return null;
@@ -15,7 +14,7 @@ const OptionSelect = observer(({ option, sx }) => {
   if (option.options.length === 1) {
     // No options to change to, render as a text field instead.
     return (
-      (<TextField
+      <TextField
         variant="standard"
         id={option.title}
         helperText={option.title}
@@ -26,8 +25,9 @@ const OptionSelect = observer(({ option, sx }) => {
         slotProps={{
           input: {
             readOnly: true,
-          }
-        }} />)
+          },
+        }}
+      />
     );
   }
 
@@ -41,7 +41,8 @@ const OptionSelect = observer(({ option, sx }) => {
           id: option.title,
         }}
         error={option.error}
-        multiple={option.multiple}>
+        multiple={option.multiple}
+      >
         {option.options.map(({ value, title }, index) => (
           <MenuItem key={index} value={value}>
             {title}

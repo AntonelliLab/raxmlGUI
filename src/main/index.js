@@ -34,7 +34,8 @@ const dialog = electron.dialog;
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
-const isDevMode = is.development && process.argv.indexOf('--noDevServer') === -1;
+const isDevMode =
+  is.development && process.argv.indexOf('--noDevServer') === -1;
 const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -86,7 +87,7 @@ autoUpdater.on('error', (error) => {
   log.info('Error in auto-updater. ' + error);
   dialog.showErrorBox(
     'Error: ',
-    error == null ? 'unknown' : (error.stack || error).toString()
+    error == null ? 'unknown' : (error.stack || error).toString(),
   );
 });
 autoUpdater.on('download-progress', (progressObj) => {

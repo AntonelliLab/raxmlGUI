@@ -11,9 +11,11 @@ import { is } from '../common/utils';
 
 import './bootstrap';
 
-is.development ? null : Sentry.init({
-  dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-});
+is.development
+  ? null
+  : Sentry.init({
+      dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
+    });
 
 const Index = () => {
   const { light, dark } = theme;
@@ -27,7 +29,6 @@ const Index = () => {
       </ThemeProvider>
     </StyledEngineProvider>
   );
-}
+};
 
 export default observer(Index);
-

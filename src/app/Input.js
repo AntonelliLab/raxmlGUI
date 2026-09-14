@@ -20,11 +20,7 @@ const Input = ({ run }) => {
   }
   // const SelectNumRuns = run.
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      sx={{ width: '100%' }}
-    >
+    <Box display="flex" flexDirection="column" sx={{ width: '100%' }}>
       <Box
         display="flex"
         mb={1}
@@ -49,11 +45,7 @@ const Input = ({ run }) => {
         >
           {({ getRootProps, getInputProps }) => (
             <div {...getRootProps()}>
-              <Box
-                display="flex"
-                alignItems="center"
-                sx={{ gap: '10px' }}
-              >
+              <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
                       <AlignmentCard
@@ -63,9 +55,7 @@ const Input = ({ run }) => {
                     ))
                   : null}
                 {run.inputIsTree && run.hasAstralTree ? (
-                  <AstralTreeCard
-                    astralTree={run.astralTree}
-                  />
+                  <AstralTreeCard astralTree={run.astralTree} />
                 ) : null}
                 <Box paddingX={1}>
                   <PartitionFileCard run={run} />

@@ -107,14 +107,15 @@ const winBinaries =
         // },
       ];
 
-const likelyARM = os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
+const likelyARM =
+  os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
 const armBinaries = [
   {
     name: 'modeltest-ng-ARM64',
     multithreaded: true,
     version: '0.1.7',
     type: 'modeltest',
-  }
+  },
 ];
 const x64Binaries = [
   {
@@ -122,7 +123,7 @@ const x64Binaries = [
     multithreaded: true,
     version: '0.1.7',
     type: 'modeltest',
-  }
+  },
 ];
 
 const allBinaries = is.windows
@@ -170,7 +171,7 @@ const allBinaries = is.windows
     ];
 
 const binaries = allBinaries.filter(({ multithreaded }) =>
-  MAX_NUM_CPUS === 1 ? !multithreaded : true
+  MAX_NUM_CPUS === 1 ? !multithreaded : true,
 );
 
 const initialBinaryName = binaries.filter(({ initial }) => initial)[0].name;
@@ -367,7 +368,7 @@ class BranchLength extends Option {
       false,
       'BS brL',
       'Compute branch lengths',
-      'Optimize model parameters and branch lengths for the given input tree'
+      'Optimize model parameters and branch lengths for the given input tree',
     );
   }
   @computed get notAvailable() {
@@ -382,7 +383,7 @@ class SHlike extends Option {
       false,
       'SH-like',
       'Compute log-likelihood test',
-      'Shimodaira-Hasegawa-like procedure'
+      'Shimodaira-Hasegawa-like procedure',
     );
   }
   @computed get notAvailable() {
@@ -621,11 +622,11 @@ class AAMatrixName extends Option {
       run,
       'BLOSUM62',
       'Matrix name',
-      'Amino Acid Substitution Matrix name'
+      'Amino Acid Substitution Matrix name',
     );
   }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
-    (value) => ({ value, title: value })
+    (value) => ({ value, title: value }),
   );
   @computed get notAvailable() {
     return this.run.dataType !== 'protein';
@@ -639,7 +640,7 @@ class EstimatedFrequencies extends Option {
       false,
       'ML Freq.',
       'Estimated base frequencies',
-      'Use estimated base frequencies instead of empirical.'
+      'Use estimated base frequencies instead of empirical.',
     );
   }
   @computed get notAvailable() {
@@ -653,7 +654,7 @@ class BaseFrequencies extends Option {
       run,
       'default',
       'Base frequencies',
-      'Empirical, ML estimated or model based base frequencies'
+      'Empirical, ML estimated or model based base frequencies',
     );
   }
   options = [
@@ -671,7 +672,7 @@ class MultistateModel extends Option {
     super(run, 'GTR', 'Multistate model');
   }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
-    (value) => ({ value, title: value })
+    (value) => ({ value, title: value }),
   );
   @computed get notAvailable() {
     return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg;
@@ -778,7 +779,7 @@ class Run extends StoreBase {
     this.atomAfterRun = createAtom('AfterRun');
     this.atomFinished = createAtom('finished');
     this.modeltestName = binaries.filter((b) =>
-      b.name.includes('modeltest')
+      b.name.includes('modeltest'),
     )[0]?.name;
   }
 
@@ -818,7 +819,7 @@ class Run extends StoreBase {
   get analysisOption() {
     return this.raxmlNgSwitch(
       raxmlNgAnalysisOptions.find((opt) => opt.value === this.analysis.value),
-      analysisOptions.find((opt) => opt.value === this.analysis.value)
+      analysisOptions.find((opt) => opt.value === this.analysis.value),
     );
   }
 
@@ -900,10 +901,10 @@ class Run extends StoreBase {
           outputDir,
           outputName: outputNameToCheck,
         },
-        ipc.OUTPUT_CHECKED
+        ipc.OUTPUT_CHECKED,
       );
       return result;
-    }
+    },
   );
 
   @computed get outputNameOk() {
@@ -1083,7 +1084,7 @@ class Run extends StoreBase {
 
   @computed get modelTestIsRunningOnAlignment() {
     const running = this.alignments.some(
-      (alignment) => alignment.modeltestLoading
+      (alignment) => alignment.modeltestLoading,
     );
     return running;
   }
@@ -1179,7 +1180,7 @@ class Run extends StoreBase {
     first.push('-i', quote(this.astralTree?.path));
     first.push(
       '-o',
-      quote(join(this.outputDir, `ASTRAL_${this.outputNameSafe}.tre`))
+      quote(join(this.outputDir, `ASTRAL_${this.outputNameSafe}.tre`)),
     );
     return [first];
   };
@@ -1197,7 +1198,7 @@ class Run extends StoreBase {
     // output file, modeltest errors if this file already exists
     first.push(
       '-o',
-      quote(join(this.outputDir, `RAxML_GUI_ModelTest_${this.outputNameSafe}`))
+      quote(join(this.outputDir, `RAxML_GUI_ModelTest_${this.outputNameSafe}`)),
     );
     // modeltest throws errors if the output file already exists
     first.push('--force');
@@ -1227,19 +1228,19 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.backboneConstraint.filePath)
+            quote(this.backboneConstraint.filePath),
           );
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.multifurcatingConstraint.filePath)
+            quote(this.multifurcatingConstraint.filePath),
           );
         }
         break;
@@ -1255,19 +1256,19 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         first.push('--msa', quote(this.finalAlignment.path));
         if (this.backboneConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.backboneConstraint.filePath)
+            quote(this.backboneConstraint.filePath),
           );
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.multifurcatingConstraint.filePath)
+            quote(this.multifurcatingConstraint.filePath),
           );
         }
         break;
@@ -1283,7 +1284,7 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         if (!this.numThreads.notAvailable) {
           first.push('--threads', this.numThreads.value);
@@ -1296,13 +1297,13 @@ class Run extends StoreBase {
         if (this.backboneConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.backboneConstraint.filePath)
+            quote(this.backboneConstraint.filePath),
           );
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.multifurcatingConstraint.filePath)
+            quote(this.multifurcatingConstraint.filePath),
           );
         }
         break;
@@ -1320,7 +1321,7 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         first.push('--seed', this.seedParsimony);
         if (!this.numThreads.notAvailable) {
@@ -1335,13 +1336,13 @@ class Run extends StoreBase {
         if (this.backboneConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.backboneConstraint.filePath)
+            quote(this.backboneConstraint.filePath),
           );
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.multifurcatingConstraint.filePath)
+            quote(this.multifurcatingConstraint.filePath),
           );
         }
         break;
@@ -1359,7 +1360,7 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         first.push('--seed', this.seedParsimony);
         if (!this.numThreads.notAvailable) {
@@ -1374,13 +1375,13 @@ class Run extends StoreBase {
         if (this.backboneConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.backboneConstraint.filePath)
+            quote(this.backboneConstraint.filePath),
           );
         }
         if (this.multifurcatingConstraint.isSet) {
           first.push(
             '--tree-constraint',
-            quote(this.multifurcatingConstraint.filePath)
+            quote(this.multifurcatingConstraint.filePath),
           );
         }
         break;
@@ -1398,7 +1399,7 @@ class Run extends StoreBase {
         }
         first.push(
           '--prefix',
-          quote(join(this.outputDir, this.outputNameSafe))
+          quote(join(this.outputDir, this.outputNameSafe)),
         );
         first.push('--tree', quote(this.tree.filePath));
         break;
@@ -1449,7 +1450,7 @@ class Run extends StoreBase {
         if (this.branchLength.value) {
           const treeFile1 = join(
             this.outputDir,
-            `RAxML_fastTree.${this.outputFilenameSafe}`
+            `RAxML_fastTree.${this.outputFilenameSafe}`,
           );
           const next = [];
           if (!this.numThreads.notAvailable) {
@@ -1477,7 +1478,7 @@ class Run extends StoreBase {
           const treeFile2 = this.branchLength.value
             ? join(
                 this.outputDir,
-                `RAxML_result.brL.${this.outputFilenameSafe}`
+                `RAxML_result.brL.${this.outputFilenameSafe}`,
               )
             : join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
@@ -1543,7 +1544,7 @@ class Run extends StoreBase {
         if (this.sHlike.value) {
           const treeFile = join(
             this.outputDir,
-            `RAxML_bestTree.${this.outputFilenameSafe}`
+            `RAxML_bestTree.${this.outputFilenameSafe}`,
           );
           const next = [];
           if (!this.numThreads.notAvailable) {
@@ -1626,11 +1627,11 @@ class Run extends StoreBase {
         const outputFilenameSafe2 = `${this.outputNameSafe}B.tre`;
         const treeFile = join(
           this.outputDir,
-          `RAxML_bestTree.${outputFilenameSafe2}`
+          `RAxML_bestTree.${outputFilenameSafe2}`,
         ); // MLtreeR
         const treesFile = join(
           this.outputDir,
-          `RAxML_bootstrap.${outputFilenameSafe1}`
+          `RAxML_bootstrap.${outputFilenameSafe1}`,
         ); // trees
         // first wrote RAxML_bootstrap.binary_8R.tre
         // second wrote RAxML_bootstrap.binary_8B.tre
@@ -1737,7 +1738,7 @@ class Run extends StoreBase {
 
         const bsTreeFile = join(
           this.outputDir,
-          `RAxML_bootstrap.${this.outputFilenameSafe}`
+          `RAxML_bootstrap.${this.outputFilenameSafe}`,
         );
         const consensusOutput = `consensus.${this.outputFilenameSafe}`;
 
@@ -1921,7 +1922,7 @@ Results saved to: ${this.outputDir}
 `;
     let argumentext = 'RAxML was called with these arguments:\n';
     this.args.map(
-      (arg, index) => (argumentext += `${index + 1}.) ${arg.join(' ')}\n`)
+      (arg, index) => (argumentext += `${index + 1}.) ${arg.join(' ')}\n`),
     );
     text += argumentext;
     // TODO: should we be more precise about what the single params mean?
@@ -1934,7 +1935,7 @@ Results saved to: ${this.outputDir}
   @computed get settingsFilePath() {
     return join(
       `${this.outputDir}`,
-      `RAxML_GUI_Settings_${this.outputNameSafe}.txt`
+      `RAxML_GUI_Settings_${this.outputNameSafe}.txt`,
     );
   }
 
@@ -1984,8 +1985,8 @@ Results saved to: ${this.outputDir}
     if (this.finalAlignment.numSequences <= 3) {
       this.parent.onError(
         new UserFixError(
-          'To start a run with RAxML the final alignment needs to have at least four sequences.'
-        )
+          'To start a run with RAxML the final alignment needs to have at least four sequences.',
+        ),
       );
       return;
     }
@@ -2280,7 +2281,7 @@ Results saved to: ${this.outputDir}
   onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
     if (id === this.id) {
       console.log(
-        `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`
+        `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
       );
       this.resultDir = resultDir;
       this.atomFinished.reportChanged();

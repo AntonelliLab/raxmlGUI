@@ -36,9 +36,11 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
     if (!modelSettings) {
       return [];
     }
-    return modelSettings.options.map(value => ({ value, title: value }));
+    return modelSettings.options.map((value) => ({ value, title: value }));
   }
-  @computed get notAvailable() { return !this.alignment.run.haveAlignments; }
+  @computed get notAvailable() {
+    return !this.alignment.run.haveAlignments;
+  }
   @computed get cmdValue() {
     let model = this.value;
     if (this.alignment.dataType === 'multistate') {
@@ -52,7 +54,9 @@ class RaxmlNgModelExtraParam extends Option {
   constructor(alignment, label, options, { addNone = true } = {}) {
     super(alignment.run, addNone ? '<none>' : options[0].value, label);
     this.alignment = alignment;
-    this.optionsSource = addNone ? [{ value: '<none>', title: 'none' }, ...options] : options;
+    this.optionsSource = addNone
+      ? [{ value: '<none>', title: 'none' }, ...options]
+      : options;
     this.addNone = addNone;
   }
   @computed get options() {
@@ -62,10 +66,7 @@ class RaxmlNgModelExtraParam extends Option {
     return this.optionsSource;
   }
   @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      !this.run.usesRaxmlNg
-    );
+    return !this.run.haveAlignments || !this.run.usesRaxmlNg;
   }
   @computed get cmdValue() {
     return this.value === '<none>' ? '' : this.value;
@@ -77,8 +78,9 @@ class RaxmlNgModelF extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Stationary frequencies',
-      raxmlNgSettings.stationaryFrequenciesOptions.options.map(({ value, label: title }) =>
-        ({ value, title }))
+      raxmlNgSettings.stationaryFrequenciesOptions.options.map(
+        ({ value, label: title }) => ({ value, title }),
+      ),
     );
   }
 }
@@ -88,8 +90,9 @@ class RaxmlNgModelI extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Proportion of invariant sites',
-      raxmlNgSettings.proportionOfInvariantSitesOptions.options.map(({ value, label: title }) =>
-        ({ value, title }))
+      raxmlNgSettings.proportionOfInvariantSitesOptions.options.map(
+        ({ value, label: title }) => ({ value, title }),
+      ),
     );
   }
 }
@@ -99,8 +102,9 @@ class RaxmlNgModelG extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Rate heterogeneity',
-      raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options.map(({ value, label: title }) =>
-        ({ value, title }))
+      raxmlNgSettings.amongsiteRateHeterogeneityModelOptions.options.map(
+        ({ value, label: title }) => ({ value, title }),
+      ),
     );
   }
 }
@@ -110,9 +114,10 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
     super(
       alignment,
       'Ascertainment bias',
-      [{ value: '<none>', label: 'No correction' },
-      ...raxmlNgSettings.ascertainmentBiasCorrectionOptions.options].map(({ value, label: title }) =>
-        ({ value, title })),
+      [
+        { value: '<none>', label: 'No correction' },
+        ...raxmlNgSettings.ascertainmentBiasCorrectionOptions.options,
+      ].map(({ value, label: title }) => ({ value, title })),
       { addNone: false },
     );
   }
@@ -131,10 +136,16 @@ class MultistateNumber extends Option {
     this.alignment = alignment;
     this.placeholder = 'Integer';
   }
-  @computed get notAvailable() { return this.alignment.dataType !== 'multistate' || !this.alignment.run.usesRaxmlNg; }
-  @computed get error() { return !this.value || !Number.isInteger(Number(this.value)) }
+  @computed get notAvailable() {
+    return (
+      this.alignment.dataType !== 'multistate' ||
+      !this.alignment.run.usesRaxmlNg
+    );
+  }
+  @computed get error() {
+    return !this.value || !Number.isInteger(Number(this.value));
+  }
 }
-
 
 class Alignment extends InputFile {
   constructor(run, path) {
@@ -300,8 +311,8 @@ class Alignment extends InputFile {
     if (this.numSequences < 3) {
       this.run.parent.onError(
         new UserFixError(
-          'ModelTest can only be run on alignments with more than two sequences.'
-        )
+          'ModelTest can only be run on alignments with more than two sequences.',
+        ),
       );
       return;
     }
@@ -418,7 +429,7 @@ class Alignment extends InputFile {
         const newDataType = getFinalDataType(
           this.run.alignments
             .map(({ dataType }) => dataType)
-            .concat(alignment.dataType)
+            .concat(alignment.dataType),
         );
         if (this.run.dataType !== newDataType) {
           this.run.substitutionMatrix.value =
@@ -458,7 +469,7 @@ class Alignment extends InputFile {
       ipc.ALIGNMENT_PARSE_CHANGED_PATH,
       (
         event,
-        { id, newFilePath, format, converted, modified, modificationMessages }
+        { id, newFilePath, format, converted, modified, modificationMessages },
       ) => {
         if (id === this.id) {
           runInAction(() => {
@@ -474,7 +485,7 @@ class Alignment extends InputFile {
             }
           });
         }
-      }
+      },
     );
     ipcRenderer.on(
       ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
@@ -484,7 +495,7 @@ class Alignment extends InputFile {
           this.setModelFromString(result);
           this.run.afterRun();
         }
-      }
+      },
     );
     ipcRenderer.on(
       ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
@@ -495,7 +506,7 @@ class Alignment extends InputFile {
           this.run.error = error;
           this.run.afterRun();
         }
-      }
+      },
     );
     //TODO: Transform above to the form of below to be able to unlisten on removal
     this.listenTo(ipc.RUN_STDOUT, this.onRunStdout);
@@ -597,11 +608,16 @@ class FinalAlignment {
 
   @action setFillTaxonGapsWithEmptySeqeunces = (checked) => {
     this.fillTaxonGapsWithEmptySeqeunces = checked;
-  }
+  };
 
   @computed get taxons() {
-    const setMethod = this.fillTaxonGapsWithEmptySeqeunces ? union : intersection;
-    return setMethod.apply(setMethod, this.run.alignments.map(({ taxons }) => taxons));
+    const setMethod = this.fillTaxonGapsWithEmptySeqeunces
+      ? union
+      : intersection;
+    return setMethod.apply(
+      setMethod,
+      this.run.alignments.map(({ taxons }) => taxons),
+    );
   }
 
   @computed get numSequences() {
@@ -609,7 +625,10 @@ class FinalAlignment {
   }
 
   @computed get length() {
-    return this.run.alignments.reduce((sumLength, alignment) => sumLength + alignment.length, 0);
+    return this.run.alignments.reduce(
+      (sumLength, alignment) => sumLength + alignment.length,
+      0,
+    );
   }
 
   @computed get hasInvariantSites() {
@@ -639,13 +658,11 @@ class FinalAlignment {
   //   return firstType;
   // }
 
-
   @computed get dataType() {
     const { alignments } = this.run;
     const dataTypes = alignments.map(({ dataType }) => dataType);
     return getFinalDataType(dataTypes);
   }
-
 
   @computed get modelFlagName() {
     const numAlignments = this.numAlignments;
@@ -664,7 +681,10 @@ class FinalAlignment {
       return '';
     }
     const suffix = this.numAlignments > 1 ? '_concat' : '';
-    return join(`${this.dir}`, `RAxML_${this.run.outputNameSafe}${suffix}.part.txt`);
+    return join(
+      `${this.dir}`,
+      `RAxML_${this.run.outputNameSafe}${suffix}.part.txt`,
+    );
   }
 
   @computed get partitionFileContent() {
@@ -705,7 +725,9 @@ class FinalAlignment {
   writeConcatenatedAlignment = async () => {
     const { taxons, numSequences } = this;
     try {
-      console.log(`Write concatenated alignment in FASTA format to ${this.path}..`);
+      console.log(
+        `Write concatenated alignment in FASTA format to ${this.path}..`,
+      );
       const writeStream = fs.createWriteStream(this.path);
       const write = util.promisify(writeStream.write);
       const end = util.promisify(writeStream.end);
@@ -715,12 +737,14 @@ class FinalAlignment {
             const prefix = i === 0 ? '>' : '\n>';
             await write.call(writeStream, `${prefix}${taxons[i]}\n`);
           }
-          await write.call(writeStream, this.run.alignments[j].getSequenceCode(taxons[i]));
+          await write.call(
+            writeStream,
+            this.run.alignments[j].getSequenceCode(taxons[i]),
+          );
         }
       }
       await end.call(writeStream);
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Error writing concatenated alignment:', err);
       throw err;
     }
@@ -731,13 +755,11 @@ class FinalAlignment {
     try {
       console.log(`Writing partition to ${this.partitionFilePath}...`);
       await writeFile(this.partitionFilePath, this.partitionFileContent);
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Error writing partition:', err);
       throw err;
     }
-  }
-
+  };
 }
 
 export { Alignment as default, FinalAlignment };

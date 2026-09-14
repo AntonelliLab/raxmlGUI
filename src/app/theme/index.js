@@ -197,15 +197,15 @@ const lightTheme = {
     // Used by the functions below to shift a color's luminance by approximately
     // two indexes within its tonal palette.
     // E.g., shift from Red 500 to Red 300 or Red 700.
-    tonalOffset: 0.2
+    tonalOffset: 0.2,
   },
   // Migration to typography v2
   typography: {
-    useNextVariants: true
-  }
+    useNextVariants: true,
+  },
 };
 
 export default {
   light: createTheme(lightTheme),
-  dark: createTheme(darkTheme)
+  dark: createTheme(darkTheme),
 };
