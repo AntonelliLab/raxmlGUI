@@ -28,6 +28,13 @@ is.development ? null : Sentry.init({
 
 const fs = _fs.promises;
 
+function getStaticDir() {
+  if (process.env.RAXMLGUI_E2E === '1') {
+    return path.join(__dirname, '..', '..', 'static');
+  }
+  return __static;
+}
+
 const get_space_safe_binary_path = (bin_path) => {
   // For Windows users with spaces in user dir
   return is.windows ? `"${bin_path}"` : bin_path;
@@ -228,7 +235,7 @@ const binParentDir = app.isPackaged
       windows: 'Windows',
       linux: 'Linux',
     });
-const binaryDir = path.join(__static, 'bin', binParentDir);
+const binaryDir = path.join(getStaticDir(), 'bin', binParentDir);
 
 ipcMain.on(
   ipc.RUN_START,
@@ -713,9 +720,9 @@ ipcMain.on(ipc.ASTRAL_FILE_SELECT, (event, runId) => {
 });
 
 ipcMain.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async (event) => {
-  // __static is defined by electron-webpack
-  const dir = path.join(__static, 'example-files');
-  const outdir = path.join(__static, 'test-results');
+  const staticDir = getStaticDir();
+  const dir = path.join(staticDir, 'example-files');
+  const outdir = path.join(staticDir, 'test-results');
   // Create outdir if not exists
   await fs.mkdir(outdir, { recursive: true });
   const fastaFiles = await fs.readdir(path.join(dir, 'fasta'));
