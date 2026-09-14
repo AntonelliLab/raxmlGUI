@@ -1,5 +1,18 @@
 require('dotenv').config();
+const { execSync } = require('child_process');
 const { notarize } = require('@electron/notarize');
+
+function assertDeveloperIdSigned(appPath) {
+  const output = execSync(`codesign -dv --verbose=4 "${appPath}" 2>&1`, {
+    encoding: 'utf8',
+  });
+
+  if (!output.includes('Authority=Developer ID Application')) {
+    throw new Error(
+      `Refusing to notarize ${appPath}: app is not signed with a Developer ID Application certificate.`
+    );
+  }
+}
 
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
@@ -34,11 +47,15 @@ exports.default = async function notarizing(context) {
   }
 
   const appName = context.packager.appInfo.productFilename;
+  const appPath = `${appOutDir}/${appName}.app`;
+
+  assertDeveloperIdSigned(appPath);
+
   console.log(`Notarizing ${appName} found at ${appOutDir}`);
 
   return await notarize({
     appBundleId: 'org.jtklein.raxmlGUI2',
-    appPath: `${appOutDir}/${appName}.app`,
+    appPath,
     appleId,
     appleIdPassword,
     teamId,
