@@ -6,6 +6,7 @@ powered-test
 # asset directories
 docs
 doc
+!**/yaml/dist/**/doc
 website
 images
 assets
