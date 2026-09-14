@@ -5,7 +5,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { FormControl } from '@mui/material';
 
-
 const OptionCheck = observer(({ option, sx }) => {
   if (option.notAvailable) {
     return null;

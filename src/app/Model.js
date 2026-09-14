@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 const Model = ({ run }) => {
-
   // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top
   if (run.usesModeltestNg) {
     return (
@@ -90,7 +89,8 @@ const Model = ({ run }) => {
             title="Random seed"
             sx={{ width: 60 }}
             value={run.randomSeed}
-            onChange={(e) => run.setRandomSeed(e.target.value)} />
+            onChange={(e) => run.setRandomSeed(e.target.value)}
+          />
         ) : null}
       </Box>
       <Box
@@ -129,7 +129,6 @@ const Model = ({ run }) => {
     </Box>
   );
 };
-
 
 Model.propTypes = {
   run: PropTypes.object.isRequired,

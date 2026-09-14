@@ -172,12 +172,10 @@ function AlignmentCard({ alignment }) {
                   ...alignment.modelExtra,
                   setValue: alignment.modelExtra.onChange,
                   title: alignment.modelExtra.label,
-                  options: alignment.modelExtra.options.map((model) => (
-                    {
-                      value: model,
-                      title: model,
-                    }
-                  )),
+                  options: alignment.modelExtra.options.map((model) => ({
+                    value: model,
+                    title: model,
+                  })),
                 }}
               />
             ) : null}
@@ -207,10 +205,7 @@ function AlignmentCard({ alignment }) {
         avatar={Type}
         action={
           <div>
-            <Tooltip
-              aria-label="remove-alignment"
-              title="Remove alignment"
-            >
+            <Tooltip aria-label="remove-alignment" title="Remove alignment">
               <IconButton onClick={alignment.remove} size="large">
                 <DeleteForeverIcon />
               </IconButton>
@@ -220,7 +215,8 @@ function AlignmentCard({ alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-              size="large">
+              size="large"
+            >
               <MoreVertIcon />
             </IconButton>
 
@@ -342,7 +338,8 @@ function FinalAlignmentCard({ sx, alignment }) {
               aria-owns={anchorEl ? 'alignment-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-              size="large">
+              size="large"
+            >
               <MoreVertIcon />
             </IconButton>
 
@@ -376,7 +373,7 @@ function FinalAlignmentCard({ sx, alignment }) {
               checked={alignment.fillTaxonGapsWithEmptySeqeunces}
               onChange={(event) => {
                 alignment.setFillTaxonGapsWithEmptySeqeunces(
-                  event.target.checked
+                  event.target.checked,
                 );
               }}
               value="fillTaxonGapsWithEmptySeqeunces"
@@ -406,7 +403,8 @@ function FinalAlignmentCard({ sx, alignment }) {
             component="code"
             sx={{
               color: (theme) => theme.palette.primary.contrastText,
-              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontFamily:
+                'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '10px',
               height: '100%',
               overflowWrap: 'break-word',

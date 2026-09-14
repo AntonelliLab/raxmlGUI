@@ -11,11 +11,14 @@ class Option {
    * @param {String} hoverInfo
    * @param {yup|undefined} schema
    */
-  constructor(run, defaultValue, title, description, hoverInfo, {
-    schema = undefined,
-    allowOnlyValidChange = false,
-    helperText = '',
-  } = {}) {
+  constructor(
+    run,
+    defaultValue,
+    title,
+    description,
+    hoverInfo,
+    { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
+  ) {
     this.run = run;
     this.defaultValue = defaultValue;
     this.title = title;
@@ -31,9 +34,13 @@ class Option {
     if (!this.allowOnlyValidChange || isValid) {
       this.value = isValid ? this.schema.cast(value) : value;
     }
+  };
+  @action reset() {
+    this.value = this.defaultValue;
   }
-  @action reset() { this.value = this.defaultValue; }
-  @computed get isDefault() { return this.value === this.defaultValue; }
+  @computed get isDefault() {
+    return this.value === this.defaultValue;
+  }
   @computed get error() {
     try {
       this.schema.validateSync(this.value);
@@ -42,8 +49,12 @@ class Option {
       return err;
     }
   }
-  @computed get haveError() { return this.error !== null; }
-  @computed get errorMessage() { return this.haveError ? this.error.message : '' }
+  @computed get haveError() {
+    return this.error !== null;
+  }
+  @computed get errorMessage() {
+    return this.haveError ? this.error.message : '';
+  }
 }
 
 export { Option as default };

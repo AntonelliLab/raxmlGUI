@@ -13,7 +13,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CodeHighlight from './components/CodeHighlight';
 
 function CitationModal({ citation }) {
-
   return (
     <Card
       elevation={0}
@@ -22,13 +21,13 @@ function CitationModal({ citation }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        maxWidth: '700px'
+        maxWidth: '700px',
       }}
     >
       <CardContent
         sx={{
           maxHeight: '600px',
-          overflowY: 'auto'
+          overflowY: 'auto',
         }}
       >
         <Typography variant="h4">How to cite?</Typography>
@@ -43,7 +42,7 @@ function CitationModal({ citation }) {
             aria-label="text format"
             size="small"
           >
-            {citation.formats.map(format => (
+            {citation.formats.map((format) => (
               <ToggleButton
                 key={format.value}
                 value={format.value}
@@ -54,7 +53,7 @@ function CitationModal({ citation }) {
             ))}
           </ToggleButtonGroup>
         </Box>
-        {citation.content.map(article => (
+        {citation.content.map((article) => (
           <Box key={article.name} mt={2}>
             <Typography variant="subtitle2">{article.name}</Typography>
             <CodeHighlight
@@ -63,7 +62,7 @@ function CitationModal({ citation }) {
               sx={{
                 backgroundColor: (theme) => theme.palette.output.background,
                 borderRadius: '4px',
-                padding: '4px'
+                padding: '4px',
               }}
             />
           </Box>
@@ -90,7 +89,7 @@ function CitationModal({ citation }) {
 }
 
 CitationModal.propTypes = {
-  citation: PropTypes.object.isRequired
+  citation: PropTypes.object.isRequired,
 };
 
 export default observer(CitationModal);

@@ -8,9 +8,12 @@ if (process.env.NODE_ENV === 'development') {
   ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST);
 }
 
-ipcRenderer.on(ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, (event, exampleFiles) => {
-  initDev(exampleFiles);
-});
+ipcRenderer.on(
+  ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS,
+  (event, exampleFiles) => {
+    initDev(exampleFiles);
+  },
+);
 
 function initDev(exampleFiles) {
   // if (exampleFiles.length === 0) {
@@ -28,7 +31,9 @@ function initDev(exampleFiles) {
     // 'mixed_data.txt',
     // 'multistate.txt',
     'nucleotide.txt',
-  ].map(filename => ({ path: path.join(exampleFilesDir, 'fasta', filename) }));
+  ].map((filename) => ({
+    path: path.join(exampleFilesDir, 'fasta', filename),
+  }));
   const usePhylipFiles = [
     // 'AA.txt',
     // 'align_allvariant.txt',
@@ -46,7 +51,9 @@ function initDev(exampleFiles) {
     // 'fail_bad_name.txt',
     // 'test_invariant_sites.txt',
     // 'test_lower_case_bases.txt',
-  ].map(filename => ({ path: path.join(exampleFilesDir, 'phylip', filename) }));
+  ].map((filename) => ({
+    path: path.join(exampleFilesDir, 'phylip', filename),
+  }));
   const useFiles = [].concat(useFastaFiles, usePhylipFiles);
   store.activeRun.addAlignments(useFiles);
   store.activeRun.setOutputDir(exampleFiles.outdir);

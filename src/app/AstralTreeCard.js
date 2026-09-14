@@ -16,7 +16,7 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
 function AstralTreeCard({ astralTree }) {
-  const { } = astralTree;
+  const {} = astralTree;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -44,9 +44,7 @@ function AstralTreeCard({ astralTree }) {
       }}
     >
       <Box>
-        <Box display="flex" flexWrap="wrap" alignItems="center">
-
-        </Box>
+        <Box display="flex" flexWrap="wrap" alignItems="center"></Box>
       </Box>
     </Box>
   );
@@ -91,7 +89,8 @@ function AstralTreeCard({ astralTree }) {
               aria-owns={anchorEl ? 'astralTree-menu' : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
-              size="large">
+              size="large"
+            >
               <MoreVertIcon />
             </IconButton>
 

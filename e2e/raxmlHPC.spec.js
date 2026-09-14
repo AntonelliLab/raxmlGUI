@@ -60,13 +60,13 @@ test.describe('raxmlHPC', () => {
     const outputFilename = `${outputId}.tre`;
     const bestTreePath = path.join(
       outputDir,
-      `RAxML_bestTree.${outputFilename}`
+      `RAxML_bestTree.${outputFilename}`,
     );
     const infoPathTxt = path.join(outputDir, `RAxML_info.${outputId}.txt`);
     const infoPathTre = path.join(outputDir, `RAxML_info.${outputFilename}`);
     const settingsPath = path.join(
       outputDir,
-      `RAxML_GUI_Settings_${outputId}.txt`
+      `RAxML_GUI_Settings_${outputId}.txt`,
     );
 
     const runButton = page.getByTestId('run-analysis');
@@ -82,7 +82,10 @@ test.describe('raxmlHPC', () => {
     expect(bestTree).toContain('TAXON_');
     expect(bestTree).toMatch(/[()]/);
 
-    const infoPath = (await fs.stat(infoPathTxt).then(() => infoPathTxt).catch(() => infoPathTre));
+    const infoPath = await fs
+      .stat(infoPathTxt)
+      .then(() => infoPathTxt)
+      .catch(() => infoPathTre);
     const infoText = await fs.readFile(infoPath, 'utf8');
     expect(infoText.length).toBeGreaterThan(0);
   });

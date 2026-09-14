@@ -13,7 +13,7 @@ const Output = ({ run }) => {
   const haveResult = resultFilenames.length > 0;
 
   return (
-    (<Box
+    <Box
       sx={{
         width: '100%',
         padding: '10px',
@@ -42,48 +42,55 @@ const Output = ({ run }) => {
           slotProps={{
             input: {
               readOnly: true,
-            }
-          }} />
+            },
+          }}
+        />
         <TextField
           variant="standard"
           id="output-name"
-          helperText={run.outputNameNotice || "Select output name"}
+          helperText={run.outputNameNotice || 'Select output name'}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
-          onChange={e => run.setOutputName(e.target.value)}
-          error={!run.outputNameOk} />
+          onChange={(e) => run.setOutputName(e.target.value)}
+          error={!run.outputNameOk}
+        />
       </Box>
       <Box mt={1} display="flex" flexDirection="column" alignItems="stretch">
-      { haveResult ? <Typography>Result for output id '{run.outputName}' </Typography> : null }
-      { resultFilenames.map(filename =>
-        <Link
-          key={filename}
-          sx={{
-            color: (theme) => theme.palette.primary.contrastText,
-            display: 'flex',
-            alignItems: 'flex-end',
-            cursor: 'pointer',
-          }}
-          onClick={() => run.openFile(join(run.outputDir, filename))}
-          underline="hover">
-          <FileIcon/>
-          <Box
-            component="span"
+        {haveResult ? (
+          <Typography>Result for output id '{run.outputName}' </Typography>
+        ) : null}
+        {resultFilenames.map((filename) => (
+          <Link
+            key={filename}
             sx={{
               color: (theme) => theme.palette.primary.contrastText,
+              display: 'flex',
+              alignItems: 'flex-end',
+              cursor: 'pointer',
             }}
+            onClick={() => run.openFile(join(run.outputDir, filename))}
+            underline="hover"
           >
-            {filename}
-          </Box>
-        </Link>
-      )}
+            <FileIcon />
+            <Box
+              component="span"
+              sx={{
+                color: (theme) => theme.palette.primary.contrastText,
+              }}
+            >
+              {filename}
+            </Box>
+          </Link>
+        ))}
       </Box>
-      { run.haveAlignments || haveResult ? (
+      {run.haveAlignments || haveResult ? (
         <Box component="form" my={1}>
-          <Button onClick={run.openOutputDir} variant="outlined">Open folder</Button>
+          <Button onClick={run.openOutputDir} variant="outlined">
+            Open folder
+          </Button>
         </Box>
-      ) : null }
-    </Box>)
+      ) : null}
+    </Box>
   );
 };
 

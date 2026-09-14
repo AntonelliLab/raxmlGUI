@@ -83,7 +83,7 @@ class RunList extends AppStore {
     this.listenTo(ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint);
     this.listenTo(
       ipc.TOGGLE_MULTIFURCATING_CONSTRAINT,
-      this.onMultifurcatingConstraint
+      this.onMultifurcatingConstraint,
     );
   };
 

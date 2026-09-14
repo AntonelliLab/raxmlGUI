@@ -1,4 +1,4 @@
-import UserFixError from "./errors";
+import UserFixError from './errors';
 
 export const isFasta = (lines) => {
   for (let i = 0; i < lines.length; ++i) {
@@ -11,10 +11,9 @@ export const isFasta = (lines) => {
     }
   }
   return false;
-}
+};
 
 export const parse = (lines) => {
-
   if (!isFasta(lines)) {
     throw new Error(`Could not parse the file as a FASTA file`);
   }
@@ -30,14 +29,14 @@ export const parse = (lines) => {
       throw new Error(`Empty taxon at line ${lineIndex + 1}`);
     }
     return taxon;
-  }
+  };
   const parseCode = (line) => {
     const code = line.replace(/\s+/g, '');
     if (!code) {
       throw new Error(`Empty sequence at line ${lineIndex + 1}`);
     }
     return code;
-  }
+  };
 
   const sequences = [];
   let taxon = '';
@@ -47,7 +46,7 @@ export const parse = (lines) => {
     const code = codeLines.join('');
     sequences.push({ taxon, code });
     codeLines = [];
-  }
+  };
 
   for (; lineIndex < lines.length; ++lineIndex) {
     const line = lines[lineIndex];
@@ -60,10 +59,11 @@ export const parse = (lines) => {
         codeLines = [];
       }
       taxon = parseTaxon(line);
-    }
-    else {
+    } else {
       if (!taxon) {
-        throw new Error(`'No taxon line found before line ${lineIndex+1} ('${line}')`);
+        throw new Error(
+          `'No taxon line found before line ${lineIndex + 1} ('${line}')`,
+        );
       }
       codeLines.push(parseCode(line));
     }
@@ -75,7 +75,9 @@ export const parse = (lines) => {
   // Check that all sequnces have the same length;
   for (let seq of sequences) {
     if (seq.code.length !== length) {
-      throw new UserFixError(`Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`);
+      throw new UserFixError(
+        `Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`,
+      );
     }
   }
 
@@ -88,8 +90,7 @@ export const parse = (lines) => {
   };
 
   return alignment;
-
-}
+};
 
 export default {
   isFasta,

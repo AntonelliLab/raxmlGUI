@@ -22,7 +22,9 @@ export default function ModifiedDialog({ show, onClose, messages }) {
     <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
       <DialogTitle id="error-dialog-title">{'Attention'}</DialogTitle>
       <DialogContent>
-        {'This will be using a copy of your input file, because there were some issues!'}
+        {
+          'This will be using a copy of your input file, because there were some issues!'
+        }
         <Box p={1}>
           <Accordion>
             <AccordionSummary
@@ -59,4 +61,4 @@ export default function ModifiedDialog({ show, onClose, messages }) {
 ModifiedDialog.propTypes = {
   error: PropTypes.object,
   onClose: PropTypes.func.isRequired,
-}
+};

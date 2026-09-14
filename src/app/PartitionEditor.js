@@ -26,68 +26,72 @@ function PartitionEditor({ alignment }) {
   const { partToAdd } = partition;
 
   return (
-    (<Box
+    <Box
       p={4}
       pt={2}
       sx={{
         backgroundColor: (theme) => theme.palette.input.background,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
       }}
     >
       <Typography variant="h6">Partition editor</Typography>
       <Box mb={2} sx={{ width: '100%' }}>
-        <LinearProgress variant="determinate" color="primary" value={partition.progress} />
-        <Box display="flex" justifyContent="space-between" sx={{ marginTop: 2 }}>
-          <small style={{ color: '#999' }}>{alignment.filename}: {alignment.numSequences} sequences of length {alignment.length}</small>
-          <small style={{ color: '#999', marginLeft: 10 }}>Partition coverage: {partition.currentEndValue} / {partition.maxEndValue}</small>
+        <LinearProgress
+          variant="determinate"
+          color="primary"
+          value={partition.progress}
+        />
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{ marginTop: 2 }}
+        >
+          <small style={{ color: '#999' }}>
+            {alignment.filename}: {alignment.numSequences} sequences of length{' '}
+            {alignment.length}
+          </small>
+          <small style={{ color: '#999', marginLeft: 10 }}>
+            Partition coverage: {partition.currentEndValue} /{' '}
+            {partition.maxEndValue}
+          </small>
         </Box>
       </Box>
       <Box>
         <Grid container spacing={1} alignItems="flex-end">
           <Grid>
-            <OptionSelect
-              option={partToAdd.type}
-              sx={{ width: 100 }}
-            />
+            <OptionSelect option={partToAdd.type} sx={{ width: 100 }} />
           </Grid>
           <Grid>
-            <OptionSelect
-              option={partToAdd.aaType}
-              sx={{ width: 120 }}
-            />
+            <OptionSelect option={partToAdd.aaType} sx={{ width: 120 }} />
           </Grid>
           <Grid>
-            <OptionTextField
-              option={partToAdd.name}
-              sx={{ width: 200 }}
-            />
+            <OptionTextField option={partToAdd.name} sx={{ width: 200 }} />
           </Grid>
           <Grid>
-            <OptionTextField
-              option={partToAdd.start}
-              sx={{ width: 70 }}
-            />
+            <OptionTextField option={partToAdd.start} sx={{ width: 70 }} />
           </Grid>
           <Grid>
-            <OptionTextField
-              option={partToAdd.end}
-              sx={{ width: 70 }}
-            />
+            <OptionTextField option={partToAdd.end} sx={{ width: 70 }} />
           </Grid>
           <Grid>
-            <OptionSelect
-              option={partToAdd.codon}
-              sx={{ width: 200 }}
-            />
+            <OptionSelect option={partToAdd.codon} sx={{ width: 200 }} />
           </Grid>
           <Grid>
-            <Button variant="outlined" disabled={partition.addPartDisabled} onClick={handleAdd}>Add</Button>
+            <Button
+              variant="outlined"
+              disabled={partition.addPartDisabled}
+              onClick={handleAdd}
+            >
+              Add
+            </Button>
           </Grid>
         </Grid>
         <Box mt={1} display="flex" justifyContent="flex-end">
-          <Typography variant="caption" color="error">{partition.errorMessage || ' '}</Typography>
+          <Typography variant="caption" color="error">
+            {partition.errorMessage || ' '}
+          </Typography>
         </Box>
       </Box>
       <Box mt={2} sx={{ width: '100%' }}>
@@ -95,7 +99,8 @@ function PartitionEditor({ alignment }) {
           sx={{
             width: '100%',
             '& .MuiInputBase-input': {
-              fontFamily: 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
+              fontFamily:
+                'Consolas, "Liberation Mono", Menlo, Courier, monospace',
             },
           }}
           id="partition"
@@ -110,23 +115,36 @@ function PartitionEditor({ alignment }) {
           variant="outlined"
         />
       </Box>
-      <Grid container spacing={1} justifyContent="flex-end" sx={{ width: '100%' }}>
-        { partition.isDefault ? null : (
+      <Grid
+        container
+        spacing={1}
+        justifyContent="flex-end"
+        sx={{ width: '100%' }}
+      >
+        {partition.isDefault ? null : (
           <Grid>
-            <Button variant="outlined" title="Clear partition entries" onClick={partition.reset}>Reset</Button>
+            <Button
+              variant="outlined"
+              title="Clear partition entries"
+              onClick={partition.reset}
+            >
+              Reset
+            </Button>
           </Grid>
         )}
         <Grid>
-          <Button variant="outlined" onClick={alignment.hidePartition}>Back</Button>
+          <Button variant="outlined" onClick={alignment.hidePartition}>
+            Back
+          </Button>
         </Grid>
       </Grid>
-    </Box>)
+    </Box>
   );
 }
 
 PartitionEditor.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 const PartitionEditorObserver = observer(PartitionEditor);
@@ -134,7 +152,7 @@ const PartitionEditorObserver = observer(PartitionEditor);
 function PartitionOnCard({ alignment }) {
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
   const [partitionText, setPartitionText] = React.useState(
-    alignment.partitionFileContent
+    alignment.partitionFileContent,
   );
 
   function handleChange(event) {
@@ -159,7 +177,7 @@ function PartitionOnCard({ alignment }) {
         marginTop: -30,
         backgroundColor: 'rgba(0,0,0,0)', // transparent background
         display: 'flex',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
       }}
       elevation={0}
     >
@@ -176,7 +194,7 @@ function PartitionOnCard({ alignment }) {
             padding: 0,
             marginTop: '10px',
             marginLeft: 1,
-            marginRight: 1
+            marginRight: 1,
           }}
           margin="normal"
           helperText={alignment.partitionHelperText || ''}
@@ -203,12 +221,12 @@ function PartitionOnCard({ alignment }) {
 
 PartitionOnCard.propTypes = {
   alignment: PropTypes.object.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 const PartitionOnCardObserver = observer(PartitionOnCard);
 
 export {
   PartitionEditorObserver as default,
-  PartitionOnCardObserver as PartitionOnCard
+  PartitionOnCardObserver as PartitionOnCard,
 };

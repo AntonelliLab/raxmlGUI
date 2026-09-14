@@ -11,7 +11,11 @@ function CodeHighlight({ code, language, sx }) {
 
   useEffect(() => {
     if (Prism.languages.hasOwnProperty(language)) {
-      const highlightHTML = Prism.highlight(code, Prism.languages[language], language);
+      const highlightHTML = Prism.highlight(
+        code,
+        Prism.languages[language],
+        language,
+      );
       codeNode.current.innerHTML = highlightHTML;
     }
   }, [code, language]);
@@ -27,7 +31,7 @@ function CodeHighlight({ code, language, sx }) {
           whiteSpace: 'pre-wrap',
         }}
       >
-        { code }
+        {code}
       </Box>
     </Box>
   );
