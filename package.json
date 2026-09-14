@@ -116,7 +116,7 @@
     "prettier": "^3.6.2",
     "shx": "^0.4.0",
     "typescript": "^5.8.3",
-    "wait-on": "^8.0.3"
+    "wait-on": "^9.1.0"
   },
   "browserslist": [
     ">0.2%",
