@@ -6769,10 +6769,10 @@ electron-webpack@^2.8.2:
     webpack-merge "^4.2.2"
     yargs "^15.3.1"
 
-electron@^42.11.2:
-  version "42.11.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-42.11.3.tgz#8118ca9edae331a96ecd98430305c208696b5ad3"
-  integrity sha512-r/rC6BikQ2vEGQLhnHmFwFpvVPlWTc/rnHcYfJe4HDa5MEl00yhx72ffKw7zMf1WvAM2r2hcGJ3ZftuJRo0QaQ==
+electron@^43.7.0:
+  version "43.7.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-43.7.0.tgz#d8f5905a0cc5ee5059b3229f9b65316edcecbcaa"
+  integrity sha512-m98FUehwnoo6q2D9Mr+n602Natb2CRFeKD81GhTdJlKh/Iyud0R1X8hChjpaMBLSsIX9r2ZEFnz0sdIALiO9ZQ==
   dependencies:
     "@electron-internal/extract-zip" "^1.0.1"
     "@electron/get" "^5.0.0"
