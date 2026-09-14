@@ -1,0 +1,47 @@
+name: Docs e2e tests
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'e2e/docs/**'
+      - '.github/workflows/docs-e2e.yaml'
+      - 'package.json'
+
+jobs:
+  docs-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.5'
+          bundler-cache: true
+          working-directory: docs
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Node deps
+        run: yarn --ignore-scripts
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Run docs smoke tests
+        run: yarn test:docs
+        env:
+          CI: true
+          PAGES_REPO_NWO: AntonelliLab/raxmlGUI
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-playwright-report
+          path: playwright-report/
+          retention-days: 7

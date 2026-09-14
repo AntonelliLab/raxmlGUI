@@ -27,6 +27,7 @@
     "react-build": "craco build",
     "react-test": "craco test --env=jsdom",
     "test:e2e": "yarn electron-compile && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
+    "test:docs": "node node_modules/playwright/cli.js test --config e2e/docs/playwright.config.js",
     "react-eject": "react-scripts eject",
     "wait-dev": "wait-on $ELECTRON_START_URL",
     "download-binaries": "node scripts/download-binaries.js",
@@ -53,7 +54,7 @@
     "postinstall-deps": "electron-builder install-app-deps",
     "postinstall-patch": "patch-package",
     "postinstall": "run-s postinstall-deps postinstall-patch",
-    "docs-serve": "cd docs && bundle exec jekyll serve"
+    "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.28.0",
