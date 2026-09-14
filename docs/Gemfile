@@ -39,3 +39,8 @@ gem "kramdown-parser-gfm"
 
 # To preview as github page
 gem "github-pages", group: :jekyll_plugins
+
+# Required for `jekyll serve` on Ruby 3+
+gem "csv"
+gem "bigdecimal"
+gem "webrick"
