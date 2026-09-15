@@ -4,7 +4,7 @@ let SentryCli;
 let download;
 
 try {
-  SentryCli = require('@sentry/cli');
+  SentryCli = require('@sentry/cli').SentryCli;
   download = require('electron-download');
 } catch (e) {
   console.error('ERROR: Missing required packages, please run:');
