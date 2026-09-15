@@ -94,7 +94,7 @@
     "react-scripts": "^5.0.1",
     "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.21",
-    "yup": "^0.32.11"
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
