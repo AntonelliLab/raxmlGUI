@@ -2149,11 +2149,41 @@ Results saved to: ${this.outputDir}
     ipcRenderer.send(ipc.PARTITION_FILE_SELECT, this.id);
   };
 
+  @action
+  addPartitionFiles = async (files) => {
+    if (!files.length) {
+      return;
+    }
+    const { path } = files[0];
+    const content = await readFile(path, 'utf-8');
+    this.partitionFile = path;
+    this.partitionFileContent = content;
+  };
+
   @action onPartitionSelected = async (event, { id, filePath }) => {
     if (id === this.id) {
-      const content = await readFile(filePath, 'utf-8');
-      this.partitionFile = filePath;
-      this.partitionFileContent = content;
+      await this.addPartitionFiles([{ path: filePath }]);
+    }
+  };
+
+  @action
+  addTreeFiles = (type, files) => {
+    if (!files.length) {
+      return;
+    }
+    const { path } = files[0];
+    switch (type) {
+      case 'tree':
+        this.tree.setFilePath(path);
+        break;
+      case 'backboneConstraint':
+        this.backboneConstraint.setFilePath(path);
+        break;
+      case 'multifurcatingConstraint':
+        this.multifurcatingConstraint.setFilePath(path);
+        break;
+      default:
+        break;
     }
   };
 
@@ -2214,19 +2244,7 @@ Results saved to: ${this.outputDir}
   @action
   onTreeSelected = (event, { id, type, filePath }) => {
     if (id === this.id) {
-      switch (type) {
-        case 'tree':
-          this.tree.setFilePath(filePath);
-          break;
-        case 'backboneConstraint':
-          this.backboneConstraint.setFilePath(filePath);
-          break;
-        case 'multifurcatingConstraint':
-          this.multifurcatingConstraint.setFilePath(filePath);
-          break;
-        default:
-          break;
-      }
+      this.addTreeFiles(type, [{ path: filePath }]);
     }
   };
 
