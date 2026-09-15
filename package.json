@@ -90,7 +90,7 @@
     "prop-types": "^15.8.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-dropzone": "20.1.2",
+    "react-dropzone": "^20.1.2",
     "react-scripts": "^5.0.1",
     "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.21",
