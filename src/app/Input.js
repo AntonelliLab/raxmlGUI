@@ -33,6 +33,22 @@ const Input = ({ run }) => {
     run.addPartitionFiles(droppedPathes);
   };
 
+  const onTreeDrop = (type) => (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addTreeFiles(type, droppedPathes);
+  };
+
+  const onAstralTreeDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    if (droppedPathes.length) {
+      run.addAstralFiles(droppedPathes[0]);
+    }
+  };
+
   const dropzoneRootSx = (isDragActive, extra = {}) => ({
     width: 'fit-content',
     alignSelf: 'flex-start',
@@ -100,16 +116,29 @@ const Input = ({ run }) => {
           <PartitionFileCard run={run} />
         </Box>
         {run.canLoadAstralTree ? (
-          <Button
-            variant="outlined"
-            sx={{
-              width: '200px',
-              height: '200px',
-            }}
-            onClick={run.loadAstralTree}
-          >
-            Load input trees
-          </Button>
+          <Dropzone noClick onDrop={onAstralTreeDrop}>
+            {({ getRootProps, getInputProps, isDragActive }) => (
+              <Box
+                {...getRootProps()}
+                sx={dropzoneRootSx(isDragActive, {
+                  width: '200px',
+                  height: '200px',
+                })}
+              >
+                <input {...getInputProps()} style={{ display: 'none' }} />
+                <Button
+                  variant="outlined"
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  onClick={run.loadAstralTree}
+                >
+                  Load input trees
+                </Button>
+              </Box>
+            )}
+          </Dropzone>
         ) : null}
         {run.canLoadAlignment &&
         !run.canLoadPartitionFile &&
@@ -226,16 +255,29 @@ const Input = ({ run }) => {
                 }}
               />
             ) : (
-              <Button
-                variant="outlined"
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-                onClick={run.loadTreeFile}
-              >
-                Add Tree
-              </Button>
+              <Dropzone noClick onDrop={onTreeDrop('tree')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
+                  <Box
+                    {...getRootProps()}
+                    sx={dropzoneRootSx(isDragActive, {
+                      width: '380px',
+                      height: '100px',
+                    })}
+                  >
+                    <input {...getInputProps()} style={{ display: 'none' }} />
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      onClick={run.loadTreeFile}
+                    >
+                      Add Tree
+                    </Button>
+                  </Box>
+                )}
+              </Dropzone>
             )}
           </Box>
         </Box>
@@ -259,16 +301,29 @@ const Input = ({ run }) => {
                 }}
               />
             ) : (
-              <Button
-                variant="outlined"
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-                onClick={run.loadBackboneConstraintFile}
-              >
-                Add Backbone Constraint
-              </Button>
+              <Dropzone noClick onDrop={onTreeDrop('backboneConstraint')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
+                  <Box
+                    {...getRootProps()}
+                    sx={dropzoneRootSx(isDragActive, {
+                      width: '380px',
+                      height: '100px',
+                    })}
+                  >
+                    <input {...getInputProps()} style={{ display: 'none' }} />
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      onClick={run.loadBackboneConstraintFile}
+                    >
+                      Add Backbone Constraint
+                    </Button>
+                  </Box>
+                )}
+              </Dropzone>
             )}
           </Box>
         </Box>
@@ -292,16 +347,29 @@ const Input = ({ run }) => {
                 }}
               />
             ) : (
-              <Button
-                variant="outlined"
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-                onClick={run.loadMultifurcatingConstraintFile}
-              >
-                Add Multifurcating Constraint
-              </Button>
+              <Dropzone noClick onDrop={onTreeDrop('multifurcatingConstraint')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
+                  <Box
+                    {...getRootProps()}
+                    sx={dropzoneRootSx(isDragActive, {
+                      width: '380px',
+                      height: '100px',
+                    })}
+                  >
+                    <input {...getInputProps()} style={{ display: 'none' }} />
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      onClick={run.loadMultifurcatingConstraintFile}
+                    >
+                      Add Multifurcating Constraint
+                    </Button>
+                  </Box>
+                )}
+              </Dropzone>
             )}
           </Box>
         </Box>

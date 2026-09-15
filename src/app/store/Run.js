@@ -2166,6 +2166,27 @@ Results saved to: ${this.outputDir}
     }
   };
 
+  @action
+  addTreeFiles = (type, files) => {
+    if (!files.length) {
+      return;
+    }
+    const { path } = files[0];
+    switch (type) {
+      case 'tree':
+        this.tree.setFilePath(path);
+        break;
+      case 'backboneConstraint':
+        this.backboneConstraint.setFilePath(path);
+        break;
+      case 'multifurcatingConstraint':
+        this.multifurcatingConstraint.setFilePath(path);
+        break;
+      default:
+        break;
+    }
+  };
+
   @action removePartitionFile = () => {
     this.partitionFile = '';
     this.partitionFileContent = '';
@@ -2223,19 +2244,7 @@ Results saved to: ${this.outputDir}
   @action
   onTreeSelected = (event, { id, type, filePath }) => {
     if (id === this.id) {
-      switch (type) {
-        case 'tree':
-          this.tree.setFilePath(filePath);
-          break;
-        case 'backboneConstraint':
-          this.backboneConstraint.setFilePath(filePath);
-          break;
-        case 'multifurcatingConstraint':
-          this.multifurcatingConstraint.setFilePath(filePath);
-          break;
-        default:
-          break;
-      }
+      this.addTreeFiles(type, [{ path: filePath }]);
     }
   };
 
