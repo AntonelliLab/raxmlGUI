@@ -66,7 +66,7 @@
     "@mui/lab": "^6.0.1-beta.36",
     "@mui/material": "^6.5.0",
     "@sentry/electron": "^4.0.2",
-    "allotment": "^1.20.4",
+    "allotment": "^1.20.5",
     "classnames": "^2.3.2",
     "clean-stack": "3.0.1",
     "computed-async-mobx": "^4.2.0",
