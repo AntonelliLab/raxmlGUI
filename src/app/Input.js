@@ -18,6 +18,28 @@ const Input = ({ run }) => {
   if (run.hasAstralTree) {
     console.log('run.hasAstralTree :>> ', run.hasAstralTree);
   }
+
+  const onAlignmentDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addAlignments(droppedPathes);
+  };
+
+  const dropzoneRootSx = (isDragActive, extra = {}) => ({
+    width: 'fit-content',
+    alignSelf: 'flex-start',
+    borderRadius: 1,
+    border: (theme) =>
+      isDragActive
+        ? `2px dashed ${theme.palette.input.darker}`
+        : '2px dashed transparent',
+    bgcolor: (theme) =>
+      isDragActive ? theme.palette.input.lighter : 'transparent',
+    transition: 'background-color 0.15s ease, border-color 0.15s ease',
+    ...extra,
+  });
+
   // const SelectNumRuns = run.
   return (
     <Box display="flex" flexDirection="column" sx={{ width: '100%' }}>
@@ -32,34 +54,9 @@ const Input = ({ run }) => {
           padding: '10px',
         }}
       >
-        <Dropzone
-          noClick
-          onDrop={(acceptedFiles) => {
-            const droppedPathes = acceptedFiles.map((file) => {
-              return {
-                path: webUtils.getPathForFile(file),
-              };
-            });
-            run.addAlignments(droppedPathes);
-          }}
-        >
+        <Dropzone noClick onDrop={onAlignmentDrop}>
           {({ getRootProps, getInputProps, isDragActive }) => (
-            <Box
-              {...getRootProps()}
-              sx={{
-                width: 'fit-content',
-                alignSelf: 'flex-start',
-                borderRadius: 1,
-                border: (theme) =>
-                  isDragActive
-                    ? `2px dashed ${theme.palette.input.darker}`
-                    : '2px dashed transparent',
-                bgcolor: (theme) =>
-                  isDragActive ? theme.palette.input.lighter : 'transparent',
-                transition:
-                  'background-color 0.15s ease, border-color 0.15s ease',
-              }}
-            >
+            <Box {...getRootProps()} sx={dropzoneRootSx(isDragActive)}>
               <input {...getInputProps()} style={{ display: 'none' }} />
               <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
@@ -110,19 +107,28 @@ const Input = ({ run }) => {
         {run.canLoadAlignment &&
         !run.canLoadPartitionFile &&
         run.haveAlignments ? (
-          <Button
-            variant="outlined"
-            sx={{
-              width: '200px',
-              minWidth: '200px',
-              height: '200px',
-              flexShrink: 0,
-            }}
-            onClick={run.loadAlignmentFiles}
-            title="Concatenate new alignments and create partition"
-          >
-            Add alignment
-          </Button>
+          <Dropzone noClick onDrop={onAlignmentDrop}>
+            {({ getRootProps, getInputProps, isDragActive }) => (
+              <Box
+                {...getRootProps()}
+                sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
+              >
+                <input {...getInputProps()} style={{ display: 'none' }} />
+                <Button
+                  variant="outlined"
+                  sx={{
+                    width: '200px',
+                    minWidth: '200px',
+                    height: '200px',
+                  }}
+                  onClick={run.loadAlignmentFiles}
+                  title="Concatenate new alignments and create partition"
+                >
+                  Add alignment
+                </Button>
+              </Box>
+            )}
+          </Dropzone>
         ) : null}
 
         {run.canLoadAlignment && run.canLoadPartitionFile ? (
@@ -132,17 +138,33 @@ const Input = ({ run }) => {
             alignItems="center"
             style={{ height: '200px' }}
           >
-            <Button
-              variant="outlined"
-              sx={{
-                minWidth: '200px',
-                flexGrow: 1,
-              }}
-              onClick={run.loadAlignmentFiles}
-              title="Concatenate new alignments and automatically generate a partition"
-            >
-              Add alignment
-            </Button>
+            <Dropzone noClick onDrop={onAlignmentDrop}>
+              {({ getRootProps, getInputProps, isDragActive }) => (
+                <Box
+                  {...getRootProps()}
+                  sx={dropzoneRootSx(isDragActive, {
+                    flexGrow: 1,
+                    width: '100%',
+                    minWidth: '200px',
+                  })}
+                >
+                  <input {...getInputProps()} style={{ display: 'none' }} />
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      minWidth: '200px',
+                      width: '100%',
+                      height: '100%',
+                      flexGrow: 1,
+                    }}
+                    onClick={run.loadAlignmentFiles}
+                    title="Concatenate new alignments and automatically generate a partition"
+                  >
+                    Add alignment
+                  </Button>
+                </Box>
+              )}
+            </Dropzone>
             <Box paddingX={2}>OR</Box>
             <Button
               variant="outlined"
