@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { execSync } = require('child_process');
-const { notarize } = require('@electron/notarize');
 
 const EXPECTED_TEAM_ID = '9VR92ZCXA8';
 const EXPECTED_IDENTITY = `Developer ID Application: Johannes Klein (${EXPECTED_TEAM_ID})`;
@@ -67,8 +66,9 @@ exports.default = async function notarizing(context) {
 
   console.log(`Notarizing ${appName} found at ${appOutDir}`);
 
+  const { notarize } = await import('@electron/notarize');
+
   return await notarize({
-    appBundleId: 'org.jtklein.raxmlGUI2',
     appPath,
     appleId,
     appleIdPassword,
