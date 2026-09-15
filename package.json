@@ -115,7 +115,7 @@
     "playwright": "^1.55.0",
     "prettier": "^3.9.6",
     "shx": "^0.4.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.3",
     "wait-on": "^9.1.0"
   },
   "browserslist": [
