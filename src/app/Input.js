@@ -47,6 +47,8 @@ const Input = ({ run }) => {
             <Box
               {...getRootProps()}
               sx={{
+                width: 'fit-content',
+                alignSelf: 'flex-start',
                 borderRadius: 1,
                 border: (theme) =>
                   isDragActive
@@ -71,42 +73,57 @@ const Input = ({ run }) => {
                 {run.inputIsTree && run.hasAstralTree ? (
                   <AstralTreeCard astralTree={run.astralTree} />
                 ) : null}
-                <Box paddingX={1}>
-                  <PartitionFileCard run={run} />
-                </Box>
-                {run.canLoadAstralTree ? (
+                {run.canLoadAlignment &&
+                !run.haveAlignments &&
+                !run.canLoadPartitionFile ? (
                   <Button
                     variant="outlined"
                     sx={{
-                      width: '200px',
-                      height: '200px',
-                    }}
-                    onClick={run.loadAstralTree}
-                  >
-                    Load input trees
-                  </Button>
-                ) : null}
-                {run.canLoadAlignment && !run.canLoadPartitionFile ? (
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      width: '200px',
+                      width: '550px',
                       height: '200px',
                     }}
                     onClick={run.loadAlignmentFiles}
-                    title={
-                      run.haveAlignments
-                        ? 'Concatenate new alignments and create partition'
-                        : ''
-                    }
                   >
-                    {run.haveAlignments ? 'Add alignment' : 'Load alignment'}
+                    Load alignment
                   </Button>
                 ) : null}
               </Box>
             </Box>
           )}
         </Dropzone>
+
+        <Box paddingX={1}>
+          <PartitionFileCard run={run} />
+        </Box>
+        {run.canLoadAstralTree ? (
+          <Button
+            variant="outlined"
+            sx={{
+              width: '200px',
+              height: '200px',
+            }}
+            onClick={run.loadAstralTree}
+          >
+            Load input trees
+          </Button>
+        ) : null}
+        {run.canLoadAlignment &&
+        !run.canLoadPartitionFile &&
+        run.haveAlignments ? (
+          <Button
+            variant="outlined"
+            sx={{
+              width: '200px',
+              minWidth: '200px',
+              height: '200px',
+              flexShrink: 0,
+            }}
+            onClick={run.loadAlignmentFiles}
+            title="Concatenate new alignments and create partition"
+          >
+            Add alignment
+          </Button>
+        ) : null}
 
         {run.canLoadAlignment && run.canLoadPartitionFile ? (
           <Box
