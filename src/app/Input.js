@@ -43,8 +43,22 @@ const Input = ({ run }) => {
             run.addAlignments(droppedPathes);
           }}
         >
-          {({ getRootProps, getInputProps }) => (
-            <div {...getRootProps()}>
+          {({ getRootProps, getInputProps, isDragActive }) => (
+            <Box
+              {...getRootProps()}
+              sx={{
+                borderRadius: 1,
+                border: (theme) =>
+                  isDragActive
+                    ? `2px dashed ${theme.palette.input.darker}`
+                    : '2px dashed transparent',
+                bgcolor: (theme) =>
+                  isDragActive ? theme.palette.input.lighter : 'transparent',
+                transition:
+                  'background-color 0.15s ease, border-color 0.15s ease',
+              }}
+            >
+              <input {...getInputProps()} style={{ display: 'none' }} />
               <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
@@ -90,7 +104,7 @@ const Input = ({ run }) => {
                   </Button>
                 ) : null}
               </Box>
-            </div>
+            </Box>
           )}
         </Dropzone>
 
