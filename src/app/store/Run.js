@@ -2149,11 +2149,20 @@ Results saved to: ${this.outputDir}
     ipcRenderer.send(ipc.PARTITION_FILE_SELECT, this.id);
   };
 
+  @action
+  addPartitionFiles = async (files) => {
+    if (!files.length) {
+      return;
+    }
+    const { path } = files[0];
+    const content = await readFile(path, 'utf-8');
+    this.partitionFile = path;
+    this.partitionFileContent = content;
+  };
+
   @action onPartitionSelected = async (event, { id, filePath }) => {
     if (id === this.id) {
-      const content = await readFile(filePath, 'utf-8');
-      this.partitionFile = filePath;
-      this.partitionFileContent = content;
+      await this.addPartitionFiles([{ path: filePath }]);
     }
   };
 

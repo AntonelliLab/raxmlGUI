@@ -26,6 +26,13 @@ const Input = ({ run }) => {
     run.addAlignments(droppedPathes);
   };
 
+  const onPartitionDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addPartitionFiles(droppedPathes);
+  };
+
   const dropzoneRootSx = (isDragActive, extra = {}) => ({
     width: 'fit-content',
     alignSelf: 'flex-start',
@@ -166,17 +173,33 @@ const Input = ({ run }) => {
               )}
             </Dropzone>
             <Box paddingX={2}>OR</Box>
-            <Button
-              variant="outlined"
-              sx={{
-                minWidth: '200px',
-                flexGrow: 1,
-              }}
-              onClick={run.loadPartitionFile}
-              title="Load a partition file for the current alignment"
-            >
-              Load partition
-            </Button>
+            <Dropzone noClick onDrop={onPartitionDrop}>
+              {({ getRootProps, getInputProps, isDragActive }) => (
+                <Box
+                  {...getRootProps()}
+                  sx={dropzoneRootSx(isDragActive, {
+                    flexGrow: 1,
+                    width: '100%',
+                    minWidth: '200px',
+                  })}
+                >
+                  <input {...getInputProps()} style={{ display: 'none' }} />
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      minWidth: '200px',
+                      width: '100%',
+                      height: '100%',
+                      flexGrow: 1,
+                    }}
+                    onClick={run.loadPartitionFile}
+                    title="Load a partition file for the current alignment"
+                  >
+                    Load partition
+                  </Button>
+                </Box>
+              )}
+            </Dropzone>
           </Box>
         ) : null}
         <Box>
