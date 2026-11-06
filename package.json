@@ -55,7 +55,8 @@
     "postinstall-patch": "patch-package",
     "postinstall-electron": "install-electron --no",
     "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
-    "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml"
+    "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.7",
@@ -100,6 +101,9 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.29.7",
     "@electron/notarize": "^3.1.1",
+    "@types/node": "^22.19.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "@sentry/cli": "^3.7.0",
     "@sentry/webpack-plugin": "^1.19.0",
     "cross-env": "^10.1.0",
