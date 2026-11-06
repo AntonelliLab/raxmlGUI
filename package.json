@@ -55,7 +55,8 @@
     "postinstall-patch": "patch-package",
     "postinstall-electron": "install-electron --no",
     "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
-    "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml"
+    "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.7",
