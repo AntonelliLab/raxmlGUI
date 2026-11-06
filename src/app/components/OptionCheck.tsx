@@ -1,11 +1,24 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
+import type { SxProps, Theme } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { FormControl } from '@mui/material';
 
-const OptionCheck = observer(({ option, sx }) => {
+export type OptionCheckOptionLike = {
+  title: string;
+  value: boolean;
+  setValue: (value: boolean) => void;
+  notAvailable: boolean;
+  hoverInfo: string;
+};
+
+export type OptionCheckProps = {
+  option: OptionCheckOptionLike;
+  sx?: SxProps<Theme>;
+};
+
+const OptionCheck = observer(function OptionCheck({ option, sx }: OptionCheckProps) {
   if (option.notAvailable) {
     return null;
   }
@@ -25,10 +38,5 @@ const OptionCheck = observer(({ option, sx }) => {
     </FormControl>
   );
 });
-
-OptionCheck.propTypes = {
-  option: PropTypes.object.isRequired,
-  sx: PropTypes.object,
-};
 
 export default OptionCheck;

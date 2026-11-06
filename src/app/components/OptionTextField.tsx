@@ -1,9 +1,28 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
+import type { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 
-const OptionTextField = observer(({ option, sx }) => {
+export type OptionTextFieldOptionLike = {
+  title: string;
+  value: string | number | boolean;
+  setValue: (value: string) => void;
+  notAvailable: boolean;
+  hoverInfo: string;
+  haveError: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+};
+
+export type OptionTextFieldProps = {
+  option: OptionTextFieldOptionLike;
+  sx?: SxProps<Theme>;
+};
+
+const OptionTextField = observer(function OptionTextField({
+  option,
+  sx,
+}: OptionTextFieldProps) {
   if (option.notAvailable) {
     return null;
   }
@@ -22,10 +41,5 @@ const OptionTextField = observer(({ option, sx }) => {
     />
   );
 });
-
-OptionTextField.propTypes = {
-  option: PropTypes.object.isRequired,
-  sx: PropTypes.object,
-};
 
 export default OptionTextField;
