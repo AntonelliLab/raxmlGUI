@@ -1,7 +1,16 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, type IpcRendererEvent } from 'electron';
 import * as ipc from '../constants/ipc';
 import store from './store';
 import path from 'path';
+
+type AlignmentExampleFilesPayload = {
+  fasta: string[];
+  phylip: string[];
+  dir: string;
+  outdir: string;
+};
+
+type AlignmentPathRef = { path: string };
 
 if (process.env.NODE_ENV === 'development') {
   console.log('\n========= Bootstrapping initial state... =========\n');
@@ -10,19 +19,19 @@ if (process.env.NODE_ENV === 'development') {
 
 ipcRenderer.on(
   ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS,
-  (event, exampleFiles) => {
+  (_event: IpcRendererEvent, exampleFiles: AlignmentExampleFilesPayload) => {
     initDev(exampleFiles);
   },
 );
 
-function initDev(exampleFiles) {
+function initDev(exampleFiles: AlignmentExampleFilesPayload): void {
   // if (exampleFiles.length === 0) {
   //   return;
   // }
   // const exampleFilesDir = path.dirname(exampleFiles[0].path);
   const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
-  const useFastaFiles = [
+  const useFastaFiles: AlignmentPathRef[] = [
     // 'aminoacid.txt',
     // 'bin1.txt',
     // 'bin2.txt',
@@ -34,7 +43,7 @@ function initDev(exampleFiles) {
   ].map((filename) => ({
     path: path.join(exampleFilesDir, 'fasta', filename),
   }));
-  const usePhylipFiles = [
+  const usePhylipFiles: AlignmentPathRef[] = [
     // 'AA.txt',
     // 'align_allvariant.txt',
     // 'aminoacid.txt',
