@@ -4,7 +4,19 @@ const rePhylipHeader = /^\s*(\d+)\s+(\d+)(?:\s+([is]))?\s*$/; // 3  78  i (optio
 const reStrictPhylipLine = /^(.{10})(.+)$/;
 const reRelaxedPhylipLine = /^(\w+)\s+(.+)$/;
 
-export const isPhylip = (lines) => {
+export type PhylipSequence = { taxon: string; code: string };
+
+export type PhylipAlignment = {
+  sequences: PhylipSequence[];
+  numSequences: number;
+  length: number;
+  fileFormat: 'PHYLIP';
+  interleaved: boolean;
+  relaxed: boolean;
+  numLinesPerTaxa: number;
+};
+
+export const isPhylip = (lines: string[]): boolean => {
   if (lines.length === 0) {
     throw new Error('No lines');
   }
@@ -12,12 +24,15 @@ export const isPhylip = (lines) => {
 };
 
 //TODO: Make PhylipParserError class
-export const parse = (lines) => {
+export const parse = (lines: string[]): PhylipAlignment => {
   if (!isPhylip(lines)) {
     throw new Error('First line is not a phylip formatted header');
   }
 
   const match = rePhylipHeader.exec(lines[0]);
+  if (!match) {
+    throw new Error('First line is not a phylip formatted header');
+  }
   const numSequences = +match[1];
   const length = +match[2];
   let isInterleaved = false;
@@ -56,14 +71,14 @@ export const parse = (lines) => {
   );
 
   let numLinesPerTaxa = 1;
-  const interleavedStartLineIndices = [];
+  const interleavedStartLineIndices: number[] = [];
   if (!oneLineSequences) {
     // Check if sequential or interleaved
 
     // Interleaved format must have empty lines between interleaved sections
     let lastEmpty = false;
     let currentSectionStartLineIndex = firstSeqLineIndex;
-    const assertCorrectNumberOfSeqLines = (startIndex, endIndex) => {
+    const assertCorrectNumberOfSeqLines = (startIndex: number, endIndex: number) => {
       const numSeq = endIndex + 1 - startIndex;
       if (numSeq !== numSequences) {
         throw new UserFixError(
@@ -123,7 +138,7 @@ export const parse = (lines) => {
   const numConsequtiveLinesPerTaxa = isInterleaved ? 1 : numLinesPerTaxa;
 
   // Discern if strict or relaxed format, first some helper methods
-  const getLineIndex = (seqIndex, subLineIndex = 0) => {
+  const getLineIndex = (seqIndex: number, subLineIndex = 0): number => {
     const startLineIndex =
       firstSeqLineIndex + seqIndex * numConsequtiveLinesPerTaxa;
     if (subLineIndex === 0) {
@@ -134,18 +149,18 @@ export const parse = (lines) => {
     }
     return interleavedStartLineIndices[subLineIndex - 1];
   };
-  const getSeqLine = (seqIndex, subLineIndex = 0) => {
+  const getSeqLine = (seqIndex: number, subLineIndex = 0): string => {
     return lines[getLineIndex(seqIndex, subLineIndex)];
   };
-  const getSeqLines = (seqIndex) => {
-    const seqLines = [];
+  const getSeqLines = (seqIndex: number): string[] => {
+    const seqLines: string[] = [];
     for (let i = 0; i < numLinesPerTaxa; ++i) {
       seqLines.push(getSeqLine(seqIndex, i));
     }
     return seqLines;
   };
 
-  const parseSeqAssumingStrictName = (seqIndex) => {
+  const parseSeqAssumingStrictName = (seqIndex: number): PhylipSequence => {
     const line = getSeqLines(seqIndex).join('');
     const taxon = line.substring(0, 10).trim();
     let code = line.substring(10);
@@ -153,13 +168,13 @@ export const parse = (lines) => {
     code = code.replace(/(?<=\S)\s+/g, '');
     return { taxon, code };
   };
-  const parseSeqAssumingRelaxedName = (seqIndex) => {
+  const parseSeqAssumingRelaxedName = (seqIndex: number): PhylipSequence => {
     const line = getSeqLines(seqIndex).join('');
     const [taxon, ...codeChunks] = line.split(/\s+/);
     const code = codeChunks.join('');
     return { taxon, code };
   };
-  const checkIsRelaxed = () => {
+  const checkIsRelaxed = (): boolean => {
     console.log(`Checking if strict or relaxed from first sequence...`);
     // Check the length of the code part assuming strict and relaxe and see which matches
     const seqIfStrict = parseSeqAssumingStrictName(0);
@@ -179,7 +194,7 @@ export const parse = (lines) => {
   const isRelaxed = checkIsRelaxed();
 
   // Parse sequences
-  const sequences = [];
+  const sequences: PhylipSequence[] = [];
   const parseSequence = isRelaxed
     ? parseSeqAssumingRelaxedName
     : parseSeqAssumingStrictName;
@@ -194,7 +209,7 @@ export const parse = (lines) => {
   }
 
   // console.log('Sequences:', sequences);
-  const alignment = {
+  const alignment: PhylipAlignment = {
     sequences,
     numSequences,
     length,
