@@ -3,8 +3,19 @@ import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ErrorDialog from './ErrorDialog';
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+export type ErrorBoundaryProps = {
+  children: React.ReactNode;
+};
+
+type ErrorBoundaryState = {
+  error: Error | null;
+};
+
+class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
 
     this.state = {
@@ -12,11 +23,13 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
-    return { error };
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+    return {
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: unknown, info: React.ErrorInfo): void {
     console.log('Error catched at React boundary:', error, info);
   }
 
@@ -36,7 +49,12 @@ class ErrorBoundary extends React.Component {
         <Box p={1}>
           <Typography variant="body1">Oops! Something went wrong.</Typography>
         </Box>
-        <ErrorDialog error={error} onClose={this.handleClose} needReload />
+        <ErrorDialog
+          error={error}
+          onClose={this.handleClose}
+          needReload
+          title={undefined}
+        />
       </Box>
     );
   }
