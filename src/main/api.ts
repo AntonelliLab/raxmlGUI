@@ -4,14 +4,16 @@ import {
   shell,
   dialog,
   Notification,
-  BrowserWindow,
-  type IpcMainEvent,
+  BrowserWindow
+  
 } from 'electron';
+import type {IpcMainEvent} from 'electron';
 import type { ChildProcess } from 'child_process';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
-import childProcess, { type ExecOptions } from 'child_process';
+import childProcess from 'child_process';
+import type {ExecOptions} from 'child_process';
 import { serializeError } from 'serialize-error';
 import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';

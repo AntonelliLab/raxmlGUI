@@ -1,7 +1,8 @@
 import electron, {
-  BrowserWindow,
-  type BrowserWindowConstructorOptions,
+  BrowserWindow
+  
 } from 'electron';
+import type {BrowserWindowConstructorOptions} from 'electron';
 import path from 'path';
 import url from 'url';
 import log from 'electron-log';

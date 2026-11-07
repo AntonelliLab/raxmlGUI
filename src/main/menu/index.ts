@@ -1,10 +1,11 @@
 import {
   app,
-  Menu,
-  type BrowserWindow,
-  type ContextMenuParams,
-  type MenuItemConstructorOptions,
+  Menu
+  
+  
+  
 } from 'electron';
+import type {BrowserWindow, ContextMenuParams, MenuItemConstructorOptions} from 'electron';
 
 import subMenuFile from './subMenuFile';
 import subMenuAnalysis from './subMenuAnalysis';

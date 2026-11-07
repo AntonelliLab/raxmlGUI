@@ -1,4 +1,5 @@
-import { ipcRenderer, type IpcRendererEvent } from 'electron';
+import { ipcRenderer  } from 'electron';
+import type {IpcRendererEvent} from 'electron';
 import * as ipc from '../constants/ipc';
 import store from './store';
 import path from 'path';

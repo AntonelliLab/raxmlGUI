@@ -20,6 +20,10 @@ module.exports = {
             default: 'array',
           },
         ],
+        'import/consistent-type-specifier-style': [
+          'error',
+          'prefer-top-level',
+        ],
       },
     },
   ],
