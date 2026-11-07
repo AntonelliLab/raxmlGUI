@@ -4,19 +4,44 @@ import util from 'util';
 
 import phylipParser from './phylipParser';
 import fastaParser from './fastaParser';
+import type { FastaAlignment } from './fastaParser';
+import type { PhylipAlignment } from './phylipParser';
 import typecheckAlignment from './typecheckAlignment';
 import UserFixError from './errors';
 
-export const parseAlignment = async (filePath) => {
+type TypecheckedSequence = { taxon: string; code: string; dataType: string };
+
+type TypecheckedAlignment<
+  T extends { sequences: Array<{ taxon: string; code: string }> },
+> = Omit<T, 'sequences'> & {
+  sequences: TypecheckedSequence[];
+  dataType: string;
+  hasInvariantSites: boolean;
+  typecheckingComplete: true;
+};
+
+export type ParsedAlignment =
+  | TypecheckedAlignment<FastaAlignment>
+  | TypecheckedAlignment<PhylipAlignment>;
+
+export type WritableAlignment = {
+  sequences: Array<{ taxon: string; code: string }>;
+};
+
+type ParserAlignment = FastaAlignment | PhylipAlignment;
+
+export const parseAlignment = async (
+  filePath: string,
+): Promise<ParsedAlignment> => {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: fs.createReadStream(filePath),
       terminal: false,
     });
 
-    const lines = [];
-    let error = null;
-    let alignment = null;
+    const lines: string[] = [];
+    let error: Error | null = null;
+    let alignment: ParserAlignment | null = null;
 
     rl.on('line', (line) => {
       lines.push(line);
@@ -31,14 +56,16 @@ export const parseAlignment = async (filePath) => {
             "Unrecognized input format. RaxmlGUI2 supports the following input types at the moment: 'clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'.",
           );
         }
-      } catch (err) {
-        error = err;
-        error.message = `Error parsing file ${filePath}: ${error.message}.`;
+      } catch (err: unknown) {
+        const parseError =
+          err instanceof Error ? err : new Error(String(err));
+        parseError.message = `Error parsing file ${filePath}: ${parseError.message}.`;
+        error = parseError;
       }
       if (error) {
         reject(error);
       } else {
-        if (alignment.sequences.length === 0) {
+        if (!alignment || alignment.sequences.length === 0) {
           return reject(
             new Error(`Couldn't parse any sequences from file ${filePath}`),
           );
@@ -55,13 +82,16 @@ export const parseAlignment = async (filePath) => {
           sequences: alignment.sequences.slice(0, 2),
         });
         console.log('Alignment with first two sequences:', alignmentRestricted);
-        resolve(alignment);
+        resolve(alignment as ParsedAlignment);
       }
     });
   });
 };
 
-export const writeAlignment = async (filePath, alignment) => {
+export const writeAlignment = async (
+  filePath: string,
+  alignment: WritableAlignment,
+): Promise<void> => {
   console.log(`Write alignment in FASTA format to ${filePath}`);
   console.log(alignment);
   const writeStream = fs.createWriteStream(filePath);
