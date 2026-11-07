@@ -1,6 +1,15 @@
 import UserFixError from './errors';
 
-export const isFasta = (lines) => {
+export type FastaSequence = { taxon: string; code: string };
+
+export type FastaAlignment = {
+  sequences: FastaSequence[];
+  numSequences: number;
+  length: number;
+  fileFormat: 'FASTA';
+};
+
+export const isFasta = (lines: string[]): boolean => {
   for (let i = 0; i < lines.length; ++i) {
     const line = lines[0].trim();
     if (line.length === 0 || line[0] === '#') {
@@ -13,14 +22,14 @@ export const isFasta = (lines) => {
   return false;
 };
 
-export const parse = (lines) => {
+export const parse = (lines: string[]): FastaAlignment => {
   if (!isFasta(lines)) {
     throw new Error(`Could not parse the file as a FASTA file`);
   }
 
   let lineIndex = 0;
 
-  const parseTaxon = (line) => {
+  const parseTaxon = (line: string): string => {
     if (line[0] !== '>') {
       throw new Error(`Expected a '>' to start a taxon line`);
     }
@@ -30,7 +39,7 @@ export const parse = (lines) => {
     }
     return taxon;
   };
-  const parseCode = (line) => {
+  const parseCode = (line: string): string => {
     const code = line.replace(/\s+/g, '');
     if (!code) {
       throw new Error(`Empty sequence at line ${lineIndex + 1}`);
@@ -38,9 +47,9 @@ export const parse = (lines) => {
     return code;
   };
 
-  const sequences = [];
+  const sequences: FastaSequence[] = [];
   let taxon = '';
-  let codeLines = [];
+  let codeLines: string[] = [];
 
   const addSequence = () => {
     const code = codeLines.join('');
@@ -73,7 +82,7 @@ export const parse = (lines) => {
   const numSequences = sequences.length;
   const length = sequences[0].code.length;
   // Check that all sequnces have the same length;
-  for (let seq of sequences) {
+  for (const seq of sequences) {
     if (seq.code.length !== length) {
       throw new UserFixError(
         `Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`,
@@ -82,7 +91,7 @@ export const parse = (lines) => {
   }
 
   // console.log('Sequences:', sequences);
-  const alignment = {
+  const alignment: FastaAlignment = {
     sequences,
     numSequences,
     length,
