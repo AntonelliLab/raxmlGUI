@@ -1,13 +1,38 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
+import type { SxProps, Theme } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
-const OptionSelect = observer(({ option, sx }) => {
+export type OptionSelectChoice = {
+  value: string | number;
+  title: string;
+};
+
+export type OptionSelectOptionLike = {
+  notAvailable: boolean;
+  title: string;
+  hoverInfo: string;
+  options: readonly OptionSelectChoice[];
+  value: string | number | readonly string[];
+  setValue: (value: unknown) => void;
+  multiple?: boolean;
+  error: unknown;
+  placeholder?: string;
+};
+
+export type OptionSelectProps = {
+  option: OptionSelectOptionLike;
+  sx?: SxProps<Theme>;
+};
+
+const OptionSelect = observer(function OptionSelect({
+  option,
+  sx,
+}: OptionSelectProps) {
   if (option.notAvailable || option.options.length === 0) {
     return null;
   }
@@ -21,7 +46,7 @@ const OptionSelect = observer(({ option, sx }) => {
         sx={sx}
         value={option.value}
         placeholder={option.placeholder}
-        error={option.error}
+        error={Boolean(option.error)}
         slotProps={{
           input: {
             readOnly: true,
@@ -40,7 +65,7 @@ const OptionSelect = observer(({ option, sx }) => {
           name: option.title,
           id: option.title,
         }}
-        error={option.error}
+        error={Boolean(option.error)}
         multiple={option.multiple}
       >
         {option.options.map(({ value, title }, index) => (
@@ -53,10 +78,5 @@ const OptionSelect = observer(({ option, sx }) => {
     </FormControl>
   );
 });
-
-OptionSelect.propTypes = {
-  option: PropTypes.object.isRequired,
-  sx: PropTypes.object,
-};
 
 export default OptionSelect;
