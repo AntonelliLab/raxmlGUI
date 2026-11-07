@@ -2,6 +2,9 @@ module.exports = {
   root: true,
   extends: ['react-app', 'react-app/jest'],
   ignorePatterns: ['build/', 'dist/', 'docs/', 'node_modules/'],
+  rules: {
+    'comma-dangle': ['error', 'always-multiline'],
+  },
   overrides: [
     {
       files: ['**/*.{ts,tsx}'],

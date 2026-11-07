@@ -4,7 +4,7 @@ import {
   shell,
   dialog,
   Notification,
-  BrowserWindow
+  BrowserWindow,
   
 } from 'electron';
 import type {IpcMainEvent} from 'electron';

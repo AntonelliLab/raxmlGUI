@@ -1,5 +1,5 @@
 import electron, {
-  BrowserWindow
+  BrowserWindow,
   
 } from 'electron';
 import type {BrowserWindowConstructorOptions} from 'electron';
