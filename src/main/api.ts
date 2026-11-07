@@ -5,16 +5,19 @@ import {
   dialog,
   Notification,
   BrowserWindow,
+  type IpcMainEvent,
 } from 'electron';
+import type { ChildProcess } from 'child_process';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
-import childProcess from 'child_process';
+import childProcess, { type ExecOptions } from 'child_process';
 import { serializeError } from 'serialize-error';
 import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';
 
 import * as ipc from '../constants/ipc';
+import type { IpcChannel } from '../constants/ipc';
 import io from '../common/io';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
@@ -29,19 +32,23 @@ is.development
 
 const fs = _fs.promises;
 
-function getStaticDir() {
+type IpcReplyPayload = Record<string, unknown> & { error?: unknown };
+
+type ProcessExitResult = number | string | null;
+
+function getStaticDir(): string {
   if (process.env.RAXMLGUI_E2E === '1') {
     return path.join(__dirname, '..', '..', 'static');
   }
   return __static;
 }
 
-const get_space_safe_binary_path = (bin_path) => {
+const get_space_safe_binary_path = (bin_path: string): string => {
   // For Windows users with spaces in user dir
   return is.windows ? `"${bin_path}"` : bin_path;
 };
 
-function handleError(title, error) {
+function handleError(title: string, error: unknown): void {
   // send error to renderer
   console.log(`${title}:`, error);
   const win = activeWindow();
@@ -61,14 +68,21 @@ process.on('unhandledRejection', (error) => {
   handleError('Unhandled Promise Rejection', error);
 });
 
-const exec = util.promisify(childProcess.exec);
+const exec = util.promisify(childProcess.exec) as (
+  command: string,
+  options?: ExecOptions,
+) => Promise<{ stdout: string; stderr: string }>;
 const execFile = util.promisify(childProcess.execFile);
 
-const state = {
+const state: { processes: Record<string, ChildProcess> } = {
   processes: {},
 };
 
-function send(event, channel, data) {
+function send(
+  event: IpcMainEvent,
+  channel: IpcChannel,
+  data: IpcReplyPayload,
+): void {
   if (!data.error) {
     return event.sender.send(channel, data);
   }
@@ -87,7 +101,13 @@ ipcMain.on(ipc.INIT_APP_STATE, (event) => {
 });
 
 ipcMain.on(ipc.RELOAD, () => {
-  BrowserWindow.getCurrentWindow().reload();
+  (
+    BrowserWindow as typeof BrowserWindow & {
+      getCurrentWindow: () => BrowserWindow;
+    }
+  )
+    .getCurrentWindow()
+    .reload();
 });
 
 ipcMain.on(ipc.OUTPUT_DIR_SELECT, (event, runId) => {
@@ -224,8 +244,8 @@ async function combineOutput(outputDir, outputFilename) {
   const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, {
     cwd: outputDir,
-    shell: is.windows,
-  });
+    ...(is.windows ? { shell: true } : {}),
+  } as unknown as ExecOptions);
   console.log(stdout, stderr);
 }
 
@@ -335,8 +355,8 @@ ipcMain.on(
           const { stdout, stderr } = await exec(
             `"${binaryPath}" ${arg.join(' ')} --flag-check`,
             {
-              shell: is.windows,
-            },
+              ...(is.windows ? { shell: true } : {}),
+            } as unknown as ExecOptions,
           );
           console.log(stdout, stderr);
         } catch (err) {
@@ -348,7 +368,7 @@ ipcMain.on(
       }
     }
 
-    let exitCode = 0;
+    let exitCode: ProcessExitResult = 0;
     for (const arg of args) {
       try {
         console.log(`Run '${binaryName}' with args:`, arg);
@@ -441,16 +461,21 @@ ipcMain.on(ipc.RUN_CANCEL, (event, arg) => {
   cancelProcess(id);
 });
 
-function cancelProcess(id) {
-  if (state.processes[id]) {
-    const proc = state.processes[id];
-    delete state.processes[id];
+function cancelProcess(id: string | number): void {
+  const processKey = String(id);
+  if (state.processes[processKey]) {
+    const proc = state.processes[processKey];
+    delete state.processes[processKey];
     proc.kill();
     console.log(`Killed RAxML process ${id}`);
   }
 }
 
-function spawnProcess(binaryDir, binaryName, args) {
+function spawnProcess(
+  binaryDir: string,
+  binaryName: string,
+  args: string[],
+): ChildProcess {
   const binaryPath = path.join(binaryDir, binaryName);
 
   const proc = childProcess.execFile(
@@ -464,18 +489,24 @@ function spawnProcess(binaryDir, binaryName, args) {
 }
 
 async function runProcess(
-  id,
-  event,
-  binaryDir,
-  binaryName,
-  args,
-  { onStdOut = () => {}, onStdErr = () => {} } = {},
-) {
+  id: string | number,
+  event: IpcMainEvent,
+  binaryDir: string,
+  binaryName: string,
+  args: string[],
+  {
+    onStdOut = (_content: string) => {},
+    onStdErr = (_content: string) => {},
+  }: {
+    onStdOut?: (content: string) => void;
+    onStdErr?: (content: string) => void;
+  } = {},
+): Promise<ProcessExitResult> {
   return new Promise((resolve, reject) => {
     cancelProcess(id);
     try {
       const proc = spawnProcess(binaryDir, binaryName, args);
-      state.processes[id] = proc;
+      state.processes[String(id)] = proc;
       let exited = false;
 
       const exit = ({ event, code, signal, error }) => {};
@@ -503,7 +534,7 @@ async function runProcess(
           signal || code,
         );
         exited = true;
-        delete state.processes[id];
+        delete state.processes[String(id)];
 
         const win = activeWindow();
         if (!win || !win.isFocused()) {
@@ -518,7 +549,7 @@ async function runProcess(
           return reject(code); // code is an error object on 'error' event
         }
         if (!code) {
-          return resolve(signal || code); // Add code last to get through code 0
+          return resolve((signal || code) as ProcessExitResult); // Add code last to get through code 0
         }
         return reject(
           new Error(
@@ -551,8 +582,8 @@ async function readalGetFormat(alignmentPath) {
   const readalPath = path.resolve(binaryDir, 'readal');
   const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -type -format`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: is.windows,
-  });
+    ...(is.windows ? { shell: true } : {}),
+  } as unknown as ExecOptions);
   console.log('Readal stderr', stderr);
   const replaced = stdout.replace(alignmentPath, '');
   const formats = ['clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'];
@@ -571,8 +602,8 @@ async function convertAlignment(alignmentPath) {
   const newPath = alignmentPath.replace(path.extname(alignmentPath), '.fas');
   const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -out ${quote(newPath)} -fasta`;
   const { stdout, stderr } = await exec(childCmd, {
-    shell: is.windows,
-  });
+    ...(is.windows ? { shell: true } : {}),
+  } as unknown as ExecOptions);
   console.log(stdout, stderr);
   return newPath;
 }
@@ -748,7 +779,7 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
   const [arg] = args;
   arg.splice(0, 0, '-jar', quote(path.join(binaryDir, binaryName)));
 
-  let exitCode = 0;
+  let exitCode: ProcessExitResult = 0;
   try {
     console.log('arg', arg);
     console.log(`ASTRAL?`);
@@ -806,7 +837,7 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const onStdOut = (content) => {
     stdOuts.push(content);
   };
-  let exitCode = 0;
+  let exitCode: ProcessExitResult = 0;
   try {
     console.log(`Run modeltest-ng with args:`, args);
     exitCode = await runProcess(id, event, binaryDir, binaryName, args, {
@@ -876,17 +907,10 @@ ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, (event, id) => {
 ipcMain.on(ipc.TREE_SELECT, (event, params) => {
   const { id, type } = params;
   dialog
-    .showOpenDialog(
-      {
-        title: 'Select a tree file',
-        properties: ['openFile'],
-      },
-      (filePaths) => {
-        if (filePaths.length === 0) {
-          return;
-        }
-      },
-    )
+    .showOpenDialog({
+      title: 'Select a tree file',
+      properties: ['openFile'],
+    })
     .then((result) => {
       console.debug(ipc.TREE_SELECT, result);
       if (result.canceled) {
