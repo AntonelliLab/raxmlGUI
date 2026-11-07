@@ -13,6 +13,7 @@ module.exports = {
             prefer: 'type-imports',
           },
         ],
+        '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       },
     },
   ],

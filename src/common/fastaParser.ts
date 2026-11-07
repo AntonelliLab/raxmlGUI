@@ -1,13 +1,13 @@
 import UserFixError from './errors';
 
-export type FastaSequence = { taxon: string; code: string };
+export interface FastaSequence { taxon: string; code: string }
 
-export type FastaAlignment = {
+export interface FastaAlignment {
   sequences: FastaSequence[];
   numSequences: number;
   length: number;
   fileFormat: 'FASTA';
-};
+}
 
 export const isFasta = (lines: string[]): boolean => {
   for (let i = 0; i < lines.length; ++i) {

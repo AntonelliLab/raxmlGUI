@@ -1,17 +1,17 @@
 import UserFixError from './errors';
 
-export type TypecheckAlignmentSequence = {
+export interface TypecheckAlignmentSequence {
   code: string;
   dataType?: string;
-};
+}
 
-export type TypecheckableAlignment = {
+export interface TypecheckableAlignment {
   length: number;
   sequences: TypecheckAlignmentSequence[];
   dataType?: string;
   hasInvariantSites?: boolean;
   typecheckingComplete?: boolean;
-};
+}
 
 export const getFinalDataType = (
   dataTypes: Array<string | undefined>,

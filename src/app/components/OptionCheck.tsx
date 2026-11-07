@@ -5,18 +5,18 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { FormControl } from '@mui/material';
 
-export type OptionCheckOptionLike = {
+export interface OptionCheckOptionLike {
   title: string;
   value: boolean;
   setValue: (value: boolean) => void;
   notAvailable: boolean;
   hoverInfo: string;
-};
+}
 
-export type OptionCheckProps = {
+export interface OptionCheckProps {
   option: OptionCheckOptionLike;
   sx?: SxProps<Theme>;
-};
+}
 
 const OptionCheck = observer(function OptionCheck({ option, sx }: OptionCheckProps) {
   if (option.notAvailable) {

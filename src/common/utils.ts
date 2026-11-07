@@ -6,7 +6,7 @@ import * as ipc from 'electron-better-ipc';
 
 import { activeWindow } from '../main/utils/utils';
 
-type NewGithubIssueUrlOptions = {
+interface NewGithubIssueUrlOptions {
   repoUrl?: string;
   user?: string;
   repo?: string;
@@ -17,7 +17,7 @@ type NewGithubIssueUrlOptions = {
   milestone?: string;
   assignee?: string;
   projects?: string[];
-};
+}
 
 type PlatformHandlers<T> = {
   macos?: T | (() => T);

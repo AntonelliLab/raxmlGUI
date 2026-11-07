@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import type { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 
-export type OptionTextFieldOptionLike = {
+export interface OptionTextFieldOptionLike {
   title: string;
   value: string | number | boolean;
   setValue: (value: string) => void;
@@ -12,12 +12,12 @@ export type OptionTextFieldOptionLike = {
   haveError: boolean;
   disabled?: boolean;
   placeholder?: string;
-};
+}
 
-export type OptionTextFieldProps = {
+export interface OptionTextFieldProps {
   option: OptionTextFieldOptionLike;
   sx?: SxProps<Theme>;
-};
+}
 
 const OptionTextField = observer(function OptionTextField({
   option,

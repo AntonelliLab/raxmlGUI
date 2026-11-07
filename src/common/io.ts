@@ -9,7 +9,7 @@ import type { PhylipAlignment } from './phylipParser';
 import typecheckAlignment from './typecheckAlignment';
 import UserFixError from './errors';
 
-type TypecheckedSequence = { taxon: string; code: string; dataType: string };
+interface TypecheckedSequence { taxon: string; code: string; dataType: string }
 
 type TypecheckedAlignment<
   T extends { sequences: Array<{ taxon: string; code: string }> },
@@ -24,9 +24,9 @@ export type ParsedAlignment =
   | TypecheckedAlignment<FastaAlignment>
   | TypecheckedAlignment<PhylipAlignment>;
 
-export type WritableAlignment = {
+export interface WritableAlignment {
   sequences: Array<{ taxon: string; code: string }>;
-};
+}
 
 type ParserAlignment = FastaAlignment | PhylipAlignment;
 

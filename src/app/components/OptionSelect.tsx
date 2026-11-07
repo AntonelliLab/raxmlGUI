@@ -7,12 +7,12 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
-export type OptionSelectChoice = {
+export interface OptionSelectChoice {
   value: string | number;
   title: string;
-};
+}
 
-export type OptionSelectOptionLike = {
+export interface OptionSelectOptionLike {
   notAvailable: boolean;
   title: string;
   hoverInfo: string;
@@ -22,12 +22,12 @@ export type OptionSelectOptionLike = {
   multiple?: boolean;
   error: unknown;
   placeholder?: string;
-};
+}
 
-export type OptionSelectProps = {
+export interface OptionSelectProps {
   option: OptionSelectOptionLike;
   sx?: SxProps<Theme>;
-};
+}
 
 const OptionSelect = observer(function OptionSelect({
   option,

@@ -2,19 +2,19 @@
   RAxML-NG --model-related options used by the renderer store.
 */
 
-export type RaxmlNgLabelledOption = {
+export interface RaxmlNgLabelledOption {
   value: string;
   label: string;
-};
+}
 
-type RaxmlNgSubstitutionModelOptions = {
+interface RaxmlNgSubstitutionModelOptions {
   default: string;
   options: readonly string[];
-};
+}
 
-type RaxmlNgLabelledOptions = {
+interface RaxmlNgLabelledOptions {
   options: readonly RaxmlNgLabelledOption[];
-};
+}
 
 // --model
 export const binarySubstitutionModelOptions = {

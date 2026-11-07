@@ -1,6 +1,6 @@
 import '@mui/material/styles';
 
-type SectionPaletteColor = {
+interface SectionPaletteColor {
   background: string;
   border: string;
   lighter: string;
@@ -11,7 +11,7 @@ type SectionPaletteColor = {
   secondaryText: string;
   contrastText: string;
   shadow: string;
-};
+}
 
 declare module '@mui/material/styles' {
   interface Palette {

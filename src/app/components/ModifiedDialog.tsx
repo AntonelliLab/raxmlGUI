@@ -11,11 +11,11 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 
-export type ModifiedDialogProps = {
+export interface ModifiedDialogProps {
   show: boolean;
   onClose: () => void;
   messages: string[];
-};
+}
 
 export default function ModifiedDialog({
   show,

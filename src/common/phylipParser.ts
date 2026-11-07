@@ -4,9 +4,9 @@ const rePhylipHeader = /^\s*(\d+)\s+(\d+)(?:\s+([is]))?\s*$/; // 3  78  i (optio
 const reStrictPhylipLine = /^(.{10})(.+)$/;
 const reRelaxedPhylipLine = /^(\w+)\s+(.+)$/;
 
-export type PhylipSequence = { taxon: string; code: string };
+export interface PhylipSequence { taxon: string; code: string }
 
-export type PhylipAlignment = {
+export interface PhylipAlignment {
   sequences: PhylipSequence[];
   numSequences: number;
   length: number;
@@ -14,7 +14,7 @@ export type PhylipAlignment = {
   interleaved: boolean;
   relaxed: boolean;
   numLinesPerTaxa: number;
-};
+}
 
 export const isPhylip = (lines: string[]): boolean => {
   if (lines.length === 0) {

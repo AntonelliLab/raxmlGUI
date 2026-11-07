@@ -3,13 +3,13 @@ import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ErrorDialog from './ErrorDialog';
 
-export type ErrorBoundaryProps = {
+export interface ErrorBoundaryProps {
   children: React.ReactNode;
-};
+}
 
-type ErrorBoundaryState = {
+interface ErrorBoundaryState {
   error: Error | null;
-};
+}
 
 class ErrorBoundary extends React.Component<
   ErrorBoundaryProps,

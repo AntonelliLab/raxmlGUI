@@ -3,14 +3,14 @@ import * as ipc from '../constants/ipc';
 import store from './store';
 import path from 'path';
 
-type AlignmentExampleFilesPayload = {
+interface AlignmentExampleFilesPayload {
   fasta: string[];
   phylip: string[];
   dir: string;
   outdir: string;
-};
+}
 
-type AlignmentPathRef = { path: string };
+interface AlignmentPathRef { path: string }
 
 if (process.env.NODE_ENV === 'development') {
   console.log('\n========= Bootstrapping initial state... =========\n');

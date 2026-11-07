@@ -7,11 +7,11 @@ import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';
 import 'prismjs/themes/prism-okaidia.css'; // coy, dark, funky, okaidia, solarizedlight, tomorrow, twilight
 
-export type CodeHighlightProps = {
+export interface CodeHighlightProps {
   code: string;
   language: string;
   sx?: SxProps<Theme>;
-};
+}
 
 function CodeHighlight({ code, language, sx }: CodeHighlightProps) {
   const codeNode = useRef<HTMLElement | null>(null);
