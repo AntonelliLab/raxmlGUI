@@ -14,6 +14,12 @@ module.exports = {
           },
         ],
         '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+        '@typescript-eslint/array-type': [
+          'error',
+          {
+            default: 'array',
+          },
+        ],
       },
     },
   ],

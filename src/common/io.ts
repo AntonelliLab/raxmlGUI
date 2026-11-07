@@ -12,7 +12,7 @@ import UserFixError from './errors';
 interface TypecheckedSequence { taxon: string; code: string; dataType: string }
 
 type TypecheckedAlignment<
-  T extends { sequences: Array<{ taxon: string; code: string }> },
+  T extends { sequences: { taxon: string; code: string }[] },
 > = Omit<T, 'sequences'> & {
   sequences: TypecheckedSequence[];
   dataType: string;
@@ -25,7 +25,7 @@ export type ParsedAlignment =
   | TypecheckedAlignment<PhylipAlignment>;
 
 export interface WritableAlignment {
-  sequences: Array<{ taxon: string; code: string }>;
+  sequences: { taxon: string; code: string }[];
 }
 
 type ParserAlignment = FastaAlignment | PhylipAlignment;

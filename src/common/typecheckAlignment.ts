@@ -14,7 +14,7 @@ export interface TypecheckableAlignment {
 }
 
 export const getFinalDataType = (
-  dataTypes: Array<string | undefined>,
+  dataTypes: (string | undefined)[],
 ): string | undefined => {
   const notUndefinedTypes = dataTypes.filter((d) => d !== undefined);
   if (notUndefinedTypes.length === 0) {
@@ -64,7 +64,7 @@ export function findInvalidCharacter(code: string, dataType: string): number {
 
 function hasInvariantSites(
   length: number,
-  sequences: Array<{ code: string }>,
+  sequences: { code: string }[],
 ): boolean {
   for (let i = 0; i < length; i++) {
     const variantsAtPosition: string[] = [];
