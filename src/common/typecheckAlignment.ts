@@ -1,6 +1,21 @@
 import UserFixError from './errors';
 
-export const getFinalDataType = (dataTypes) => {
+export type TypecheckAlignmentSequence = {
+  code: string;
+  dataType?: string;
+};
+
+export type TypecheckableAlignment = {
+  length: number;
+  sequences: TypecheckAlignmentSequence[];
+  dataType?: string;
+  hasInvariantSites?: boolean;
+  typecheckingComplete?: boolean;
+};
+
+export const getFinalDataType = (
+  dataTypes: Array<string | undefined>,
+): string | undefined => {
   const notUndefinedTypes = dataTypes.filter((d) => d !== undefined);
   if (notUndefinedTypes.length === 0) {
     return undefined;
@@ -29,7 +44,7 @@ const reInvalidAA = /[^ARNDCQEGHILKMFPSTWYVBZX*?-]/gi;
 const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/gi;
 const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/gi;
 
-export function findInvalidCharacter(code, dataType) {
+export function findInvalidCharacter(code: string, dataType: string): number {
   // Returns the index of the invalid character if found, else -1
   switch (dataType) {
     case 'protein':
@@ -47,9 +62,12 @@ export function findInvalidCharacter(code, dataType) {
   }
 }
 
-function hasInvariantSites(length, sequences) {
+function hasInvariantSites(
+  length: number,
+  sequences: Array<{ code: string }>,
+): boolean {
   for (let i = 0; i < length; i++) {
-    const variantsAtPosition = [];
+    const variantsAtPosition: string[] = [];
     for (const sequence of sequences) {
       const site = sequence.code[i];
       if (!variantsAtPosition.includes(site)) {
@@ -63,19 +81,21 @@ function hasInvariantSites(length, sequences) {
   return false;
 }
 
-export default function typecheckAlignment(alignment) {
+export default function typecheckAlignment<T extends TypecheckableAlignment>(
+  alignment: T,
+): T {
   const acgMatch = /[ACGN?]/i; // Include 'N' and '?' as symbols for missing characters in DNA
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
   const proteinMatch = /[EFJIJLOPQZX]/i;
   const binaryMatch = /[01]/;
   const multistateMatch = /2/;
   const unknownMatch = /^[N?]+$/i;
-  const sequenceDataTypes = [];
-  const dataTypes = new Set();
+  const sequenceDataTypes: string[] = [];
+  const dataTypes = new Set<string>();
   let numSequencesTypechecked = 0;
   alignment.sequences.forEach((sequence, index) => {
     const { code } = sequence;
-    let dataType = undefined;
+    let dataType: string | undefined = undefined;
     if (proteinMatch.test(code)) {
       dataType = 'protein';
     } else if (acgMatch.test(code)) {
@@ -119,7 +139,7 @@ export default function typecheckAlignment(alignment) {
       );
     }
   }
-  let dataType = dataTypes.values().next().value;
+  let dataType = dataTypes.values().next().value as string;
   if (dataTypes.size > 1) {
     // Only valid case with different types is binary and multistate as [01] is a subset of [012].
     const isMultistate = !sequenceDataTypes.find(
