@@ -31,9 +31,9 @@ autoUpdater.autoInstallOnAppQuit = false;
 log.info('App starting...');
 
 // Module to control application life.
-const app = electron.app;
+const {app} = electron;
 // Module to show dialogs
-const dialog = electron.dialog;
+const {dialog} = electron;
 
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from

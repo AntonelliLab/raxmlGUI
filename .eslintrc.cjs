@@ -4,6 +4,13 @@ module.exports = {
   ignorePatterns: ['build/', 'dist/', 'docs/', 'node_modules/'],
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
+    'prefer-destructuring': [
+      'error',
+      {
+        object: true,
+        array: false,
+      },
+    ],
   },
   overrides: [
     {

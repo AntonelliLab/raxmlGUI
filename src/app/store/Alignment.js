@@ -665,7 +665,7 @@ class FinalAlignment {
   }
 
   @computed get modelFlagName() {
-    const numAlignments = this.numAlignments;
+    const {numAlignments} = this;
     if (numAlignments === 0) {
       return 'none';
     }

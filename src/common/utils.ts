@@ -32,11 +32,12 @@ const processWithElectron = process as NodeJS.Process & {
 };
 
 function newGithubIssueUrl(options: NewGithubIssueUrlOptions = {}): string {
+  const { repoUrl: repoUrlOption, user, repo } = options;
   let repoUrl: string;
-  if (options.repoUrl) {
-    repoUrl = options.repoUrl;
-  } else if (options.user && options.repo) {
-    repoUrl = `https://github.com/${options.user}/${options.repo}`;
+  if (repoUrlOption) {
+    repoUrl = repoUrlOption;
+  } else if (user && repo) {
+    repoUrl = `https://github.com/${user}/${repo}`;
   } else {
     throw new Error(
       'You need to specify either the `repoUrl` option or both the `user` and `repo` options',

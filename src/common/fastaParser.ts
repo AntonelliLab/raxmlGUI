@@ -80,7 +80,7 @@ export const parse = (lines: string[]): FastaAlignment => {
   addSequence();
 
   const numSequences = sequences.length;
-  const length = sequences[0].code.length;
+  const {length} = sequences[0].code;
   // Check that all sequnces have the same length;
   for (const seq of sequences) {
     if (seq.code.length !== length) {
