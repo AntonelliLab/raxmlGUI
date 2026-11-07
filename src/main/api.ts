@@ -23,12 +23,12 @@ import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
 
-is.development
-  ? null
-  : Sentry.init({
-      dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-      maxValueLength: 2000,
-    });
+if (!is.development) {
+  Sentry.init({
+    dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
+    maxValueLength: 2000,
+  });
+}
 
 const fs = _fs.promises;
 
