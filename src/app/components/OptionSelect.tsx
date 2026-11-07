@@ -18,7 +18,7 @@ export interface OptionSelectOptionLike {
   hoverInfo: string;
   options: readonly OptionSelectChoice[];
   value: string | number | readonly string[];
-  setValue: (value: unknown) => void;
+  setValue: ( value: unknown ) => void;
   multiple?: boolean;
   error: unknown;
   placeholder?: string;
@@ -29,14 +29,14 @@ export interface OptionSelectProps {
   sx?: SxProps<Theme>;
 }
 
-const OptionSelect = observer(function OptionSelect({
+const OptionSelect = observer( function OptionSelect( {
   option,
   sx,
-}: OptionSelectProps) {
-  if (option.notAvailable || option.options.length === 0) {
+}: OptionSelectProps ) {
+  if ( option.notAvailable || option.options.length === 0 ) {
     return null;
   }
-  if (option.options.length === 1) {
+  if ( option.options.length === 1 ) {
     // No options to change to, render as a text field instead.
     return (
       <TextField
@@ -46,7 +46,7 @@ const OptionSelect = observer(function OptionSelect({
         sx={sx}
         value={option.value}
         placeholder={option.placeholder}
-        error={Boolean(option.error)}
+        error={Boolean( option.error )}
         slotProps={{
           input: {
             readOnly: true,
@@ -60,23 +60,23 @@ const OptionSelect = observer(function OptionSelect({
     <FormControl variant="standard" sx={sx} title={option.hoverInfo}>
       <Select
         value={option.value}
-        onChange={(e) => option.setValue(e.target.value)}
+        onChange={( e ) => option.setValue( e.target.value )}
         inputProps={{
           name: option.title,
           id: option.title,
         }}
-        error={Boolean(option.error)}
+        error={Boolean( option.error )}
         multiple={option.multiple}
       >
-        {option.options.map(({ value, title }, index) => (
+        {option.options.map( ( { value, title }, index ) => (
           <MenuItem key={index} value={value}>
             {title}
           </MenuItem>
-        ))}
+        ) )}
       </Select>
       <FormHelperText>{option.title}</FormHelperText>
     </FormControl>
   );
-});
+} );
 
 export default OptionSelect;

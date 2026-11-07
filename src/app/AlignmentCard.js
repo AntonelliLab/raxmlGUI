@@ -21,8 +21,8 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
-function _ModelTestButton({ alignment }) {
-  if (!alignment.modelTestCanRun) {
+function _ModelTestButton( { alignment } ) {
+  if ( !alignment.modelTestCanRun ) {
     return null;
   }
   return (
@@ -30,11 +30,11 @@ function _ModelTestButton({ alignment }) {
       data-testid="run-modeltest"
       sx={{
         marginLeft: '10px',
-        backgroundColor: (theme) => theme.palette.input.main,
-        border: (theme) => `1px solid ${theme.palette.input.darker}`,
-        color: (theme) => theme.palette.input.contrastText,
+        backgroundColor: ( theme ) => theme.palette.input.main,
+        border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
+        color: ( theme ) => theme.palette.input.contrastText,
         '&:hover': {
-          backgroundColor: (theme) => theme.palette.input.main,
+          backgroundColor: ( theme ) => theme.palette.input.main,
         },
       }}
       variant="contained"
@@ -51,39 +51,39 @@ _ModelTestButton.propTypes = {
   alignment: PropTypes.object.isRequired,
 };
 
-const ModelTestButton = observer(_ModelTestButton);
+const ModelTestButton = observer( _ModelTestButton );
 
-function AlignmentCard({ alignment }) {
+function AlignmentCard( { alignment } ) {
   const { dataType, numSequences, length } = alignment;
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState( null );
 
-  function handleMenuClick(event) {
-    setAnchorEl(event.currentTarget);
+  function handleMenuClick( event ) {
+    setAnchorEl( event.currentTarget );
   }
 
   function handleMenuClose() {
-    setAnchorEl(null);
+    setAnchorEl( null );
   }
 
-  function closeMenuAndRun(callback) {
+  function closeMenuAndRun( callback ) {
     return () => {
       callback();
-      setAnchorEl(null);
+      setAnchorEl( null );
     };
   }
 
   const Size = alignment.parsingComplete ? (
     <Box
       component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
     >
       {numSequences} sequences of length {length}
     </Box>
   ) : (
     <Box
       component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
     >
       Parsing... {alignment.numSequencesParsed}{' '}
     </Box>
@@ -93,9 +93,9 @@ function AlignmentCard({ alignment }) {
     <Chip
       sx={{
         height: '30px',
-        color: (theme) => theme.palette.input.contrastText,
-        backgroundColor: (theme) => theme.palette.input.main,
-        border: (theme) => `1px solid ${theme.palette.input.darker}`,
+        color: ( theme ) => theme.palette.input.contrastText,
+        backgroundColor: ( theme ) => theme.palette.input.main,
+        border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
       }}
       label={dataType}
     />
@@ -172,10 +172,10 @@ function AlignmentCard({ alignment }) {
                   ...alignment.modelExtra,
                   setValue: alignment.modelExtra.onChange,
                   title: alignment.modelExtra.label,
-                  options: alignment.modelExtra.options.map((model) => ({
+                  options: alignment.modelExtra.options.map( ( model ) => ( {
                     value: model,
                     title: model,
-                  })),
+                  } ) ),
                 }}
               />
             ) : null}
@@ -189,8 +189,8 @@ function AlignmentCard({ alignment }) {
   return (
     <Card
       sx={{
-        backgroundColor: (theme) => theme.palette.input.light,
-        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        backgroundColor: ( theme ) => theme.palette.input.light,
+        border: ( theme ) => `1px solid ${theme.palette.input.border}`,
         width: '550px',
         height: '200px',
       }}
@@ -223,23 +223,23 @@ function AlignmentCard({ alignment }) {
             <Menu
               id="alignment-menu"
               anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
+              open={Boolean( anchorEl )}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.openFile )}>
                 Open aligment
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.showFileInFolder)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.showFileInFolder )}>
                 Show in folder
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.remove)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.remove )}>
                 Remove alignment
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.setShowPartition )}>
                 Edit partition
               </MenuItem>
               {alignment.modeltestLoading ? (
-                <MenuItem onClick={closeMenuAndRun(alignment.cancelModelTest)}>
+                <MenuItem onClick={closeMenuAndRun( alignment.cancelModelTest )}>
                   Cancel modeltest
                 </MenuItem>
               ) : null}
@@ -275,28 +275,28 @@ function AlignmentCard({ alignment }) {
   );
 }
 
-function FinalAlignmentCard({ sx, alignment }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+function FinalAlignmentCard( { sx, alignment } ) {
+  const [anchorEl, setAnchorEl] = React.useState( null );
 
-  function handleMenuClick(event) {
-    setAnchorEl(event.currentTarget);
+  function handleMenuClick( event ) {
+    setAnchorEl( event.currentTarget );
   }
 
   function handleMenuClose() {
-    setAnchorEl(null);
+    setAnchorEl( null );
   }
 
-  function closeMenuAndRun(callback) {
+  function closeMenuAndRun( callback ) {
     return () => {
       callback();
-      setAnchorEl(null);
+      setAnchorEl( null );
     };
   }
 
   const Size = alignment.parsingComplete ? (
     <Box
       component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
     >
       {alignment.numSequences} sequences of length {alignment.length} from{' '}
       {alignment.numAlignments} alignment
@@ -305,7 +305,7 @@ function FinalAlignmentCard({ sx, alignment }) {
   ) : (
     <Box
       component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
     >
       Parsing... {alignment.numSequencesParsed}{' '}
     </Box>
@@ -314,8 +314,8 @@ function FinalAlignmentCard({ sx, alignment }) {
   return (
     <Card
       sx={{
-        backgroundColor: (theme) => theme.palette.input.light,
-        border: (theme) => `1px solid ${theme.palette.input.border}`,
+        backgroundColor: ( theme ) => theme.palette.input.light,
+        border: ( theme ) => `1px solid ${theme.palette.input.border}`,
         ...sx,
       }}
     >
@@ -324,9 +324,9 @@ function FinalAlignmentCard({ sx, alignment }) {
           <Chip
             sx={{
               height: '30px',
-              color: (theme) => theme.palette.input.contrastText,
-              backgroundColor: (theme) => theme.palette.input.main,
-              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+              color: ( theme ) => theme.palette.input.contrastText,
+              backgroundColor: ( theme ) => theme.palette.input.main,
+              border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
             }}
             label={alignment.dataType}
             color="secondary"
@@ -346,16 +346,16 @@ function FinalAlignmentCard({ sx, alignment }) {
             <Menu
               id="alignment-menu"
               anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
+              open={Boolean( anchorEl )}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={closeMenuAndRun(alignment.openFile)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.openFile )}>
                 Open aligment
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.openPartition)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.openPartition )}>
                 Open partition
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(alignment.openFolder)}>
+              <MenuItem onClick={closeMenuAndRun( alignment.openFolder )}>
                 Open folder
               </MenuItem>
             </Menu>
@@ -371,7 +371,7 @@ function FinalAlignmentCard({ sx, alignment }) {
           control={
             <Switch
               checked={alignment.fillTaxonGapsWithEmptySeqeunces}
-              onChange={(event) => {
+              onChange={( event ) => {
                 alignment.setFillTaxonGapsWithEmptySeqeunces(
                   event.target.checked,
                 );
@@ -379,9 +379,9 @@ function FinalAlignmentCard({ sx, alignment }) {
               value="fillTaxonGapsWithEmptySeqeunces"
               sx={{
                 '& .MuiSwitch-switchBase': {
-                  color: (theme) => theme.palette.input.secondaryText,
+                  color: ( theme ) => theme.palette.input.secondaryText,
                   '&.Mui-checked': {
-                    color: (theme) => theme.palette.input.dark,
+                    color: ( theme ) => theme.palette.input.dark,
                   },
                 },
               }}
@@ -402,7 +402,7 @@ function FinalAlignmentCard({ sx, alignment }) {
           <Box
             component="code"
             sx={{
-              color: (theme) => theme.palette.primary.contrastText,
+              color: ( theme ) => theme.palette.primary.contrastText,
               fontFamily:
                 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '10px',
@@ -429,8 +429,8 @@ FinalAlignmentCard.propTypes = {
   sx: PropTypes.object,
 };
 
-const AlignmentCardObserver = observer(AlignmentCard);
-const FinalAlignmentCardObserver = observer(FinalAlignmentCard);
+const AlignmentCardObserver = observer( AlignmentCard );
+const FinalAlignmentCardObserver = observer( FinalAlignmentCard );
 
 export default AlignmentCardObserver;
 export { FinalAlignmentCardObserver as FinalAlignmentCard };

@@ -11,25 +11,25 @@ export default class Config extends StoreBase {
     this.listen();
   }
 
-  @observable isDarkMode = store.get('darkMode');
+  @observable isDarkMode = store.get( 'darkMode' );
 
   @action
-  setDarkMode = (value) => {
+  setDarkMode = ( value ) => {
     value = !!value;
-    store.set('darkMode', value);
+    store.set( 'darkMode', value );
     this.isDarkMode = value;
   };
 
   onLightMode = () => {
-    this.setDarkMode(false);
+    this.setDarkMode( false );
   };
 
   onDarkMode = () => {
-    this.setDarkMode(true);
+    this.setDarkMode( true );
   };
 
   listen = () => {
-    this.listenTo(ipc.LIGHT_MODE, this.onLightMode);
-    this.listenTo(ipc.DARK_MODE, this.onDarkMode);
+    this.listenTo( ipc.LIGHT_MODE, this.onLightMode );
+    this.listenTo( ipc.DARK_MODE, this.onDarkMode );
   };
 }

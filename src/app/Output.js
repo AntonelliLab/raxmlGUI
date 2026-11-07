@@ -8,7 +8,7 @@ import { Link, Typography } from '@mui/material';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import { join } from 'path';
 
-const Output = ({ run }) => {
+const Output = ( { run } ) => {
   const { resultFilenames } = run;
   const haveResult = resultFilenames.length > 0;
 
@@ -51,7 +51,7 @@ const Output = ({ run }) => {
           helperText={run.outputNameNotice || 'Select output name'}
           value={run.outputName}
           placeholder={run.outputNamePlaceholder}
-          onChange={(e) => run.setOutputName(e.target.value)}
+          onChange={( e ) => run.setOutputName( e.target.value )}
           error={!run.outputNameOk}
         />
       </Box>
@@ -59,29 +59,29 @@ const Output = ({ run }) => {
         {haveResult ? (
           <Typography>Result for output id '{run.outputName}' </Typography>
         ) : null}
-        {resultFilenames.map((filename) => (
+        {resultFilenames.map( ( filename ) => (
           <Link
             key={filename}
             sx={{
-              color: (theme) => theme.palette.primary.contrastText,
+              color: ( theme ) => theme.palette.primary.contrastText,
               display: 'flex',
               alignItems: 'flex-end',
               cursor: 'pointer',
             }}
-            onClick={() => run.openFile(join(run.outputDir, filename))}
+            onClick={() => run.openFile( join( run.outputDir, filename ) )}
             underline="hover"
           >
             <FileIcon />
             <Box
               component="span"
               sx={{
-                color: (theme) => theme.palette.primary.contrastText,
+                color: ( theme ) => theme.palette.primary.contrastText,
               }}
             >
               {filename}
             </Box>
           </Link>
-        ))}
+        ) )}
       </Box>
       {run.haveAlignments || haveResult ? (
         <Box component="form" my={1}>
@@ -98,4 +98,4 @@ Output.propTypes = {
   run: PropTypes.object.isRequired,
 };
 
-export default observer(Output);
+export default observer( Output );

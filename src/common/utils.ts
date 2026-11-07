@@ -20,23 +20,23 @@ interface NewGithubIssueUrlOptions {
 }
 
 type PlatformHandlers<T> = {
-  macos?: T | (() => T);
-  windows?: T | (() => T);
-  linux?: T | (() => T);
-  default?: T | (() => T);
-} & Record<string, T | (() => T) | undefined>;
+  macos?: T | ( () => T );
+  windows?: T | ( () => T );
+  linux?: T | ( () => T );
+  default?: T | ( () => T );
+} & Record<string, T | ( () => T ) | undefined>;
 
 const processWithElectron = process as NodeJS.Process & {
   mas?: boolean;
   windowsStore?: boolean;
 };
 
-function newGithubIssueUrl(options: NewGithubIssueUrlOptions = {}): string {
+function newGithubIssueUrl( options: NewGithubIssueUrlOptions = {} ): string {
   const { repoUrl: repoUrlOption, user, repo } = options;
   let repoUrl: string;
-  if (repoUrlOption) {
+  if ( repoUrlOption ) {
     repoUrl = repoUrlOption;
-  } else if (user && repo) {
+  } else if ( user && repo ) {
     repoUrl = `https://github.com/${user}/${repo}`;
   } else {
     throw new Error(
@@ -44,7 +44,7 @@ function newGithubIssueUrl(options: NewGithubIssueUrlOptions = {}): string {
     );
   }
 
-  const url = new URL(`${repoUrl}/issues/new`);
+  const url = new URL( `${repoUrl}/issues/new` );
 
   const types = [
     'body',
@@ -56,21 +56,21 @@ function newGithubIssueUrl(options: NewGithubIssueUrlOptions = {}): string {
     'projects',
   ] as const;
 
-  for (const type of types) {
+  for ( const type of types ) {
     let value = options[type];
-    if (value === undefined) {
+    if ( value === undefined ) {
       continue;
     }
 
-    if (type === 'labels' || type === 'projects') {
-      if (!Array.isArray(value)) {
-        throw new TypeError(`The \`${type}\` option should be an array`);
+    if ( type === 'labels' || type === 'projects' ) {
+      if ( !Array.isArray( value ) ) {
+        throw new TypeError( `The \`${type}\` option should be an array` );
       }
 
-      value = value.join(',');
+      value = value.join( ',' );
     }
 
-    url.searchParams.set(type, String(value));
+    url.searchParams.set( type, String( value ) );
   }
 
   return url.toString();
@@ -87,15 +87,15 @@ export const is = {
   windowsStore: processWithElectron.windowsStore === true,
 };
 
-export const platform = <T,>(object: PlatformHandlers<T>): T => {
+export const platform = <T,>( object: PlatformHandlers<T> ): T => {
   let platformKey: string = process.platform;
-  if (is.macos) {
+  if ( is.macos ) {
     platformKey = 'macos';
-  } else if (is.windows) {
+  } else if ( is.windows ) {
     platformKey = 'windows';
   }
   const fn = platformKey in object ? object[platformKey] : object.default;
-  return typeof fn === 'function' ? (fn as () => T)() : (fn as T);
+  return typeof fn === 'function' ? ( fn as () => T )() : ( fn as T );
 };
 
 // TODO: Had to replace this debug info on renderer, because electron remote module is no longer available.
@@ -109,91 +109,91 @@ Locale: ${electron.app.getLocale()}
 `.trim()
     : `Debug info not available in renderer.`;
 
-if (is.renderer) {
-  ipc.ipcRenderer.answerMain('get-state-report', async () => {
-    const storeModule = await import('../app/store');
+if ( is.renderer ) {
+  ipc.ipcRenderer.answerMain( 'get-state-report', async () => {
+    const storeModule = await import( '../app/store' );
     const store = storeModule.default;
     const report = store.generateReport();
     return report;
-  });
+  } );
 }
 
 const getActiveState = async (): Promise<unknown> => {
-  if (is.renderer) {
+  if ( is.renderer ) {
     return window.store.generateReport();
   }
   const win = activeWindow();
-  const report = await ipc.ipcMain.callRenderer(win, 'get-state-report');
+  const report = await ipc.ipcMain.callRenderer( win, 'get-state-report' );
   return report;
 };
 
 const getActiveStateSync = (): unknown => {
-  if (is.renderer) {
+  if ( is.renderer ) {
     return window.store.generateReport();
   }
   return `Current state not available on synchronous call from main`;
 };
 
-const serializeAndCleanError = (error: unknown) => {
-  const err = serializeError(error);
+const serializeAndCleanError = ( error: unknown ) => {
+  const err = serializeError( error );
   const stack = error instanceof Error ? error.stack : undefined;
-  err.stack = cleanStack(stack);
+  err.stack = cleanStack( stack );
   return err;
 };
 
-export function timeout(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export function timeout( ms: number ): Promise<void> {
+  return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 }
 
-export const quote = (dir: string): string => (is.windows ? `"${dir}"` : dir);
+export const quote = ( dir: string ): string => ( is.windows ? `"${dir}"` : dir );
 
-const stringify = (json: unknown) => JSON.stringify(json, null, '  ');
+const stringify = ( json: unknown ) => JSON.stringify( json, null, '  ' );
 
-const stringifyToGithubMarkdown = (json: unknown) => `\`\`\`json
-${stringify(json)}
+const stringifyToGithubMarkdown = ( json: unknown ) => `\`\`\`json
+${stringify( json )}
 \`\`\``;
 
-const createReportBodyForGithub = (error: Error, activeState: unknown) =>
+const createReportBodyForGithub = ( error: Error, activeState: unknown ) =>
   `Autogenerated report:
-${stringifyToGithubMarkdown(serializeAndCleanError(error))}
+${stringifyToGithubMarkdown( serializeAndCleanError( error ) )}
 
 Active state:
-${stringifyToGithubMarkdown(activeState)}
+${stringifyToGithubMarkdown( activeState )}
 
 ---
 
 Process: ${is.renderer ? 'renderer' : 'main'}
 ${debugInfo()}`;
 
-const createReportBodyForMail = (error: Error, activeState: unknown) =>
-  encodeURI(`Autogenerated report:
-${stringify(serializeAndCleanError(error))}
+const createReportBodyForMail = ( error: Error, activeState: unknown ) =>
+  encodeURI( `Autogenerated report:
+${stringify( serializeAndCleanError( error ) )}
 
 Active state:
-${stringify(activeState)}
+${stringify( activeState )}
 
 ---
 
 Process: ${is.renderer ? 'renderer' : 'main'}
-${debugInfo()}`);
+${debugInfo()}` );
 
-const openNewGitHubIssue = (options: NewGithubIssueUrlOptions) => {
-  const url = newGithubIssueUrl(options);
-  electron.shell.openExternal(url);
+const openNewGitHubIssue = ( options: NewGithubIssueUrlOptions ) => {
+  const url = newGithubIssueUrl( options );
+  electron.shell.openExternal( url );
 };
 
-export const reportIssueToGitHub = async (error: Error): Promise<void> => {
+export const reportIssueToGitHub = async ( error: Error ): Promise<void> => {
   const activeState = await getActiveState();
-  openNewGitHubIssue({
+  openNewGitHubIssue( {
     user: 'AntonelliLab',
     repo: 'raxmlGUI',
     title: error.name,
-    body: createReportBodyForGithub(error, activeState),
-  });
+    body: createReportBodyForGithub( error, activeState ),
+  } );
 };
 
-export const getMailtoLinkToReportError = (error: Error): string => {
+export const getMailtoLinkToReportError = ( error: Error ): string => {
   const activeState = getActiveStateSync();
-  const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI(error.name)}&body=${createReportBodyForMail(error, activeState)}`;
+  const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI( error.name )}&body=${createReportBodyForMail( error, activeState )}`;
   return mailtoLinkContent;
 };

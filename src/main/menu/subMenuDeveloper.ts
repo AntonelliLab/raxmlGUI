@@ -7,7 +7,7 @@ const subMenuDeveloper = {
     {
       label: 'Force Error',
       click() {
-        throw new Error('Testing Error');
+        throw new Error( 'Testing Error' );
       },
     },
     { type: 'separator' },

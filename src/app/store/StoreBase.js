@@ -10,15 +10,15 @@ export default class StoreBase {
     this._listen();
   }
 
-  listenTo = (channel, listener) => {
-    ipcRenderer.on(channel, listener);
-    this.listeners.push([channel, listener]);
+  listenTo = ( channel, listener ) => {
+    ipcRenderer.on( channel, listener );
+    this.listeners.push( [channel, listener] );
   };
 
   unlisten = () => {
-    while (!this.listeners.length > 0) {
+    while ( !this.listeners.length > 0 ) {
       const [channel, listener] = this.listeners.pop();
-      ipcRenderer.removeListener(channel, listener);
+      ipcRenderer.removeListener( channel, listener );
     }
   };
 
@@ -27,14 +27,14 @@ export default class StoreBase {
   };
 
   _init = () => {
-    ipcRenderer.send(ipc.INIT_APP_STATE);
+    ipcRenderer.send( ipc.INIT_APP_STATE );
   };
 
   _listen = () => {
-    this.listenTo(ipc.INIT_APP_STATE_RECEIVED, this._initAppState);
+    this.listenTo( ipc.INIT_APP_STATE_RECEIVED, this._initAppState );
   };
 
-  _initAppState = (event, { version }) => {
+  _initAppState = ( event, { version } ) => {
     this.version = version;
   };
 }

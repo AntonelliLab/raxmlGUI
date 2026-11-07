@@ -8,7 +8,7 @@ import StoreBase from './StoreBase';
 class InputFile extends StoreBase {
   run = null;
 
-  constructor(run, path) {
+  constructor( run, path ) {
     super();
     this.run = run;
     this.path = path;
@@ -24,22 +24,22 @@ class InputFile extends StoreBase {
 
   @computed
   get name() {
-    return parsePath(this.path).name;
+    return parsePath( this.path ).name;
   }
 
   @computed
   get dir() {
-    return parsePath(this.path).dir;
+    return parsePath( this.path ).dir;
   }
 
   @computed
   get base() {
-    return parsePath(this.path).base;
+    return parsePath( this.path ).base;
   }
 
   @computed
   get filename() {
-    return parsePath(this.path).base;
+    return parsePath( this.path ).base;
   }
 
   @computed
@@ -49,12 +49,12 @@ class InputFile extends StoreBase {
 
   @action
   openFile = () => {
-    ipcRenderer.send(ipc.FILE_OPEN, this.path);
+    ipcRenderer.send( ipc.FILE_OPEN, this.path );
   };
 
   @action
   showFileInFolder = () => {
-    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
+    ipcRenderer.send( ipc.FILE_SHOW_IN_FOLDER, this.path );
   };
 }
 

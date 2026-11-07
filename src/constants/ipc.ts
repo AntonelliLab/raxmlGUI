@@ -47,7 +47,7 @@ const ipcChannels = {
   ASTRAL_FILE_SELECTED: 'ASTRAL_FILE_SELECTED',
 } as const;
 
-export type IpcChannel = (typeof ipcChannels)[keyof typeof ipcChannels];
+export type IpcChannel = ( typeof ipcChannels )[keyof typeof ipcChannels];
 
 export const {
   INIT_APP_STATE,

@@ -29,10 +29,10 @@ class Option {
     this.helperText = helperText;
   }
   @observable value = this.defaultValue;
-  @action setValue = (value) => {
-    const isValid = this.schema.isValidSync(value);
-    if (!this.allowOnlyValidChange || isValid) {
-      this.value = isValid ? this.schema.cast(value) : value;
+  @action setValue = ( value ) => {
+    const isValid = this.schema.isValidSync( value );
+    if ( !this.allowOnlyValidChange || isValid ) {
+      this.value = isValid ? this.schema.cast( value ) : value;
     }
   };
   @action reset() {
@@ -43,9 +43,9 @@ class Option {
   }
   @computed get error() {
     try {
-      this.schema.validateSync(this.value);
+      this.schema.validateSync( this.value );
       return null;
-    } catch (err) {
+    } catch ( err ) {
       return err;
     }
   }
