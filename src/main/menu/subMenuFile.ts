@@ -1,7 +1,16 @@
-import { BrowserWindow } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 
 import * as ipc from '../../constants/ipc';
 import { store } from '../../app/store/Config';
+import { activeWindow } from '../utils/utils';
+
+const sendToFocusedWindow = (channel: string) => {
+  const win = activeWindow();
+  if (!win) {
+    return;
+  }
+  win.webContents.send(channel);
+};
 
 const subMenuFile = {
   label: 'File',
@@ -10,14 +19,14 @@ const subMenuFile = {
       label: 'New Tab',
       accelerator: 'CmdOrCtrl+T',
       click() {
-        BrowserWindow.getFocusedWindow().webContents.send(ipc.ADD_RUN);
+        sendToFocusedWindow(ipc.ADD_RUN);
       },
     },
     {
       label: 'Close Tab',
       accelerator: 'CmdOrCtrl+W',
       click() {
-        BrowserWindow.getFocusedWindow().webContents.send(ipc.REMOVE_RUN);
+        sendToFocusedWindow(ipc.REMOVE_RUN);
       },
     },
     {
@@ -28,20 +37,20 @@ const subMenuFile = {
           type: 'radio',
           checked: !store.get('darkMode'),
           click() {
-            BrowserWindow.getFocusedWindow().webContents.send(ipc.LIGHT_MODE);
+            sendToFocusedWindow(ipc.LIGHT_MODE);
           },
         },
         {
           label: 'Dark mode',
           type: 'radio',
-          checked: store.get('darkMode'),
+          checked: Boolean(store.get('darkMode')),
           click() {
-            BrowserWindow.getFocusedWindow().webContents.send(ipc.DARK_MODE);
+            sendToFocusedWindow(ipc.DARK_MODE);
           },
         },
       ],
     },
   ],
-};
+} satisfies MenuItemConstructorOptions;
 
 export default subMenuFile;

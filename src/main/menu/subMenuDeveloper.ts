@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from 'electron';
+
 const subMenuDeveloper = {
   // If you see this menu in production sth is wrong
   label: 'DEVELOPER!!!',
@@ -9,16 +11,16 @@ const subMenuDeveloper = {
       },
     },
     { type: 'separator' },
-    { role: 'toggledevtools' },
+    { role: 'toggleDevTools' },
     { role: 'reload' },
-    { role: 'forcereload' },
+    { role: 'forceReload' },
     { type: 'separator' },
-    { role: 'resetzoom' },
-    { role: 'zoomin' },
-    { role: 'zoomout' },
+    { role: 'resetZoom' },
+    { role: 'zoomIn' },
+    { role: 'zoomOut' },
     { type: 'separator' },
     { role: 'togglefullscreen' },
   ],
-};
+} satisfies MenuItemConstructorOptions;
 
 export default subMenuDeveloper;

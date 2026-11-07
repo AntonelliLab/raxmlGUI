@@ -1,35 +1,62 @@
-import { app, Menu } from 'electron';
+import {
+  app,
+  Menu,
+  type BrowserWindow,
+  type ContextMenuParams,
+  type MenuItemConstructorOptions,
+} from 'electron';
 
 import subMenuFile from './subMenuFile';
 import subMenuAnalysis from './subMenuAnalysis';
 import subMenuDeveloper from './subMenuDeveloper';
 import saveScreenshot from '../utils/saveScreenshot';
 
-const menuTemplate = [
+const windowMenuSection = {
+  role: 'window',
+  submenu: [
+    { role: 'minimize' },
+    { role: 'close' },
+    {
+      label: 'Save screenshot',
+      accelerator: 'CmdOrCtrl+S',
+      click() {
+        saveScreenshot();
+      },
+    },
+  ],
+} satisfies MenuItemConstructorOptions;
+
+const baseMenuTemplate: MenuItemConstructorOptions[] = [
   subMenuFile,
   subMenuAnalysis,
-  {
-    role: 'window',
-    submenu: [
-      { role: 'minimize' },
-      { role: 'close' },
-      {
-        label: 'Save screenshot',
-        accelerator: 'CmdOrCtrl+S',
-        click() {
-          saveScreenshot();
-        },
-      },
-    ],
-  },
+  windowMenuSection,
 ];
 
+const darwinAppMenu = {
+  label: app.name,
+  submenu: [
+    { role: 'about' },
+    { type: 'separator' },
+    { role: 'services' },
+    { type: 'separator' },
+    { role: 'hide' },
+    { role: 'hideOthers' },
+    { role: 'unhide' },
+    { type: 'separator' },
+    { role: 'quit' },
+  ],
+} satisfies MenuItemConstructorOptions;
+
 export default class MenuBuilder {
-  constructor(mainWindow) {
+  mainWindow: BrowserWindow;
+
+  constructor(mainWindow: BrowserWindow) {
     this.mainWindow = mainWindow;
   }
 
-  buildMenu() {
+  buildMenu(): Menu {
+    const menuTemplate: MenuItemConstructorOptions[] = [...baseMenuTemplate];
+
     if (
       process.env.NODE_ENV === 'development' ||
       process.env.DEBUG_PROD === 'true'
@@ -39,20 +66,7 @@ export default class MenuBuilder {
     }
 
     if (process.platform === 'darwin') {
-      menuTemplate.unshift({
-        label: app.name,
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' },
-        ],
-      });
+      menuTemplate.unshift(darwinAppMenu);
     }
 
     const menu = Menu.buildFromTemplate(menuTemplate);
@@ -61,18 +75,21 @@ export default class MenuBuilder {
     return menu;
   }
 
-  setupDevelopmentEnvironment() {
-    this.mainWindow.openDevTools();
-    this.mainWindow.webContents.on('context-menu', (e, props) => {
-      const { x, y } = props;
-      Menu.buildFromTemplate([
-        {
-          label: 'Inspect element',
-          click: () => {
-            this.mainWindow.inspectElement(x, y);
+  setupDevelopmentEnvironment(): void {
+    this.mainWindow.webContents.openDevTools();
+    this.mainWindow.webContents.on(
+      'context-menu',
+      (_e, props: ContextMenuParams) => {
+        const { x, y } = props;
+        Menu.buildFromTemplate([
+          {
+            label: 'Inspect element',
+            click: () => {
+              this.mainWindow.webContents.inspectElement(x, y);
+            },
           },
-        },
-      ]).popup(this.mainWindow);
-    });
+        ]).popup({ window: this.mainWindow });
+      },
+    );
   }
 }
