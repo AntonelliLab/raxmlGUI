@@ -39,7 +39,6 @@ class ErrorBoundary extends React.Component<
 
   render() {
     const { error } = this.state;
-    // const error = new Error(`Minified React error #31; visit https://reactjs.org/docs/error-decoder.html?invariant=31&args[]=object%20with%20keys%20%7Bcmd%2C%20code%2C%20killed%2C%20message%2C%20name%2C%20signal%2C%20stack%2C%20stderr%2C%20stdout%7D&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.`);
     if (!error) {
       return this.props.children;
     }
