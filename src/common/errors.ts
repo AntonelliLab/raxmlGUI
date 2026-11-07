@@ -1,7 +1,8 @@
 export default class UserFixError extends Error {
-  constructor(message) {
+  readonly isUserFix = true;
+
+  constructor(message: string) {
     super(message);
     this.name = 'UserFixError';
-    this.isUserFix = true;
   }
 }
