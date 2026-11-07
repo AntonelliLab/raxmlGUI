@@ -13,19 +13,19 @@ export interface CodeHighlightProps {
   sx?: SxProps<Theme>;
 }
 
-function CodeHighlight( { code, language, sx }: CodeHighlightProps ) {
-  const codeNode = useRef<HTMLElement | null>( null );
+function CodeHighlight({ code, language, sx }: CodeHighlightProps) {
+  const codeNode = useRef<HTMLElement | null>(null);
 
-  useEffect( () => {
+  useEffect(() => {
     const el = codeNode.current;
-    if ( !el ) {
+    if (!el) {
       return;
     }
     const grammar = Prism.languages[language];
-    if ( grammar && typeof grammar === 'object' ) {
-      el.innerHTML = Prism.highlight( code, grammar as Grammar, language );
+    if (grammar && typeof grammar === 'object') {
+      el.innerHTML = Prism.highlight(code, grammar as Grammar, language);
     }
-  }, [code, language] );
+  }, [code, language]);
 
   return (
     <Box component="pre" sx={sx}>

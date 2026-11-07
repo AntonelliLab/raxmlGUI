@@ -13,19 +13,19 @@ interface AlignmentExampleFilesPayload {
 
 interface AlignmentPathRef { path: string }
 
-if ( process.env.NODE_ENV === 'development' ) {
-  console.log( '\n========= Bootstrapping initial state... =========\n' );
-  ipcRenderer.send( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST );
+if (process.env.NODE_ENV === 'development') {
+  console.log('\n========= Bootstrapping initial state... =========\n');
+  ipcRenderer.send(ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST);
 }
 
 ipcRenderer.on(
   ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS,
-  ( _event: IpcRendererEvent, exampleFiles: AlignmentExampleFilesPayload ) => {
-    initDev( exampleFiles );
+  (_event: IpcRendererEvent, exampleFiles: AlignmentExampleFilesPayload) => {
+    initDev(exampleFiles);
   },
 );
 
-function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
+function initDev(exampleFiles: AlignmentExampleFilesPayload): void {
   // if (exampleFiles.length === 0) {
   //   return;
   // }
@@ -41,9 +41,9 @@ function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
     // 'mixed_data.txt',
     // 'multistate.txt',
     'nucleotide.txt',
-  ].map( ( filename ) => ( {
-    path: path.join( exampleFilesDir, 'fasta', filename ),
-  } ) );
+  ].map((filename) => ({
+    path: path.join(exampleFilesDir, 'fasta', filename),
+  }));
   const usePhylipFiles: AlignmentPathRef[] = [
     // 'AA.txt',
     // 'align_allvariant.txt',
@@ -61,14 +61,14 @@ function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
     // 'fail_bad_name.txt',
     // 'test_invariant_sites.txt',
     // 'test_lower_case_bases.txt',
-  ].map( ( filename ) => ( {
-    path: path.join( exampleFilesDir, 'phylip', filename ),
-  } ) );
-  const useFiles = [].concat( useFastaFiles, usePhylipFiles );
-  store.activeRun.addAlignments( useFiles );
-  store.activeRun.setOutputDir( exampleFiles.outdir );
-  setTimeout( () => {
+  ].map((filename) => ({
+    path: path.join(exampleFilesDir, 'phylip', filename),
+  }));
+  const useFiles = [].concat(useFastaFiles, usePhylipFiles);
+  store.activeRun.addAlignments(useFiles);
+  store.activeRun.setOutputDir(exampleFiles.outdir);
+  setTimeout(() => {
     // store.activeRun.alignments[0].setShowPartition();
     // store.citation.show();
-  }, 1000 );
+  }, 1000);
 }

@@ -28,7 +28,7 @@ autoUpdater.logger = log;
 ).transports.file.level = 'info';
 // Fixes this error: https://github.com/electron-userland/electron-builder/issues/5717
 autoUpdater.autoInstallOnAppQuit = false;
-log.info( 'App starting...' );
+log.info('App starting...');
 
 // Module to control application life.
 const {app} = electron;
@@ -39,7 +39,7 @@ const {dialog} = electron;
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
 const isDevMode =
-  is.development && process.argv.indexOf( '--noDevServer' ) === -1;
+  is.development && process.argv.indexOf('--noDevServer') === -1;
 const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -47,57 +47,57 @@ const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 let mainWindow: BrowserWindow | null = null;
 let progressBar: ProgressBar | undefined;
 
-autoUpdater.on( 'checking-for-update', () => {
-  log.info( 'Checking for update...' );
-} );
-autoUpdater.on( 'update-available', ( info ) => {
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for update...');
+});
+autoUpdater.on('update-available', (info) => {
   dialog
-    .showMessageBox( {
+    .showMessageBox({
       type: 'info',
       title: 'Found Updates',
       message:
         'An update for RAxML-GUI is available, do you want to update now and restart?',
       buttons: ['Yes', 'No'],
       cancelId: 1,
-    } )
-    .then( ( r ) => {
+    })
+    .then((r) => {
       // Button index
-      if ( r.response === 0 ) {
-        progressBar = new ProgressBar( {
+      if (r.response === 0) {
+        progressBar = new ProgressBar({
           text: 'Downloading the update for the app',
           browserWindow: {
             webPreferences: {
               nodeIntegration: true,
             },
           },
-        } );
+        });
         progressBar
-          .on( 'completed', function () {
-            console.info( `completed...` );
+          .on('completed', function () {
+            console.info(`completed...`);
             progressBar.detail = 'Download completed. Exiting...';
-          } )
-          .on( 'aborted', function () {
-            console.info( `aborted...` );
-          } );
+          })
+          .on('aborted', function () {
+            console.info(`aborted...`);
+          });
         autoUpdater.downloadUpdate();
       }
-    } );
-  log.info( 'Update available.' );
-} );
-autoUpdater.on( 'update-not-available', ( info ) => {
-  log.info( 'Update not available.' );
-} );
-autoUpdater.on( 'error', ( error: unknown ) => {
-  log.info( 'Error in auto-updater. ' + error );
+    });
+  log.info('Update available.');
+});
+autoUpdater.on('update-not-available', (info) => {
+  log.info('Update not available.');
+});
+autoUpdater.on('error', (error: unknown) => {
+  log.info('Error in auto-updater. ' + error);
   const message =
     error == null
       ? 'unknown'
       : error instanceof Error
         ? error.stack || error.message
-        : String( error );
-  dialog.showErrorBox( 'Error: ', message );
-} );
-autoUpdater.on( 'download-progress', ( progressObj ) => {
+        : String(error);
+  dialog.showErrorBox('Error: ', message);
+});
+autoUpdater.on('download-progress', (progressObj) => {
   let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message =
@@ -107,20 +107,20 @@ autoUpdater.on( 'download-progress', ( progressObj ) => {
     '/' +
     progressObj.total +
     ')';
-  log.info( log_message );
-} );
-autoUpdater.on( 'update-downloaded', ( info ) => {
+  log.info(log_message);
+});
+autoUpdater.on('update-downloaded', (info) => {
   progressBar.setCompleted();
   dialog
-    .showMessageBox( {
+    .showMessageBox({
       title: 'Install Updates',
       message: 'Updates downloaded, the application will now quit to update...',
-    } )
-    .then( () => {
-      setImmediate( () => autoUpdater.quitAndInstall() );
-    } );
-  log.info( 'Update downloaded' );
-} );
+    })
+    .then(() => {
+      setImmediate(() => autoUpdater.quitAndInstall());
+    });
+  log.info('Update downloaded');
+});
 
 /**
  * Add event listeners...
@@ -128,7 +128,7 @@ autoUpdater.on( 'update-downloaded', ( info ) => {
 function initialize() {
   // Make this a single instance app
   const shouldQuit = makeSingleInstance();
-  if ( shouldQuit ) return app.quit();
+  if (shouldQuit) return app.quit();
 
   function createMainWindow() {
     // Window options for the main window
@@ -150,53 +150,53 @@ function initialize() {
       },
     } as BrowserWindowConstructorOptions;
 
-    if ( process.platform === 'linux' ) {
+    if (process.platform === 'linux') {
       // Set a window icon for linux
-      mainWindowOptions.icon = path.join( __dirname, '/public/favicon.ico' );
+      mainWindowOptions.icon = path.join(__dirname, '/public/favicon.ico');
     }
 
     // Create the browser window.
-    const win = new BrowserWindow( mainWindowOptions );
+    const win = new BrowserWindow(mainWindowOptions);
     mainWindow = win;
 
     // and load the index.html of the app.
     const startUrl =
       process.env.ELECTRON_START_URL ||
-      url.format( {
+      url.format({
         // pathname: path.join(__dirname, '..', 'build', 'index.html'),
-        pathname: path.join( __dirname, 'index.html' ),
+        pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true,
-      } );
-    win.loadURL( startUrl );
+      });
+    win.loadURL(startUrl);
 
     // Open the DevTools.
     // TODO: make conditional as in app.ready
-    if ( isDevMode && !isE2eMode ) {
+    if (isDevMode && !isE2eMode) {
       win.webContents.openDevTools();
     }
 
     // Emitted when the window is closed.
-    win.on( 'closed', function () {
+    win.on('closed', function () {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       mainWindow = null;
-    } );
+    });
 
     // TODO: Use 'ready-to-show' event
     // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-    win.webContents.on( 'did-finish-load', () => {
-      if ( process.env.START_MINIMIZED ) {
+    win.webContents.on('did-finish-load', () => {
+      if (process.env.START_MINIMIZED) {
         win.minimize();
       } else {
         win.show();
         win.focus();
       }
-    } );
+    });
 
     // Set the main window menu
-    const menuBuilder = new MenuBuilder( win );
+    const menuBuilder = new MenuBuilder(win);
     menuBuilder.buildMenu();
 
     // Remove this if your app does not use auto updates
@@ -207,34 +207,34 @@ function initialize() {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on( 'ready', async () => {
+  app.on('ready', async () => {
     // if (isDevMode) {
     //   await installExtensions();
     // }
     createMainWindow();
 
-    if ( !isE2eMode ) {
+    if (!isE2eMode) {
       autoUpdater.autoDownload = false;
       autoUpdater.checkForUpdates();
     }
-  } );
+  });
 
   // Quit when all windows are closed.
-  app.on( 'window-all-closed', () => {
+  app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
     // after all windows have been closed
-    if ( process.platform !== 'darwin' ) {
+    if (process.platform !== 'darwin') {
       app.quit();
     }
-  } );
+  });
 
-  app.on( 'activate', () => {
+  app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if ( mainWindow === null ) {
+    if (mainWindow === null) {
       createMainWindow();
     }
-  } );
+  });
 }
 
 // Make this app a single instance app.
@@ -246,20 +246,20 @@ function initialize() {
 // launching.
 function makeSingleInstance(): boolean {
   const processWithMas = process as NodeJS.Process & { mas?: boolean };
-  if ( processWithMas.mas ) return false;
+  if (processWithMas.mas) return false;
 
   app.requestSingleInstanceLock();
 
-  app.on( 'second-instance', () => {
-    if ( mainWindow ) {
-      if ( mainWindow.isMinimized() ) mainWindow.restore();
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
     }
-  } );
+  });
 }
 
 // Handle Squirrel on Windows startup events
-switch ( process.argv[1] ) {
+switch (process.argv[1]) {
   case '--squirrel-install':
   case '--squirrel-uninstall':
   case '--squirrel-obsolete':

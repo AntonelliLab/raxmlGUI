@@ -213,8 +213,8 @@ const lightTheme: ThemeOptions = {
 export interface AppThemes { light: Theme; dark: Theme }
 
 const themes: AppThemes = {
-  light: createTheme( lightTheme ),
-  dark: createTheme( darkTheme ),
+  light: createTheme(lightTheme),
+  dark: createTheme(darkTheme),
 };
 
 export default themes;

@@ -11,57 +11,57 @@ import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
 import { webUtils } from 'electron';
 
-const Input = ( { run } ) => {
+const Input = ({ run }) => {
   // run.hasAstralTree is the condition on which to show an astral tree card
   // For some reason when changed in the mobx store a rerender is not triggered with this boolean with the conditional below alone
   // With this if the component rerenders as should be
-  if ( run.hasAstralTree ) {
-    console.log( 'run.hasAstralTree :>> ', run.hasAstralTree );
+  if (run.hasAstralTree) {
+    console.log('run.hasAstralTree :>> ', run.hasAstralTree);
   }
 
-  const onAlignmentDrop = ( acceptedFiles ) => {
-    const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
-    } ) );
-    run.addAlignments( droppedPathes );
+  const onAlignmentDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addAlignments(droppedPathes);
   };
 
-  const onPartitionDrop = ( acceptedFiles ) => {
-    const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
-    } ) );
-    run.addPartitionFiles( droppedPathes );
+  const onPartitionDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addPartitionFiles(droppedPathes);
   };
 
-  const onTreeDrop = ( type ) => ( acceptedFiles ) => {
-    const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
-    } ) );
-    run.addTreeFiles( type, droppedPathes );
+  const onTreeDrop = (type) => (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    run.addTreeFiles(type, droppedPathes);
   };
 
-  const onAstralTreeDrop = ( acceptedFiles ) => {
-    const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
-    } ) );
-    if ( droppedPathes.length ) {
-      run.addAstralFiles( droppedPathes[0] );
+  const onAstralTreeDrop = (acceptedFiles) => {
+    const droppedPathes = acceptedFiles.map((file) => ({
+      path: webUtils.getPathForFile(file),
+    }));
+    if (droppedPathes.length) {
+      run.addAstralFiles(droppedPathes[0]);
     }
   };
 
-  const dropzoneRootSx = ( isDragActive, extra = {} ) => ( {
+  const dropzoneRootSx = (isDragActive, extra = {}) => ({
     width: 'fit-content',
     alignSelf: 'flex-start',
     borderRadius: 1,
-    border: ( theme ) =>
+    border: (theme) =>
       isDragActive
         ? `2px dashed ${theme.palette.input.darker}`
         : '2px dashed transparent',
-    bgcolor: ( theme ) =>
+    bgcolor: (theme) =>
       isDragActive ? theme.palette.input.lighter : 'transparent',
     transition: 'background-color 0.15s ease, border-color 0.15s ease',
     ...extra,
-  } );
+  });
 
   // const SelectNumRuns = run.
   return (
@@ -78,17 +78,17 @@ const Input = ( { run } ) => {
         }}
       >
         <Dropzone noClick onDrop={onAlignmentDrop}>
-          {( { getRootProps, getInputProps, isDragActive } ) => (
-            <Box {...getRootProps()} sx={dropzoneRootSx( isDragActive )}>
+          {({ getRootProps, getInputProps, isDragActive }) => (
+            <Box {...getRootProps()} sx={dropzoneRootSx(isDragActive)}>
               <input {...getInputProps()} style={{ display: 'none' }} />
               <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
-                  ? run.alignments.map( ( alignment ) => (
+                  ? run.alignments.map((alignment) => (
                       <AlignmentCard
                         key={alignment.path}
                         alignment={alignment}
                       />
-                    ) )
+                    ))
                   : null}
                 {run.inputIsTree && run.hasAstralTree ? (
                   <AstralTreeCard astralTree={run.astralTree} />
@@ -117,13 +117,13 @@ const Input = ( { run } ) => {
         </Box>
         {run.canLoadAstralTree ? (
           <Dropzone noClick onDrop={onAstralTreeDrop}>
-            {( { getRootProps, getInputProps, isDragActive } ) => (
+            {({ getRootProps, getInputProps, isDragActive }) => (
               <Box
                 {...getRootProps()}
-                sx={dropzoneRootSx( isDragActive, {
+                sx={dropzoneRootSx(isDragActive, {
                   width: '200px',
                   height: '200px',
-                } )}
+                })}
               >
                 <input {...getInputProps()} style={{ display: 'none' }} />
                 <Button
@@ -144,10 +144,10 @@ const Input = ( { run } ) => {
         !run.canLoadPartitionFile &&
         run.haveAlignments ? (
           <Dropzone noClick onDrop={onAlignmentDrop}>
-            {( { getRootProps, getInputProps, isDragActive } ) => (
+            {({ getRootProps, getInputProps, isDragActive }) => (
               <Box
                 {...getRootProps()}
-                sx={dropzoneRootSx( isDragActive, { flexShrink: 0 } )}
+                sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
               >
                 <input {...getInputProps()} style={{ display: 'none' }} />
                 <Button
@@ -175,14 +175,14 @@ const Input = ( { run } ) => {
             style={{ height: '200px' }}
           >
             <Dropzone noClick onDrop={onAlignmentDrop}>
-              {( { getRootProps, getInputProps, isDragActive } ) => (
+              {({ getRootProps, getInputProps, isDragActive }) => (
                 <Box
                   {...getRootProps()}
-                  sx={dropzoneRootSx( isDragActive, {
+                  sx={dropzoneRootSx(isDragActive, {
                     flexGrow: 1,
                     width: '100%',
                     minWidth: '200px',
-                  } )}
+                  })}
                 >
                   <input {...getInputProps()} style={{ display: 'none' }} />
                   <Button
@@ -203,14 +203,14 @@ const Input = ( { run } ) => {
             </Dropzone>
             <Box paddingX={2}>OR</Box>
             <Dropzone noClick onDrop={onPartitionDrop}>
-              {( { getRootProps, getInputProps, isDragActive } ) => (
+              {({ getRootProps, getInputProps, isDragActive }) => (
                 <Box
                   {...getRootProps()}
-                  sx={dropzoneRootSx( isDragActive, {
+                  sx={dropzoneRootSx(isDragActive, {
                     flexGrow: 1,
                     width: '100%',
                     minWidth: '200px',
-                  } )}
+                  })}
                 >
                   <input {...getInputProps()} style={{ display: 'none' }} />
                   <Button
@@ -255,14 +255,14 @@ const Input = ( { run } ) => {
                 }}
               />
             ) : (
-              <Dropzone noClick onDrop={onTreeDrop( 'tree' )}>
-                {( { getRootProps, getInputProps, isDragActive } ) => (
+              <Dropzone noClick onDrop={onTreeDrop('tree')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
                   <Box
                     {...getRootProps()}
-                    sx={dropzoneRootSx( isDragActive, {
+                    sx={dropzoneRootSx(isDragActive, {
                       width: '380px',
                       height: '100px',
-                    } )}
+                    })}
                   >
                     <input {...getInputProps()} style={{ display: 'none' }} />
                     <Button
@@ -301,14 +301,14 @@ const Input = ( { run } ) => {
                 }}
               />
             ) : (
-              <Dropzone noClick onDrop={onTreeDrop( 'backboneConstraint' )}>
-                {( { getRootProps, getInputProps, isDragActive } ) => (
+              <Dropzone noClick onDrop={onTreeDrop('backboneConstraint')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
                   <Box
                     {...getRootProps()}
-                    sx={dropzoneRootSx( isDragActive, {
+                    sx={dropzoneRootSx(isDragActive, {
                       width: '380px',
                       height: '100px',
-                    } )}
+                    })}
                   >
                     <input {...getInputProps()} style={{ display: 'none' }} />
                     <Button
@@ -347,14 +347,14 @@ const Input = ( { run } ) => {
                 }}
               />
             ) : (
-              <Dropzone noClick onDrop={onTreeDrop( 'multifurcatingConstraint' )}>
-                {( { getRootProps, getInputProps, isDragActive } ) => (
+              <Dropzone noClick onDrop={onTreeDrop('multifurcatingConstraint')}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
                   <Box
                     {...getRootProps()}
-                    sx={dropzoneRootSx( isDragActive, {
+                    sx={dropzoneRootSx(isDragActive, {
                       width: '380px',
                       height: '100px',
-                    } )}
+                    })}
                   >
                     <input {...getInputProps()} style={{ display: 'none' }} />
                     <Button
@@ -395,4 +395,4 @@ Input.propTypes = {
   run: PropTypes.object.isRequired,
 };
 
-export default observer( Input );
+export default observer(Input);

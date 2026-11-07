@@ -15,23 +15,23 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
-function AstralTreeCard( { astralTree } ) {
+function AstralTreeCard({ astralTree }) {
   const {} = astralTree;
 
-  const [anchorEl, setAnchorEl] = React.useState( null );
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  function handleMenuClick( event ) {
-    setAnchorEl( event.currentTarget );
+  function handleMenuClick(event) {
+    setAnchorEl(event.currentTarget);
   }
 
   function handleMenuClose() {
-    setAnchorEl( null );
+    setAnchorEl(null);
   }
 
-  function closeMenuAndRun( callback ) {
+  function closeMenuAndRun(callback) {
     return () => {
       callback();
-      setAnchorEl( null );
+      setAnchorEl(null);
     };
   }
 
@@ -52,8 +52,8 @@ function AstralTreeCard( { astralTree } ) {
   return (
     <Card
       sx={{
-        backgroundColor: ( theme ) => theme.palette.input.light,
-        border: ( theme ) => `1px solid ${theme.palette.input.border}`,
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
         width: '550px',
         height: '200px',
       }}
@@ -69,9 +69,9 @@ function AstralTreeCard( { astralTree } ) {
           <Chip
             sx={{
               height: '30px',
-              color: ( theme ) => theme.palette.input.contrastText,
-              backgroundColor: ( theme ) => theme.palette.input.main,
-              border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
             }}
             label={"trees"}
             color="secondary"
@@ -97,16 +97,16 @@ function AstralTreeCard( { astralTree } ) {
             <Menu
               id="astralTree-menu"
               anchorEl={anchorEl}
-              open={Boolean( anchorEl )}
+              open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={closeMenuAndRun( astralTree.openFile )}>
+              <MenuItem onClick={closeMenuAndRun(astralTree.openFile)}>
                 Open input trees
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun( astralTree.showFileInFolder )}>
+              <MenuItem onClick={closeMenuAndRun(astralTree.showFileInFolder)}>
                 Show in folder
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun( astralTree.remove )}>
+              <MenuItem onClick={closeMenuAndRun(astralTree.remove)}>
                 Remove input trees
               </MenuItem>
             </Menu>
@@ -126,6 +126,6 @@ AstralTreeCard.propTypes = {
   astralTree: PropTypes.object.isRequired,
 };
 
-const AstralTreeCardObserver = observer( AstralTreeCard );
+const AstralTreeCardObserver = observer(AstralTreeCard);
 
 export default AstralTreeCardObserver;

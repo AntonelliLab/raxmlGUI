@@ -11,7 +11,6 @@ module.exports = {
         array: false,
       },
     ],
-    'space-in-parens': ['error', 'always'],
   },
   overrides: [
     {

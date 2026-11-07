@@ -8,16 +8,16 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 
-function PartitionFileCard( { run } ) {
-  if ( !run.havePartitionFile ) {
+function PartitionFileCard({ run }) {
+  if (!run.havePartitionFile) {
     return null;
   }
 
   return (
     <Card
       sx={{
-        backgroundColor: ( theme ) => theme.palette.input.light,
-        border: ( theme ) => `1px solid ${theme.palette.input.border}`,
+        backgroundColor: (theme) => theme.palette.input.light,
+        border: (theme) => `1px solid ${theme.palette.input.border}`,
         height: '200px',
         display: 'flex',
         flexDirection: 'column',
@@ -28,9 +28,9 @@ function PartitionFileCard( { run } ) {
           <Chip
             sx={{
               height: '30px',
-              color: ( theme ) => theme.palette.input.contrastText,
-              backgroundColor: ( theme ) => theme.palette.input.main,
-              border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
+              color: (theme) => theme.palette.input.contrastText,
+              backgroundColor: (theme) => theme.palette.input.main,
+              border: (theme) => `1px solid ${theme.palette.input.darker}`,
             }}
             label="Partition"
             color="secondary"
@@ -66,7 +66,7 @@ function PartitionFileCard( { run } ) {
           <Box
             component="code"
             sx={{
-              color: ( theme ) => theme.palette.primary.contrastText,
+              color: (theme) => theme.palette.primary.contrastText,
               fontFamily:
                 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
@@ -87,6 +87,6 @@ PartitionFileCard.propTypes = {
   run: PropTypes.object.isRequired,
 };
 
-const PartitionFileCardObserver = observer( PartitionFileCard );
+const PartitionFileCardObserver = observer(PartitionFileCard);
 
 export default PartitionFileCardObserver;

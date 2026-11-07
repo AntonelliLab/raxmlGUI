@@ -3,8 +3,8 @@ import { observable, computed, action, runInAction } from 'mobx';
 import InputFile from './InputFile';
 
 class AstralTree extends InputFile {
-  constructor( run, path ) {
-    super( run, path );
+  constructor(run, path) {
+    super(run, path);
   }
 
   @action

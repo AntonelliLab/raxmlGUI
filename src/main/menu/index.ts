@@ -51,7 +51,7 @@ const darwinAppMenu = {
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
 
-  constructor( mainWindow: BrowserWindow ) {
+  constructor(mainWindow: BrowserWindow) {
     this.mainWindow = mainWindow;
   }
 
@@ -62,16 +62,16 @@ export default class MenuBuilder {
       process.env.NODE_ENV === 'development' ||
       process.env.DEBUG_PROD === 'true'
     ) {
-      menuTemplate.push( subMenuDeveloper );
+      menuTemplate.push(subMenuDeveloper);
       this.setupDevelopmentEnvironment();
     }
 
-    if ( process.platform === 'darwin' ) {
-      menuTemplate.unshift( darwinAppMenu );
+    if (process.platform === 'darwin') {
+      menuTemplate.unshift(darwinAppMenu);
     }
 
-    const menu = Menu.buildFromTemplate( menuTemplate );
-    Menu.setApplicationMenu( menu );
+    const menu = Menu.buildFromTemplate(menuTemplate);
+    Menu.setApplicationMenu(menu);
 
     return menu;
   }
@@ -80,16 +80,16 @@ export default class MenuBuilder {
     this.mainWindow.webContents.openDevTools();
     this.mainWindow.webContents.on(
       'context-menu',
-      ( _e, props: ContextMenuParams ) => {
+      (_e, props: ContextMenuParams) => {
         const { x, y } = props;
-        Menu.buildFromTemplate( [
+        Menu.buildFromTemplate([
           {
             label: 'Inspect element',
             click: () => {
-              this.mainWindow.webContents.inspectElement( x, y );
+              this.mainWindow.webContents.inspectElement(x, y);
             },
           },
-        ] ).popup( { window: this.mainWindow } );
+        ]).popup({ window: this.mainWindow });
       },
     );
   }

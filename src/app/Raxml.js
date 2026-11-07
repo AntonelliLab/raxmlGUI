@@ -11,11 +11,11 @@ import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
 
-const Raxml = ( { run, store } ) => {
-  const copyCommand = useCallback( () => {
-    clipboard.writeText( run.command );
+const Raxml = ({ run, store }) => {
+  const copyCommand = useCallback(() => {
+    clipboard.writeText(run.command);
     store.setAppSnack();
-  }, [run.command, store] );
+  }, [run.command, store]);
 
   return (
     <Box
@@ -90,4 +90,4 @@ Raxml.propTypes = {
   store: PropTypes.object.isRequired,
 };
 
-export default observer( Raxml );
+export default observer(Raxml);

@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 export interface OptionTextFieldOptionLike {
   title: string;
   value: string | number | boolean;
-  setValue: ( value: string ) => void;
+  setValue: (value: string) => void;
   notAvailable: boolean;
   hoverInfo: string;
   haveError: boolean;
@@ -19,11 +19,11 @@ export interface OptionTextFieldProps {
   sx?: SxProps<Theme>;
 }
 
-const OptionTextField = observer( function OptionTextField( {
+const OptionTextField = observer(function OptionTextField({
   option,
   sx,
-}: OptionTextFieldProps ) {
-  if ( option.notAvailable ) {
+}: OptionTextFieldProps) {
+  if (option.notAvailable) {
     return null;
   }
   return (
@@ -36,10 +36,10 @@ const OptionTextField = observer( function OptionTextField( {
       sx={sx}
       value={option.value}
       placeholder={option.placeholder}
-      onChange={( e ) => option.setValue( e.target.value )}
+      onChange={(e) => option.setValue(e.target.value)}
       error={option.haveError}
     />
   );
-} );
+});
 
 export default OptionTextField;

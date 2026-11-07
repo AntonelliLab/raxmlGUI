@@ -21,26 +21,26 @@ import {
 import * as ipc from '../../constants/ipc';
 
 const handleReload = () => {
-  ipcRenderer.send( ipc.RELOAD );
+  ipcRenderer.send(ipc.RELOAD);
 };
 
-export default function ErrorDialog( { error, onClose, needReload, title } ) {
-  const [reported, setReported] = React.useState( false );
+export default function ErrorDialog({ error, onClose, needReload, title }) {
+  const [reported, setReported] = React.useState(false);
 
-  if ( !error ) {
+  if (!error) {
     return null;
   }
 
   const handleReportToGithub = () => {
-    reportIssueToGitHub( error );
-    setReported( true );
+    reportIssueToGitHub(error);
+    setReported(true);
   };
 
   const handleReportToMail = () => {
-    setReported( true );
+    setReported(true);
   };
 
-  const mailtoContent = getMailtoLinkToReportError( error );
+  const mailtoContent = getMailtoLinkToReportError(error);
 
   const closeMessage = needReload
     ? reported
@@ -49,7 +49,7 @@ export default function ErrorDialog( { error, onClose, needReload, title } ) {
     : 'Close';
 
   const resetAndClose = () => {
-    setReported( false );
+    setReported(false);
     onClose();
   };
 
@@ -158,7 +158,7 @@ export default function ErrorDialog( { error, onClose, needReload, title } ) {
   );
 
   let returnDialog = GenericErrorDialog;
-  if ( error.isUserFix ) {
+  if (error.isUserFix) {
     returnDialog = UserFixErrorDialog;
   }
 

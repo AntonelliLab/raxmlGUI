@@ -11,10 +11,10 @@ import { is } from '../common/utils';
 
 import './bootstrap';
 
-if ( !is.development ) {
-  Sentry.init( {
+if (!is.development) {
+  Sentry.init({
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-  } );
+  });
 }
 
 const Index = () => {
@@ -31,4 +31,4 @@ const Index = () => {
   );
 };
 
-export default observer( Index );
+export default observer(Index);

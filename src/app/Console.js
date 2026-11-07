@@ -3,28 +3,28 @@ import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 
-const Console = ( { run } ) => {
-  const stdoutContainerRef = useRef( null );
+const Console = ({ run }) => {
+  const stdoutContainerRef = useRef(null);
 
-  const scrollConsoleToBottom = useCallback( () => {
-    if ( !stdoutContainerRef.current ) return;
+  const scrollConsoleToBottom = useCallback(() => {
+    if (!stdoutContainerRef.current) return;
     const { scrollHeight, clientHeight } = stdoutContainerRef.current;
     const diff = scrollHeight - clientHeight;
     stdoutContainerRef.current.scrollTop = diff;
-  }, [] );
+  }, []);
 
   // Every time the component updates, scroll to the bottom
-  useEffect( () => {
+  useEffect(() => {
     scrollConsoleToBottom();
-  } );
+  });
 
   return (
     <Box
       data-testid="console-output"
       ref={stdoutContainerRef}
       sx={{
-        color: ( theme ) => theme.palette.console.contrastText,
-        background: ( theme ) => theme.palette.console.background,
+        color: (theme) => theme.palette.console.contrastText,
+        background: (theme) => theme.palette.console.background,
         padding: '10px',
         width: '100%',
         height: '100%',
@@ -37,7 +37,7 @@ const Console = ( { run } ) => {
           <Box
             component="code"
             sx={{
-              color: ( theme ) => theme.palette.console.contrastText,
+              color: (theme) => theme.palette.console.contrastText,
               fontFamily:
                 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
@@ -55,7 +55,7 @@ const Console = ( { run } ) => {
           <Box
             component="code"
             sx={{
-              color: ( theme ) => theme.palette.console.contrastText,
+              color: (theme) => theme.palette.console.contrastText,
               fontFamily:
                 'Consolas, "Liberation Mono", Menlo, Courier, monospace',
               fontSize: '12px',
@@ -78,4 +78,4 @@ Console.propTypes = {
   run: PropTypes.object.isRequired,
 };
 
-export default observer( Console );
+export default observer(Console);

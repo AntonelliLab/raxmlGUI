@@ -17,12 +17,12 @@ export interface ModifiedDialogProps {
   messages: string[];
 }
 
-export default function ModifiedDialog( {
+export default function ModifiedDialog({
   show,
   onClose,
   messages,
-}: ModifiedDialogProps ) {
-  if ( !show ) {
+}: ModifiedDialogProps) {
+  if (!show) {
     return null;
   }
 
@@ -44,11 +44,11 @@ export default function ModifiedDialog( {
             </AccordionSummary>
             <AccordionDetails>
               <Box>
-                {messages.map( ( message ) => (
+                {messages.map((message) => (
                   <Typography key={message} variant="body2">
                     {message}
                   </Typography>
-                ) )}
+                ))}
               </Box>
             </AccordionDetails>
           </Accordion>
