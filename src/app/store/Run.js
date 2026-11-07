@@ -34,78 +34,78 @@ const [majorVersion, minorVersion] = os.release().split('.');
 const winBinaries =
   majorVersion === '6' && minorVersion === '1'
     ? [
-        // TODO: add raxml ng windows exe
-        // TODO: Crashes on Win7, disabled for now
-        // { name: 'modeltest-ng.exe', version: '0.1.7' },
-        {
-          name: 'raxmlHPC_Win7.exe',
-          multithreaded: false,
-          version: '8.2.10',
-          type: 'raxml',
-        },
-        {
-          name: 'raxmlHPC-SSE3_Win7.exe',
-          multithreaded: false,
-          version: '8.2.10',
-          type: 'raxml',
-        },
-        // TODO: Crashes on Win7, disabled for now
-        // {
-        //   name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
-        //   multithreaded: true,
-        //   version: '8.2.10',
-        // },
-        {
-          name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe',
-          multithreaded: true,
-          version: '8.2.10',
-          initial: true,
-          type: 'raxml',
-        },
-        // TODO: put back in Astral
-        // {
-        //   name: 'astral.5.7.8.jar',
-        //   multithreaded: false,
-        //   version: '5.7.8',
-        //   type: 'astral',
-        // },
-      ]
+      // TODO: add raxml ng windows exe
+      // TODO: Crashes on Win7, disabled for now
+      // { name: 'modeltest-ng.exe', version: '0.1.7' },
+      {
+        name: 'raxmlHPC_Win7.exe',
+        multithreaded: false,
+        version: '8.2.10',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-SSE3_Win7.exe',
+        multithreaded: false,
+        version: '8.2.10',
+        type: 'raxml',
+      },
+      // TODO: Crashes on Win7, disabled for now
+      // {
+      //   name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
+      //   multithreaded: true,
+      //   version: '8.2.10',
+      // },
+      {
+        name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe',
+        multithreaded: true,
+        version: '8.2.10',
+        initial: true,
+        type: 'raxml',
+      },
+      // TODO: put back in Astral
+      // {
+      //   name: 'astral.5.7.8.jar',
+      //   multithreaded: false,
+      //   version: '5.7.8',
+      //   type: 'astral',
+      // },
+    ]
     : [
-        // TODO: add raxml ng windows exe
-        { name: 'modeltest-ng.exe', version: '0.1.7', type: 'modeltest' },
-        {
-          name: 'raxmlHPC.exe',
-          multithreaded: false,
-          version: '8.2.12',
-          type: 'raxml',
-        },
-        {
-          name: 'raxmlHPC-SSE3.exe',
-          multithreaded: false,
-          version: '8.2.12',
-          type: 'raxml',
-        },
-        {
-          name: 'raxmlHPC-PTHREADS-AVX.exe',
-          multithreaded: true,
-          version: '8.2.12',
-          type: 'raxml',
-        },
-        {
-          name: 'raxmlHPC-PTHREADS-SSE3.exe',
-          multithreaded: true,
-          version: '8.2.12',
-          initial: true,
-          type: 'raxml',
-        },
-        // TODO: put back in Astral
-        // {
-        //   name: 'astral.5.7.8.jar',
-        //   multithreaded: false,
-        //   version: '5.7.8',
-        //   type: 'astral',
-        // },
-      ];
+      // TODO: add raxml ng windows exe
+      { name: 'modeltest-ng.exe', version: '0.1.7', type: 'modeltest' },
+      {
+        name: 'raxmlHPC.exe',
+        multithreaded: false,
+        version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-SSE3.exe',
+        multithreaded: false,
+        version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-PTHREADS-AVX.exe',
+        multithreaded: true,
+        version: '8.2.12',
+        type: 'raxml',
+      },
+      {
+        name: 'raxmlHPC-PTHREADS-SSE3.exe',
+        multithreaded: true,
+        version: '8.2.12',
+        initial: true,
+        type: 'raxml',
+      },
+      // TODO: put back in Astral
+      // {
+      //   name: 'astral.5.7.8.jar',
+      //   multithreaded: false,
+      //   version: '5.7.8',
+      //   type: 'astral',
+      // },
+    ];
 
 const likelyARM =
   os.arch().includes('arm64') || os.cpus()[0].model.includes('Apple');
@@ -129,46 +129,46 @@ const x64Binaries = [
 const allBinaries = is.windows
   ? winBinaries
   : [
-      ...(!likelyARM ? x64Binaries : armBinaries),
-      {
-        name: 'raxml-ng',
-        multithreaded: true,
-        version: '1.2.2',
-        initial: true,
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC',
-        multithreaded: false,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-SSE3',
-        multithreaded: false,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-PTHREADS-AVX',
-        multithreaded: true,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-PTHREADS-SSE3',
-        multithreaded: true,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      // TODO: put back in Astral
-      // {
-      //   name: 'astral.5.7.8.jar',
-      //   multithreaded: false,
-      //   version: '5.7.8',
-      //   type: 'astral',
-      // },
-    ];
+    ...(!likelyARM ? x64Binaries : armBinaries),
+    {
+      name: 'raxml-ng',
+      multithreaded: true,
+      version: '1.2.2',
+      initial: true,
+      type: 'raxml',
+    },
+    {
+      name: 'raxmlHPC',
+      multithreaded: false,
+      version: '8.2.12',
+      type: 'raxml',
+    },
+    {
+      name: 'raxmlHPC-SSE3',
+      multithreaded: false,
+      version: '8.2.12',
+      type: 'raxml',
+    },
+    {
+      name: 'raxmlHPC-PTHREADS-AVX',
+      multithreaded: true,
+      version: '8.2.12',
+      type: 'raxml',
+    },
+    {
+      name: 'raxmlHPC-PTHREADS-SSE3',
+      multithreaded: true,
+      version: '8.2.12',
+      type: 'raxml',
+    },
+    // TODO: put back in Astral
+    // {
+    //   name: 'astral.5.7.8.jar',
+    //   multithreaded: false,
+    //   version: '5.7.8',
+    //   type: 'astral',
+    // },
+  ];
 
 const binaries = allBinaries.filter(({ multithreaded }) =>
   MAX_NUM_CPUS === 1 ? !multithreaded : true,
@@ -846,25 +846,25 @@ class Run extends StoreBase {
   multifurcatingConstraint = new MultifurcatingConstraintTree(this);
 
   @action
-  loadTreeFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'tree' });
-  };
+    loadTreeFile = () => {
+      ipcRenderer.send(ipc.TREE_SELECT, { id: this.id, type: 'tree' });
+    };
 
   @action
-  loadBackboneConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, {
-      id: this.id,
-      type: 'backboneConstraint',
-    });
-  };
+    loadBackboneConstraintFile = () => {
+      ipcRenderer.send(ipc.TREE_SELECT, {
+        id: this.id,
+        type: 'backboneConstraint',
+      });
+    };
 
   @action
-  loadMultifurcatingConstraintFile = () => {
-    ipcRenderer.send(ipc.TREE_SELECT, {
-      id: this.id,
-      type: 'multifurcatingConstraint',
-    });
-  };
+    loadMultifurcatingConstraintFile = () => {
+      ipcRenderer.send(ipc.TREE_SELECT, {
+        id: this.id,
+        type: 'multifurcatingConstraint',
+      });
+    };
 
   @observable disableCheckUndeterminedSequence = true;
 
@@ -930,13 +930,13 @@ class Run extends StoreBase {
 
   @observable outputDir = '';
   @action
-  setOutputDir = (dir) => {
-    this.outputDir = dir;
-  };
+    setOutputDir = (dir) => {
+      this.outputDir = dir;
+    };
   @action
-  selectOutputDir = () => {
-    ipcRenderer.send(ipc.OUTPUT_DIR_SELECT, this.id);
-  };
+    selectOutputDir = () => {
+      ipcRenderer.send(ipc.OUTPUT_DIR_SELECT, this.id);
+    };
 
   @action openOutputDir = () => {
     shell.openPath(this.outputDir);
@@ -944,13 +944,13 @@ class Run extends StoreBase {
 
   @observable.ref showPartitionFor = null;
   @action
-  showPartition = (alignment) => {
-    this.showPartitionFor = alignment;
-  };
+    showPartition = (alignment) => {
+      this.showPartitionFor = alignment;
+    };
   @action
-  hidePartition = () => {
-    this.showPartition(null);
-  };
+    hidePartition = () => {
+      this.showPartition(null);
+    };
 
   // Result
   @observable resultDir = '';
@@ -1477,9 +1477,9 @@ class Run extends StoreBase {
         if (this.sHlike.value) {
           const treeFile2 = this.branchLength.value
             ? join(
-                this.outputDir,
-                `RAxML_result.brL.${this.outputFilenameSafe}`,
-              )
+              this.outputDir,
+              `RAxML_result.brL.${this.outputFilenameSafe}`,
+            )
             : join(this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}`);
           const next = [];
           if (!this.numThreads.notAvailable) {
@@ -1940,15 +1940,15 @@ Results saved to: ${this.outputDir}
   }
 
   @action
-  writeSettings = async () => {
-    try {
-      console.log(`Writing settings to ${this.settingsFilePath}...`);
-      await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
-    } catch (err) {
-      console.error('Error writing settings:', err);
-      throw err;
-    }
-  };
+    writeSettings = async () => {
+      try {
+        console.log(`Writing settings to ${this.settingsFilePath}...`);
+        await fs.writeFileSync(this.settingsFilePath, this.settingsFileContent);
+      } catch (err) {
+        console.error('Error writing settings:', err);
+        throw err;
+      }
+    };
 
   startAstral = async () => {
     const { id, binary, args } = this;
@@ -1962,72 +1962,72 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  start = async () => {
-    const {
-      id,
-      args,
-      binary,
-      outputDir,
-      outputFilenameSafe: outputFilename,
-      outputNameSafe: outputName,
-      combinedOutput,
-      usesRaxmlNg,
-      usesModeltestNg,
-      finalAlignment,
-    } = this;
+    start = async () => {
+      const {
+        id,
+        args,
+        binary,
+        outputDir,
+        outputFilenameSafe: outputFilename,
+        outputNameSafe: outputName,
+        combinedOutput,
+        usesRaxmlNg,
+        usesModeltestNg,
+        finalAlignment,
+      } = this;
 
-    // If binary is astral use start in seperate function
-    if (this.usesAstral) {
-      return this.startAstral();
-    }
+      // If binary is astral use start in seperate function
+      if (this.usesAstral) {
+        return this.startAstral();
+      }
 
-    // Less than 4 sequences and RAxML would error out
-    if (this.finalAlignment.numSequences <= 3) {
-      this.parent.onError(
-        new UserFixError(
-          'To start a run with RAxML the final alignment needs to have at least four sequences.',
-        ),
-      );
-      return;
-    }
+      // Less than 4 sequences and RAxML would error out
+      if (this.finalAlignment.numSequences <= 3) {
+        this.parent.onError(
+          new UserFixError(
+            'To start a run with RAxML the final alignment needs to have at least four sequences.',
+          ),
+        );
+        return;
+      }
 
-    this.running = true;
-    if (this.outputName !== this.outputNameSafe) {
-      this.outputName = this.outputNameSafe;
-    }
+      this.running = true;
+      if (this.outputName !== this.outputNameSafe) {
+        this.outputName = this.outputNameSafe;
+      }
 
-    if (this.finalAlignment.numAlignments > 1) {
-      await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
-    } else if (!this.finalAlignment.partition.isDefault) {
-      await this.finalAlignment.writePartition();
-    }
-    await this.writeSettings();
-    console.log(`Start run ${id} with args ${args}`);
-    ipcRenderer.send(ipc.RUN_START, {
-      id,
-      args,
-      binaryName: binary.value,
-      outputDir,
-      outputFilename,
-      outputName,
-      combinedOutput: combinedOutput.isUsed,
-      usesRaxmlNg,
-      usesModeltestNg,
-      inputPath: finalAlignment.path,
-    });
-  };
-
-  @action
-  cancel = () => {
-    ipcRenderer.send(ipc.RUN_CANCEL, this.id);
-    this.afterRun();
-  };
+      if (this.finalAlignment.numAlignments > 1) {
+        await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
+      } else if (!this.finalAlignment.partition.isDefault) {
+        await this.finalAlignment.writePartition();
+      }
+      await this.writeSettings();
+      console.log(`Start run ${id} with args ${args}`);
+      ipcRenderer.send(ipc.RUN_START, {
+        id,
+        args,
+        binaryName: binary.value,
+        outputDir,
+        outputFilename,
+        outputName,
+        combinedOutput: combinedOutput.isUsed,
+        usesRaxmlNg,
+        usesModeltestNg,
+        inputPath: finalAlignment.path,
+      });
+    };
 
   @action
-  afterRun = () => {
-    this.running = false;
-    this.atomAfterRun.reportChanged();
-  };
+    cancel = () => {
+      ipcRenderer.send(ipc.RUN_CANCEL, this.id);
+      this.afterRun();
+    };
+
+  @action
+    afterRun = () => {
+      this.running = false;
+      this.atomAfterRun.reportChanged();
+    };
 
   @observable alignments = [];
   @observable astralTree = undefined;
@@ -2051,19 +2051,19 @@ Results saved to: ${this.outputDir}
   }
 
   @action
-  removeRun = () => {
-    this.parent.deleteRun(this);
-  };
+    removeRun = () => {
+      this.parent.deleteRun(this);
+    };
 
   @action
-  loadAlignmentFiles = () => {
-    ipcRenderer.send(ipc.ALIGNMENT_SELECT, this.id);
-  };
+    loadAlignmentFiles = () => {
+      ipcRenderer.send(ipc.ALIGNMENT_SELECT, this.id);
+    };
 
   @action
-  loadAstralTree = () => {
-    ipcRenderer.send(ipc.ASTRAL_FILE_SELECT, this.id);
-  };
+    loadAstralTree = () => {
+      ipcRenderer.send(ipc.ASTRAL_FILE_SELECT, this.id);
+    };
 
   haveAlignment = (id) => {
     // TODO: Input.js queries without id, doe it work as expected? Later queries with path instead of id
@@ -2071,53 +2071,53 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  addAlignments = (alignments) => {
-    alignments.forEach(({ path }) => {
-      if (!this.haveAlignment(path)) {
-        this.alignments.push(new Alignment(this, path));
-        if (this.alignments.length === 1) {
-          this.setOutputName(this.alignments[0].name);
-          if (!this.outputDir) {
-            this.setOutputDir(this.alignments[0].dir);
+    addAlignments = (alignments) => {
+      alignments.forEach(({ path }) => {
+        if (!this.haveAlignment(path)) {
+          this.alignments.push(new Alignment(this, path));
+          if (this.alignments.length === 1) {
+            this.setOutputName(this.alignments[0].name);
+            if (!this.outputDir) {
+              this.setOutputDir(this.alignments[0].dir);
+            }
           }
         }
-      }
-    });
-  };
+      });
+    };
 
   @action
-  addAstralFiles = ({ path }) => {
-    if (!this.hasAstralTree) {
-      this.astralTree = new AstralTree(this, path);
-      this.setOutputName(this.astralTree.name);
-      if (!this.outputDir) {
-        this.setOutputDir(this.astralTree.dir);
+    addAstralFiles = ({ path }) => {
+      if (!this.hasAstralTree) {
+        this.astralTree = new AstralTree(this, path);
+        this.setOutputName(this.astralTree.name);
+        if (!this.outputDir) {
+          this.setOutputDir(this.astralTree.dir);
+        }
       }
-    }
-  };
+    };
 
   @action
-  removeAlignment = (alignment) => {
-    const oldDataType = this.dataType;
-    const index = this.alignments.indexOf(alignment);
-    if (index >= 0) {
-      this.alignments.splice(index, 1);
-    }
-    if (this.haveAlignments) {
+    removeAlignment = (alignment) => {
+      const oldDataType = this.dataType;
+      const index = this.alignments.indexOf(alignment);
+      if (index >= 0) {
+        this.alignments.splice(index, 1);
+      }
+      if (this.haveAlignments) {
       // this.dataType is computed automatically with the reduced set, reset to default if changed (from mixed or multistate)
-      if (this.dataType !== oldDataType) {
+        if (this.dataType !== oldDataType) {
         // This parameter is deleted, but there seems to be no need for updating other params
         // this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
+        }
+      } else {
+        this.reset();
       }
-    } else {
-      this.reset();
-    }
-  };
+    };
 
   @action
-  removeAstralTree = () => {
-    this.astralTree = null;
-  };
+    removeAstralTree = () => {
+      this.astralTree = null;
+    };
 
   @computed get canLoadAlignment() {
     return (
@@ -2150,15 +2150,15 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  addPartitionFiles = async (files) => {
-    if (!files.length) {
-      return;
-    }
-    const { path } = files[0];
-    const content = await readFile(path, 'utf-8');
-    this.partitionFile = path;
-    this.partitionFileContent = content;
-  };
+    addPartitionFiles = async (files) => {
+      if (!files.length) {
+        return;
+      }
+      const { path } = files[0];
+      const content = await readFile(path, 'utf-8');
+      this.partitionFile = path;
+      this.partitionFileContent = content;
+    };
 
   @action onPartitionSelected = async (event, { id, filePath }) => {
     if (id === this.id) {
@@ -2167,25 +2167,25 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  addTreeFiles = (type, files) => {
-    if (!files.length) {
-      return;
-    }
-    const { path } = files[0];
-    switch (type) {
-      case 'tree':
-        this.tree.setFilePath(path);
-        break;
-      case 'backboneConstraint':
-        this.backboneConstraint.setFilePath(path);
-        break;
-      case 'multifurcatingConstraint':
-        this.multifurcatingConstraint.setFilePath(path);
-        break;
-      default:
-        break;
-    }
-  };
+    addTreeFiles = (type, files) => {
+      if (!files.length) {
+        return;
+      }
+      const { path } = files[0];
+      switch (type) {
+        case 'tree':
+          this.tree.setFilePath(path);
+          break;
+        case 'backboneConstraint':
+          this.backboneConstraint.setFilePath(path);
+          break;
+        case 'multifurcatingConstraint':
+          this.multifurcatingConstraint.setFilePath(path);
+          break;
+        default:
+          break;
+      }
+    };
 
   @action removePartitionFile = () => {
     this.partitionFile = '';
@@ -2193,31 +2193,31 @@ Results saved to: ${this.outputDir}
   };
 
   @action
-  clearStdout = () => {
-    this.stdout = '';
-  };
+    clearStdout = () => {
+      this.stdout = '';
+    };
 
   @action
-  clearStderr = () => {
-    this.stderr = '';
-  };
+    clearStderr = () => {
+      this.stderr = '';
+    };
 
   @action
-  clearConsole = () => {
-    this.clearStdout();
-    this.clearStderr();
-  };
+    clearConsole = () => {
+      this.clearStdout();
+      this.clearStderr();
+    };
 
   @action
-  clearError = () => {
-    this.error = null;
-  };
+    clearError = () => {
+      this.error = null;
+    };
 
   @action
-  reset = () => {
-    this.outGroup.reset();
-    this.removePartitionFile();
-  };
+    reset = () => {
+      this.outGroup.reset();
+      this.removePartitionFile();
+    };
 
   dispose = () => {
     this.cancel();
@@ -2242,91 +2242,91 @@ Results saved to: ${this.outputDir}
   // -----------------------------------------------------------
 
   @action
-  onTreeSelected = (event, { id, type, filePath }) => {
-    if (id === this.id) {
-      this.addTreeFiles(type, [{ path: filePath }]);
-    }
-  };
+    onTreeSelected = (event, { id, type, filePath }) => {
+      if (id === this.id) {
+        this.addTreeFiles(type, [{ path: filePath }]);
+      }
+    };
 
   @action
-  onAlignmentAdded = (event, { id, alignments }) => {
-    if (id === this.id) {
-      this.addAlignments(alignments);
-    }
-  };
+    onAlignmentAdded = (event, { id, alignments }) => {
+      if (id === this.id) {
+        this.addAlignments(alignments);
+      }
+    };
 
   @action
-  onAstralFileAdded = (event, { id, file }) => {
-    if (id === this.id) {
-      this.addAstralFiles(file);
-    }
-  };
+    onAstralFileAdded = (event, { id, file }) => {
+      if (id === this.id) {
+        this.addAstralFiles(file);
+      }
+    };
 
   @action
-  onOutputDirSelected = (event, { id, outputDir }) => {
-    if (id === this.id) {
-      this.setOutputDir(outputDir);
-    }
-  };
+    onOutputDirSelected = (event, { id, outputDir }) => {
+      if (id === this.id) {
+        this.setOutputDir(outputDir);
+      }
+    };
 
   @action
-  onRunStdout = (event, { id, content }) => {
-    if (id === this.id) {
-      this.stdout += content;
-    }
-  };
+    onRunStdout = (event, { id, content }) => {
+      if (id === this.id) {
+        this.stdout += content;
+      }
+    };
 
   @action
-  onRunStderr = (event, { id, content }) => {
-    if (id === this.id) {
-      this.stderr += content;
-    }
-  };
+    onRunStderr = (event, { id, content }) => {
+      if (id === this.id) {
+        this.stderr += content;
+      }
+    };
 
   @action
-  onAstralFinished = (event, { id, exitCode }) => {
-    if (id === this.id) {
-      console.log(`Process ${id} finished with exitCode '${exitCode}'`);
-      this.resultDir = this.outputDir;
-      this.atomFinished.reportChanged();
-      this.finished = true;
-      this.exitCode = exitCode;
-      this.afterRun();
-    }
-  };
+    onAstralFinished = (event, { id, exitCode }) => {
+      if (id === this.id) {
+        console.log(`Process ${id} finished with exitCode '${exitCode}'`);
+        this.resultDir = this.outputDir;
+        this.atomFinished.reportChanged();
+        this.finished = true;
+        this.exitCode = exitCode;
+        this.afterRun();
+      }
+    };
 
   @action
-  onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
-    if (id === this.id) {
-      console.log(
-        `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
-      );
-      this.resultDir = resultDir;
-      this.atomFinished.reportChanged();
-      this.finished = true;
-      this.exitCode = exitCode;
-      this.afterRun();
-    }
-  };
+    onRunFinished = (event, { id, resultDir, resultFilenames, exitCode }) => {
+      if (id === this.id) {
+        console.log(
+          `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
+        );
+        this.resultDir = resultDir;
+        this.atomFinished.reportChanged();
+        this.finished = true;
+        this.exitCode = exitCode;
+        this.afterRun();
+      }
+    };
 
   @action
-  onRunError = (event, { id, error }) => {
-    if (id === this.id) {
-      console.log(`Process ${id} finished with error:`, error);
-      this.error = error;
-      this.afterRun();
-    }
-  };
+    onRunError = (event, { id, error }) => {
+      if (id === this.id) {
+        console.log(`Process ${id} finished with error:`, error);
+        this.error = error;
+        this.afterRun();
+      }
+    };
 
   @action
-  onBackboneConstraint = (event, params) => {
-    this.useBackboneConstraint = !this.useBackboneConstraint;
-  };
+    onBackboneConstraint = (event, params) => {
+      this.useBackboneConstraint = !this.useBackboneConstraint;
+    };
 
   @action
-  onMultifurcatingConstraint = (event, params) => {
-    this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
-  };
+    onMultifurcatingConstraint = (event, params) => {
+      this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
+    };
 
   generateReport = ({ maxStdoutLength = 1000 } = {}) => {
     const { command, stdout } = this;
@@ -2335,8 +2335,8 @@ Results saved to: ${this.outputDir}
       stdout:
         stdout.length > maxStdoutLength
           ? `[${
-              stdout.length - maxStdoutLength
-            } more characters]...${stdout.slice(-maxStdoutLength)}`
+            stdout.length - maxStdoutLength
+          } more characters]...${stdout.slice(-maxStdoutLength)}`
           : stdout,
     };
   };

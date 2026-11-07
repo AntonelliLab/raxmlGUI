@@ -48,14 +48,14 @@ class InputFile extends StoreBase {
   }
 
   @action
-  openFile = () => {
-    ipcRenderer.send(ipc.FILE_OPEN, this.path);
-  };
+    openFile = () => {
+      ipcRenderer.send(ipc.FILE_OPEN, this.path);
+    };
 
   @action
-  showFileInFolder = () => {
-    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
-  };
+    showFileInFolder = () => {
+      ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
+    };
 }
 
 export default InputFile;

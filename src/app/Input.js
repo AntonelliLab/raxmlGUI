@@ -84,11 +84,11 @@ const Input = ({ run }) => {
               <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
-                      <AlignmentCard
-                        key={alignment.path}
-                        alignment={alignment}
-                      />
-                    ))
+                    <AlignmentCard
+                      key={alignment.path}
+                      alignment={alignment}
+                    />
+                  ))
                   : null}
                 {run.inputIsTree && run.hasAstralTree ? (
                   <AstralTreeCard astralTree={run.astralTree} />
@@ -96,17 +96,17 @@ const Input = ({ run }) => {
                 {run.canLoadAlignment &&
                 !run.haveAlignments &&
                 !run.canLoadPartitionFile ? (
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      width: '550px',
-                      height: '200px',
-                    }}
-                    onClick={run.loadAlignmentFiles}
-                  >
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: '550px',
+                        height: '200px',
+                      }}
+                      onClick={run.loadAlignmentFiles}
+                    >
                     Load alignment
-                  </Button>
-                ) : null}
+                    </Button>
+                  ) : null}
               </Box>
             </Box>
           )}
@@ -143,29 +143,29 @@ const Input = ({ run }) => {
         {run.canLoadAlignment &&
         !run.canLoadPartitionFile &&
         run.haveAlignments ? (
-          <Dropzone noClick onDrop={onAlignmentDrop}>
-            {({ getRootProps, getInputProps, isDragActive }) => (
-              <Box
-                {...getRootProps()}
-                sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
-              >
-                <input {...getInputProps()} style={{ display: 'none' }} />
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: '200px',
-                    minWidth: '200px',
-                    height: '200px',
-                  }}
-                  onClick={run.loadAlignmentFiles}
-                  title="Concatenate new alignments and create partition"
+            <Dropzone noClick onDrop={onAlignmentDrop}>
+              {({ getRootProps, getInputProps, isDragActive }) => (
+                <Box
+                  {...getRootProps()}
+                  sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
                 >
+                  <input {...getInputProps()} style={{ display: 'none' }} />
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: '200px',
+                      minWidth: '200px',
+                      height: '200px',
+                    }}
+                    onClick={run.loadAlignmentFiles}
+                    title="Concatenate new alignments and create partition"
+                  >
                   Add alignment
-                </Button>
-              </Box>
-            )}
-          </Dropzone>
-        ) : null}
+                  </Button>
+                </Box>
+              )}
+            </Dropzone>
+          ) : null}
 
         {run.canLoadAlignment && run.canLoadPartitionFile ? (
           <Box

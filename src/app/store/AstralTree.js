@@ -8,9 +8,9 @@ class AstralTree extends InputFile {
   }
 
   @action
-  remove = () => {
-    this.run.removeAstralTree();
-  };
+    remove = () => {
+      this.run.removeAstralTree();
+    };
 }
 
 export default AstralTree;

@@ -6,102 +6,102 @@ import * as ipc from 'electron-better-ipc';
 import { activeWindow } from '../main/utils/utils';
 const processWithElectron = process;
 function newGithubIssueUrl(options = {}) {
-    const { repoUrl: repoUrlOption, user, repo } = options;
-    let repoUrl;
-    if (repoUrlOption) {
-        repoUrl = repoUrlOption;
+  const { repoUrl: repoUrlOption, user, repo } = options;
+  let repoUrl;
+  if (repoUrlOption) {
+    repoUrl = repoUrlOption;
+  }
+  else if (user && repo) {
+    repoUrl = `https://github.com/${user}/${repo}`;
+  }
+  else {
+    throw new Error('You need to specify either the `repoUrl` option or both the `user` and `repo` options');
+  }
+  const url = new URL(`${repoUrl}/issues/new`);
+  const types = [
+    'body',
+    'title',
+    'labels',
+    'template',
+    'milestone',
+    'assignee',
+    'projects',
+  ];
+  for (const type of types) {
+    let value = options[type];
+    if (value === undefined) {
+      continue;
     }
-    else if (user && repo) {
-        repoUrl = `https://github.com/${user}/${repo}`;
+    if (type === 'labels' || type === 'projects') {
+      if (!Array.isArray(value)) {
+        throw new TypeError(`The \`${type}\` option should be an array`);
+      }
+      value = value.join(',');
     }
-    else {
-        throw new Error('You need to specify either the `repoUrl` option or both the `user` and `repo` options');
-    }
-    const url = new URL(`${repoUrl}/issues/new`);
-    const types = [
-        'body',
-        'title',
-        'labels',
-        'template',
-        'milestone',
-        'assignee',
-        'projects',
-    ];
-    for (const type of types) {
-        let value = options[type];
-        if (value === undefined) {
-            continue;
-        }
-        if (type === 'labels' || type === 'projects') {
-            if (!Array.isArray(value)) {
-                throw new TypeError(`The \`${type}\` option should be an array`);
-            }
-            value = value.join(',');
-        }
-        url.searchParams.set(type, String(value));
-    }
-    return url.toString();
+    url.searchParams.set(type, String(value));
+  }
+  return url.toString();
 }
 export const is = {
-    macos: process.platform === 'darwin',
-    linux: process.platform === 'linux',
-    windows: process.platform === 'win32',
-    main: process.type === 'browser',
-    renderer: process.type === 'renderer',
-    development: process.env.NODE_ENV === 'development',
-    macAppStore: processWithElectron.mas === true,
-    windowsStore: processWithElectron.windowsStore === true,
+  macos: process.platform === 'darwin',
+  linux: process.platform === 'linux',
+  windows: process.platform === 'win32',
+  main: process.type === 'browser',
+  renderer: process.type === 'renderer',
+  development: process.env.NODE_ENV === 'development',
+  macAppStore: processWithElectron.mas === true,
+  windowsStore: processWithElectron.windowsStore === true,
 };
 export const platform = (object) => {
-    let platformKey = process.platform;
-    if (is.macos) {
-        platformKey = 'macos';
-    }
-    else if (is.windows) {
-        platformKey = 'windows';
-    }
-    const fn = platformKey in object ? object[platformKey] : object.default;
-    return typeof fn === 'function' ? fn() : fn;
+  let platformKey = process.platform;
+  if (is.macos) {
+    platformKey = 'macos';
+  }
+  else if (is.windows) {
+    platformKey = 'windows';
+  }
+  const fn = platformKey in object ? object[platformKey] : object.default;
+  return typeof fn === 'function' ? fn() : fn;
 };
 // TODO: Had to replace this debug info on renderer, because electron remote module is no longer available.
 // If needed, one would need to use the context bridge
 export const debugInfo = () => is.main
-    ? `${electron.app.getName()} ${electron.app.getVersion()}
+  ? `${electron.app.getName()} ${electron.app.getVersion()}
 Electron ${process.versions.electron}
 ${process.platform} ${os.release()}
 Locale: ${electron.app.getLocale()}
 `.trim()
-    : `Debug info not available in renderer.`;
+  : `Debug info not available in renderer.`;
 if (is.renderer) {
-    ipc.ipcRenderer.answerMain('get-state-report', async () => {
-        const storeModule = await import('../app/store');
-        const store = storeModule.default;
-        const report = store.generateReport();
-        return report;
-    });
+  ipc.ipcRenderer.answerMain('get-state-report', async () => {
+    const storeModule = await import('../app/store');
+    const store = storeModule.default;
+    const report = store.generateReport();
+    return report;
+  });
 }
 const getActiveState = async () => {
-    if (is.renderer) {
-        return window.store.generateReport();
-    }
-    const win = activeWindow();
-    const report = await ipc.ipcMain.callRenderer(win, 'get-state-report');
-    return report;
+  if (is.renderer) {
+    return window.store.generateReport();
+  }
+  const win = activeWindow();
+  const report = await ipc.ipcMain.callRenderer(win, 'get-state-report');
+  return report;
 };
 const getActiveStateSync = () => {
-    if (is.renderer) {
-        return window.store.generateReport();
-    }
-    return `Current state not available on synchronous call from main`;
+  if (is.renderer) {
+    return window.store.generateReport();
+  }
+  return `Current state not available on synchronous call from main`;
 };
 const serializeAndCleanError = (error) => {
-    const err = serializeError(error);
-    const stack = error instanceof Error ? error.stack : undefined;
-    err.stack = cleanStack(stack);
-    return err;
+  const err = serializeError(error);
+  const stack = error instanceof Error ? error.stack : undefined;
+  err.stack = cleanStack(stack);
+  return err;
 };
 export function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 export const quote = (dir) => (is.windows ? `"${dir}"` : dir);
 const stringify = (json) => JSON.stringify(json, null, '  ');
@@ -129,20 +129,20 @@ ${stringify(activeState)}
 Process: ${is.renderer ? 'renderer' : 'main'}
 ${debugInfo()}`);
 const openNewGitHubIssue = (options) => {
-    const url = newGithubIssueUrl(options);
-    electron.shell.openExternal(url);
+  const url = newGithubIssueUrl(options);
+  electron.shell.openExternal(url);
 };
 export const reportIssueToGitHub = async (error) => {
-    const activeState = await getActiveState();
-    openNewGitHubIssue({
-        user: 'AntonelliLab',
-        repo: 'raxmlGUI',
-        title: error.name,
-        body: createReportBodyForGithub(error, activeState),
-    });
+  const activeState = await getActiveState();
+  openNewGitHubIssue({
+    user: 'AntonelliLab',
+    repo: 'raxmlGUI',
+    title: error.name,
+    body: createReportBodyForGithub(error, activeState),
+  });
 };
 export const getMailtoLinkToReportError = (error) => {
-    const activeState = getActiveStateSync();
-    const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI(error.name)}&body=${createReportBodyForMail(error, activeState)}`;
-    return mailtoLinkContent;
+  const activeState = getActiveStateSync();
+  const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI(error.name)}&body=${createReportBodyForMail(error, activeState)}`;
+  return mailtoLinkContent;
 };

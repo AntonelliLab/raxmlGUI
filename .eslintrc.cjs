@@ -11,6 +11,7 @@ module.exports = {
         array: false,
       },
     ],
+    indent: ['error', 2, { SwitchCase: 1 }],
   },
   overrides: [
     {

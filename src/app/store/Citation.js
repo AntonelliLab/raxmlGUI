@@ -197,13 +197,13 @@ ER  - `,
   }
 
   @action
-  show = () => {
-    this.visible = true;
-  };
+    show = () => {
+      this.visible = true;
+    };
   @action
-  hide = () => {
-    this.visible = false;
-  };
+    hide = () => {
+      this.visible = false;
+    };
 
   copyToClipboard = () => {
     clipboard.writeText(this.allText);

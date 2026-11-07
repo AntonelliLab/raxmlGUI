@@ -14,11 +14,11 @@ export default class Config extends StoreBase {
   @observable isDarkMode = store.get('darkMode');
 
   @action
-  setDarkMode = (value) => {
-    value = !!value;
-    store.set('darkMode', value);
-    this.isDarkMode = value;
-  };
+    setDarkMode = (value) => {
+      value = !!value;
+      store.set('darkMode', value);
+      this.isDarkMode = value;
+    };
 
   onLightMode = () => {
     this.setDarkMode(false);
