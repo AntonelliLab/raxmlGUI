@@ -311,8 +311,10 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     await combineOutput(outputDir, outputFilename);
   }
   // Rename the RAxML_info.\*.tre into RAxML_info.\*.txt
-  console.log(`Renaming info file 'RAxML_info\.${outputName}\.tre' -> 'RAxML_info\.${outputName}\.txt'...`);
-  const anyMatch = new RegExp(`RAxML_info\.${outputName}\.tre`);
+  console.log(
+    `Renaming info file 'RAxML_info.${outputName}.tre' -> 'RAxML_info.${outputName}.txt'...`,
+  );
+  const anyMatch = new RegExp(`RAxML_info\\.${outputName}\\.tre`);
   const filenames = await fs.readdir(outputDir);
   const infoFiles = filenames.filter((filename) => anyMatch.test(filename));
   for (let i = 0; i < infoFiles.length; i++) {
