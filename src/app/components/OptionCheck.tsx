@@ -1,9 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import type { SxProps, Theme } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import { FormControl } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import type { SxProps, Theme } from '@mui/material/styles';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 export interface OptionCheckOptionLike {
   title: string;

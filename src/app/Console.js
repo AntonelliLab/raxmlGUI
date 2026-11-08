@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import Box from '@mui/material/Box';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
+import React, { useCallback,useEffect, useRef } from 'react';
 
 const Console = ( { run } ) => {
   const stdoutContainerRef = useRef( null );

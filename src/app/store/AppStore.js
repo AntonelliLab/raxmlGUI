@@ -1,7 +1,8 @@
-import { observable, action } from 'mobx';
-import StoreBase from './StoreBase';
+import { action,observable } from 'mobx';
+
 import Citation from './Citation';
 import Config from './Config';
+import StoreBase from './StoreBase';
 
 class AppStore extends StoreBase {
   citation = new Citation();

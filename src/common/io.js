@@ -1,10 +1,11 @@
 import fs from 'fs';
 import readline from 'readline';
 import util from 'util';
-import phylipParser from './phylipParser';
-import fastaParser from './fastaParser';
-import typecheckAlignment from './typecheckAlignment';
+
 import UserFixError from './errors';
+import fastaParser from './fastaParser';
+import phylipParser from './phylipParser';
+import typecheckAlignment from './typecheckAlignment';
 export const parseAlignment = async ( filePath ) => {
   return new Promise( ( resolve, reject ) => {
     const rl = readline.createInterface( {

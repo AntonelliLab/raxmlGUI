@@ -1,5 +1,5 @@
-import { observable, action, computed } from 'mobx';
 import { clipboard } from 'electron';
+import { action, computed,observable } from 'mobx';
 
 export default class Citation {
   @observable visible = false;

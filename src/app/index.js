@@ -1,15 +1,15 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
+import './bootstrap';
+
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/electron/renderer';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
-import theme from './theme';
+import { is } from '../common/utils';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import store from './store';
-import { is } from '../common/utils';
-
-import './bootstrap';
+import theme from './theme';
 
 if ( !is.development ) {
   Sentry.init( {

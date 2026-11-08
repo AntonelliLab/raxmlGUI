@@ -1,6 +1,7 @@
-import React from 'react';
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import React from 'react';
+
 import ErrorDialog from './ErrorDialog';
 
 export interface ErrorBoundaryProps {

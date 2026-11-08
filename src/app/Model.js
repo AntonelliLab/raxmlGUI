@@ -1,11 +1,12 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import OptionSelect from './components/OptionSelect';
-import OptionCheck from './components/OptionCheck';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react-lite';
+import PropTypes from 'prop-types';
+import React from 'react';
+
+import OptionCheck from './components/OptionCheck';
+import OptionSelect from './components/OptionSelect';
 
 const Model = ( { run } ) => {
   // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top

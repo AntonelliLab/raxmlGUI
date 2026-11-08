@@ -1,38 +1,38 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
-import { styled } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import IconButton from '@mui/material/IconButton';
-import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+
 import IconAdd from '@mui/icons-material/Add';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import Box from '@mui/material/Box';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
+import Snackbar from '@mui/material/Snackbar';
+import { styled } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Toolbar from '@mui/material/Toolbar';
+import { Allotment } from 'allotment';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
-import Model from './Model';
-import Input from './Input';
-import Output from './Output';
-import Raxml from './Raxml';
-import Console from './Console';
-import store from './store';
-import PartitionEditor from './PartitionEditor';
 import CitationModal from './CitationModal';
-
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
+import Console from './Console';
+import Input from './Input';
+import Model from './Model';
+import Output from './Output';
+import PartitionEditor from './PartitionEditor';
+import Raxml from './Raxml';
+import store from './store';
 
 const VerticalHeading = styled( Typography )( ( { theme } ) => ( {
   writingMode: 'vertical-rl',

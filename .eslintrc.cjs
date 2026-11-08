@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   extends: ['react-app', 'react-app/jest'],
   ignorePatterns: ['build/', 'dist/', 'docs/', 'node_modules/'],
+  plugins: ['simple-import-sort'],
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
     'prefer-destructuring': [
@@ -14,6 +15,8 @@ module.exports = {
     indent: ['error', 2, { SwitchCase: 1 }],
     'multiline-ternary': ['error', 'always'],
     'space-in-parens': ['error', 'always'],
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
   },
   overrides: [
     {

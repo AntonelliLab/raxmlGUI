@@ -1,6 +1,7 @@
 import { dialog } from 'electron';
 import fs from 'fs';
 import util from 'util';
+
 import { activeWindow } from './utils';
 const writeFile = util.promisify( fs.writeFile );
 const saveScreenshot = async () => {

@@ -1,15 +1,16 @@
-import React from 'react';
+import { Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { webUtils } from 'electron';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
+import React from 'react';
+import Dropzone from 'react-dropzone';
+
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import AstralTreeCard from './AstralTreeCard';
 import PartitionFileCard from './PartitionFileCard';
-import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
-import { Typography } from '@mui/material';
-import Dropzone from 'react-dropzone';
-import { webUtils } from 'electron';
 
 const Input = ( { run } ) => {
   // run.hasAstralTree is the condition on which to show an astral tree card

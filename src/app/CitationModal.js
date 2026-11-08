@@ -1,14 +1,14 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react-lite';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import CodeHighlight from './components/CodeHighlight';
 

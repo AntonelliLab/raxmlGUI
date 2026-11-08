@@ -1,21 +1,21 @@
-import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
-import { join } from 'path';
 import fs from 'fs';
-import util from 'util';
-import union from 'lodash/union';
 import intersection from 'lodash/intersection';
+import union from 'lodash/union';
+import { action, computed, observable, runInAction } from 'mobx';
 import os from 'os';
+import { join } from 'path';
+import util from 'util';
 
+import UserFixError from '../../common/errors';
+import { getFinalDataType } from '../../common/typecheckAlignment';
+import { is } from '../../common/utils';
 import * as ipc from '../../constants/ipc';
-import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
-import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
-import { getFinalDataType } from '../../common/typecheckAlignment';
-import UserFixError from '../../common/errors';
-import { is } from '../../common/utils';
+import Option from './Option';
+import Partition, { FinalPartition } from './Partition';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;

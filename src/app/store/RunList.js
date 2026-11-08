@@ -1,7 +1,8 @@
-import { observable, computed, action } from 'mobx';
-import Run from './Run';
+import { action,computed, observable } from 'mobx';
+
 import * as ipc from '../../constants/ipc';
 import AppStore from './AppStore';
+import Run from './Run';
 
 class RunList extends AppStore {
   @observable runs = [];

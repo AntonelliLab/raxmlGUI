@@ -1,12 +1,12 @@
-import React from 'react';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Chip from '@mui/material/Chip';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import Chip from '@mui/material/Chip';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
+import React from 'react';
 
 function PartitionFileCard( { run } ) {
   if ( !run.havePartitionFile ) {

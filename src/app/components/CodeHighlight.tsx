@@ -1,11 +1,12 @@
-import React, { useRef, useEffect } from 'react';
-import { Box } from '@mui/material';
-import type { SxProps, Theme } from '@mui/material/styles';
-import Prism from 'prismjs';
-import type { Grammar } from 'prismjs';
 import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';
 import 'prismjs/themes/prism-okaidia.css'; // coy, dark, funky, okaidia, solarizedlight, tomorrow, twilight
+
+import { Box } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
+import type { Grammar } from 'prismjs';
+import Prism from 'prismjs';
+import React, { useEffect,useRef } from 'react';
 
 export interface CodeHighlightProps {
   code: string;

@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { action,computed, observable } from 'mobx';
 import { mixed } from 'yup';
 
 class Option {

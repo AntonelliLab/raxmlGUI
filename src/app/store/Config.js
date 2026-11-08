@@ -1,7 +1,8 @@
-import { observable, action } from 'mobx';
+import Store from 'electron-store';
+import { action,observable } from 'mobx';
+
 import * as ipc from '../../constants/ipc';
 import StoreBase from './StoreBase';
-import Store from 'electron-store';
 
 export const store = new Store();
 

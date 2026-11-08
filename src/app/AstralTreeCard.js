@@ -1,18 +1,18 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Box from '@mui/material/Box';
+import { observer } from 'mobx-react-lite';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 function AstralTreeCard( { astralTree } ) {
   const [anchorEl, setAnchorEl] = React.useState( null );

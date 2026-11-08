@@ -1,5 +1,5 @@
-import * as ipc from '../../constants/ipc';
 import { store } from '../../app/store/Config';
+import * as ipc from '../../constants/ipc';
 import { activeWindow } from '../utils/utils';
 const sendToFocusedWindow = ( channel ) => {
   const win = activeWindow();

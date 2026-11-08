@@ -1,16 +1,17 @@
 /* global __static */
-import { app, ipcMain, shell, dialog, Notification, BrowserWindow } from 'electron';
-import path from 'path';
-import util from 'util';
-import _fs from 'fs';
-import childProcess from 'child_process';
-import { serializeError } from 'serialize-error';
-import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';
-import * as ipc from '../constants/ipc';
+import childProcess from 'child_process';
+import { app, BrowserWindow,dialog, ipcMain, Notification, shell } from 'electron';
+import _fs from 'fs';
+import parsePath from 'parse-filepath';
+import path from 'path';
+import { serializeError } from 'serialize-error';
+import util from 'util';
+
+import UserFixError from '../common/errors';
 import io from '../common/io';
 import { is, platform, quote } from '../common/utils';
-import UserFixError from '../common/errors';
+import * as ipc from '../constants/ipc';
 import { activeWindow } from './utils/utils';
 if ( !is.development ) {
   Sentry.init( {

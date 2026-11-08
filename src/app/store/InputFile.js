@@ -1,5 +1,5 @@
-import { observable, computed, action } from 'mobx';
 import { ipcRenderer } from 'electron';
+import { action,computed, observable } from 'mobx';
 import parsePath from 'parse-filepath';
 
 import * as ipc from '../../constants/ipc';

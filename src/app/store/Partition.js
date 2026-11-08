@@ -1,7 +1,8 @@
-import { observable, computed, action, reaction } from 'mobx';
-import Option from './Option';
-import * as raxmlSettings from '../../settings/raxml';
+import { action, computed, observable, reaction } from 'mobx';
 import * as yup from 'yup';
+
+import * as raxmlSettings from '../../settings/raxml';
+import Option from './Option';
 
 const CODON_NONE = 'None';
 const CODON_SPECIFIC = 'Codon specific';

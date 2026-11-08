@@ -1,8 +1,9 @@
+import cleanStack from 'clean-stack';
 import electron from 'electron';
+import * as ipc from 'electron-better-ipc';
 import os from 'os';
 import { serializeError } from 'serialize-error';
-import cleanStack from 'clean-stack';
-import * as ipc from 'electron-better-ipc';
+
 import { activeWindow } from '../main/utils/utils';
 const processWithElectron = process;
 function newGithubIssueUrl( options = {} ) {

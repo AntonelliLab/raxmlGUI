@@ -1,8 +1,9 @@
 import { app, Menu } from 'electron';
-import subMenuFile from './subMenuFile';
+
+import saveScreenshot from '../utils/saveScreenshot';
 import subMenuAnalysis from './subMenuAnalysis';
 import subMenuDeveloper from './subMenuDeveloper';
-import saveScreenshot from '../utils/saveScreenshot';
+import subMenuFile from './subMenuFile';
 const windowMenuSection = {
   role: 'window',
   submenu: [

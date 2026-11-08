@@ -1,24 +1,24 @@
-import { observable, computed, action, createAtom } from 'mobx';
-import { ipcRenderer, shell } from 'electron';
-import { range } from 'd3-array';
-import cpus from 'cpus';
-import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
-import { join } from 'path';
+import cpus from 'cpus';
+import { range } from 'd3-array';
+import { ipcRenderer, shell } from 'electron';
 import filenamify from 'filenamify';
-import util from 'util';
 import fs from 'fs';
+import remove from 'lodash/remove';
+import { action, computed, createAtom,observable } from 'mobx';
 import os from 'os';
+import parsePath from 'parse-filepath';
+import { join } from 'path';
+import util from 'util';
 
+import UserFixError from '../../common/errors';
+import { is, quote } from '../../common/utils';
+import * as ipc from '../../constants/ipc';
+import * as raxmlSettings from '../../settings/raxml';
 import Alignment, { FinalAlignment } from './Alignment';
 import AstralTree from './AstralTree';
 import Option from './Option';
 import StoreBase from './StoreBase';
-import { is, quote } from '../../common/utils';
-import * as raxmlSettings from '../../settings/raxml';
-import * as ipc from '../../constants/ipc';
-import remove from 'lodash/remove';
-import UserFixError from '../../common/errors';
 
 const readFile = util.promisify( fs.readFile );
 

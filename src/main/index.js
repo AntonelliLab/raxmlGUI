@@ -1,12 +1,14 @@
+import './api';
+
 import electron, { BrowserWindow } from 'electron';
+import log from 'electron-log';
+import ProgressBar from 'electron-progressbar';
+import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import url from 'url';
-import log from 'electron-log';
-import { autoUpdater } from 'electron-updater';
-import ProgressBar from 'electron-progressbar';
-import './api';
-import MenuBuilder from './menu';
+
 import { is } from '../common/utils';
+import MenuBuilder from './menu';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js

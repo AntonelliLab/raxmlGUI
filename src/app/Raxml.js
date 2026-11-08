@@ -1,15 +1,16 @@
-import React, { useCallback } from 'react';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { FormHelperText } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { clipboard } from 'electron';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
+import React, { useCallback } from 'react';
+
 import OptionSelect from './components/OptionSelect';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { FormHelperText } from '@mui/material';
 
 const Raxml = ( { run, store } ) => {
   const copyCommand = useCallback( () => {
