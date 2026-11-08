@@ -53,7 +53,9 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
     onClose();
   };
 
-  const closeHandler = needReload ? handleReload : resetAndClose;
+  const closeHandler = needReload
+    ? handleReload
+    : resetAndClose;
 
   const CloseAction = (
     <DialogActions>
@@ -63,42 +65,46 @@ export default function ErrorDialog({ error, onClose, needReload, title }) {
     </DialogActions>
   );
 
-  const Actions = reported ? (
-    CloseAction
-  ) : (
-    <DialogActions>
-      <Button
-        href={mailtoContent}
-        onClick={handleReportToMail}
-        variant="contained"
-        color="secondary"
-        autoFocus
-      >
+  const Actions = reported
+    ? (
+      CloseAction
+    )
+    : (
+      <DialogActions>
+        <Button
+          href={mailtoContent}
+          onClick={handleReportToMail}
+          variant="contained"
+          color="secondary"
+          autoFocus
+        >
         Report issue on mail
-      </Button>
-      <Button
-        onClick={handleReportToGithub}
-        variant="contained"
-        color="secondary"
-        autoFocus
-      >
+        </Button>
+        <Button
+          onClick={handleReportToGithub}
+          variant="contained"
+          color="secondary"
+          autoFocus
+        >
         Report issue on GitHub
-      </Button>
-      <Button onClick={closeHandler} variant="outlined">
-        {closeMessage}
-      </Button>
-    </DialogActions>
-  );
+        </Button>
+        <Button onClick={closeHandler} variant="outlined">
+          {closeMessage}
+        </Button>
+      </DialogActions>
+    );
 
-  const Message = !reported ? (
-    <DialogContentText>
+  const Message = !reported
+    ? (
+      <DialogContentText>
       Please help us solve the issue by reporting it.
-    </DialogContentText>
-  ) : (
-    <Alert severity="success" sx={{ width: '100%' }}>
+      </DialogContentText>
+    )
+    : (
+      <Alert severity="success" sx={{ width: '100%' }}>
       Thanks for reporting the issue!
-    </Alert>
-  );
+      </Alert>
+    );
 
   const GenericErrorDialog = (
     <Dialog

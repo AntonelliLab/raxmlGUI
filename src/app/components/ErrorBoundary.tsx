@@ -25,7 +25,9 @@ class ErrorBoundary extends React.Component<
 
   static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
     return {
-      error: error instanceof Error ? error : new Error(String(error)),
+      error: error instanceof Error
+        ? error
+        : new Error(String(error)),
     };
   }
 

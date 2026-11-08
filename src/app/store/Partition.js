@@ -142,7 +142,9 @@ class PartEnd extends PartBase {
   }
   @computed get min() {
     return (
-      this.part.start.value + (this.part.codon.value === CODON_NONE ? 0 : 2)
+      this.part.start.value + (this.part.codon.value === CODON_NONE
+        ? 0
+        : 2)
     );
   }
   @computed get max() {
@@ -188,7 +190,11 @@ class Part {
    */
   _transform = (offset = 0, namePrefix = '', codon = 0) => {
     const nameSuffix =
-      codon === 0 ? '' : codon === 12 ? '_codon1and2' : `_codon${codon}`;
+      codon === 0
+        ? ''
+        : codon === 12
+          ? '_codon1and2'
+          : `_codon${codon}`;
     const partWithoutRange = `${this.typePadded}${namePrefix}${this.name.value}${nameSuffix} = `;
     const start = this.start.value + offset;
     const end = this.end.value + offset;

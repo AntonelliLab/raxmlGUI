@@ -27,7 +27,9 @@ function getStaticDir() {
 }
 const get_space_safe_binary_path = (bin_path) => {
   // For Windows users with spaces in user dir
-  return is.windows ? `"${bin_path}"` : bin_path;
+  return is.windows
+    ? `"${bin_path}"`
+    : bin_path;
 };
 function handleError(title, error) {
   // send error to renderer
@@ -163,7 +165,9 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
       ++counter;
     }
     const ok = outputName === outputNameUnused;
-    const notice = ok ? '' : `Using '${outputNameUnused}'`;
+    const notice = ok
+      ? ''
+      : `Using '${outputNameUnused}'`;
     send(event, ipc.OUTPUT_CHECKED, {
       id,
       outputDir,
@@ -188,11 +192,15 @@ ipcMain.on(ipc.OUTPUT_CHECK, async (event, data) => {
 // Function to combine multiple output trees into one file
 async function combineOutput(outputDir, outputFilename) {
   // Use type command on windows, cat on Mac or Linux
-  const command = is.windows ? 'type' : 'cat';
+  const command = is.windows
+    ? 'type'
+    : 'cat';
   const childCmd = `${command} RAxML_result.${outputFilename}* > combined_results.${outputFilename}`;
   const { stdout, stderr } = await exec(childCmd, {
     cwd: outputDir,
-    ...(is.windows ? { shell: true } : {}),
+    ...(is.windows
+      ? { shell: true }
+      : {}),
   });
   console.log(stdout, stderr);
 }
@@ -242,7 +250,9 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
   }
   console.log(`Try executing binary by running '"${binaryPath}" -v'...`);
   try {
-    const { stdout, stderr } = await execFile(get_space_safe_binary_path(binaryPath), usesModeltestNg ? ['--version'] : ['-v'], {
+    const { stdout, stderr } = await execFile(get_space_safe_binary_path(binaryPath), usesModeltestNg
+      ? ['--version']
+      : ['-v'], {
       // env: { PATH: binaryDir },
       shell: is.windows,
     });
@@ -266,7 +276,9 @@ ipcMain.on(ipc.RUN_START, async (event, { id, args, binaryName, outputDir, outpu
     for (const arg of args) {
       try {
         const { stdout, stderr } = await exec(`"${binaryPath}" ${arg.join(' ')} --flag-check`, {
-          ...(is.windows ? { shell: true } : {}),
+          ...(is.windows
+            ? { shell: true }
+            : {}),
         });
         console.log(stdout, stderr);
       }
@@ -431,7 +443,9 @@ async function readalGetFormat(alignmentPath) {
   const readalPath = path.resolve(binaryDir, 'readal');
   const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -type -format`;
   const { stdout, stderr } = await exec(childCmd, {
-    ...(is.windows ? { shell: true } : {}),
+    ...(is.windows
+      ? { shell: true }
+      : {}),
   });
   console.log('Readal stderr', stderr);
   const replaced = stdout.replace(alignmentPath, '');
@@ -450,7 +464,9 @@ async function convertAlignment(alignmentPath) {
   const newPath = alignmentPath.replace(path.extname(alignmentPath), '.fas');
   const childCmd = `${quote(readalPath)} -in ${quote(alignmentPath)} -out ${quote(newPath)} -fasta`;
   const { stdout, stderr } = await exec(childCmd, {
-    ...(is.windows ? { shell: true } : {}),
+    ...(is.windows
+      ? { shell: true }
+      : {}),
   });
   console.log(stdout, stderr);
   return newPath;
@@ -475,7 +491,9 @@ ipcMain.on(ipc.ALIGNMENT_PARSE_REQUEST, async (event, { id, filePath }) => {
     console.log('error', error);
   }
   try {
-    const actualPath = newFilePath ? newFilePath : filePath;
+    const actualPath = newFilePath
+      ? newFilePath
+      : filePath;
     const alignment = await io.parseAlignment(actualPath);
     // Check if duplicate or invalid taxon names
     const taxons = new Map();

@@ -52,7 +52,9 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
 
 class RaxmlNgModelExtraParam extends Option {
   constructor(alignment, label, options, { addNone = true } = {}) {
-    super(alignment.run, addNone ? '<none>' : options[0].value, label);
+    super(alignment.run, addNone
+      ? '<none>'
+      : options[0].value, label);
     this.alignment = alignment;
     this.optionsSource = addNone
       ? [{ value: '<none>', title: 'none' }, ...options]
@@ -69,7 +71,9 @@ class RaxmlNgModelExtraParam extends Option {
     return !this.run.haveAlignments || !this.run.usesRaxmlNg;
   }
   @computed get cmdValue() {
-    return this.value === '<none>' ? '' : this.value;
+    return this.value === '<none>'
+      ? ''
+      : this.value;
   }
 }
 
@@ -204,7 +208,9 @@ class Alignment extends InputFile {
 
   @action
     setShowPartition = (value = true) => {
-      this.run.showPartition(value ? this : null);
+      this.run.showPartition(value
+        ? this
+        : null);
     };
 
   @action
@@ -680,7 +686,9 @@ class FinalAlignment {
     if (this.partition.isDefault) {
       return '';
     }
-    const suffix = this.numAlignments > 1 ? '_concat' : '';
+    const suffix = this.numAlignments > 1
+      ? '_concat'
+      : '';
     return join(
       `${this.dir}`,
       `RAxML_${this.run.outputNameSafe}${suffix}.part.txt`,
@@ -734,7 +742,9 @@ class FinalAlignment {
         for (let i = 0; i < numSequences; ++i) {
           for (let j = 0; j < this.numAlignments; ++j) {
             if (j === 0) {
-              const prefix = i === 0 ? '>' : '\n>';
+              const prefix = i === 0
+                ? '>'
+                : '\n>';
               await write.call(writeStream, `${prefix}${taxons[i]}\n`);
             }
             await write.call(

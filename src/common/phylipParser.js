@@ -94,7 +94,9 @@ export const parse = (lines) => {
       console.log(`Is sequential format with ${numLinesPerTaxa} consecutive lines for each sequence`);
     }
   }
-  const numConsequtiveLinesPerTaxa = isInterleaved ? 1 : numLinesPerTaxa;
+  const numConsequtiveLinesPerTaxa = isInterleaved
+    ? 1
+    : numLinesPerTaxa;
   // Discern if strict or relaxed format, first some helper methods
   const getLineIndex = (seqIndex, subLineIndex = 0) => {
     const startLineIndex = firstSeqLineIndex + seqIndex * numConsequtiveLinesPerTaxa;

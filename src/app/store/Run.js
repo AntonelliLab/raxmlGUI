@@ -129,7 +129,9 @@ const x64Binaries = [
 const allBinaries = is.windows
   ? winBinaries
   : [
-    ...(!likelyARM ? x64Binaries : armBinaries),
+    ...(!likelyARM
+      ? x64Binaries
+      : armBinaries),
     {
       name: 'raxml-ng',
       multithreaded: true,
@@ -171,7 +173,9 @@ const allBinaries = is.windows
   ];
 
 const binaries = allBinaries.filter(({ multithreaded }) =>
-  MAX_NUM_CPUS === 1 ? !multithreaded : true,
+  MAX_NUM_CPUS === 1
+    ? !multithreaded
+    : true,
 );
 
 const initialBinaryName = binaries.filter(({ initial }) => initial)[0].name;
@@ -447,7 +451,9 @@ class OutGroup extends Option {
     );
   }
   @computed get cmdValue() {
-    return this.value.includes('<none>') ? '' : this.value.join(',');
+    return this.value.includes('<none>')
+      ? ''
+      : this.value.join(',');
   }
 }
 
@@ -465,7 +471,9 @@ class SubstitutionMatrix extends Option {
     }
     return modelSettings.options.map((value) => ({
       value,
-      title: value === 'GTR' ? value : `${value} + GAMMA`,
+      title: value === 'GTR'
+        ? value
+        : `${value} + GAMMA`,
     }));
   }
   @computed get notAvailable() {
@@ -566,7 +574,9 @@ class SubstitutionI extends Option {
     );
   }
   @computed get cmdValue() {
-    return this.value === 'none' ? '' : 'I';
+    return this.value === 'none'
+      ? ''
+      : 'I';
   }
   @computed get isSet() {
     return this.value !== 'none';
@@ -597,7 +607,9 @@ class SubstitutionAscertainment extends Option {
     );
   }
   @computed get cmdValue() {
-    return this.value === 'none' ? '' : 'ASC_';
+    return this.value === 'none'
+      ? ''
+      : 'ASC_';
   }
   @computed get extraCmdValue() {
     switch (this.value) {
@@ -975,7 +987,9 @@ class Run extends StoreBase {
   }
 
   @computed get taxons() {
-    return this.haveAlignments ? this.alignments[0].taxons : [];
+    return this.haveAlignments
+      ? this.alignments[0].taxons
+      : [];
   }
 
   @computed get dataType() {
@@ -1107,7 +1121,9 @@ class Run extends StoreBase {
   }
 
   @computed get ngSubstitutionModelCmd() {
-    return this.haveAlignments ? this.alignments[0].ngSubstitutionModelCmd : '';
+    return this.haveAlignments
+      ? this.alignments[0].ngSubstitutionModelCmd
+      : '';
   }
 
   @computed get showModifiedSnack() {
@@ -1166,7 +1182,9 @@ class Run extends StoreBase {
     if (this.dataType === 'protein') {
       model += this.alignments[0].aaMatrixName;
       const { value: suffix } = this.baseFrequencies;
-      model += suffix === 'default' ? '' : suffix;
+      model += suffix === 'default'
+        ? ''
+        : suffix;
     } else {
       if (this.estimatedFrequencies.value) {
         model += 'X';

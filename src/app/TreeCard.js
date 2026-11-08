@@ -55,7 +55,9 @@ function TreeCard({ sx, tree }) {
         action={
           <Box>
             <IconButton
-              aria-owns={anchorEl ? 'tree-menu' : undefined}
+              aria-owns={anchorEl
+                ? 'tree-menu'
+                : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
               size="large"
@@ -83,11 +85,13 @@ function TreeCard({ sx, tree }) {
         subheader={''}
       />
       <Box>
-        {tree.loading ? (
-          <Box sx={{ marginLeft: '10px' }}>
-            <CircularProgress variant="indeterminate" />
-          </Box>
-        ) : null}
+        {tree.loading
+          ? (
+            <Box sx={{ marginLeft: '10px' }}>
+              <CircularProgress variant="indeterminate" />
+            </Box>
+          )
+          : null}
       </Box>
       <CardContent></CardContent>
     </Card>

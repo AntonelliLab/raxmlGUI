@@ -86,7 +86,9 @@ function AstralTreeCard({ astralTree }) {
             </Tooltip>
 
             <IconButton
-              aria-owns={anchorEl ? 'astralTree-menu' : undefined}
+              aria-owns={anchorEl
+                ? 'astralTree-menu'
+                : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
               size="large"

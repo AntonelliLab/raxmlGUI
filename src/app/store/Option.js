@@ -24,7 +24,9 @@ class Option {
     this.title = title;
     this.description = description;
     this.hoverInfo = hoverInfo;
-    this.schema = schema ? schema : mixed();
+    this.schema = schema
+      ? schema
+      : mixed();
     this.allowOnlyValidChange = allowOnlyValidChange;
     this.helperText = helperText;
   }
@@ -32,7 +34,9 @@ class Option {
   @action setValue = (value) => {
     const isValid = this.schema.isValidSync(value);
     if (!this.allowOnlyValidChange || isValid) {
-      this.value = isValid ? this.schema.cast(value) : value;
+      this.value = isValid
+        ? this.schema.cast(value)
+        : value;
     }
   };
   @action reset() {
@@ -53,7 +57,9 @@ class Option {
     return this.error !== null;
   }
   @computed get errorMessage() {
-    return this.haveError ? this.error.message : '';
+    return this.haveError
+      ? this.error.message
+      : '';
   }
 }
 

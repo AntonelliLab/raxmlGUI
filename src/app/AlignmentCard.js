@@ -73,35 +73,39 @@ function AlignmentCard({ alignment }) {
     };
   }
 
-  const Size = alignment.parsingComplete ? (
-    <Box
-      component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
-    >
-      {numSequences} sequences of length {length}
-    </Box>
-  ) : (
-    <Box
-      component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
-    >
+  const Size = alignment.parsingComplete
+    ? (
+      <Box
+        component="span"
+        sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      >
+        {numSequences} sequences of length {length}
+      </Box>
+    )
+    : (
+      <Box
+        component="span"
+        sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </Box>
-  );
+      </Box>
+    );
 
-  const Type = dataType ? (
-    <Chip
-      sx={{
-        height: '30px',
-        color: (theme) => theme.palette.input.contrastText,
-        backgroundColor: (theme) => theme.palette.input.main,
-        border: (theme) => `1px solid ${theme.palette.input.darker}`,
-      }}
-      label={dataType}
-    />
-  ) : (
-    <CircularProgress variant="indeterminate" size={20} />
-  );
+  const Type = dataType
+    ? (
+      <Chip
+        sx={{
+          height: '30px',
+          color: (theme) => theme.palette.input.contrastText,
+          backgroundColor: (theme) => theme.palette.input.main,
+          border: (theme) => `1px solid ${theme.palette.input.darker}`,
+        }}
+        label={dataType}
+      />
+    )
+    : (
+      <CircularProgress variant="indeterminate" size={20} />
+    );
 
   const Content = (
     <Box
@@ -112,76 +116,80 @@ function AlignmentCard({ alignment }) {
       }}
     >
       <Box>
-        {alignment.run.usesRaxmlNg ? (
-          <Box display="flex">
+        {alignment.run.usesRaxmlNg
+          ? (
+            <Box display="flex">
+              <Box display="flex" flexWrap="wrap" alignItems="center">
+                <OptionSelect
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.substitutionModel}
+                />
+                <OptionTextField
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.multistateNumber}
+                />
+                <OptionSelect
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.ngStationaryFrequencies}
+                />
+                <OptionSelect
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.ngInvariantSites}
+                />
+                <OptionSelect
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.ngRateHeterogeneity}
+                />
+                <OptionSelect
+                  sx={{
+                    marginLeft: '10px',
+                    minWidth: '150px',
+                  }}
+                  option={alignment.ngAscertainmentBias}
+                />
+                <ModelTestButton alignment={alignment} />
+              </Box>
+            </Box>
+          )
+          : (
             <Box display="flex" flexWrap="wrap" alignItems="center">
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.substitutionModel}
-              />
-              <OptionTextField
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.multistateNumber}
-              />
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.ngStationaryFrequencies}
-              />
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.ngInvariantSites}
-              />
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.ngRateHeterogeneity}
-              />
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={alignment.ngAscertainmentBias}
-              />
+              {alignment.modelExtra
+                ? (
+                  <OptionSelect
+                    sx={{
+                      marginLeft: '10px',
+                      minWidth: '150px',
+                    }}
+                    option={{
+                      ...alignment.modelExtra,
+                      setValue: alignment.modelExtra.onChange,
+                      title: alignment.modelExtra.label,
+                      options: alignment.modelExtra.options.map((model) => ({
+                        value: model,
+                        title: model,
+                      })),
+                    }}
+                  />
+                )
+                : null}
               <ModelTestButton alignment={alignment} />
             </Box>
-          </Box>
-        ) : (
-          <Box display="flex" flexWrap="wrap" alignItems="center">
-            {alignment.modelExtra ? (
-              <OptionSelect
-                sx={{
-                  marginLeft: '10px',
-                  minWidth: '150px',
-                }}
-                option={{
-                  ...alignment.modelExtra,
-                  setValue: alignment.modelExtra.onChange,
-                  title: alignment.modelExtra.label,
-                  options: alignment.modelExtra.options.map((model) => ({
-                    value: model,
-                    title: model,
-                  })),
-                }}
-              />
-            ) : null}
-            <ModelTestButton alignment={alignment} />
-          </Box>
-        )}
+          )}
       </Box>
     </Box>
   );
@@ -212,7 +220,9 @@ function AlignmentCard({ alignment }) {
             </Tooltip>
 
             <IconButton
-              aria-owns={anchorEl ? 'alignment-menu' : undefined}
+              aria-owns={anchorEl
+                ? 'alignment-menu'
+                : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
               size="large"
@@ -238,11 +248,13 @@ function AlignmentCard({ alignment }) {
               <MenuItem onClick={closeMenuAndRun(alignment.setShowPartition)}>
                 Edit partition
               </MenuItem>
-              {alignment.modeltestLoading ? (
-                <MenuItem onClick={closeMenuAndRun(alignment.cancelModelTest)}>
+              {alignment.modeltestLoading
+                ? (
+                  <MenuItem onClick={closeMenuAndRun(alignment.cancelModelTest)}>
                   Cancel modeltest
-                </MenuItem>
-              ) : null}
+                  </MenuItem>
+                )
+                : null}
             </Menu>
           </div>
         }
@@ -250,26 +262,30 @@ function AlignmentCard({ alignment }) {
         subheader={Size}
       />
       <Box>
-        {alignment.loading ? (
-          <Box sx={{ marginLeft: '10px' }}>
-            <CircularProgress variant="indeterminate" />
-          </Box>
-        ) : null}
+        {alignment.loading
+          ? (
+            <Box sx={{ marginLeft: '10px' }}>
+              <CircularProgress variant="indeterminate" />
+            </Box>
+          )
+          : null}
       </Box>
       <CardContent>{Content}</CardContent>
       <CardActions>
-        {alignment.partition.isComplete || alignment.showPartition ? null : (
-          <Typography variant="caption" color="primary">
+        {alignment.partition.isComplete || alignment.showPartition
+          ? null
+          : (
+            <Typography variant="caption" color="primary">
             Partition not complete, click{' '}
-            <strong
-              style={{ cursor: 'pointer' }}
-              onClick={alignment.setShowPartition}
-            >
+              <strong
+                style={{ cursor: 'pointer' }}
+                onClick={alignment.setShowPartition}
+              >
               here
-            </strong>{' '}
+              </strong>{' '}
             to edit.
-          </Typography>
-        )}
+            </Typography>
+          )}
       </CardActions>
     </Card>
   );
@@ -293,23 +309,27 @@ function FinalAlignmentCard({ sx, alignment }) {
     };
   }
 
-  const Size = alignment.parsingComplete ? (
-    <Box
-      component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
-    >
-      {alignment.numSequences} sequences of length {alignment.length} from{' '}
-      {alignment.numAlignments} alignment
-      {alignment.numAlignments > 1 ? 's' : ''}
-    </Box>
-  ) : (
-    <Box
-      component="span"
-      sx={{ color: (theme) => theme.palette.primary.secondaryText }}
-    >
+  const Size = alignment.parsingComplete
+    ? (
+      <Box
+        component="span"
+        sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      >
+        {alignment.numSequences} sequences of length {alignment.length} from{' '}
+        {alignment.numAlignments} alignment
+        {alignment.numAlignments > 1
+          ? 's'
+          : ''}
+      </Box>
+    )
+    : (
+      <Box
+        component="span"
+        sx={{ color: (theme) => theme.palette.primary.secondaryText }}
+      >
       Parsing... {alignment.numSequencesParsed}{' '}
-    </Box>
-  );
+      </Box>
+    );
 
   return (
     <Card
@@ -335,7 +355,9 @@ function FinalAlignmentCard({ sx, alignment }) {
         action={
           <div>
             <IconButton
-              aria-owns={anchorEl ? 'alignment-menu' : undefined}
+              aria-owns={anchorEl
+                ? 'alignment-menu'
+                : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
               size="large"

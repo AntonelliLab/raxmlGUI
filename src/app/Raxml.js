@@ -39,20 +39,24 @@ const Raxml = ({ run, store }) => {
       >
         <OptionSelect option={run.binary} />
         <OptionSelect option={run.numThreads} />
-        {run.modelTestIsRunningOnAlignment ? (
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={run.cancelModeltestOnAlignment}
-          >
+        {run.modelTestIsRunningOnAlignment
+          ? (
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={run.cancelModeltestOnAlignment}
+            >
             Cancel modeltest
-          </Button>
-        ) : null}
-        {run.running ? (
-          <Button variant="outlined" onClick={run.cancel}>
+            </Button>
+          )
+          : null}
+        {run.running
+          ? (
+            <Button variant="outlined" onClick={run.cancel}>
             Cancel
-          </Button>
-        ) : null}
+            </Button>
+          )
+          : null}
         <Button
           data-testid="run-analysis"
           variant="contained"

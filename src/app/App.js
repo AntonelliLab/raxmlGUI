@@ -62,7 +62,9 @@ const App = () => {
               <CircularProgress
                 color="inherit"
                 size={20}
-                variant={run.running ? 'indeterminate' : 'determinate'}
+                variant={run.running
+                  ? 'indeterminate'
+                  : 'determinate'}
                 value={0}
               />
             }
@@ -140,31 +142,33 @@ const App = () => {
           backgroundColor: (theme) => theme.palette.primary.background,
         }}
       >
-        {store.runs.length <= 1 ? null : (
-          <AppBar
-            position="static"
-            elevation={1}
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              backgroundColor: (theme) => theme.palette.input.background,
-              borderBottom: (theme) =>
-                `1px solid ${theme.palette.status.border}`,
-            }}
-          >
-            <Tabs
-              value={store.activeIndex}
-              onChange={(event, value) => store.setActive(value)}
+        {store.runs.length <= 1
+          ? null
+          : (
+            <AppBar
+              position="static"
+              elevation={1}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                backgroundColor: (theme) => theme.palette.input.background,
+                borderBottom: (theme) =>
+                  `1px solid ${theme.palette.status.border}`,
+              }}
             >
-              {TabItems}
-            </Tabs>
-            <Toolbar variant="dense" sx={{ minHeight: 0 }}>
-              <IconButton onClick={store.addRun} size="large">
-                <IconAdd />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-        )}
+              <Tabs
+                value={store.activeIndex}
+                onChange={(event, value) => store.setActive(value)}
+              >
+                {TabItems}
+              </Tabs>
+              <Toolbar variant="dense" sx={{ minHeight: 0 }}>
+                <IconButton onClick={store.addRun} size="large">
+                  <IconAdd />
+                </IconButton>
+              </Toolbar>
+            </AppBar>
+          )}
 
         <Allotment defaultSizes={[640, 400]} minSize={100}>
           <Allotment.Pane>
@@ -312,17 +316,19 @@ const App = () => {
                   }}
                 >
                   Console
-                  {run.stdout === '' && run.stderr === '' ? null : (
-                    <DeleteIcon
-                      onClick={run.clearConsole}
-                      sx={{
-                        '&:hover': {
-                          color: '#999',
-                        },
-                      }}
-                      title="Clear console"
-                    />
-                  )}
+                  {run.stdout === '' && run.stderr === ''
+                    ? null
+                    : (
+                      <DeleteIcon
+                        onClick={run.clearConsole}
+                        sx={{
+                          '&:hover': {
+                            color: '#999',
+                          },
+                        }}
+                        title="Clear console"
+                      />
+                    )}
                 </VerticalHeading>
                 <Box
                   sx={{
@@ -392,11 +398,13 @@ const App = () => {
               }
               sx={{ mr: 2, color: 'inherit' }}
             >
-              {store.config.isDarkMode ? (
-                <LightModeIcon fontSize="small" />
-              ) : (
-                <DarkModeIcon fontSize="small" />
-              )}
+              {store.config.isDarkMode
+                ? (
+                  <LightModeIcon fontSize="small" />
+                )
+                : (
+                  <DarkModeIcon fontSize="small" />
+                )}
             </IconButton>
             <Box display="flex">
               {/* In dev mode the app version shown is from electron, in production it is ours */}
@@ -443,7 +451,9 @@ const App = () => {
           >
             <Alert
               onClose={run.clearFinished}
-              severity={run.exitCode === 0 ? 'success' : 'info'}
+              severity={run.exitCode === 0
+                ? 'success'
+                : 'info'}
               sx={{ width: '100%' }}
             >
               {run.exitCode === 0
@@ -461,40 +471,44 @@ const App = () => {
           />
         </ErrorBoundary>
 
-        {run.showPartitionFor === null ? null : (
-          <Modal
-            aria-labelledby="show-partition"
-            open={true}
-            onClose={run.hidePartition}
-            sx={{
-              margin: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div id="show-partition">
-              <PartitionEditor alignment={run.showPartitionFor} />
-            </div>
-          </Modal>
-        )}
-        {store.citation.visible ? (
-          <Modal
-            aria-labelledby="show-citation"
-            open={true}
-            onClose={store.citation.hide}
-            sx={{
-              margin: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div id="show-citation">
-              <CitationModal citation={store.citation} />
-            </div>
-          </Modal>
-        ) : null}
+        {run.showPartitionFor === null
+          ? null
+          : (
+            <Modal
+              aria-labelledby="show-partition"
+              open={true}
+              onClose={run.hidePartition}
+              sx={{
+                margin: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div id="show-partition">
+                <PartitionEditor alignment={run.showPartitionFor} />
+              </div>
+            </Modal>
+          )}
+        {store.citation.visible
+          ? (
+            <Modal
+              aria-labelledby="show-citation"
+              open={true}
+              onClose={store.citation.hide}
+              sx={{
+                margin: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div id="show-citation">
+                <CitationModal citation={store.citation} />
+              </div>
+            </Modal>
+          )
+          : null}
         <ErrorDialog error={store.error} onClose={store.clearError} />
       </Box>
     </React.Fragment>

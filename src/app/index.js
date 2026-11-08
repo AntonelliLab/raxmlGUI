@@ -19,7 +19,9 @@ if (!is.development) {
 
 const Index = () => {
   const { light, dark } = theme;
-  const muiTheme = store.config.isDarkMode ? dark : light;
+  const muiTheme = store.config.isDarkMode
+    ? dark
+    : light;
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={muiTheme}>

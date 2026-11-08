@@ -121,17 +121,19 @@ function PartitionEditor({ alignment }) {
         justifyContent="flex-end"
         sx={{ width: '100%' }}
       >
-        {partition.isDefault ? null : (
-          <Grid>
-            <Button
-              variant="outlined"
-              title="Clear partition entries"
-              onClick={partition.reset}
-            >
+        {partition.isDefault
+          ? null
+          : (
+            <Grid>
+              <Button
+                variant="outlined"
+                title="Clear partition entries"
+                onClick={partition.reset}
+              >
               Reset
-            </Button>
-          </Grid>
-        )}
+              </Button>
+            </Grid>
+          )}
         <Grid>
           <Button variant="outlined" onClick={alignment.hidePartition}>
             Back

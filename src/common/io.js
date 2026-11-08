@@ -29,7 +29,9 @@ export const parseAlignment = async (filePath) => {
         }
       }
       catch (err) {
-        const parseError = err instanceof Error ? err : new Error(String(err));
+        const parseError = err instanceof Error
+          ? err
+          : new Error(String(err));
         parseError.message = `Error parsing file ${filePath}: ${parseError.message}.`;
         error = parseError;
       }
@@ -63,7 +65,9 @@ export const writeAlignment = async (filePath, alignment) => {
   const write = util.promisify(writeStream.write);
   const end = util.promisify(writeStream.end);
   for (let i = 0; i < alignment.sequences.length; ++i) {
-    const prefix = i === 0 ? '>' : '\n>';
+    const prefix = i === 0
+      ? '>'
+      : '\n>';
     const sequence = alignment.sequences[i];
     await write.call(writeStream, `${prefix}${sequence.taxon}\n`);
     await write.call(writeStream, sequence.code);

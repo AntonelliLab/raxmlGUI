@@ -29,17 +29,27 @@ export function findInvalidCharacter(code, dataType) {
   // Returns the index of the invalid character if found, else -1
   switch (dataType) {
     case 'protein':
-      return reInvalidAA.test(code) ? reInvalidAA.lastIndex - 1 : -1;
+      return reInvalidAA.test(code)
+        ? reInvalidAA.lastIndex - 1
+        : -1;
     case 'nucleotide':
-      return reInvalidDNA.test(code) ? reInvalidDNA.lastIndex - 1 : -1;
+      return reInvalidDNA.test(code)
+        ? reInvalidDNA.lastIndex - 1
+        : -1;
     case 'multistate':
-      return reInvalidGeneric.test(code) ? reInvalidGeneric.lastIndex - 1 : -1;
+      return reInvalidGeneric.test(code)
+        ? reInvalidGeneric.lastIndex - 1
+        : -1;
     case 'binary':
-      return reInvalidBinary.test(code) ? reInvalidBinary.lastIndex - 1 : -1;
+      return reInvalidBinary.test(code)
+        ? reInvalidBinary.lastIndex - 1
+        : -1;
     case 'unknown':
     case 'mixed':
     default:
-      return reInvalidMixed.test(code) ? reInvalidMixed.lastIndex - 1 : -1;
+      return reInvalidMixed.test(code)
+        ? reInvalidMixed.lastIndex - 1
+        : -1;
   }
 }
 function hasInvariantSites(length, sequences) {
