@@ -1,5 +1,3 @@
-import './bootstrap';
-
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/electron/renderer';
 import { observer } from 'mobx-react-lite';
@@ -10,6 +8,9 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import store from './store';
 import theme from './theme';
+
+// After store/App imports: webpack evaluates requires in source order.
+import './bootstrap';
 
 if ( !is.development ) {
   Sentry.init( {

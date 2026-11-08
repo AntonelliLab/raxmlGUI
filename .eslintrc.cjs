@@ -21,6 +21,13 @@ module.exports = {
   },
   overrides: [
     {
+      // bootstrap must import after store (webpack require order); not a side-effect-first chunk.
+      files: ['src/app/index.js'],
+      rules: {
+        'simple-import-sort/imports': 'off',
+      },
+    },
+    {
       files: ['**/*.{ts,tsx}'],
       rules: {
         '@typescript-eslint/consistent-type-imports': [
