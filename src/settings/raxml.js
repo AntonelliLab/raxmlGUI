@@ -1,7 +1,3 @@
-/*
-  RAxML substitution-related options used by the renderer store. (CLI flag
-  catalog was removed; nothing imported it.)
-*/
 // -K
 export const kMultistateSubstitutionModelOptions = {
   argument: 'K',
