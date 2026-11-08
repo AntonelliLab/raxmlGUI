@@ -1142,9 +1142,11 @@ class Run extends StoreBase {
 
   @computed get modificationMessages() {
     const messages = [];
-    this.alignments.map((a) => {
-      messages.push(a.name + ':\n');
-      a.modificationMessages.map((b) => messages.push(b + '\n'));
+    this.alignments.forEach((a) => {
+      messages.push(`${a.name}:\n`);
+      a.modificationMessages.forEach((b) => {
+        messages.push(`${b}\n`);
+      });
     });
     return messages;
   }
