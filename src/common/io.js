@@ -74,7 +74,9 @@ export const writeAlignment = async (filePath, alignment) => {
   }
   await end.call(writeStream);
 };
-export default {
+const io = {
   parseAlignment,
   writeAlignment,
 };
+
+export default io;

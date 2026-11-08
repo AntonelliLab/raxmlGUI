@@ -170,7 +170,9 @@ export const parse = (lines) => {
   };
   return alignment;
 };
-export default {
+const phylipParser = {
   isPhylip,
   parse,
 };
+
+export default phylipParser;

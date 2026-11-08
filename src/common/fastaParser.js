@@ -78,7 +78,9 @@ export const parse = (lines) => {
   };
   return alignment;
 };
-export default {
+const fastaParser = {
   isFasta,
   parse,
 };
+
+export default fastaParser;
