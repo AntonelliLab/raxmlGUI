@@ -12,12 +12,12 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import CodeHighlight from './components/CodeHighlight';
 
-function CitationModal({ citation }) {
+function CitationModal( { citation } ) {
   return (
     <Card
       elevation={0}
       sx={{
-        backgroundColor: (theme) => theme.palette.output.background,
+        backgroundColor: ( theme ) => theme.palette.output.background,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -38,11 +38,11 @@ function CitationModal({ citation }) {
           <ToggleButtonGroup
             value={citation.format}
             exclusive
-            onChange={(_, format) => citation.setFormat(format)}
+            onChange={( _, format ) => citation.setFormat( format )}
             aria-label="text format"
             size="small"
           >
-            {citation.formats.map((format) => (
+            {citation.formats.map( ( format ) => (
               <ToggleButton
                 key={format.value}
                 value={format.value}
@@ -50,23 +50,23 @@ function CitationModal({ citation }) {
               >
                 {format.name}
               </ToggleButton>
-            ))}
+            ) )}
           </ToggleButtonGroup>
         </Box>
-        {citation.content.map((article) => (
+        {citation.content.map( ( article ) => (
           <Box key={article.name} mt={2}>
             <Typography variant="subtitle2">{article.name}</Typography>
             <CodeHighlight
               code={article[citation.format]}
               language={citation.format}
               sx={{
-                backgroundColor: (theme) => theme.palette.output.background,
+                backgroundColor: ( theme ) => theme.palette.output.background,
                 borderRadius: '4px',
                 padding: '4px',
               }}
             />
           </Box>
-        ))}
+        ) )}
       </CardContent>
       <CardActions sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" sx={{ width: '100%' }}>
@@ -92,4 +92,4 @@ CitationModal.propTypes = {
   citation: PropTypes.object.isRequired,
 };
 
-export default observer(CitationModal);
+export default observer( CitationModal );

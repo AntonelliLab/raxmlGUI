@@ -13,12 +13,12 @@ import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
-function PartitionEditor({ alignment }) {
-  function handleAdd(event) {
+function PartitionEditor( { alignment } ) {
+  function handleAdd( event ) {
     alignment.partition.addPart();
   }
 
-  if (!alignment.showPartition) {
+  if ( !alignment.showPartition ) {
     return null;
   }
 
@@ -30,7 +30,7 @@ function PartitionEditor({ alignment }) {
       p={4}
       pt={2}
       sx={{
-        backgroundColor: (theme) => theme.palette.input.background,
+        backgroundColor: ( theme ) => theme.palette.input.background,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -149,25 +149,25 @@ PartitionEditor.propTypes = {
   className: PropTypes.string,
 };
 
-const PartitionEditorObserver = observer(PartitionEditor);
+const PartitionEditorObserver = observer( PartitionEditor );
 
-function PartitionOnCard({ alignment }) {
+function PartitionOnCard( { alignment } ) {
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
   const [partitionText, setPartitionText] = React.useState(
     alignment.partitionFileContent,
   );
 
-  function handleChange(event) {
-    setPartitionText(event.target.value);
+  function handleChange( event ) {
+    setPartitionText( event.target.value );
   }
 
-  function onClickCancel(event) {
-    alignment.setShowPartition(false);
+  function onClickCancel( event ) {
+    alignment.setShowPartition( false );
   }
 
-  function onClickSave(event) {
-    alignment.setPartitionText(partitionText);
-    alignment.setShowPartition(false);
+  function onClickSave( event ) {
+    alignment.setPartitionText( partitionText );
+    alignment.setShowPartition( false );
   }
 
   const hasChange = partitionText !== alignment.partitionText;
@@ -226,7 +226,7 @@ PartitionOnCard.propTypes = {
   className: PropTypes.string,
 };
 
-const PartitionOnCardObserver = observer(PartitionOnCard);
+const PartitionOnCardObserver = observer( PartitionOnCard );
 
 export {
   PartitionEditorObserver as default,

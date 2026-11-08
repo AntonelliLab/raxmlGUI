@@ -37,35 +37,35 @@ const darwinAppMenu = {
   ],
 };
 export default class MenuBuilder {
-  constructor(mainWindow) {
+  constructor( mainWindow ) {
     this.mainWindow = mainWindow;
   }
   buildMenu() {
     const menuTemplate = [...baseMenuTemplate];
-    if (process.env.NODE_ENV === 'development' ||
-            process.env.DEBUG_PROD === 'true') {
-      menuTemplate.push(subMenuDeveloper);
+    if ( process.env.NODE_ENV === 'development' ||
+            process.env.DEBUG_PROD === 'true' ) {
+      menuTemplate.push( subMenuDeveloper );
       this.setupDevelopmentEnvironment();
     }
-    if (process.platform === 'darwin') {
-      menuTemplate.unshift(darwinAppMenu);
+    if ( process.platform === 'darwin' ) {
+      menuTemplate.unshift( darwinAppMenu );
     }
-    const menu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(menu);
+    const menu = Menu.buildFromTemplate( menuTemplate );
+    Menu.setApplicationMenu( menu );
     return menu;
   }
   setupDevelopmentEnvironment() {
     this.mainWindow.webContents.openDevTools();
-    this.mainWindow.webContents.on('context-menu', (_e, props) => {
+    this.mainWindow.webContents.on( 'context-menu', ( _e, props ) => {
       const { x, y } = props;
-      Menu.buildFromTemplate([
+      Menu.buildFromTemplate( [
         {
           label: 'Inspect element',
           click: () => {
-            this.mainWindow.webContents.inspectElement(x, y);
+            this.mainWindow.webContents.inspectElement( x, y );
           },
         },
-      ]).popup({ window: this.mainWindow });
-    });
+      ] ).popup( { window: this.mainWindow } );
+    } );
   }
 }

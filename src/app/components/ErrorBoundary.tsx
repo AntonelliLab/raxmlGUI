@@ -15,33 +15,33 @@ class ErrorBoundary extends React.Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
+  constructor( props: ErrorBoundaryProps ) {
+    super( props );
 
     this.state = {
       error: null,
     };
   }
 
-  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+  static getDerivedStateFromError( error: unknown ): ErrorBoundaryState {
     return {
       error: error instanceof Error
         ? error
-        : new Error(String(error)),
+        : new Error( String( error ) ),
     };
   }
 
-  componentDidCatch(error: unknown, info: React.ErrorInfo): void {
-    console.log('Error catched at React boundary:', error, info);
+  componentDidCatch( error: unknown, info: React.ErrorInfo ): void {
+    console.log( 'Error catched at React boundary:', error, info );
   }
 
   handleClose = () => {
-    this.setState({ error: null });
+    this.setState( { error: null } );
   };
 
   render() {
     const { error } = this.state;
-    if (!error) {
+    if ( !error ) {
       return this.props.children;
     }
 

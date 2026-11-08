@@ -11,7 +11,7 @@ export default class Citation {
   ];
 
   @observable format = 'txt';
-  @action setFormat = (format) => {
+  @action setFormat = ( format ) => {
     this.format = format;
   };
 
@@ -193,7 +193,7 @@ ER  - `,
 
   @computed
   get allText() {
-    return this.content.map((ref) => ref[this.format]).join('\n');
+    return this.content.map( ( ref ) => ref[this.format] ).join( '\n' );
   }
 
   @action
@@ -206,7 +206,7 @@ ER  - `,
     };
 
   copyToClipboard = () => {
-    clipboard.writeText(this.allText);
-    console.log('Copied citation to clipboard');
+    clipboard.writeText( this.allText );
+    console.log( 'Copied citation to clipboard' );
   };
 }

@@ -8,7 +8,7 @@ import { FormControl } from '@mui/material';
 export interface OptionCheckOptionLike {
   title: string;
   value: boolean;
-  setValue: (value: boolean) => void;
+  setValue: ( value: boolean ) => void;
   notAvailable: boolean;
   hoverInfo: string;
 }
@@ -18,8 +18,8 @@ export interface OptionCheckProps {
   sx?: SxProps<Theme>;
 }
 
-const OptionCheck = observer(function OptionCheck({ option, sx }: OptionCheckProps) {
-  if (option.notAvailable) {
+const OptionCheck = observer( function OptionCheck( { option, sx }: OptionCheckProps ) {
+  if ( option.notAvailable ) {
     return null;
   }
   return (
@@ -28,7 +28,7 @@ const OptionCheck = observer(function OptionCheck({ option, sx }: OptionCheckPro
         control={
           <Checkbox
             checked={option.value}
-            onChange={(e) => option.setValue(e.target.checked)}
+            onChange={( e ) => option.setValue( e.target.checked )}
             value={option.title}
             color="primary"
           />
@@ -37,6 +37,6 @@ const OptionCheck = observer(function OptionCheck({ option, sx }: OptionCheckPro
       />
     </FormControl>
   );
-});
+} );
 
 export default OptionCheck;

@@ -34,17 +34,17 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
 
-const VerticalHeading = styled(Typography)(({ theme }) => ({
+const VerticalHeading = styled( Typography )( ( { theme } ) => ( {
   writingMode: 'vertical-rl',
   textOrientation: 'upright',
   padding: '10px 5px',
   letterSpacing: '0.25em',
   textTransform: 'uppercase',
   borderRight: '1px solid #ccc',
-}));
+} ) );
 
 const App = () => {
-  const TabItems = store.runs.map((run) => (
+  const TabItems = store.runs.map( ( run ) => (
     <Tab
       key={run.id}
       icon={
@@ -77,14 +77,14 @@ const App = () => {
         </Box>
       }
     />
-  ));
+  ) );
 
-  function fileModifiedSnack(run) {
+  function fileModifiedSnack( run ) {
     let message = 'Something happened';
-    if (run.converted) {
+    if ( run.converted ) {
       message = `Converted your ${run.convertedAlignmentFrom} alignment into fasta!`;
     }
-    if (run.modified) {
+    if ( run.modified ) {
       message = `Made a copy of your input file, because there were some issues!`;
     }
     return (
@@ -107,7 +107,7 @@ const App = () => {
     );
   }
 
-  function appSnack(store) {
+  function appSnack( store ) {
     const message = 'Command copied';
     return (
       <Snackbar
@@ -139,7 +139,7 @@ const App = () => {
           display: 'flex',
           flexDirection: 'column',
           height: '100vh',
-          backgroundColor: (theme) => theme.palette.primary.background,
+          backgroundColor: ( theme ) => theme.palette.primary.background,
         }}
       >
         {store.runs.length <= 1
@@ -151,14 +151,14 @@ const App = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                backgroundColor: (theme) => theme.palette.input.background,
-                borderBottom: (theme) =>
+                backgroundColor: ( theme ) => theme.palette.input.background,
+                borderBottom: ( theme ) =>
                   `1px solid ${theme.palette.status.border}`,
               }}
             >
               <Tabs
                 value={store.activeIndex}
-                onChange={(event, value) => store.setActive(value)}
+                onChange={( event, value ) => store.setActive( value )}
               >
                 {TabItems}
               </Tabs>
@@ -185,13 +185,13 @@ const App = () => {
                 display="flex"
                 sx={{
                   width: '100%',
-                  backgroundColor: (theme) => theme.palette.input.background,
+                  backgroundColor: ( theme ) => theme.palette.input.background,
                 }}
               >
                 <VerticalHeading
                   sx={{
-                    backgroundColor: (theme) => theme.palette.input.main,
-                    borderRight: (theme) =>
+                    backgroundColor: ( theme ) => theme.palette.input.main,
+                    borderRight: ( theme ) =>
                       `1px solid ${theme.palette.input.border}`,
                   }}
                 >
@@ -213,13 +213,13 @@ const App = () => {
                   width: '100%',
                   borderTop: '2px solid #ccc',
                   borderBottom: '2px solid #ccc',
-                  backgroundColor: (theme) => theme.palette.model.background,
+                  backgroundColor: ( theme ) => theme.palette.model.background,
                 }}
               >
                 <VerticalHeading
                   sx={{
-                    backgroundColor: (theme) => theme.palette.model.main,
-                    borderRight: (theme) =>
+                    backgroundColor: ( theme ) => theme.palette.model.main,
+                    borderRight: ( theme ) =>
                       `1px solid ${theme.palette.model.border}`,
                   }}
                 >
@@ -240,13 +240,13 @@ const App = () => {
                 sx={{
                   width: '100%',
                   flexGrow: 1,
-                  backgroundColor: (theme) => theme.palette.output.background,
+                  backgroundColor: ( theme ) => theme.palette.output.background,
                 }}
               >
                 <VerticalHeading
                   sx={{
-                    backgroundColor: (theme) => theme.palette.output.main,
-                    borderRight: (theme) =>
+                    backgroundColor: ( theme ) => theme.palette.output.main,
+                    borderRight: ( theme ) =>
                       `1px solid ${theme.palette.output.border}`,
                   }}
                 >
@@ -280,12 +280,12 @@ const App = () => {
                 display="flex"
                 sx={{
                   width: '100%',
-                  backgroundColor: (theme) => theme.palette.raxml.background,
+                  backgroundColor: ( theme ) => theme.palette.raxml.background,
                 }}
               >
                 <VerticalHeading
                   sx={{
-                    backgroundColor: (theme) => theme.palette.raxml.main,
+                    backgroundColor: ( theme ) => theme.palette.raxml.main,
                   }}
                 >
                   RAxML
@@ -304,14 +304,14 @@ const App = () => {
                 display="flex"
                 sx={{
                   width: '100%',
-                  backgroundColor: (theme) => theme.palette.console.background,
+                  backgroundColor: ( theme ) => theme.palette.console.background,
                   height: '100%',
                   borderTop: '2px solid #ccc',
                 }}
               >
                 <VerticalHeading
                   sx={{
-                    backgroundColor: (theme) => theme.palette.console.main,
+                    backgroundColor: ( theme ) => theme.palette.console.main,
                     zIndex: 10,
                   }}
                 >
@@ -354,9 +354,9 @@ const App = () => {
             width: '100%',
             margin: 0,
             padding: 0,
-            backgroundColor: (theme) => theme.palette.status.main,
-            borderTop: (theme) => `1px solid ${theme.palette.status.border}`,
-            color: (theme) => theme.palette.status.contrastText,
+            backgroundColor: ( theme ) => theme.palette.status.main,
+            borderTop: ( theme ) => `1px solid ${theme.palette.status.border}`,
+            color: ( theme ) => theme.palette.status.contrastText,
             fontSize: 12,
           }}
         >
@@ -389,7 +389,7 @@ const App = () => {
             }}
           >
             <IconButton
-              onClick={() => store.config.setDarkMode(!store.config.isDarkMode)}
+              onClick={() => store.config.setDarkMode( !store.config.isDarkMode )}
               size="small"
               title={
                 store.config.isDarkMode
@@ -418,7 +418,7 @@ const App = () => {
               <Box
                 component="span"
                 sx={{
-                  color: (theme) => theme.palette.status.contrastText,
+                  color: ( theme ) => theme.palette.status.contrastText,
                   cursor: 'pointer',
                   marginLeft: '20px',
                 }}
@@ -430,7 +430,7 @@ const App = () => {
                 component="a"
                 href="mailto:raxmlgui.help@googlemail.com?subject=Feedback"
                 sx={{
-                  color: (theme) => theme.palette.status.contrastText,
+                  color: ( theme ) => theme.palette.status.contrastText,
                   marginLeft: '20px',
                 }}
               >
@@ -461,8 +461,8 @@ const App = () => {
                 : `Calculation cancelled!`}
             </Alert>
           </Snackbar>
-          {fileModifiedSnack(run)}
-          {appSnack(store)}
+          {fileModifiedSnack( run )}
+          {appSnack( store )}
           <ErrorDialog error={run.error} onClose={run.clearError} />
           <ModifiedDialog
             show={run.showModifiedDialog}
@@ -515,4 +515,4 @@ const App = () => {
   );
 };
 
-export default observer(App);
+export default observer( App );
