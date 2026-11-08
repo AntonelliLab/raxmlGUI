@@ -1,3 +1,2 @@
 import electron from 'electron';
-
-export const activeWindow = () => electron.BrowserWindow.getFocusedWindow();
+export const activeWindow = () => electron.BrowserWindow.getFocusedWindow() ?? null;

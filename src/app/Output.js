@@ -56,9 +56,11 @@ const Output = ({ run }) => {
         />
       </Box>
       <Box mt={1} display="flex" flexDirection="column" alignItems="stretch">
-        {haveResult ? (
-          <Typography>Result for output id '{run.outputName}' </Typography>
-        ) : null}
+        {haveResult
+          ? (
+            <Typography>Result for output id '{run.outputName}' </Typography>
+          )
+          : null}
         {resultFilenames.map((filename) => (
           <Link
             key={filename}
@@ -83,13 +85,15 @@ const Output = ({ run }) => {
           </Link>
         ))}
       </Box>
-      {run.haveAlignments || haveResult ? (
-        <Box component="form" my={1}>
-          <Button onClick={run.openOutputDir} variant="outlined">
+      {run.haveAlignments || haveResult
+        ? (
+          <Box component="form" my={1}>
+            <Button onClick={run.openOutputDir} variant="outlined">
             Open folder
-          </Button>
-        </Box>
-      ) : null}
+            </Button>
+          </Box>
+        )
+        : null}
     </Box>
   );
 };

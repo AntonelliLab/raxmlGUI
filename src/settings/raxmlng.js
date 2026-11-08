@@ -1,9 +1,11 @@
+/*
+  RAxML-NG --model-related options used by the renderer store.
+*/
 // --model
 export const binarySubstitutionModelOptions = {
   default: 'BIN',
   options: ['BIN'],
 };
-
 // --model
 export const nucleotideSubstitutionModelOptions = {
   default: 'GTR',
@@ -32,13 +34,11 @@ export const nucleotideSubstitutionModelOptions = {
     'GTR',
   ],
 };
-
 // --model
 export const multistateSubstitutionModelOptions = {
   default: 'MULTIx_GTR',
   options: ['MULTIx_MK', 'MULTIx_GTR'],
 };
-
 // --model
 export const aminoAcidSubstitutionModelOptions = {
   default: 'Blosum62',
@@ -68,7 +68,6 @@ export const aminoAcidSubstitutionModelOptions = {
     'PROTGTR',
   ],
 };
-
 // --model
 export const stationaryFrequenciesOptions = {
   options: [
@@ -89,7 +88,6 @@ export const stationaryFrequenciesOptions = {
     // +FU{freqs.txt} (user-defined from file)
   ],
 };
-
 // --model
 export const proportionOfInvariantSitesOptions = {
   options: [
@@ -105,7 +103,6 @@ export const proportionOfInvariantSitesOptions = {
     // +IU{p} (user-defined: p)
   ],
 };
-
 // --model
 export const amongsiteRateHeterogeneityModelOptions = {
   options: [
@@ -124,7 +121,6 @@ export const amongsiteRateHeterogeneityModelOptions = {
     // +Rn{r1/r2/../rn}{w1/w2/../wn} (FreeRate with n categories', 'user-defined rates r1 r2 ... rn and weights w1 w2 ... wn)
   ],
 };
-
 // --model
 export const ascertainmentBiasCorrectionOptions = {
   options: [
@@ -137,7 +133,6 @@ export const ascertainmentBiasCorrectionOptions = {
     // +ASC_STAM{w1/w2/../wn} (Stamatakis' method with per-state invariable site numbers w1 w2 ... wn)
   ],
 };
-
 export const modelOptions = {
   protein: aminoAcidSubstitutionModelOptions,
   binary: binarySubstitutionModelOptions,

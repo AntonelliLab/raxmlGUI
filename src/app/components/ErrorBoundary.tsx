@@ -3,8 +3,19 @@ import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ErrorDialog from './ErrorDialog';
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+export interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
 
     this.state = {
@@ -12,11 +23,15 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
-    return { error };
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+    return {
+      error: error instanceof Error
+        ? error
+        : new Error(String(error)),
+    };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: unknown, info: React.ErrorInfo): void {
     console.log('Error catched at React boundary:', error, info);
   }
 
@@ -26,7 +41,6 @@ class ErrorBoundary extends React.Component {
 
   render() {
     const { error } = this.state;
-    // const error = new Error(`Minified React error #31; visit https://reactjs.org/docs/error-decoder.html?invariant=31&args[]=object%20with%20keys%20%7Bcmd%2C%20code%2C%20killed%2C%20message%2C%20name%2C%20signal%2C%20stack%2C%20stderr%2C%20stdout%7D&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.`);
     if (!error) {
       return this.props.children;
     }
@@ -36,7 +50,12 @@ class ErrorBoundary extends React.Component {
         <Box p={1}>
           <Typography variant="body1">Oops! Something went wrong.</Typography>
         </Box>
-        <ErrorDialog error={error} onClose={this.handleClose} needReload />
+        <ErrorDialog
+          error={error}
+          onClose={this.handleClose}
+          needReload
+          title={undefined}
+        />
       </Box>
     );
   }

@@ -1,16 +1,13 @@
-import electron from 'electron';
+import electron, { BrowserWindow } from 'electron';
 import path from 'path';
 import url from 'url';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import ProgressBar from 'electron-progressbar';
-
 import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
-
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
-
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
 // Logging
@@ -19,30 +16,23 @@ import { is } from '../common/utils';
 // but it sure makes debugging easier :)
 //-------------------------------------------------------------------
 autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
+log.transports.file.level = 'info';
 // Fixes this error: https://github.com/electron-userland/electron-builder/issues/5717
 autoUpdater.autoInstallOnAppQuit = false;
 log.info('App starting...');
-
 // Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+const { app } = electron;
 // Module to show dialogs
-const dialog = electron.dialog;
-
+const { dialog } = electron;
 // This is the dev mode definition from Daniel's initial version of the repository,
 // without explanation where the --noDevServer comes from
 // TODO: add an explanation
-const isDevMode =
-  is.development && process.argv.indexOf('--noDevServer') === -1;
+const isDevMode = is.development && process.argv.indexOf('--noDevServer') === -1;
 const isE2eMode = process.env.RAXMLGUI_E2E === '1';
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow = null;
 let progressBar;
-
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for update...');
 });
@@ -51,8 +41,7 @@ autoUpdater.on('update-available', (info) => {
     .showMessageBox({
       type: 'info',
       title: 'Found Updates',
-      message:
-        'An update for RAxML-GUI is available, do you want to update now and restart?',
+      message: 'An update for RAxML-GUI is available, do you want to update now and restart?',
       buttons: ['Yes', 'No'],
       cancelId: 1,
     })
@@ -85,21 +74,23 @@ autoUpdater.on('update-not-available', (info) => {
 });
 autoUpdater.on('error', (error) => {
   log.info('Error in auto-updater. ' + error);
-  dialog.showErrorBox(
-    'Error: ',
-    error == null ? 'unknown' : (error.stack || error).toString(),
-  );
+  const message = error == null
+    ? 'unknown'
+    : error instanceof Error
+      ? error.stack || error.message
+      : String(error);
+  dialog.showErrorBox('Error: ', message);
 });
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message =
-    log_message +
-    ' (' +
-    progressObj.transferred +
-    '/' +
-    progressObj.total +
-    ')';
+        log_message +
+            ' (' +
+            progressObj.transferred +
+            '/' +
+            progressObj.total +
+            ')';
   log.info(log_message);
 });
 autoUpdater.on('update-downloaded', (info) => {
@@ -114,15 +105,14 @@ autoUpdater.on('update-downloaded', (info) => {
     });
   log.info('Update downloaded');
 });
-
 /**
  * Add event listeners...
  */
 function initialize() {
   // Make this a single instance app
   const shouldQuit = makeSingleInstance();
-  if (shouldQuit) return app.quit();
-
+  if (shouldQuit)
+    return app.quit();
   function createMainWindow() {
     // Window options for the main window
     const mainWindowOptions = {
@@ -142,63 +132,52 @@ function initialize() {
         allowEval: false,
       },
     };
-
     if (process.platform === 'linux') {
       // Set a window icon for linux
       mainWindowOptions.icon = path.join(__dirname, '/public/favicon.ico');
     }
-
     // Create the browser window.
-    mainWindow = new BrowserWindow(mainWindowOptions);
-
+    const win = new BrowserWindow(mainWindowOptions);
+    mainWindow = win;
     // and load the index.html of the app.
-    const startUrl =
-      process.env.ELECTRON_START_URL ||
-      url.format({
-        // pathname: path.join(__dirname, '..', 'build', 'index.html'),
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true,
-      });
-    mainWindow.loadURL(startUrl);
-
+    const startUrl = process.env.ELECTRON_START_URL ||
+            url.format({
+              // pathname: path.join(__dirname, '..', 'build', 'index.html'),
+              pathname: path.join(__dirname, 'index.html'),
+              protocol: 'file:',
+              slashes: true,
+            });
+    win.loadURL(startUrl);
     // Open the DevTools.
     // TODO: make conditional as in app.ready
     if (isDevMode && !isE2eMode) {
-      mainWindow.webContents.openDevTools();
+      win.webContents.openDevTools();
     }
-
     // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
+    win.on('closed', function () {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       mainWindow = null;
     });
-
     // TODO: Use 'ready-to-show' event
     // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-    mainWindow.on('did-finish-load', () => {
-      if (!mainWindow) {
-        throw new Error('The main window is not defined');
-      }
+    win.webContents.on('did-finish-load', () => {
       if (process.env.START_MINIMIZED) {
-        mainWindow.minimize();
-      } else {
-        mainWindow.show();
-        mainWindow.focus();
+        win.minimize();
+      }
+      else {
+        win.show();
+        win.focus();
       }
     });
-
     // Set the main window menu
-    const menuBuilder = new MenuBuilder(mainWindow);
+    const menuBuilder = new MenuBuilder(win);
     menuBuilder.buildMenu();
-
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
-    // new AppUpdater();
+        // new AppUpdater();
   }
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
@@ -207,13 +186,11 @@ function initialize() {
     //   await installExtensions();
     // }
     createMainWindow();
-
     if (!isE2eMode) {
       autoUpdater.autoDownload = false;
       autoUpdater.checkForUpdates();
     }
   });
-
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
@@ -222,7 +199,6 @@ function initialize() {
       app.quit();
     }
   });
-
   app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -231,7 +207,6 @@ function initialize() {
     }
   });
 }
-
 // Make this app a single instance app.
 //
 // The main window will be restored and focused instead of a second window
@@ -240,18 +215,18 @@ function initialize() {
 // Returns true if the current version of the app should quit instead of
 // launching.
 function makeSingleInstance() {
-  if (process.mas) return false;
-
+  const processWithMas = process;
+  if (processWithMas.mas)
+    return false;
   app.requestSingleInstanceLock();
-
   app.on('second-instance', () => {
     if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
+      if (mainWindow.isMinimized())
+        mainWindow.restore();
       mainWindow.focus();
     }
   });
 }
-
 // Handle Squirrel on Windows startup events
 switch (process.argv[1]) {
   case '--squirrel-install':
@@ -263,6 +238,5 @@ switch (process.argv[1]) {
   default:
     initialize();
 }
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

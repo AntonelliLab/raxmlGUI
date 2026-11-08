@@ -56,7 +56,9 @@
     "postinstall-electron": "install-electron --no",
     "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
     "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.7",
@@ -101,11 +103,14 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.29.7",
     "@electron/notarize": "^3.1.1",
-    "@types/node": "^22.19.1",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
     "@sentry/cli": "^3.7.0",
     "@sentry/webpack-plugin": "^1.19.0",
+    "@types/node": "^22.19.1",
+    "@types/prismjs": "^1.26.5",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "download": "^8.0.0",
@@ -113,6 +118,7 @@
     "electron-builder": "^24.13.3",
     "electron-download": "^4.1.1",
     "electron-webpack": "^2.8.2",
+    "eslint": "^8.57.0",
     "npm-run-all": "^4.1.5",
     "playwright": "^1.55.0",
     "prettier": "^3.9.6",
@@ -218,5 +224,9 @@
     "publish": {
       "provider": "github"
     }
+  },
+  "resolutions": {
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1"
   }
 }

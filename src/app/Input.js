@@ -58,7 +58,9 @@ const Input = ({ run }) => {
         ? `2px dashed ${theme.palette.input.darker}`
         : '2px dashed transparent',
     bgcolor: (theme) =>
-      isDragActive ? theme.palette.input.lighter : 'transparent',
+      isDragActive
+        ? theme.palette.input.lighter
+        : 'transparent',
     transition: 'background-color 0.15s ease, border-color 0.15s ease',
     ...extra,
   });
@@ -84,29 +86,33 @@ const Input = ({ run }) => {
               <Box display="flex" alignItems="center" sx={{ gap: '10px' }}>
                 {run.inputIsAlignment
                   ? run.alignments.map((alignment) => (
-                      <AlignmentCard
-                        key={alignment.path}
-                        alignment={alignment}
-                      />
-                    ))
+                    <AlignmentCard
+                      key={alignment.path}
+                      alignment={alignment}
+                    />
+                  ))
                   : null}
-                {run.inputIsTree && run.hasAstralTree ? (
-                  <AstralTreeCard astralTree={run.astralTree} />
-                ) : null}
+                {run.inputIsTree && run.hasAstralTree
+                  ? (
+                    <AstralTreeCard astralTree={run.astralTree} />
+                  )
+                  : null}
                 {run.canLoadAlignment &&
                 !run.haveAlignments &&
-                !run.canLoadPartitionFile ? (
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      width: '550px',
-                      height: '200px',
-                    }}
-                    onClick={run.loadAlignmentFiles}
-                  >
+                !run.canLoadPartitionFile
+                  ? (
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: '550px',
+                        height: '200px',
+                      }}
+                      onClick={run.loadAlignmentFiles}
+                    >
                     Load alignment
-                  </Button>
-                ) : null}
+                    </Button>
+                  )
+                  : null}
               </Box>
             </Box>
           )}
@@ -115,278 +121,298 @@ const Input = ({ run }) => {
         <Box paddingX={1}>
           <PartitionFileCard run={run} />
         </Box>
-        {run.canLoadAstralTree ? (
-          <Dropzone noClick onDrop={onAstralTreeDrop}>
-            {({ getRootProps, getInputProps, isDragActive }) => (
-              <Box
-                {...getRootProps()}
-                sx={dropzoneRootSx(isDragActive, {
-                  width: '200px',
-                  height: '200px',
-                })}
-              >
-                <input {...getInputProps()} style={{ display: 'none' }} />
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                  onClick={run.loadAstralTree}
+        {run.canLoadAstralTree
+          ? (
+            <Dropzone noClick onDrop={onAstralTreeDrop}>
+              {({ getRootProps, getInputProps, isDragActive }) => (
+                <Box
+                  {...getRootProps()}
+                  sx={dropzoneRootSx(isDragActive, {
+                    width: '200px',
+                    height: '200px',
+                  })}
                 >
+                  <input {...getInputProps()} style={{ display: 'none' }} />
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    onClick={run.loadAstralTree}
+                  >
                   Load input trees
-                </Button>
-              </Box>
-            )}
-          </Dropzone>
-        ) : null}
+                  </Button>
+                </Box>
+              )}
+            </Dropzone>
+          )
+          : null}
         {run.canLoadAlignment &&
         !run.canLoadPartitionFile &&
-        run.haveAlignments ? (
-          <Dropzone noClick onDrop={onAlignmentDrop}>
-            {({ getRootProps, getInputProps, isDragActive }) => (
-              <Box
-                {...getRootProps()}
-                sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
-              >
-                <input {...getInputProps()} style={{ display: 'none' }} />
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: '200px',
-                    minWidth: '200px',
-                    height: '200px',
-                  }}
-                  onClick={run.loadAlignmentFiles}
-                  title="Concatenate new alignments and create partition"
-                >
-                  Add alignment
-                </Button>
-              </Box>
-            )}
-          </Dropzone>
-        ) : null}
-
-        {run.canLoadAlignment && run.canLoadPartitionFile ? (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            style={{ height: '200px' }}
-          >
+        run.haveAlignments
+          ? (
             <Dropzone noClick onDrop={onAlignmentDrop}>
               {({ getRootProps, getInputProps, isDragActive }) => (
                 <Box
                   {...getRootProps()}
-                  sx={dropzoneRootSx(isDragActive, {
-                    flexGrow: 1,
-                    width: '100%',
-                    minWidth: '200px',
-                  })}
+                  sx={dropzoneRootSx(isDragActive, { flexShrink: 0 })}
                 >
                   <input {...getInputProps()} style={{ display: 'none' }} />
                   <Button
                     variant="outlined"
                     sx={{
+                      width: '200px',
                       minWidth: '200px',
-                      width: '100%',
-                      height: '100%',
-                      flexGrow: 1,
+                      height: '200px',
                     }}
                     onClick={run.loadAlignmentFiles}
-                    title="Concatenate new alignments and automatically generate a partition"
+                    title="Concatenate new alignments and create partition"
                   >
-                    Add alignment
+                  Add alignment
                   </Button>
                 </Box>
               )}
             </Dropzone>
-            <Box paddingX={2}>OR</Box>
-            <Dropzone noClick onDrop={onPartitionDrop}>
-              {({ getRootProps, getInputProps, isDragActive }) => (
-                <Box
-                  {...getRootProps()}
-                  sx={dropzoneRootSx(isDragActive, {
-                    flexGrow: 1,
-                    width: '100%',
-                    minWidth: '200px',
-                  })}
-                >
-                  <input {...getInputProps()} style={{ display: 'none' }} />
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      minWidth: '200px',
-                      width: '100%',
-                      height: '100%',
+          )
+          : null}
+
+        {run.canLoadAlignment && run.canLoadPartitionFile
+          ? (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              style={{ height: '200px' }}
+            >
+              <Dropzone noClick onDrop={onAlignmentDrop}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
+                  <Box
+                    {...getRootProps()}
+                    sx={dropzoneRootSx(isDragActive, {
                       flexGrow: 1,
-                    }}
-                    onClick={run.loadPartitionFile}
-                    title="Load a partition file for the current alignment"
+                      width: '100%',
+                      minWidth: '200px',
+                    })}
                   >
+                    <input {...getInputProps()} style={{ display: 'none' }} />
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        minWidth: '200px',
+                        width: '100%',
+                        height: '100%',
+                        flexGrow: 1,
+                      }}
+                      onClick={run.loadAlignmentFiles}
+                      title="Concatenate new alignments and automatically generate a partition"
+                    >
+                    Add alignment
+                    </Button>
+                  </Box>
+                )}
+              </Dropzone>
+              <Box paddingX={2}>OR</Box>
+              <Dropzone noClick onDrop={onPartitionDrop}>
+                {({ getRootProps, getInputProps, isDragActive }) => (
+                  <Box
+                    {...getRootProps()}
+                    sx={dropzoneRootSx(isDragActive, {
+                      flexGrow: 1,
+                      width: '100%',
+                      minWidth: '200px',
+                    })}
+                  >
+                    <input {...getInputProps()} style={{ display: 'none' }} />
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        minWidth: '200px',
+                        width: '100%',
+                        height: '100%',
+                        flexGrow: 1,
+                      }}
+                      onClick={run.loadPartitionFile}
+                      title="Load a partition file for the current alignment"
+                    >
                     Load partition
-                  </Button>
-                </Box>
-              )}
-            </Dropzone>
-          </Box>
-        ) : null}
+                    </Button>
+                  </Box>
+                )}
+              </Dropzone>
+            </Box>
+          )
+          : null}
         <Box>
           <div style={{ width: 20, height: 200 }}></div>
         </Box>
       </Box>
 
-      {run.tree.notAvailable ? null : (
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'nowrap',
-            overflowX: 'auto',
-            padding: '10px',
-          }}
-        >
-          <Box sx={{ display: 'flex' }}>
-            {run.tree.haveFile ? (
-              <TreeCard
-                tree={run.tree}
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-              />
-            ) : (
-              <Dropzone noClick onDrop={onTreeDrop('tree')}>
-                {({ getRootProps, getInputProps, isDragActive }) => (
-                  <Box
-                    {...getRootProps()}
-                    sx={dropzoneRootSx(isDragActive, {
-                      width: '380px',
-                      height: '100px',
-                    })}
-                  >
-                    <input {...getInputProps()} style={{ display: 'none' }} />
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      onClick={run.loadTreeFile}
-                    >
-                      Add Tree
-                    </Button>
-                  </Box>
-                )}
-              </Dropzone>
-            )}
-          </Box>
-        </Box>
-      )}
-      {run.backboneConstraint.notAvailable ? null : (
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'nowrap',
-            overflowX: 'auto',
-            padding: '10px',
-          }}
-        >
-          <Box sx={{ display: 'flex' }}>
-            {run.backboneConstraint.haveFile ? (
-              <TreeCard
-                tree={run.backboneConstraint}
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-              />
-            ) : (
-              <Dropzone noClick onDrop={onTreeDrop('backboneConstraint')}>
-                {({ getRootProps, getInputProps, isDragActive }) => (
-                  <Box
-                    {...getRootProps()}
-                    sx={dropzoneRootSx(isDragActive, {
-                      width: '380px',
-                      height: '100px',
-                    })}
-                  >
-                    <input {...getInputProps()} style={{ display: 'none' }} />
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      onClick={run.loadBackboneConstraintFile}
-                    >
-                      Add Backbone Constraint
-                    </Button>
-                  </Box>
-                )}
-              </Dropzone>
-            )}
-          </Box>
-        </Box>
-      )}
-      {run.multifurcatingConstraint.notAvailable ? null : (
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'nowrap',
-            overflowX: 'auto',
-            padding: '10px',
-          }}
-        >
-          <Box sx={{ display: 'flex' }}>
-            {run.multifurcatingConstraint.haveFile ? (
-              <TreeCard
-                tree={run.multifurcatingConstraint}
-                sx={{
-                  width: '380px',
-                  height: '100px',
-                }}
-              />
-            ) : (
-              <Dropzone noClick onDrop={onTreeDrop('multifurcatingConstraint')}>
-                {({ getRootProps, getInputProps, isDragActive }) => (
-                  <Box
-                    {...getRootProps()}
-                    sx={dropzoneRootSx(isDragActive, {
-                      width: '380px',
-                      height: '100px',
-                    })}
-                  >
-                    <input {...getInputProps()} style={{ display: 'none' }} />
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      onClick={run.loadMultifurcatingConstraintFile}
-                    >
-                      Add Multifurcating Constraint
-                    </Button>
-                  </Box>
-                )}
-              </Dropzone>
-            )}
-          </Box>
-        </Box>
-      )}
-
-      {run.alignments.length <= 1 ? null : (
-        <Box sx={{ padding: '10px' }}>
-          <Typography variant="h5">Concatenated alignment</Typography>
-          <FinalAlignmentCard
-            alignment={run.finalAlignment}
+      {run.tree.notAvailable
+        ? null
+        : (
+          <Box
             sx={{
-              width: '550px',
-              height: '200px',
+              display: 'flex',
+              flexWrap: 'nowrap',
+              overflowX: 'auto',
+              padding: '10px',
             }}
-          />
-        </Box>
-      )}
+          >
+            <Box sx={{ display: 'flex' }}>
+              {run.tree.haveFile
+                ? (
+                  <TreeCard
+                    tree={run.tree}
+                    sx={{
+                      width: '380px',
+                      height: '100px',
+                    }}
+                  />
+                )
+                : (
+                  <Dropzone noClick onDrop={onTreeDrop('tree')}>
+                    {({ getRootProps, getInputProps, isDragActive }) => (
+                      <Box
+                        {...getRootProps()}
+                        sx={dropzoneRootSx(isDragActive, {
+                          width: '380px',
+                          height: '100px',
+                        })}
+                      >
+                        <input {...getInputProps()} style={{ display: 'none' }} />
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                          onClick={run.loadTreeFile}
+                        >
+                      Add Tree
+                        </Button>
+                      </Box>
+                    )}
+                  </Dropzone>
+                )}
+            </Box>
+          </Box>
+        )}
+      {run.backboneConstraint.notAvailable
+        ? null
+        : (
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'nowrap',
+              overflowX: 'auto',
+              padding: '10px',
+            }}
+          >
+            <Box sx={{ display: 'flex' }}>
+              {run.backboneConstraint.haveFile
+                ? (
+                  <TreeCard
+                    tree={run.backboneConstraint}
+                    sx={{
+                      width: '380px',
+                      height: '100px',
+                    }}
+                  />
+                )
+                : (
+                  <Dropzone noClick onDrop={onTreeDrop('backboneConstraint')}>
+                    {({ getRootProps, getInputProps, isDragActive }) => (
+                      <Box
+                        {...getRootProps()}
+                        sx={dropzoneRootSx(isDragActive, {
+                          width: '380px',
+                          height: '100px',
+                        })}
+                      >
+                        <input {...getInputProps()} style={{ display: 'none' }} />
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                          onClick={run.loadBackboneConstraintFile}
+                        >
+                      Add Backbone Constraint
+                        </Button>
+                      </Box>
+                    )}
+                  </Dropzone>
+                )}
+            </Box>
+          </Box>
+        )}
+      {run.multifurcatingConstraint.notAvailable
+        ? null
+        : (
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'nowrap',
+              overflowX: 'auto',
+              padding: '10px',
+            }}
+          >
+            <Box sx={{ display: 'flex' }}>
+              {run.multifurcatingConstraint.haveFile
+                ? (
+                  <TreeCard
+                    tree={run.multifurcatingConstraint}
+                    sx={{
+                      width: '380px',
+                      height: '100px',
+                    }}
+                  />
+                )
+                : (
+                  <Dropzone noClick onDrop={onTreeDrop('multifurcatingConstraint')}>
+                    {({ getRootProps, getInputProps, isDragActive }) => (
+                      <Box
+                        {...getRootProps()}
+                        sx={dropzoneRootSx(isDragActive, {
+                          width: '380px',
+                          height: '100px',
+                        })}
+                      >
+                        <input {...getInputProps()} style={{ display: 'none' }} />
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                          onClick={run.loadMultifurcatingConstraintFile}
+                        >
+                      Add Multifurcating Constraint
+                        </Button>
+                      </Box>
+                    )}
+                  </Dropzone>
+                )}
+            </Box>
+          </Box>
+        )}
+
+      {run.alignments.length <= 1
+        ? null
+        : (
+          <Box sx={{ padding: '10px' }}>
+            <Typography variant="h5">Concatenated alignment</Typography>
+            <FinalAlignmentCard
+              alignment={run.finalAlignment}
+              sx={{
+                width: '550px',
+                height: '200px',
+              }}
+            />
+          </Box>
+        )}
     </Box>
   );
 };

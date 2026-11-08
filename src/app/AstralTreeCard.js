@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,8 +15,6 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
 function AstralTreeCard({ astralTree }) {
-  const {} = astralTree;
-
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -86,7 +83,9 @@ function AstralTreeCard({ astralTree }) {
             </Tooltip>
 
             <IconButton
-              aria-owns={anchorEl ? 'astralTree-menu' : undefined}
+              aria-owns={anchorEl
+                ? 'astralTree-menu'
+                : undefined}
               aria-haspopup="true"
               onClick={handleMenuClick}
               size="large"

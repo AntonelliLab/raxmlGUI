@@ -1,22 +1,29 @@
 import React, { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 import Prism from 'prismjs';
+import type { Grammar } from 'prismjs';
 import 'prismjs-bibtex';
 import 'prismjs/themes/prism.css';
 import 'prismjs/themes/prism-okaidia.css'; // coy, dark, funky, okaidia, solarizedlight, tomorrow, twilight
 
-function CodeHighlight({ code, language, sx }) {
-  const codeNode = useRef(null);
+export interface CodeHighlightProps {
+  code: string;
+  language: string;
+  sx?: SxProps<Theme>;
+}
+
+function CodeHighlight({ code, language, sx }: CodeHighlightProps) {
+  const codeNode = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (Prism.languages.hasOwnProperty(language)) {
-      const highlightHTML = Prism.highlight(
-        code,
-        Prism.languages[language],
-        language,
-      );
-      codeNode.current.innerHTML = highlightHTML;
+    const el = codeNode.current;
+    if (!el) {
+      return;
+    }
+    const grammar = Prism.languages[language];
+    if (grammar && typeof grammar === 'object') {
+      el.innerHTML = Prism.highlight(code, grammar as Grammar, language);
     }
   }, [code, language]);
 
@@ -36,11 +43,5 @@ function CodeHighlight({ code, language, sx }) {
     </Box>
   );
 }
-
-CodeHighlight.propTypes = {
-  code: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
-  sx: PropTypes.object,
-};
 
 export default CodeHighlight;

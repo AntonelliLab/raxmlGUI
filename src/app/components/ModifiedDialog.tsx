@@ -1,11 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContentText from '@mui/material/DialogContentText';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -13,12 +11,22 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 
-export default function ModifiedDialog({ show, onClose, messages }) {
+export interface ModifiedDialogProps {
+  show: boolean;
+  onClose: () => void;
+  messages: string[];
+}
+
+export default function ModifiedDialog({
+  show,
+  onClose,
+  messages,
+}: ModifiedDialogProps) {
   if (!show) {
     return null;
   }
 
-  const GenericDialog = (
+  return (
     <Dialog onClose={onClose} aria-labelledby="error-dialog-title" open={true}>
       <DialogTitle id="error-dialog-title">{'Attention'}</DialogTitle>
       <DialogContent>
@@ -53,12 +61,4 @@ export default function ModifiedDialog({ show, onClose, messages }) {
       </DialogActions>
     </Dialog>
   );
-
-  let returnDialog = GenericDialog;
-  return returnDialog;
 }
-
-ModifiedDialog.propTypes = {
-  error: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
-};

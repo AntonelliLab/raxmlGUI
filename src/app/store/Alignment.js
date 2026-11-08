@@ -11,7 +11,6 @@ import * as ipc from '../../constants/ipc';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
-import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';
@@ -52,7 +51,9 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
 
 class RaxmlNgModelExtraParam extends Option {
   constructor(alignment, label, options, { addNone = true } = {}) {
-    super(alignment.run, addNone ? '<none>' : options[0].value, label);
+    super(alignment.run, addNone
+      ? '<none>'
+      : options[0].value, label);
     this.alignment = alignment;
     this.optionsSource = addNone
       ? [{ value: '<none>', title: 'none' }, ...options]
@@ -69,7 +70,9 @@ class RaxmlNgModelExtraParam extends Option {
     return !this.run.haveAlignments || !this.run.usesRaxmlNg;
   }
   @computed get cmdValue() {
-    return this.value === '<none>' ? '' : this.value;
+    return this.value === '<none>'
+      ? ''
+      : this.value;
   }
 }
 
@@ -203,19 +206,21 @@ class Alignment extends InputFile {
   }
 
   @action
-  setShowPartition = (value = true) => {
-    this.run.showPartition(value ? this : null);
-  };
+    setShowPartition = (value = true) => {
+      this.run.showPartition(value
+        ? this
+        : null);
+    };
 
   @action
-  hidePartition = () => {
-    this.setShowPartition(false);
-  };
+    hidePartition = () => {
+      this.setShowPartition(false);
+    };
 
   @action
-  setPartitionText = (value) => {
-    this.partitionText = value;
-  };
+    setPartitionText = (value) => {
+      this.partitionText = value;
+    };
 
   @observable partitionText = '';
 
@@ -306,115 +311,115 @@ class Alignment extends InputFile {
   @observable modeltestLoading = false;
 
   @action
-  runModelTest = () => {
+    runModelTest = () => {
     // Show an error if there are not enough sequences and dont start the run
-    if (this.numSequences < 3) {
-      this.run.parent.onError(
-        new UserFixError(
-          'ModelTest can only be run on alignments with more than two sequences.',
-        ),
-      );
-      return;
-    }
-    this.modeltestLoading = true;
-    ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
-      id: this.id,
-      filePath: this.path,
-      outputDir: this.run.outputDir,
-      dataType: this.dataType,
-      numThreads: this.run.numThreads.value,
-      binaryName: this.run.modeltestName,
-    });
-  };
+      if (this.numSequences < 3) {
+        this.run.parent.onError(
+          new UserFixError(
+            'ModelTest can only be run on alignments with more than two sequences.',
+          ),
+        );
+        return;
+      }
+      this.modeltestLoading = true;
+      ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
+        id: this.id,
+        filePath: this.path,
+        outputDir: this.run.outputDir,
+        dataType: this.dataType,
+        numThreads: this.run.numThreads.value,
+        binaryName: this.run.modeltestName,
+      });
+    };
 
   @action
-  cancelModelTest = () => {
-    if (this.modeltestLoading) {
+    cancelModelTest = () => {
+      if (this.modeltestLoading) {
+        this.modeltestLoading = false;
+        ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
+      }
+    };
+
+  @action
+    setModelFromString = ({ raxml, extraFlag, raxmlNG }) => {
       this.modeltestLoading = false;
-      ipcRenderer.send(ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id);
-    }
-  };
+      // For raxml-ng
+      let model = raxmlNG.split('+')[0];
+      // Two models have different names in modeltest-ng and raxml-ng
+      model = model.replace('TrN', 'TN93');
+      model = model.replace('TPM1', 'K81');
+      this.substitutionModel.setValue(model);
+      if (/\+F[O|E]?/.test(raxmlNG)) {
+        this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
+      }
+      if (/\+IC?/.test(raxmlNG)) {
+        this.ngInvariantSites.setValue(/\+IC?/.exec(raxmlNG)[0]);
+      }
+      if (/\+GA?/.test(raxmlNG)) {
+        this.ngRateHeterogeneity.setValue(/\+GA?/.exec(raxmlNG)[0]);
+      }
+      if (/\+ASC_LEWIS/.test(raxmlNG)) {
+        this.ngAscertainmentBias.setValue('+ASC_LEWIS');
+      }
 
-  @action
-  setModelFromString = ({ raxml, extraFlag, raxmlNG }) => {
-    this.modeltestLoading = false;
-    // For raxml-ng
-    let model = raxmlNG.split('+')[0];
-    // Two models have different names in modeltest-ng and raxml-ng
-    model = model.replace('TrN', 'TN93');
-    model = model.replace('TPM1', 'K81');
-    this.substitutionModel.setValue(model);
-    if (/\+F[O|E]?/.test(raxmlNG)) {
-      this.ngStationaryFrequencies.setValue(/\+F[O|E]?/.exec(raxmlNG)[0]);
-    }
-    if (/\+IC?/.test(raxmlNG)) {
-      this.ngInvariantSites.setValue(/\+IC?/.exec(raxmlNG)[0]);
-    }
-    if (/\+GA?/.test(raxmlNG)) {
-      this.ngRateHeterogeneity.setValue(/\+GA?/.exec(raxmlNG)[0]);
-    }
-    if (/\+ASC_LEWIS/.test(raxmlNG)) {
-      this.ngAscertainmentBias.setValue('+ASC_LEWIS');
-    }
+      model = raxml;
+      // For raxml
+      if (/F$/.test(raxml)) {
+        this.run.baseFrequencies.setValue('F');
+        model = model.slice(0, -1);
+      } else if (/X$/.test(raxml)) {
+        this.run.estimatedFrequencies.setValue(true); // for all but proteins
+        this.run.baseFrequencies.setValue('X'); // for proteins
+        model = model.slice(0, -1);
+      } else {
+        this.run.baseFrequencies.setValue('default');
+      }
 
-    model = raxml;
-    // For raxml
-    if (/F$/.test(raxml)) {
-      this.run.baseFrequencies.setValue('F');
-      model = model.slice(0, -1);
-    } else if (/X$/.test(raxml)) {
-      this.run.estimatedFrequencies.setValue(true); // for all but proteins
-      this.run.baseFrequencies.setValue('X'); // for proteins
-      model = model.slice(0, -1);
-    } else {
-      this.run.baseFrequencies.setValue('default');
-    }
+      if (this.dataType === 'protein') {
+        console.log('parsing matrix name...');
+        const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
+        const re = new RegExp(`(${options.join('|')})$`);
+        const matrixName = re.exec(model)[1];
+        this.aaMatrixName = matrixName;
+        model = model.replace(re, '');
+      }
+      // I couldnt find information if ModelTest checks for ASC_
+      this.run.substitutionAscertainment.setValue('none');
 
-    if (this.dataType === 'protein') {
-      console.log('parsing matrix name...');
-      const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
-      const re = new RegExp(`(${options.join('|')})$`);
-      const matrixName = re.exec(model)[1];
-      this.aaMatrixName = matrixName;
-      model = model.replace(re, '');
-    }
-    // I couldnt find information if ModelTest checks for ASC_
-    this.run.substitutionAscertainment.setValue('none');
-
-    // Check for invariant sites
-    if (/I$/.test(model)) {
-      this.run.substitutionI.setValue('+I (ML estimate)');
-      model = model.slice(0, -1);
-    } else {
-      this.run.substitutionI.setValue('none');
-    }
-    // Check for substitution rates
-    if (/GAMMA/.test(model)) {
-      this.run.substitutionRate.setValue('GAMMA');
-      model = model.replace('GAMMA', '');
-    }
-    if (/CAT/.test(model)) {
-      this.run.substitutionRate.setValue('CAT');
-      model = model.replace('CAT', '');
-    }
-    // Checks for the different nucleotide substitution matrices
-    // Default is GTR
-    if (extraFlag === '--JC69') {
-      this.run.substitutionMatrix.setValue('JC');
-      // We dont allow CAT model for this matrix
-      this.run.substitutionRate.setValue('GAMMA');
-    }
-    if (extraFlag === '--K80') {
-      this.run.substitutionMatrix.setValue('K80');
-      // We dont allow CAT model for this matrix
-      this.run.substitutionRate.setValue('GAMMA');
-    }
-    if (extraFlag === '--HKY85') {
-      this.run.substitutionMatrix.setValue('HKY');
-      // We dont allow CAT model for this matrix
-      this.run.substitutionRate.setValue('GAMMA');
-    }
-  };
+      // Check for invariant sites
+      if (/I$/.test(model)) {
+        this.run.substitutionI.setValue('+I (ML estimate)');
+        model = model.slice(0, -1);
+      } else {
+        this.run.substitutionI.setValue('none');
+      }
+      // Check for substitution rates
+      if (/GAMMA/.test(model)) {
+        this.run.substitutionRate.setValue('GAMMA');
+        model = model.replace('GAMMA', '');
+      }
+      if (/CAT/.test(model)) {
+        this.run.substitutionRate.setValue('CAT');
+        model = model.replace('CAT', '');
+      }
+      // Checks for the different nucleotide substitution matrices
+      // Default is GTR
+      if (extraFlag === '--JC69') {
+        this.run.substitutionMatrix.setValue('JC');
+        // We dont allow CAT model for this matrix
+        this.run.substitutionRate.setValue('GAMMA');
+      }
+      if (extraFlag === '--K80') {
+        this.run.substitutionMatrix.setValue('K80');
+        // We dont allow CAT model for this matrix
+        this.run.substitutionRate.setValue('GAMMA');
+      }
+      if (extraFlag === '--HKY85') {
+        this.run.substitutionMatrix.setValue('HKY');
+        // We dont allow CAT model for this matrix
+        this.run.substitutionRate.setValue('GAMMA');
+      }
+    };
 
   listen = () => {
     // Send alignments to main process for processing
@@ -519,45 +524,45 @@ class Alignment extends InputFile {
   };
 
   @action
-  dispose = () => {
-    this.unlisten();
-    if (this.modeltestLoading) {
-      this.cancelModelTest();
-    }
-  };
+    dispose = () => {
+      this.unlisten();
+      if (this.modeltestLoading) {
+        this.cancelModelTest();
+      }
+    };
 
   @action
-  remove = () => {
-    this.dispose();
-    this.run.removeAlignment(this);
-  };
+    remove = () => {
+      this.dispose();
+      this.run.removeAlignment(this);
+    };
 
   @action
-  onChangeModel = (event) => {
-    console.log('onChangeModel');
-    this.model = event.target.value;
-  };
+    onChangeModel = (event) => {
+      console.log('onChangeModel');
+      this.model = event.target.value;
+    };
 
   @action
-  onChangeAAMatrixName = (value) => {
-    console.log('onChangeAAMatrixName');
-    this.aaMatrixName = value;
-  };
+    onChangeAAMatrixName = (value) => {
+      console.log('onChangeAAMatrixName');
+      this.aaMatrixName = value;
+    };
 
   @action
-  onRunStdout = (event, { id, content }) => {
-    if (id === this.id) {
+    onRunStdout = (event, { id, content }) => {
+      if (id === this.id) {
       // TODO: Keep local log?
-      this.run.stdout += content;
-    }
-  };
+        this.run.stdout += content;
+      }
+    };
 
   @action
-  onRunStderr = (event, { id, content }) => {
-    if (id === this.id) {
-      this.run.stderr += content;
-    }
-  };
+    onRunStderr = (event, { id, content }) => {
+      if (id === this.id) {
+        this.run.stderr += content;
+      }
+    };
 
   getSequenceCode = (taxon) => {
     // TODO: Sort sequences on taxon for quicker search, intersection and union
@@ -665,7 +670,7 @@ class FinalAlignment {
   }
 
   @computed get modelFlagName() {
-    const numAlignments = this.numAlignments;
+    const {numAlignments} = this;
     if (numAlignments === 0) {
       return 'none';
     }
@@ -680,7 +685,9 @@ class FinalAlignment {
     if (this.partition.isDefault) {
       return '';
     }
-    const suffix = this.numAlignments > 1 ? '_concat' : '';
+    const suffix = this.numAlignments > 1
+      ? '_concat'
+      : '';
     return join(
       `${this.dir}`,
       `RAxML_${this.run.outputNameSafe}${suffix}.part.txt`,
@@ -692,74 +699,76 @@ class FinalAlignment {
   }
 
   @action
-  openFile = async () => {
-    await this.writeConcatenatedAlignment();
-    ipcRenderer.send(ipc.FILE_OPEN, this.path);
-  };
+    openFile = async () => {
+      await this.writeConcatenatedAlignment();
+      ipcRenderer.send(ipc.FILE_OPEN, this.path);
+    };
 
   @action
-  openPartition = async () => {
-    await this.writeConcatenatedAlignmentAndPartition();
-    ipcRenderer.send(ipc.FILE_OPEN, this.partitionFilePath);
-  };
+    openPartition = async () => {
+      await this.writeConcatenatedAlignmentAndPartition();
+      ipcRenderer.send(ipc.FILE_OPEN, this.partitionFilePath);
+    };
 
   @action
-  showFileInFolder = async () => {
-    await this.writeConcatenatedAlignment();
-    ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
-  };
+    showFileInFolder = async () => {
+      await this.writeConcatenatedAlignment();
+      ipcRenderer.send(ipc.FILE_SHOW_IN_FOLDER, this.path);
+    };
 
   @action
-  openFolder = async () => {
-    await this.writeConcatenatedAlignmentAndPartition();
-    ipcRenderer.send(ipc.FOLDER_OPEN, this.dir);
-  };
+    openFolder = async () => {
+      await this.writeConcatenatedAlignmentAndPartition();
+      ipcRenderer.send(ipc.FOLDER_OPEN, this.dir);
+    };
 
   @action
-  writeConcatenatedAlignmentAndPartition = async () => {
-    await this.writeConcatenatedAlignment();
-    await this.writePartition();
-  };
+    writeConcatenatedAlignmentAndPartition = async () => {
+      await this.writeConcatenatedAlignment();
+      await this.writePartition();
+    };
 
   @action
-  writeConcatenatedAlignment = async () => {
-    const { taxons, numSequences } = this;
-    try {
-      console.log(
-        `Write concatenated alignment in FASTA format to ${this.path}..`,
-      );
-      const writeStream = fs.createWriteStream(this.path);
-      const write = util.promisify(writeStream.write);
-      const end = util.promisify(writeStream.end);
-      for (let i = 0; i < numSequences; ++i) {
-        for (let j = 0; j < this.numAlignments; ++j) {
-          if (j === 0) {
-            const prefix = i === 0 ? '>' : '\n>';
-            await write.call(writeStream, `${prefix}${taxons[i]}\n`);
+    writeConcatenatedAlignment = async () => {
+      const { taxons, numSequences } = this;
+      try {
+        console.log(
+          `Write concatenated alignment in FASTA format to ${this.path}..`,
+        );
+        const writeStream = fs.createWriteStream(this.path);
+        const write = util.promisify(writeStream.write);
+        const end = util.promisify(writeStream.end);
+        for (let i = 0; i < numSequences; ++i) {
+          for (let j = 0; j < this.numAlignments; ++j) {
+            if (j === 0) {
+              const prefix = i === 0
+                ? '>'
+                : '\n>';
+              await write.call(writeStream, `${prefix}${taxons[i]}\n`);
+            }
+            await write.call(
+              writeStream,
+              this.run.alignments[j].getSequenceCode(taxons[i]),
+            );
           }
-          await write.call(
-            writeStream,
-            this.run.alignments[j].getSequenceCode(taxons[i]),
-          );
         }
+        await end.call(writeStream);
+      } catch (err) {
+        console.error('Error writing concatenated alignment:', err);
+        throw err;
       }
-      await end.call(writeStream);
-    } catch (err) {
-      console.error('Error writing concatenated alignment:', err);
-      throw err;
-    }
-  };
+    };
 
   @action
-  writePartition = async () => {
-    try {
-      console.log(`Writing partition to ${this.partitionFilePath}...`);
-      await writeFile(this.partitionFilePath, this.partitionFileContent);
-    } catch (err) {
-      console.error('Error writing partition:', err);
-      throw err;
-    }
-  };
+    writePartition = async () => {
+      try {
+        console.log(`Writing partition to ${this.partitionFilePath}...`);
+        await writeFile(this.partitionFilePath, this.partitionFileContent);
+      } catch (err) {
+        console.error('Error writing partition:', err);
+        throw err;
+      }
+    };
 }
 
 export { Alignment as default, FinalAlignment };

@@ -1,5 +1,4 @@
 import UserFixError from './errors';
-
 export const isFasta = (lines) => {
   for (let i = 0; i < lines.length; ++i) {
     const line = lines[0].trim();
@@ -12,14 +11,11 @@ export const isFasta = (lines) => {
   }
   return false;
 };
-
 export const parse = (lines) => {
   if (!isFasta(lines)) {
     throw new Error(`Could not parse the file as a FASTA file`);
   }
-
   let lineIndex = 0;
-
   const parseTaxon = (line) => {
     if (line[0] !== '>') {
       throw new Error(`Expected a '>' to start a taxon line`);
@@ -37,17 +33,14 @@ export const parse = (lines) => {
     }
     return code;
   };
-
   const sequences = [];
   let taxon = '';
   let codeLines = [];
-
   const addSequence = () => {
     const code = codeLines.join('');
     sequences.push({ taxon, code });
     codeLines = [];
   };
-
   for (; lineIndex < lines.length; ++lineIndex) {
     const line = lines[lineIndex];
     if (line.length === 0 || line[0] === '#') {
@@ -61,26 +54,20 @@ export const parse = (lines) => {
       taxon = parseTaxon(line);
     } else {
       if (!taxon) {
-        throw new Error(
-          `'No taxon line found before line ${lineIndex + 1} ('${line}')`,
-        );
+        throw new Error(`'No taxon line found before line ${lineIndex + 1} ('${line}')`);
       }
       codeLines.push(parseCode(line));
     }
   }
   addSequence();
-
   const numSequences = sequences.length;
-  const length = sequences[0].code.length;
+  const { length } = sequences[0].code;
   // Check that all sequnces have the same length;
-  for (let seq of sequences) {
+  for (const seq of sequences) {
     if (seq.code.length !== length) {
-      throw new UserFixError(
-        `Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`,
-      );
+      throw new UserFixError(`Sequence '${seq.taxon}' has different length (${seq.code.length}) than previous taxons (${length})`);
     }
   }
-
   // console.log('Sequences:', sequences);
   const alignment = {
     sequences,
@@ -88,11 +75,11 @@ export const parse = (lines) => {
     length,
     fileFormat: 'FASTA',
   };
-
   return alignment;
 };
-
-export default {
+const fastaParser = {
   isFasta,
   parse,
 };
+
+export default fastaParser;

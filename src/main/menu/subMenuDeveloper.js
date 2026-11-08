@@ -9,16 +9,15 @@ const subMenuDeveloper = {
       },
     },
     { type: 'separator' },
-    { role: 'toggledevtools' },
+    { role: 'toggleDevTools' },
     { role: 'reload' },
-    { role: 'forcereload' },
+    { role: 'forceReload' },
     { type: 'separator' },
-    { role: 'resetzoom' },
-    { role: 'zoomin' },
-    { role: 'zoomout' },
+    { role: 'resetZoom' },
+    { role: 'zoomIn' },
+    { role: 'zoomOut' },
     { type: 'separator' },
     { role: 'togglefullscreen' },
   ],
 };
-
 export default subMenuDeveloper;

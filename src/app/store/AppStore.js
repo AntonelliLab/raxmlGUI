@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, action } from 'mobx';
 import StoreBase from './StoreBase';
 import Citation from './Citation';
 import Config from './Config';
@@ -18,10 +18,6 @@ class AppStore extends StoreBase {
   @action clearAppSnack = () => {
     this.showAppSnack = false;
   };
-
-  constructor() {
-    super();
-  }
 }
 
 export default AppStore;

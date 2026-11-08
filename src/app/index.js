@@ -11,15 +11,17 @@ import { is } from '../common/utils';
 
 import './bootstrap';
 
-is.development
-  ? null
-  : Sentry.init({
-      dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-    });
+if (!is.development) {
+  Sentry.init({
+    dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
+  });
+}
 
 const Index = () => {
   const { light, dark } = theme;
-  const muiTheme = store.config.isDarkMode ? dark : light;
+  const muiTheme = store.config.isDarkMode
+    ? dark
+    : light;
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={muiTheme}>
