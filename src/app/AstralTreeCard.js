@@ -15,8 +15,6 @@ import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
 function AstralTreeCard({ astralTree }) {
-  const {} = astralTree;
-
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleMenuClick(event) {
