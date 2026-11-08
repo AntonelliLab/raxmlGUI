@@ -11,8 +11,7 @@ export const getFinalDataType = (dataTypes) => {
       if ((type === 'binary' && firstType === 'multistate') ||
                 (type === 'multistate' && firstType === 'binary')) {
         firstType = 'multistate';
-      }
-      else {
+      } else {
         return 'mixed';
       }
     }
@@ -82,8 +81,7 @@ export default function typecheckAlignment(alignment) {
     let dataType = undefined;
     if (proteinMatch.test(code)) {
       dataType = 'protein';
-    }
-    else if (acgMatch.test(code)) {
+    } else if (acgMatch.test(code)) {
       // const numT = (code.match(/T/ig) || []).length;
       // const numU = (code.match(/U/ig) || []).length;
       // if (numT > numU) {
@@ -94,23 +92,19 @@ export default function typecheckAlignment(alignment) {
       if (/[ACG]/i.test(code)) {
         // Check that it don't have only N or ?
         dataType = 'nucleotide';
-      }
-      else {
+      } else {
         dataType = 'unknown';
       }
     }
     if (!dataType || dataType === 'unknown') {
       if (multistateMatch.test(code)) {
         dataType = 'multistate';
-      }
-      else if (binaryMatch.test(code)) {
+      } else if (binaryMatch.test(code)) {
         dataType = 'binary';
-      }
-      else if (unknownMatch.test(code)) {
+      } else if (unknownMatch.test(code)) {
         dataType = 'unknown';
       }
-    }
-    else if (binaryMatch.test(code) || multistateMatch.test(code)) {
+    } else if (binaryMatch.test(code) || multistateMatch.test(code)) {
       dataType = 'mixed';
     }
     dataTypes.add(dataType);
@@ -130,11 +124,10 @@ export default function typecheckAlignment(alignment) {
     const isMultistate = !sequenceDataTypes.find((type) => type !== 'binary' && type !== 'multistate');
     if (isMultistate) {
       dataType = 'multistate';
-    }
-    else {
+    } else {
       dataType = 'invalid';
       console.log('Illegal mix of data types among sequences:', sequenceDataTypes);
-      throw new UserFixError(`Your alignment is a mix of different data types, namely = ${Array.from(dataTypes.keys())}. 
+      throw new UserFixError(`Your alignment is a mix of different data types, namely = ${Array.from(dataTypes.keys())}.
         Please use only the same type for one alignment or combine several files.`);
     }
   }

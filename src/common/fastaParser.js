@@ -52,8 +52,7 @@ export const parse = (lines) => {
         codeLines = [];
       }
       taxon = parseTaxon(line);
-    }
-    else {
+    } else {
       if (!taxon) {
         throw new Error(`'No taxon line found before line ${lineIndex + 1} ('${line}')`);
       }

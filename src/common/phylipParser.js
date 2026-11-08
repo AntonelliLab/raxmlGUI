@@ -58,8 +58,7 @@ export const parse = (lines) => {
         }
         assertCorrectNumberOfSeqLines(currentSectionStartLineIndex, i - 1);
         lastEmpty = true;
-      }
-      else {
+      } else {
         if (lastEmpty) {
           interleavedStartLineIndices.push(i);
           currentSectionStartLineIndex = i;
@@ -74,8 +73,7 @@ export const parse = (lines) => {
       const lastInterleavedStartLineIndex = interleavedStartLineIndices[interleavedStartLineIndices.length - 1];
       assertCorrectNumberOfSeqLines(lastInterleavedStartLineIndex, lastSeqLineIndex);
       console.log('interleavedStartLineIndices:', interleavedStartLineIndices);
-    }
-    else {
+    } else {
       // Should be sequential
       if (isInterleaved) {
         throw new UserFixError(`File is specified as interleaved in header but no empty lines separating interleaved sections found`);
@@ -170,6 +168,7 @@ export const parse = (lines) => {
   };
   return alignment;
 };
+
 const phylipParser = {
   isPhylip,
   parse,

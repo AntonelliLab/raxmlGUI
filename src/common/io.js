@@ -20,15 +20,12 @@ export const parseAlignment = async (filePath) => {
       try {
         if (phylipParser.isPhylip(lines)) {
           alignment = phylipParser.parse(lines);
-        }
-        else if (fastaParser.isFasta(lines)) {
+        } else if (fastaParser.isFasta(lines)) {
           alignment = fastaParser.parse(lines);
-        }
-        else {
+        } else {
           throw new UserFixError("Unrecognized input format. RaxmlGUI2 supports the following input types at the moment: 'clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'.");
         }
-      }
-      catch (err) {
+      } catch (err) {
         const parseError = err instanceof Error
           ? err
           : new Error(String(err));
@@ -37,15 +34,13 @@ export const parseAlignment = async (filePath) => {
       }
       if (error) {
         reject(error);
-      }
-      else {
+      } else {
         if (!alignment || alignment.sequences.length === 0) {
           return reject(new Error(`Couldn't parse any sequences from file ${filePath}`));
         }
         try {
           typecheckAlignment(alignment);
-        }
-        catch (err) {
+        } catch (err) {
           console.error('Error checking data type:', err);
           return reject(err);
         }
@@ -74,6 +69,7 @@ export const writeAlignment = async (filePath, alignment) => {
   }
   await end.call(writeStream);
 };
+
 const io = {
   parseAlignment,
   writeAlignment,

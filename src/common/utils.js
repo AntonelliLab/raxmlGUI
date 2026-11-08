@@ -10,11 +10,9 @@ function newGithubIssueUrl(options = {}) {
   let repoUrl;
   if (repoUrlOption) {
     repoUrl = repoUrlOption;
-  }
-  else if (user && repo) {
+  } else if (user && repo) {
     repoUrl = `https://github.com/${user}/${repo}`;
-  }
-  else {
+  } else {
     throw new Error('You need to specify either the `repoUrl` option or both the `user` and `repo` options');
   }
   const url = new URL(`${repoUrl}/issues/new`);
@@ -56,8 +54,7 @@ export const platform = (object) => {
   let platformKey = process.platform;
   if (is.macos) {
     platformKey = 'macos';
-  }
-  else if (is.windows) {
+  } else if (is.windows) {
     platformKey = 'windows';
   }
   const fn = platformKey in object
