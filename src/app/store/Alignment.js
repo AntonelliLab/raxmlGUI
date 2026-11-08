@@ -11,7 +11,6 @@ import * as ipc from '../../constants/ipc';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
-import StoreBase from './StoreBase';
 import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';

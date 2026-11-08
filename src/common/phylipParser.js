@@ -1,7 +1,5 @@
 import UserFixError from './errors';
 const rePhylipHeader = /^\s*(\d+)\s+(\d+)(?:\s+([is]))?\s*$/; // 3  78  i (optional i/s for interleaved/sequential)
-const reStrictPhylipLine = /^(.{10})(.+)$/;
-const reRelaxedPhylipLine = /^(\w+)\s+(.+)$/;
 export const isPhylip = (lines) => {
   if (lines.length === 0) {
     throw new Error('No lines');

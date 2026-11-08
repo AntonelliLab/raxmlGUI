@@ -386,7 +386,6 @@ async function runProcess(id, event, binaryDir, binaryName, args, { onStdOut = (
       const proc = spawnProcess(binaryDir, binaryName, args);
       state.processes[String(id)] = proc;
       let exited = false;
-      const exit = ({ event, code, signal, error }) => { };
       proc.stdout.on('data', (buffer) => {
         const content = String(buffer);
         console.log('on stdout:', content);
@@ -431,12 +430,6 @@ async function runProcess(id, event, binaryDir, binaryName, args, { onStdOut = (
       reject(err);
     }
   });
-}
-// Send promise with exit code and stdout
-async function execProcess(binaryPath, args) {
-  // const binaryDir = path.dirname(binaryPath);
-  // const binaryName = path.basename(binaryPath);
-  return exec(`${binaryPath} ${args.join(' ')}`);
 }
 // Function to get an alignment format with readal
 async function readalGetFormat(alignmentPath) {
@@ -650,7 +643,7 @@ ipcMain.on(ipc.ASTRAL_REQUEST, async (event, payload) => {
 });
 ipcMain.on(ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async (event, payload) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
-  const { dir, name } = parsePath(filePath);
+  const { name } = parsePath(filePath);
   const outputPath = path.join(outputDir, `RAxML_GUI_ModelTest_${name}`);
   try {
     // Remove binary checkpoint as that may be invalid

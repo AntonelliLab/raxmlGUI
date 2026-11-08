@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction } from 'mobx';
+import { action } from 'mobx';
 
 import InputFile from './InputFile';
 
