@@ -12,21 +12,21 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 
-function TreeCard({ sx, tree }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+function TreeCard( { sx, tree } ) {
+  const [anchorEl, setAnchorEl] = React.useState( null );
 
-  function handleMenuClick(event) {
-    setAnchorEl(event.currentTarget);
+  function handleMenuClick( event ) {
+    setAnchorEl( event.currentTarget );
   }
 
   function handleMenuClose() {
-    setAnchorEl(null);
+    setAnchorEl( null );
   }
 
-  function closeMenuAndRun(callback) {
+  function closeMenuAndRun( callback ) {
     return () => {
       callback();
-      setAnchorEl(null);
+      setAnchorEl( null );
     };
   }
 
@@ -34,8 +34,8 @@ function TreeCard({ sx, tree }) {
     <Card
       raised
       sx={{
-        backgroundColor: (theme) => theme.palette.input.main,
-        border: (theme) => `1px solid ${theme.palette.input.light}`,
+        backgroundColor: ( theme ) => theme.palette.input.main,
+        border: ( theme ) => `1px solid ${theme.palette.input.light}`,
         ...sx,
       }}
     >
@@ -46,9 +46,9 @@ function TreeCard({ sx, tree }) {
             color="secondary"
             sx={{
               height: '30px',
-              color: (theme) => theme.palette.input.contrastText,
-              backgroundColor: (theme) => theme.palette.input.main,
-              border: (theme) => `1px solid ${theme.palette.input.darker}`,
+              color: ( theme ) => theme.palette.input.contrastText,
+              backgroundColor: ( theme ) => theme.palette.input.main,
+              border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
             }}
           />
         }
@@ -68,16 +68,16 @@ function TreeCard({ sx, tree }) {
             <Menu
               id="tree-menu"
               anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
+              open={Boolean( anchorEl )}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={closeMenuAndRun(tree.openFile)}>
+              <MenuItem onClick={closeMenuAndRun( tree.openFile )}>
                 Show tree
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(tree.openFolder)}>
+              <MenuItem onClick={closeMenuAndRun( tree.openFolder )}>
                 Show folder
               </MenuItem>
-              <MenuItem onClick={closeMenuAndRun(tree.remove)}>Remove</MenuItem>
+              <MenuItem onClick={closeMenuAndRun( tree.remove )}>Remove</MenuItem>
             </Menu>
           </Box>
         }
@@ -104,4 +104,4 @@ TreeCard.propTypes = {
   sx: PropTypes.object,
 };
 
-export default observer(TreeCard);
+export default observer( TreeCard );

@@ -13,6 +13,7 @@ module.exports = {
     ],
     indent: ['error', 2, { SwitchCase: 1 }],
     'multiline-ternary': ['error', 'always'],
+    'space-in-parens': ['error', 'always'],
   },
   overrides: [
     {

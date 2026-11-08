@@ -1,11 +1,11 @@
 import * as ipc from '../../constants/ipc';
 import { activeWindow } from '../utils/utils';
-const sendToFocusedWindow = (channel) => {
+const sendToFocusedWindow = ( channel ) => {
   const win = activeWindow();
-  if (!win) {
+  if ( !win ) {
     return;
   }
-  win.webContents.send(channel);
+  win.webContents.send( channel );
 };
 const subMenuAnalysis = {
   label: 'Analysis',
@@ -18,7 +18,7 @@ const subMenuAnalysis = {
           type: 'checkbox',
           checked: false,
           click() {
-            sendToFocusedWindow(ipc.TOGGLE_BACKBONE_CONSTRAINT);
+            sendToFocusedWindow( ipc.TOGGLE_BACKBONE_CONSTRAINT );
           },
         },
         {
@@ -26,7 +26,7 @@ const subMenuAnalysis = {
           type: 'checkbox',
           checked: false,
           click() {
-            sendToFocusedWindow(ipc.TOGGLE_MULTIFURCATING_CONSTRAINT);
+            sendToFocusedWindow( ipc.TOGGLE_MULTIFURCATING_CONSTRAINT );
           },
         },
       ],
