@@ -18,10 +18,6 @@ class AppStore extends StoreBase {
   @action clearAppSnack = () => {
     this.showAppSnack = false;
   };
-
-  constructor() {
-    super();
-  }
 }
 
 export default AppStore;
