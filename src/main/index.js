@@ -1,7 +1,7 @@
 import electron, { BrowserWindow } from 'electron';
 import path from 'path';
 import url from 'url';
-import log from 'electron-log';
+import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
 import ProgressBar from 'electron-progressbar';
 import './api';

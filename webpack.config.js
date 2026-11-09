@@ -1,3 +1,5 @@
+const path = require('path');
+
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 const package = require('./package.json');
@@ -5,6 +7,22 @@ const package = require('./package.json');
 module.exports = {
   // other webpack configuration
   devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: path.join(__dirname, 'node_modules', 'electron-log'),
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', { modules: false, targets: { node: '10.2.0' } }],
+            ],
+          },
+        },
+      },
+    ],
+  },
   plugins: [
     process.env.SENTRY_ORG && process.env.SENTRY_AUTH_TOKEN
       ? new SentryWebpackPlugin({
