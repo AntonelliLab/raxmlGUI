@@ -26,6 +26,7 @@ in case of vulnerabilities.
 - Performance and security updates
 ### Removed
 - Dropping macOS 11 support
+- Dropping macOS 12 support
 
 ## [2.0.17] - 2026-04-19
 ### Changed
