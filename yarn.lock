@@ -4229,10 +4229,10 @@ ajv@^8.20.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-allotment@^1.20.5:
-  version "1.20.5"
-  resolved "https://registry.yarnpkg.com/allotment/-/allotment-1.20.5.tgz#f3458f8b77309cd6046e45e50bf70f3318bf7afd"
-  integrity sha512-7i4NT7ieXEyAd5lBrXmE7WHz/e7hRuo97+j+TwrPE85ha6kyFURoc76nom0dWSZ1pTKVEAMJy/+f3/Isfu/41A==
+allotment@^1.20.6:
+  version "1.20.6"
+  resolved "https://registry.yarnpkg.com/allotment/-/allotment-1.20.6.tgz#363d64fb10819ff7833203ba91f1fefff6154e8c"
+  integrity sha512-NvMqVVu04kKVq+ezJ/H+kO4DT3rWCm6sNxZG9kpxBd9WZafkv7GQ8zdaRQ9sPFKNukJKLLVmNnslLB+3mgQqKw==
   dependencies:
     classnames "^2.3.0"
     eventemitter3 "^5.0.0"
