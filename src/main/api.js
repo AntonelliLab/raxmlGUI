@@ -1,5 +1,5 @@
 /* global __static */
-import { app, ipcMain, shell, dialog, Notification, BrowserWindow } from 'electron';
+import { app, ipcMain, shell, dialog, Notification, BrowserWindow, clipboard } from 'electron';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
@@ -65,6 +65,9 @@ ipcMain.on( ipc.INIT_APP_STATE, ( event ) => {
   send( event, ipc.INIT_APP_STATE_RECEIVED, {
     version,
   } );
+} );
+ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
+  await clipboard.writeText( text );
 } );
 ipcMain.on( ipc.RELOAD, () => {
   BrowserWindow

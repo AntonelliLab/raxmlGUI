@@ -42,14 +42,6 @@ async function main() {
   zipPath = await downloadSymbols({
     version,
     platform: 'win32',
-    arch: 'ia32',
-    symbols: true,
-  });
-  await sentryCli.execute(['upload-dif', '-t', 'breakpad', zipPath], true);
-
-  zipPath = await downloadSymbols({
-    version,
-    platform: 'win32',
     arch: 'x64',
     symbols: true,
   });

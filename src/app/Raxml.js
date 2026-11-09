@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { clipboard } from 'electron';
+import { ipcRenderer } from 'electron';
+import * as ipc from '../constants/ipc';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
@@ -12,8 +13,8 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
 
 const Raxml = ( { run, store } ) => {
-  const copyCommand = useCallback( () => {
-    clipboard.writeText( run.command );
+  const copyCommand = useCallback( async () => {
+    await ipcRenderer.invoke( ipc.COPY_TEXT, run.command );
     store.setAppSnack();
   }, [run.command, store] );
 
