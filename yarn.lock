@@ -6728,10 +6728,10 @@ ejs@^3.1.6, ejs@^3.1.8:
   dependencies:
     jake "^10.8.5"
 
-electron-better-ipc@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-2.0.1.tgz#982a4468e814f9f19308c7865a148c6dca5e218a"
-  integrity sha512-S/h2vjQjev9FVicGnZeuP2wH/ycO9pOv63JGaTjYB2m5JcKDuXHAM713YmnmDC+VVXP7mh1Y9rtxi6BoNK7YJA==
+electron-better-ipc@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-2.1.1.tgz#fdd708bfdb3c4dc6733782c8297020118ea42965"
+  integrity sha512-Wmkd2c5dJCXgcQGneLpMhh7HZ/n9Szzn8LCsDh1cRKwEVlv6gYilc/+r73SnU2AzxolJwFyAzUKtizVT+Hmd7g==
   dependencies:
     serialize-error "^8.1.0"
 
