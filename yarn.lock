@@ -2225,10 +2225,10 @@
     fs-extra "^9.0.1"
     promise-retry "^2.0.1"
 
-"@electron/notarize@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@electron/notarize/-/notarize-3.1.1.tgz#428d96ab84e333506f2a16fcf12db7ca12fdc7e0"
-  integrity sha512-uQQSlOiJnqRkTL1wlEBAxe90nVN/Fc/hEmk0bqpKk8nKjV1if/tXLHKUPePtv9Xsx90PtZU8aidx5lAiOpjkQQ==
+"@electron/notarize@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@electron/notarize/-/notarize-3.1.2.tgz#862f1456abc7b936b488794ccc6f94745402861d"
+  integrity sha512-S/EH6W/GTe3XiD4oYHW+6xuUWZWjc9F5gayMrNdmRLv7qG9KRYmYE26+RDgC1hYUZVY3qLpa1VftxuL+sL5VQg==
   dependencies:
     debug "^4.4.0"
     promise-retry "^2.0.1"
