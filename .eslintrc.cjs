@@ -2,7 +2,9 @@ module.exports = {
   root: true,
   extends: ['react-app', 'react-app/jest'],
   ignorePatterns: ['build/', 'dist/', 'docs/', 'node_modules/'],
+  plugins: ['lodash'],
   rules: {
+    'lodash/import-scope': 2,
     'comma-dangle': ['error', 'always-multiline'],
     'prefer-destructuring': [
       'error',
