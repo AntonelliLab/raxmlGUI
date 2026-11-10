@@ -4,7 +4,7 @@ import { defineConfig } from 'electron-vite';
 import react from '@vitejs/plugin-react';
 
 const nodeBuiltins = builtinModules.filter( ( name ) => !name.startsWith( '_' ) );
-const nodeExternals = [
+const nodePackages = [
   'electron',
   'electron-store',
   'electron-better-ipc',
@@ -15,6 +15,9 @@ const nodeExternals = [
   'parse-filepath',
   'filenamify',
   'clean-stack',
+];
+const nodeExternals = [
+  ...nodePackages,
   ...nodeBuiltins,
   ...nodeBuiltins.map( ( name ) => (
     name.startsWith( 'node:' )
@@ -41,10 +44,6 @@ function rendererNodeBabel( externals ) {
         const namespace = specs.find( ( spec ) => spec.type === 'ImportNamespaceSpecifier' );
         const named = specs.filter( ( spec ) => spec.type === 'ImportSpecifier' );
         const defaults = specs.filter( ( spec ) => spec.type === 'ImportDefaultSpecifier' );
-        if ( specs.length === 0 ) {
-          path.replaceWith( t.expressionStatement( req ) );
-          return;
-        }
         if ( namespace ) {
           path.replaceWith( t.variableDeclaration( 'const', [
             t.variableDeclarator( namespace.local, req ),
@@ -121,16 +120,7 @@ export default defineConfig( {
           '.js': 'jsx',
         },
       },
-      exclude: [
-        'electron',
-        'electron-store',
-        'electron-better-ipc',
-        '@sentry/electron',
-        'cpus',
-        'parse-filepath',
-        'filenamify',
-        'clean-stack',
-      ],
+      exclude: nodePackages,
     },
     plugins: [
       // plugin-react 5: its babel option compiles legacy MobX decorators. 6 dropped babel.

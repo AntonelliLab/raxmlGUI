@@ -145,10 +145,11 @@ function initialize() {
     const win = new BrowserWindow( mainWindowOptions );
     mainWindow = win;
     // and load the index.html of the app.
+    // The current end-to-end run still passes its own page URL.
     const startUrl = process.env.ELECTRON_RENDERER_URL ||
             process.env.ELECTRON_START_URL ||
             url.format( {
-              pathname: path.join( __dirname, 'index.html' ),
+              pathname: path.join( __dirname, '../renderer/index.html' ),
               protocol: 'file:',
               slashes: true,
             } );
