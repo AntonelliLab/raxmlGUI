@@ -20,9 +20,9 @@
     "GUI",
     "Phylogenetics"
   ],
-  "main": "build/electron.js",
+  "main": "./out/main/index.js",
   "scripts": {
-    "start": "cross-env ELECTRON_START_URL=http://localhost:3000/ run-p react-start electron-dev",
+    "start": "electron-vite dev",
     "react-start": "cross-env BROWSER=none craco start",
     "react-build": "craco build",
     "react-test": "craco test --env=jsdom",
@@ -101,6 +101,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-react-jsx": "7.25.2",
     "@babel/preset-env": "^7.29.7",
     "@electron/notarize": "^3.1.2",
     "@sentry/cli": "^3.8.2",
@@ -111,12 +112,14 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
+    "@vitejs/plugin-react": "5.2.0",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "download": "^8.0.0",
     "electron": "^45.2.3",
     "electron-builder": "^24.13.3",
     "electron-download": "^4.1.1",
+    "electron-vite": "^6.0.0",
     "electron-webpack": "^2.8.2",
     "eslint": "^8.57.0",
     "eslint-plugin-lodash": "^8.1.0",
@@ -125,6 +128,7 @@
     "prettier": "^3.9.10",
     "shx": "^0.4.0",
     "typescript": "^5.9.3",
+    "vite": "^8.3.7",
     "wait-on": "^9.5.1"
   },
   "browserslist": [

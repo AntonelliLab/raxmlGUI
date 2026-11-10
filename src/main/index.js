@@ -1,5 +1,6 @@
 import electron, { BrowserWindow } from 'electron';
 import path from 'path';
+import fs from 'fs';
 import url from 'url';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
@@ -114,6 +115,8 @@ function initialize() {
   if ( shouldQuit )
     return app.quit();
   function createMainWindow() {
+    // shortcut: electron-webpack's dist/main has no preload beside it; drop the exists check when that build is gone.
+    const preloadPath = path.join( __dirname, '../preload/index.js' );
     // Window options for the main window
     const mainWindowOptions = {
       width: 1280,
@@ -127,7 +130,9 @@ function initialize() {
         // nodeIntegration: isDevMode,
         nodeIntegration: true,
         contextIsolation: false, // Needed to expose ipcRenderer from preload script
-        // preload: path.join(app.getAppPath(), 'src', 'main', 'preload.js'),
+        ...( fs.existsSync( preloadPath )
+          ? { preload: preloadPath }
+          : {} ),
         enableRemoteModule: true,
         allowEval: false,
       },
@@ -140,9 +145,9 @@ function initialize() {
     const win = new BrowserWindow( mainWindowOptions );
     mainWindow = win;
     // and load the index.html of the app.
-    const startUrl = process.env.ELECTRON_START_URL ||
+    const startUrl = process.env.ELECTRON_RENDERER_URL ||
+            process.env.ELECTRON_START_URL ||
             url.format( {
-              // pathname: path.join(__dirname, '..', 'build', 'index.html'),
               pathname: path.join( __dirname, 'index.html' ),
               protocol: 'file:',
               slashes: true,

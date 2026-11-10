@@ -1,6 +1,8 @@
+import Store from 'electron-store';
 import * as ipc from '../../constants/ipc';
-import { store } from '../../app/store/Config';
 import { activeWindow } from '../utils/utils';
+// The page's store class is decorated. This build does not compile decorators.
+const store = new Store();
 const sendToFocusedWindow = ( channel ) => {
   const win = activeWindow();
   if ( !win ) {
