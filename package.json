@@ -43,7 +43,7 @@
     "electron-compile": "electron-webpack",
     "electron-copy": "shx cp dist/main/main.js build/electron.js",
     "compile": "run-s electron-compile electron-copy",
-    "build": "run-s react-build compile",
+    "build": "electron-vite build",
     "build-mac": "run-s react-build compile electron-build",
     "build-win": "run-s react-build compile electron-build-win",
     "build-linux": "run-s react-build compile electron-build-linux",
