@@ -99,13 +99,15 @@ While `electron-webpack` is a devDependency, electron-builder 24 automatically e
 
 ## Dev command
 
-`yarn start` is `electron-vite dev`. It starts main, preload, and the page together, and it sets `ELECTRON_RENDERER_URL` to the page's dev server (default `http://localhost:5173/`). The window loads that URL, then `ELECTRON_START_URL` (the current end-to-end run still sets it), then `out/renderer/index.html`.
+`yarn start` is `electron-vite dev`. It starts main, preload, and the page together, and it sets `ELECTRON_RENDERER_URL` to the page's dev server (default `http://localhost:5173/`). The window loads that URL, then `ELECTRON_START_URL` when a launch sets it, then `out/renderer/index.html`.
+
+`yarn test:e2e` runs the production build, then Playwright. Playwright launches `out/main/index.js` with `RAXMLGUI_E2E=1` and no page URL, so the window is the built page.
 
 `electron-vite dev` refuses to launch unless the `package.json` `main` file exists on disk. `ELECTRON_ENTRY` skips that check. A `preload` key in `electron.vite.config.js` and a `src/preload` entry keep the preload build in the same command.
 
 `__static` is an electron-webpack define, the absolute `static/` directory. electron-vite does not define it. `src/main/api.js` reads it for the example alignment unless `RAXMLGUI_E2E` is `1`. The main Vite config defines it.
 
-electron-vite does not bundle Node into the page. This window still sets `nodeIntegration: true`. Page imports of `electron`, `fs`, `path`, `os`, `util`, `electron-store`, `electron-better-ipc`, `@sentry/electron`, `cpus`, `parse-filepath`, `filenamify`, and `clean-stack` are rewritten to `globalThis.require(...)`. A bare `require` is not defined in those ESM modules. Prebundling those packages gives them a browser stub of `path`.
+electron-vite does not bundle Node into the page. This window still sets `nodeIntegration: true`. Page imports of `electron`, `fs`, `path`, `os`, `util`, `electron-store`, `electron-better-ipc`, `@sentry/electron`, `cpus`, `parse-filepath`, `filenamify`, and `clean-stack` are rewritten to `globalThis.require(...)`. A bare `require` is not defined in those ESM modules. Prebundling those packages gives them a browser stub of `path`. The production page build inlines `process.env`, so a check such as `process.env.NODE_ENV === 'development'` in `src/app/bootstrap.ts` is compiled out of `out/renderer`. A flag the built page must see at runtime is read from Node: `globalThis.require('process').env`.
 
 JSX stays in `.js` files. Vite 8's oxc parser does not treat `.js` as JSX, so the page build compiles JSX in Babel before oxc sees the file. The dependency scanner needs `optimizeDeps.rolldownOptions.moduleTypes['.js']` set to `jsx`.
 
