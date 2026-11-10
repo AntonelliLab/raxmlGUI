@@ -13,13 +13,6 @@ const config = {
   workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
-  webServer: {
-    command: 'yarn react-start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    cwd: path.join(__dirname, '..'),
-  },
 };
 
 module.exports = config;

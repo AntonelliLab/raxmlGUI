@@ -26,7 +26,7 @@
     "react-start": "cross-env BROWSER=none craco start",
     "react-build": "craco build",
     "react-test": "craco test --env=jsdom",
-    "test:e2e": "yarn electron-compile && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
+    "test:e2e": "yarn build && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
     "test:docs": "node node_modules/playwright/cli.js test --config e2e/docs/playwright.config.js",
     "react-eject": "react-scripts eject",
     "wait-dev": "wait-on $ELECTRON_START_URL",
