@@ -22,12 +22,13 @@ in case of vulnerabilities.
 ### Added
 - Added support for species tree from gene trees inference using ASTRAL
 ## [Unreleased] - YYYY-MM-DD
+
+## [2.0.18] - 2026-11-10
 ### Changed
 - Performance and security updates
 ### Removed
 - Dropping macOS 11 support
 - Dropping macOS 12 support
-
 ## [2.0.17] - 2026-04-19
 ### Changed
 - Performance and security updates
