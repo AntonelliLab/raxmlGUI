@@ -2,6 +2,7 @@
 
 module.exports = {
   testEnvironment: 'jsdom',
+  setupFiles: [ '<rootDir>/jest/setup.js' ],
   roots: [ '<rootDir>/src' ],
   transform: {
     '^.+\\.(js|jsx|mjs|ts|tsx)$': '<rootDir>/jest/babelTransform.js',
@@ -11,5 +12,6 @@ module.exports = {
   moduleNameMapper: {
     '\\.css$': '<rootDir>/jest/fileMock.js',
     '^electron$': '<rootDir>/jest/electron.js',
+    '^@sentry/electron/renderer$': '<rootDir>/jest/sentry.js',
   },
 };
