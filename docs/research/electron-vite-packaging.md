@@ -1,0 +1,118 @@
+# electron-vite packaging facts
+
+Question: how does electron-vite lay out the main process, preload, and page builds, and how does that output get packed by an existing electron-builder setup?
+
+This note records what the primary docs say. It does not choose what this repo keeps. "Page" means the renderer build. This repo's electron-builder is 24.13.3 (`electron-builder` in `package.json`); builder behavior below is from that version's docs and source, not from the electron-builder 27 website.
+
+## Layout
+
+`electron-vite build` bundles three separate Vite builds. The default output directory is `out` at the project root:
+
+```
+out/
+  main/
+  preload/
+  renderer/
+```
+
+Each build's `build.outDir` can be set on its own, or one shared root can be passed as `--outDir`. The project recommends keeping all three bundles in one directory so the packager can include that directory and leave the source out. ([Building for Production](https://electron-vite.org/guide/build))
+
+Default entries, looked up in this order:
+
+- Main: `src/main/index.{js,ts,mjs,cjs}`, then `src/main/main.{js,ts,mjs,cjs}`
+- Preload: `src/preload/index.{js,ts,mjs,cjs}`, then `src/preload/preload.{js,ts,mjs,cjs}`
+- Renderer: `src/renderer/index.html`
+
+([Development](https://electron-vite.org/guide/dev), and `findLibEntry` / `findInput` in [electron-vite 6.0.0 `src/plugins/electron.ts`](https://github.com/alex8088/electron-vite/blob/v6.0.0/src/plugins/electron.ts))
+
+With no `"type": "module"` in `package.json`, main and preload are CommonJS. ESM is emitted only when `package.json` has `"type": "module"` and the installed Electron supports ESM (Electron 28+), or when `build.rollupOptions.output.format` is set to `es`. ([Configuring electron-vite](https://electron-vite.org/config/), [ESM Support in Electron](https://electron-vite.org/guide/dev#esm-support-in-electron), format selection in the same `electron.ts`)
+
+Those two builds set Vite `build.ssr` to true, and the default entry is passed as a string path. In Vite 6, an SSR build names entry files `[name].<ext>`. Rollup's `[name]` is the entry file's basename unless the input was an object that set a different name. For CommonJS and a package that is not `"type": "module"`, the extension is `.js`, so `src/main/index.ts` emits `out/main/index.js` and `src/preload/index.ts` emits `out/preload/index.js`. ([Vite SSR `entryFileNames`](https://github.com/vitejs/vite/blob/v6.3.5/packages/vite/src/node/build.ts), [Rollup `output.entryFileNames`](https://rollupjs.org/configuration-options/#output-entryfilenames)) electron-vite's getting-started page shows the matching `package.json` field:
+
+```json
+"main": "./out/main/index.js"
+```
+
+([Getting Started](https://electron-vite.org/guide/))
+
+The renderer build targets Chromium (`chrome*`, matched to the installed Electron), takes `src/renderer/index.html` as its Rollup input, and writes `out/renderer`, including that HTML. In production the renderer `base` is `./`. The documented production window load is `loadFile` of `../renderer/index.html` relative to the built main file, and the documented preload path beside it is `../preload/index.js`. ([Configuring electron-vite](https://electron-vite.org/config/), [HMR and Hot Reloading](https://electron-vite.org/guide/hmr-and-hot-reloading), renderer `base` in `electron.ts`)
+
+`electron` and Node built-ins are external in the main and preload builds, so they stay as `require("electron")` / `require("node:…")` in the output. Packages listed under `dependencies` are also left external for main and preload (`build.externalizeDeps` defaults to true), and are expected to be copied by the packager. Renderer `dependencies` are bundled into the page. `devDependencies` are bundled only when imported, and electron-builder does not copy `devDependencies` into the app. ([Dependency Handling](https://electron-vite.org/guide/dependency-handling), [`externalizeDeps ?? true` in electron-vite 6.0.0 `src/config.ts`](https://github.com/alex8088/electron-vite/blob/v6.0.0/src/config.ts), external list in `electron.ts`)
+
+## What electron-builder packs, and where `main` points
+
+electron-builder does not bundle the Electron app. It packs an already-built app into an asar (the default) and then into installers. The files it copies are the `files` patterns. Electron then starts whatever `package.json` `"main"` names. ([electron-builder](https://www.electron.build/docs/), [Building your First App](https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app), asar default in [electron-builder 24.13.3 `PlatformSpecificBuildOptions`](https://github.com/electron-userland/electron-builder/blob/v24.13.3/packages/app-builder-lib/src/options/PlatformSpecificBuildOptions.ts))
+
+electron-vite's documented order is to run `electron-vite build` first, then `electron-builder`. The distribution guide's electron-builder example excludes `src` and the vite config and leaves the built `out/` tree to be packed with the rest of the app. Its Forge section is the one that retargets `--outDir` to `dist`, because Forge's output directory is `out`. ([Distribution](https://electron-vite.org/guide/distribution), [Getting Started](https://electron-vite.org/guide/))
+
+On electron-builder 24.13.3, `directories.output` defaults to `dist` and `directories.buildResources` defaults to `build`. Build resources are not packed into the app. The file copier also excludes the builder output directory from the asar (`!<output>{,/**/*}`), and it excludes the `buildResources` directory. A custom `files` list does **not** keep the default `**/*` when any pattern is an include (does not start with `!`). `package.json` and production `node_modules` are still added. A `files` list that is only exclusions does keep `**/*`, and then the output directory and `build/` are still excluded. ([`contents.md` at v24.13.3](https://github.com/electron-userland/electron-builder/blob/v24.13.3/docs/configuration/contents.md), [`configuration.ts` `MetadataDirectories`](https://github.com/electron-userland/electron-builder/blob/v24.13.3/packages/app-builder-lib/src/configuration.ts), [`fileMatcher.ts` `getMainFileMatchers`](https://github.com/electron-userland/electron-builder/blob/v24.13.3/packages/app-builder-lib/src/fileMatcher.ts))
+
+So the directory electron-builder should consume for an electron-vite app is `out/` (`out/main`, `out/preload`, `out/renderer`), and `"main"` should be `./out/main/index.js` for the conventional `index` entry. That path is outside both `build/` and `dist/`. Putting the bundle in `dist` would put it in the directory this builder excludes from the asar and uses for installer artifacts. electron-vite does not document a copy of the main bundle onto `build/electron.js`.
+
+## `afterSign`, `extraResources`, and GitHub `publish`
+
+These three are electron-builder keys. electron-vite does not replace them. The distribution guide's electron-builder example keeps `afterSign` and `publish` in the builder config next to the `out/` layout. ([Distribution](https://electron-vite.org/guide/distribution))
+
+- `afterSign` is a path or function run after pack and sign, before the distributable is built. The hook receives the pack context (`appOutDir`, `electronPlatformName`, and the rest of `AfterPackContext`). It does not receive the bundler's output path. ([`configuration.ts` at v24.13.3](https://github.com/electron-userland/electron-builder/blob/v24.13.3/packages/app-builder-lib/src/configuration.ts))
+- `extraResources` copies project files into the app's resources directory (`Contents/Resources` on macOS, `resources` on Linux and Windows), outside the asar. Patterns work like `files`, but the source is the project directory. ([`contents.md` at v24.13.3](https://github.com/electron-userland/electron-builder/blob/v24.13.3/docs/configuration/contents.md))
+- `publish` tells electron-builder where to upload artifacts and update metadata. `{ "provider": "github" }` is `GithubOptions`. The GitHub owner and repo are detected from `package.json` `"repository"` when omitted. Publishing is controlled by `--publish` (`onTag`, `onTagOrDraft`, `always`, `never`), not by which tool bundled the JavaScript. ([`publish.md` at v24.13.3](https://github.com/electron-userland/electron-builder/blob/v24.13.3/docs/configuration/publish.md))
+
+An existing `afterSign` script, `extraResources` list, and `publish.provider: "github"` can stay as they are. They do not name the bundle directory. The `files` pattern is the key that has to include `out/`. A pattern such as `src/main/*` is an include, so it does not keep `**/*` and does not match `out/`.
+
+## Source maps and native symbols
+
+These are different Sentry artifacts.
+
+**JavaScript source maps.** For a Vite build, Sentry's Electron guide says to use the Vite plugin, not the webpack plugin. Install `@sentry/bundler-plugins` and add `sentryVitePlugin` from `@sentry/bundler-plugins/vite`. The guide assumes a Sentry JavaScript SDK of 7.47.0 or newer. The plugin creates a release and uploads source maps during the production bundling step. It does not upload in watch mode or development. `build.sourcemap` must be on (`"hidden"` or `true`). The plugin has to be last in that Vite config's `plugins` array. If `sourcemaps.assets` is omitted, it uploads the JavaScript files and source maps created during that build. `sourcemaps.filesToDeleteAfterUpload` deletes the `.map` files after upload. ([Vite for Electron](https://docs.sentry.io/platforms/javascript/guides/electron/sourcemaps/uploading/vite/), [Uploading Source Maps for Electron](https://docs.sentry.io/platforms/javascript/guides/electron/sourcemaps/uploading/), [Bundler Plugin Options](https://docs.sentry.io/platforms/javascript/sourcemaps/uploading/bundler-plugin-options/))
+
+electron-vite's own `--sourcemap` flag defaults to false. ([Command Line Interface](https://electron-vite.org/guide/cli))
+
+electron-vite's config is three Vite configs (`main`, `preload`, `renderer`). A plugin on one of them only sees that build. Main-process maps come from `sentryVitePlugin` on `main`. Page maps come from the same plugin on `renderer`. The preload build is a third Vite build; its maps are uploaded only if the plugin is on `preload` as well. ([Configuring electron-vite](https://electron-vite.org/config/), `sourcemaps.assets` in the bundler-plugin options)
+
+**Native symbols.** Sentry says source maps are debug information files but are handled differently from native debug files. Native crash symbolication needs debug information files: dSYM (macOS), PDB (Windows), ELF (Linux), or Breakpad symbols. Without them, native crashes show addresses. For a stock Electron app, Sentry's own instruction is to enable the built-in Electron symbol server under Project Settings, Debug Files. Custom native extensions, or a child process you want symbolicated, are uploaded separately with `sentry-cli debug-files upload`. The Vite plugin does not do that upload. ([Debug Information Files for Electron](https://docs.sentry.io/platforms/javascript/guides/electron/data-management/debug-files/), [Native Crash Reporting for Electron](https://docs.sentry.io/platforms/javascript/guides/electron/features/native-crash-reporting/), [sentry-cli debug files](https://docs.sentry.io/cli/dif/))
+
+## What a sandboxed, context-isolated preload build emits
+
+Sandbox is the default for renderer processes since Electron 20. A sandboxed preload's `require` can load only the `electron` module (renderer modules: `contextBridge`, `crashReporter`, `ipcRenderer`, `nativeImage`, `webFrame`, `webUtils`). It cannot load other files, and Node built-ins and Node globals such as `Buffer` and `setImmediate` are not available. Electron's instruction is to use one bundled file rather than several CommonJS files, and to bundle a polyfill if the script needs something the sandbox does not provide. ([Process Sandboxing](https://www.electronjs.org/docs/latest/tutorial/sandbox), [Using Preload Scripts](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload))
+
+Context isolation is the default since Electron 12. The preload `window` is not the page `window`, so assigning `window.someApi` in the preload does not show up on the page. The page-facing API has to be passed through `contextBridge.exposeInMainWorld`. The preload file is attached with `webPreferences.preload`, an absolute path. ([Context Isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation), [Using Preload Scripts](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload))
+
+Sandboxed preload scripts cannot use ESM imports. They run as plain script. An ESM preload must be unsandboxed and must end in `.mjs`; preload scripts ignore `"type": "module"`. ([ES Modules in Electron](https://www.electronjs.org/docs/latest/tutorial/esm))
+
+electron-vite states the same constraint from the bundler side. A sandboxed preload that `require`s or `import`s another module fails with `Unable to load preload scripts -> Error: module not found`. The documented fix that keeps the sandbox on is to bundle the preload into one file. `build.externalizeDeps: false` on the preload build is what pulls `dependencies` into that file; the default is to leave them external. If several preload entries share imports, `build.isolatedEntries: true` is required so each entry is its own single bundle, again with `externalizeDeps: false`. Enabling ESM makes the preload output `[name].mjs`, which is the form Electron will not load in a sandbox. ([Limitations of Sandboxing](https://electron-vite.org/guide/dev#limitations-of-sandboxing), [Troubleshooting](https://electron-vite.org/guide/troubleshooting), [Dependency Handling](https://electron-vite.org/guide/dependency-handling), [Isolated Build](https://electron-vite.org/guide/isolated-build), `.mjs` naming in `electron.ts` and [ESM Support](https://electron-vite.org/guide/dev#esm-support-in-electron))
+
+electron-vite's sandbox table still lists Node's `events`, `timers`, and `url`, plus `Buffer` and `setImmediate`, as available. Electron's current sandbox page says those are not available and that `require` loads only `electron`. The emit rule that matches Electron's page is: one CommonJS file (`.js` for a package that is not `"type": "module"`), `require` of `electron` left external, every other dependency inlined, Node built-ins either unused or polyfilled inside the bundle (they stay on electron-vite's external list unless that list is changed), and `contextBridge.exposeInMainWorld` for anything the page calls. The window then points `webPreferences.preload` at that file, `out/preload/index.js` for the conventional entry. ([Process Sandboxing](https://www.electronjs.org/docs/latest/tutorial/sandbox), external list in [`electron.ts`](https://github.com/alex8088/electron-vite/blob/v6.0.0/src/plugins/electron.ts), [HMR and Hot Reloading](https://electron-vite.org/guide/hmr-and-hot-reloading))
+
+electron-vite does not support `nodeIntegration`. The page build is a browser bundle. ([Development](https://electron-vite.org/guide/dev#nodeintegration), [Troubleshooting](https://electron-vite.org/guide/troubleshooting))
+
+## Local context
+
+This is how this repo packs today. It is not a description of electron-vite.
+
+`package.json` `"main"` is `./out/main/index.js`. `electron-webpack` still writes `dist/main/main.js`, and `electron-copy` still copies that file to `build/electron.js`. The dev command launches the electron-vite bundle, not that copy. The `build` key sets `afterSign` to `./scripts/notarize.js`, `extraResources` to `assets/` plus per-platform `static/bin` copies, `publish` to `{ "provider": "github" }`, `directories.output` to `dist`, `directories.buildResources` to `build`, and `files` to `src/main/*`.
+
+`scripts/notarize.js` exports a default function of electron-builder's afterSign context. On darwin it notarizes `${appOutDir}/${productFilename}.app`. It does not read the JavaScript bundle path.
+
+While `electron-webpack` is a devDependency, electron-builder 24 automatically extends `electron-webpack`'s packager preset. That preset sets the packed app's `main` to `main.js` via `extraMetadata`, and its `files` copy `dist/main` and `dist/renderer` (plus `package.json`). electron-builder concatenates parent and child `files` lists. There is no equivalent preset for electron-vite. ([`config.ts` `getConfig`](https://github.com/electron-userland/electron-builder/blob/v24.13.3/packages/app-builder-lib/src/util/config.ts), [electron-webpack 2.8.2 `out/electron-builder.js`](https://unpkg.com/electron-webpack@2.8.2/out/electron-builder.js))
+
+`webpack.config.js` turns on webpack `devtool: 'source-map'` and, when `SENTRY_ORG` and `SENTRY_AUTH_TOKEN` are set, runs `@sentry/webpack-plugin` over the webpack build. That is the webpack source-map upload. `sentry-symbols.js` is separate: after an Electron upgrade it downloads Electron's own macOS dSYM and Windows/Linux Breakpad zips and runs `sentry-cli upload-dif` on them. That is a native debug-file upload. Sentry's current CLI docs name that class of upload `sentry-cli debug-files upload`. ([Debug Information Files](https://docs.sentry.io/cli/dif/))
+
+## Dev command
+
+`yarn start` is `electron-vite dev`. It starts main, preload, and the page together, and it sets `ELECTRON_RENDERER_URL` to the page's dev server (default `http://localhost:5173/`). The window loads that URL, then `ELECTRON_START_URL` (the current end-to-end run still sets it), then `out/renderer/index.html`.
+
+`electron-vite dev` refuses to launch unless the `package.json` `main` file exists on disk. `ELECTRON_ENTRY` skips that check. A `preload` key in `electron.vite.config.js` and a `src/preload` entry keep the preload build in the same command.
+
+`__static` is an electron-webpack define, the absolute `static/` directory. electron-vite does not define it. `src/main/api.js` reads it for the example alignment unless `RAXMLGUI_E2E` is `1`. The main Vite config defines it.
+
+electron-vite does not bundle Node into the page. This window still sets `nodeIntegration: true`. Page imports of `electron`, `fs`, `path`, `os`, `util`, `electron-store`, `electron-better-ipc`, `@sentry/electron`, `cpus`, `parse-filepath`, `filenamify`, and `clean-stack` are rewritten to `globalThis.require(...)`. A bare `require` is not defined in those ESM modules. Prebundling those packages gives them a browser stub of `path`.
+
+JSX stays in `.js` files. Vite 8's oxc parser does not treat `.js` as JSX, so the page build compiles JSX in Babel before oxc sees the file. The dependency scanner needs `optimizeDeps.rolldownOptions.moduleTypes['.js']` set to `jsx`.
+
+Legacy MobX decorators stay on the page only. `@vitejs/plugin-react` 6 has no `babel` option. The page build uses 5.2.0 with `@babel/plugin-proposal-decorators` (`legacy: true`) and `@babel/plugin-proposal-class-properties` (`loose: true`). The main build does not get that transform. Main must not import `src/app/store`. The file menu keeps its own `electron-store`. `src/common/utils.js` imports the store only in the renderer. The main config externalizes ids containing `/app/store`.
+
+`@babel/plugin-transform-react-jsx` stays at 7.25.2. 7.29.7 nested `@babel/helper-validator-identifier` 8, whose published entry is ESM, and `yarn electron-compile` crashes on it. The 8.x plugin peers `@babel/core` 8.
+
+`vite-plugin-commonjs-externals` cannot parse JSX in `.js` and wants Vite 4 or 5. The page build does not use it.
+
+The Vite HTML entry is the repo-root `index.html`. The renderer `root` is `.` and `publicDir` is false, so `public/index.html` (the Create React App template) does not shadow it.

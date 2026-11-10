@@ -1,0 +1,5 @@
+#!/bin/sh
+# shortcut: electron-webpack only, delete with ticket 14
+if git diff --cached --name-only -- yarn.lock | grep -q .; then
+  corepack yarn@1.22.22 electron-compile
+fi

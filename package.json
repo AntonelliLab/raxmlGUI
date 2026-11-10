@@ -54,11 +54,12 @@
     "postinstall-deps": "electron-builder install-app-deps",
     "postinstall-patch": "patch-package",
     "postinstall-electron": "install-electron --no",
-    "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
+    "postinstall-hooks": "node scripts/install-git-hooks.js",
+    "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron postinstall-hooks",
     "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" electron.vite.config.js",
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" electron.vite.config.js --fix"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.7",
