@@ -19,6 +19,13 @@ module.exports = {
   },
   overrides: [
     {
+      // `yarn lint` does not include e2e, and that tree does not use the src parenthesis style.
+      files: ['e2e/**/*.js'],
+      rules: {
+        'space-in-parens': 'off',
+      },
+    },
+    {
       files: ['**/*.{ts,tsx}'],
       rules: {
         '@typescript-eslint/consistent-type-imports': [
