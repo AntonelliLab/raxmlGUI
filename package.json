@@ -44,13 +44,13 @@
     "electron-copy": "shx cp dist/main/main.js build/electron.js",
     "compile": "run-s electron-compile electron-copy",
     "build": "electron-vite build",
-    "build-mac": "run-s react-build compile electron-build",
-    "build-win": "run-s react-build compile electron-build-win",
-    "build-linux": "run-s react-build compile electron-build-linux",
-    "build-all": "run-s react-build compile electron-build-all",
-    "dist-pack": "run-s react-build compile electron-pack",
-    "dist-pack-win": "run-s react-build compile electron-pack-win",
-    "publish-all": "run-s react-build compile electron-build-publish-all",
+    "build-mac": "run-s build electron-build",
+    "build-win": "run-s build electron-build-win",
+    "build-linux": "run-s build electron-build-linux",
+    "build-all": "run-s build electron-build-all",
+    "dist-pack": "run-s build electron-pack",
+    "dist-pack-win": "run-s build electron-pack-win",
+    "publish-all": "run-s build electron-build-publish-all",
     "postinstall-deps": "electron-builder install-app-deps",
     "postinstall-patch": "patch-package",
     "postinstall-electron": "install-electron --no",
@@ -154,12 +154,16 @@
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI",
     "afterSign": "./scripts/notarize.js",
+    "extends": null,
     "directories": {
       "buildResources": "build",
       "output": "dist"
     },
     "files": [
-      "src/main/*"
+      "!src{,/**/*}",
+      "!e2e{,/**/*}",
+      "!docs{,/**/*}",
+      "!electron.vite.config.js"
     ],
     "extraResources": [
       "assets/"
