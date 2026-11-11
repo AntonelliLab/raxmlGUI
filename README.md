@@ -4,9 +4,9 @@ A desktop GUI for RAxML.
 
 ## Development
 
-This is a an [Electron](https://electronjs.org/) App that was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an [Electron](https://electronjs.org/) app. The shell is built with electron-vite.
 
-```yarn start``` will start the Electron app and the React app at the same time.  
+```yarn start``` starts the shell.  
 ```yarn build``` compiles the shell into `out/`.  
 ```yarn build-mac```, ```yarn build-win```, and ```yarn build-linux``` compile the shell, then pack it with electron-builder.
 
