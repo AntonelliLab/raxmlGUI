@@ -78,6 +78,7 @@ const result = {};
 try {
   const copied = await rendererBridge.copyText('bridge-text');
   result.copied = copied === undefined;
+  result.alignments = await rendererBridge.selectAlignment('run-7');
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -112,6 +113,10 @@ app.whenReady().then(async () => {
   Store.initRenderer();
   ipcMain.handle('COPY_TEXT', async (_event, text) => {
     await clipboard.writeText(text);
+  });
+  ipcMain.handle('ALIGNMENT_SELECT', async (_event, runId) => {
+    console.log('RUNID ' + runId);
+    return [{ path: '/data/primates.fasta', name: 'primates.fasta' }];
   });
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
   const win = new BrowserWindow({
@@ -155,6 +160,10 @@ setTimeout(() => app.exit(2), 8000);
   const payload = JSON.parse( line.slice( 'RESULT '.length ) );
   expect( payload.result.error ).toBeUndefined();
   expect( payload.result.copied ).toBe( true );
+  expect( payload.result.alignments ).toEqual( [
+    { path: '/data/primates.fasta', name: 'primates.fasta' },
+  ] );
+  expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
   expect( payload.clip ).toBe( 'bridge-text' );
   expect( payload.result.sent ).toBe( true );
   expect( payload.result.file ).toBe( 'ok' );
@@ -166,3 +175,4 @@ setTimeout(() => app.exit(2), 8000);
   expect( payload.result.ended ).toBe( true );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
+

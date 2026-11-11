@@ -9,6 +9,7 @@ import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
+import { selectAlignment } from './selectAlignment';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -556,28 +557,8 @@ ipcMain.on( ipc.ALIGNMENT_PARSE_REQUEST, async ( event, { id, filePath } ) => {
   }
 } );
 // Open a dialog to select alignments
-ipcMain.on( ipc.ALIGNMENT_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select an alignment',
-      properties: ['openFile', 'multiSelections'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.ALIGNMENT_SELECTED, result );
-      if ( result.canceled ) {
-        return;
-      }
-      const alignments = result.filePaths.map( ( filePath ) => {
-        return {
-          path: filePath,
-          name: path.basename( filePath ),
-        };
-      } );
-      send( event, ipc.ALIGNMENT_SELECTED, { id: runId, alignments } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.ALIGNMENT_SELECTED, err );
-    } );
+ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event, _runId ) => {
+  return selectAlignment( ( options ) => dialog.showOpenDialog( options ) );
 } );
 // Open a dialog to select astral input trees
 ipcMain.on( ipc.ASTRAL_FILE_SELECT, ( event, runId ) => {

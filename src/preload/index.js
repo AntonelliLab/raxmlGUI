@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { contextBridge, ipcRenderer } from 'electron';
-import { COPY_TEXT } from '../constants/ipc';
+import { ALIGNMENT_SELECT, COPY_TEXT } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -145,5 +145,8 @@ contextBridge.exposeInMainWorld( 'process', publish( load( 'process' ) ) );
 contextBridge.exposeInMainWorld( 'rendererBridge', {
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
+  },
+  selectAlignment( runId ) {
+    return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
   },
 } );
