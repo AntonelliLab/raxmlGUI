@@ -25,4 +25,4 @@ Main, shared modules used by main, `src/constants/ipc`, and `src/settings/*` are
    - `yarn lint` (main is `.js` today; TS-only ESLint override applies once files are `.ts` again)
    - `npx tsc --noEmit` if types are restored (optional `electron-webpack-globals.d.ts` for `__static`)
 
-4. **Optional:** broaden `electron-builder` `build.files` if packaging needs nested `src/main/**` beyond the top-level glob.
+4. The pack excludes `src/` and ships `out/`. Leave `build.files` as exclusions.
