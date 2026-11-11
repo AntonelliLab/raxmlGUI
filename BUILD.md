@@ -15,7 +15,10 @@ The benefit of this workflow is that it allows you to always have the latest art
 5. Update CHANGELOG and the download links in `docs/_layouts/default.html` to the new version.
 5. Bump the version in package.json to use for the next draft and push to update the download links on the github page.
 6. Uploading Debug Information
-To get symbolicated stack traces for native crashes, you have to upload debug symbols to Sentry. Sentry Wizard creates a convenient sentry-symbols.js script that will upload the Electron symbols for you. After installing the SDK and every time you upgrade the Electron version, run this script:
+
+A production build uploads JavaScript source maps for the main process and the page when `SENTRY_ORG` and `SENTRY_AUTH_TOKEN` are set. The release name is `raxmlGUI@version`. The preload is not included, and a dev start does not upload.
+
+Native crash symbols stay a manual upload. `sentry-symbols.js` downloads the Electron symbols and uploads them with `sentry-cli upload-dif`. After installing the SDK, and again after every Electron upgrade, run `node sentry-symbols.js`.
 
 ## Homepage
 
