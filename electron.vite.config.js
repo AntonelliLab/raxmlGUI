@@ -103,7 +103,7 @@ function leaveDecoratedStoreOutOfMain() {
   };
 }
 
-// Dev still builds main. The plugin only belongs on the production command, and only with a token.
+// Dev still builds main, so this gates on electron-vite's command. Leave build.sourcemap unset: this plugin turns hidden maps on and deletes them. An explicit true or "hidden" leaves .map files in out/, which the pack includes. The upload also needs SENTRY_PROJECT in the environment.
 function sourceMapUpload( command ) {
   if ( command !== 'build' || !process.env.SENTRY_ORG || !process.env.SENTRY_AUTH_TOKEN ) {
     return [];
