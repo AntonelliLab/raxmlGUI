@@ -91,6 +91,16 @@ try {
   result.got = store.get('k');
   result.stem = require('parse-filepath')('/tmp/example.fasta').name;
   result.safe = require('filenamify')('a/b');
+  result.model = require('os').cpus()[0].model;
+  await new Promise((resolve, reject) => {
+    const stream = require('fs').createWriteStream(file + '.stream');
+    const timer = setTimeout(() => reject(new Error('callback not called')), 2000);
+    stream.end('x', () => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+  result.ended = true;
 } catch (error) {
   result.error = String(error && error.stack || error);
 }
@@ -151,5 +161,8 @@ setTimeout(() => app.exit(2), 8000);
   expect( payload.result.got ).toBe( 'v' );
   expect( payload.result.stem ).toBe( 'example' );
   expect( payload.result.safe ).toBe( 'a!b' );
+  expect( typeof payload.result.model ).toBe( 'string' );
+  expect( payload.result.model.length ).toBeGreaterThan( 0 );
+  expect( payload.result.ended ).toBe( true );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
