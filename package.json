@@ -48,6 +48,7 @@
     "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
     "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
     "typecheck": "tsc --noEmit",
+    "typecheck:baseline": "node scripts/typecheck-baseline.js",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" electron.vite.config.js jest.config.js \"jest/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" electron.vite.config.js jest.config.js \"jest/**/*.js\" --fix"
   },
