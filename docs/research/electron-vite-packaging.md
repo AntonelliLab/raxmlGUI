@@ -2,7 +2,7 @@
 
 Question: how does electron-vite lay out the main process, preload, and page builds, and how does that output get packed by an existing electron-builder setup?
 
-This note records what the primary docs say. It does not choose what this repo keeps. "Page" means the renderer build. This repo's electron-builder is 24.13.3 (`electron-builder` in `package.json`); builder behavior below is from that version's docs and source, not from the electron-builder 27 website.
+Pre-ticket reading of the upstream docs, pinned to the versions cited below. Rank against a ticket is in `docs/agents/issue-tracker.md`. "Page" means the renderer build. This repo's electron-builder is 24.13.3 (`electron-builder` in `package.json`); builder behavior below is from that version's docs and source, not from the electron-builder 27 website.
 
 ## Layout
 
