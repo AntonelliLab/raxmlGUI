@@ -1,5 +1,0 @@
-#!/bin/sh
-# shortcut: electron-webpack only, delete with ticket 14. Not the shell check (docs/agents/issue-tracker.md).
-if git diff --cached --name-only -- yarn.lock | grep -q .; then
-  corepack yarn@1.22.22 electron-compile
-fi

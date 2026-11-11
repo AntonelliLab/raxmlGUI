@@ -23,16 +23,10 @@
   "main": "./out/main/index.js",
   "scripts": {
     "start": "electron-vite dev",
-    "react-start": "cross-env BROWSER=none craco start",
-    "react-build": "craco build",
     "react-test": "jest --watchAll=false",
     "test:e2e": "yarn build && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
     "test:docs": "node node_modules/playwright/cli.js test --config e2e/docs/playwright.config.js",
-    "react-eject": "react-scripts eject",
-    "wait-dev": "wait-on $ELECTRON_START_URL",
     "download-binaries": "node scripts/download-binaries.js",
-    "electron-dev": "electron-webpack dev",
-    "electron-start": "cross-env DEV=true run-s wait-dev electron-dev",
     "electron-build": "electron-builder",
     "electron-build-win": "electron-builder -w",
     "electron-build-linux": "electron-builder -l",
@@ -40,9 +34,6 @@
     "electron-build-publish-all": "electron-builder -mwl -p always",
     "electron-pack": "electron-builder --dir -c.compression=store -c.mac.identity=null",
     "electron-pack-win": "electron-builder -w --dir -c.compression=store",
-    "electron-compile": "electron-webpack",
-    "electron-copy": "shx cp dist/main/main.js build/electron.js",
-    "compile": "run-s electron-compile electron-copy",
     "build": "electron-vite build",
     "build-mac": "run-s build electron-build",
     "build-win": "run-s build electron-build-win",
@@ -54,8 +45,7 @@
     "postinstall-deps": "electron-builder install-app-deps",
     "postinstall-patch": "patch-package",
     "postinstall-electron": "install-electron --no",
-    "postinstall-hooks": "node scripts/install-git-hooks.js",
-    "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron postinstall-hooks",
+    "postinstall": "run-s postinstall-deps postinstall-patch postinstall-electron",
     "docs-serve": "cd docs && bundle exec jekyll serve --config _config.yml,_config_dev.yml",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" electron.vite.config.js jest.config.js \"jest/**/*.js\"",
@@ -63,7 +53,6 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.7",
-    "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.11",
@@ -94,7 +83,6 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-dropzone": "^20.2.0",
-    "react-scripts": "^5.0.1",
     "serialize-error": "^8.1.0",
     "source-map-support": "^0.5.21",
     "yup": "^1.7.1"
@@ -104,10 +92,10 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-react-jsx": "7.25.2",
     "@babel/preset-env": "^7.29.7",
+    "@babel/preset-typescript": "^7.24.7",
     "@electron/notarize": "^3.1.2",
     "@sentry/bundler-plugins": "11.12.0",
     "@sentry/cli": "^3.8.2",
-    "@sentry/webpack-plugin": "^1.19.0",
     "@types/node": "^22.19.1",
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19.2.7",
@@ -115,6 +103,7 @@
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "@vitejs/plugin-react": "5.2.0",
+    "babel-jest": "27.5.1",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "download": "^8.0.0",
@@ -122,9 +111,10 @@
     "electron-builder": "^24.13.3",
     "electron-download": "^4.1.1",
     "electron-vite": "^6.0.0",
-    "electron-webpack": "^2.8.2",
     "eslint": "^8.57.0",
+    "eslint-config-react-app": "7.0.1",
     "eslint-plugin-lodash": "^8.1.0",
+    "jest": "27.5.1",
     "npm-run-all": "^4.1.5",
     "playwright": "^1.65.0",
     "prettier": "^3.9.10",
@@ -139,18 +129,6 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "electronWebpack": {
-    "commonSourceDirectory": "src/common",
-    "staticSourceDirectory": "static",
-    "main": {
-      "sourceDirectory": "src/main",
-      "webpackConfig": "webpack.config.js"
-    },
-    "renderer": {
-      "sourceDirectory": null,
-      "webpackConfig": "webpack.config.js"
-    }
-  },
   "build": {
     "appId": "org.jtklein.raxmlGUI2",
     "productName": "raxmlGUI",

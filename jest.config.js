@@ -1,5 +1,3 @@
-// shortcut: jest comes from react-scripts, add it when that toolchain leaves.
-
 module.exports = {
   testEnvironment: 'jsdom',
   setupFiles: [ '<rootDir>/jest/setup.js' ],
