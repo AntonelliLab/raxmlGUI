@@ -22,6 +22,9 @@ const gonePackages = [
   'react-scripts',
   'electron-webpack',
   '@sentry/webpack-plugin',
+  'cross-env',
+  'shx',
+  'wait-on',
 ];
 
 it( 'drops the Create React App and electron-webpack toolchain', () => {
