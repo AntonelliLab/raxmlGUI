@@ -57,6 +57,14 @@ test.describe('raxmlHPC', () => {
     expect(commandText).toMatch(/-f d/);
     expect(commandText).toMatch(/-m \S+/);
 
+    await page.getByLabel('copy-command').click();
+    await expect.poll(async () => electronApp.evaluate(async ({ clipboard }) => clipboard.readText())).toBe(commandText);
+
+    await page.getByText('How to cite?').click();
+    await page.getByRole('button', { name: 'Copy to clipboard' }).click();
+    await expect.poll(async () => electronApp.evaluate(async ({ clipboard }) => clipboard.readText())).toContain('10.1111/2041-210X.13512');
+    await page.locator('#show-citation').getByRole('button', { name: 'Close' }).click();
+
     const outputFilename = `${outputId}.tre`;
     const bestTreePath = path.join(
       outputDir,

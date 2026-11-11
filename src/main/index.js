@@ -129,7 +129,9 @@ function initialize() {
         backgroundThrottling: false,
         // nodeIntegration: isDevMode,
         nodeIntegration: true,
-        contextIsolation: false, // Needed to expose ipcRenderer from preload script
+        // The preload exposes the renderer bridge. Node stays available to that script.
+        contextIsolation: true,
+        sandbox: false,
         ...( fs.existsSync( preloadPath )
           ? { preload: preloadPath }
           : {} ),

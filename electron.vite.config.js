@@ -123,7 +123,17 @@ export default defineConfig( ( { command } ) => ( {
     },
     plugins: [leaveDecoratedStoreOutOfMain(), ...sourceMapUpload( command )],
   },
-  preload: {},
+  preload: {
+    resolve: {
+      // cpus points its browser field at a stub. The page reads the real CPU list.
+      alias: {
+        cpus: resolve( __dirname, 'node_modules/cpus/index.js' ),
+      },
+    },
+    build: {
+      externalizeDeps: false,
+    },
+  },
   renderer: {
     root: '.',
     publicDir: false,
