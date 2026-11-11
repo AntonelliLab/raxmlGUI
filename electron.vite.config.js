@@ -1,7 +1,9 @@
 import { builtinModules } from 'node:module';
 import { resolve } from 'node:path';
+import { sentryVitePlugin } from '@sentry/bundler-plugins/vite';
 import { defineConfig } from 'electron-vite';
 import react from '@vitejs/plugin-react';
+import { version } from './package.json';
 
 const nodeBuiltins = builtinModules.filter( ( name ) => !name.startsWith( '_' ) );
 const nodePackages = [
@@ -101,13 +103,25 @@ function leaveDecoratedStoreOutOfMain() {
   };
 }
 
-export default defineConfig( {
+// Dev still builds main. The plugin only belongs on the production command, and only with a token.
+function sourceMapUpload( command ) {
+  if ( command !== 'build' || !process.env.SENTRY_ORG || !process.env.SENTRY_AUTH_TOKEN ) {
+    return [];
+  }
+  return sentryVitePlugin( {
+    release: {
+      name: `raxmlGUI@${version}`,
+    },
+  } );
+}
+
+export default defineConfig( ( { command } ) => ( {
   main: {
     // electron-webpack injected this path. The main process still reads the repo's static files through it.
     define: {
       __static: JSON.stringify( resolve( __dirname, 'static' ) ),
     },
-    plugins: [leaveDecoratedStoreOutOfMain()],
+    plugins: [leaveDecoratedStoreOutOfMain(), ...sourceMapUpload( command )],
   },
   preload: {},
   renderer: {
@@ -135,6 +149,7 @@ export default defineConfig( {
           ],
         },
       } ),
+      ...sourceMapUpload( command ),
     ],
     build: {
       rollupOptions: {
@@ -144,4 +159,4 @@ export default defineConfig( {
       },
     },
   },
-} );
+} ) );
