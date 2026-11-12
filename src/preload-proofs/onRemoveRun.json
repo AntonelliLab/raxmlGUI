@@ -1,0 +1,7 @@
+{
+  "key": "removeRun",
+  "method": "onRemoveRun",
+  "channel": "REMOVE_RUN",
+  "subscribe": true,
+  "result": null
+}

@@ -5,7 +5,7 @@ import { runEvents } from '../src/app/store/StoreBase';
 // React 19 flushes a render inside act() when this flag is set.
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Run and an alignment listen at construction. A test assignment keeps its object.
+// Run, an alignment, the run list, and the theme listen at construction. A test assignment keeps its object.
 const runEventStubs = {};
 for ( const name of Object.values( runEvents ) ) {
   runEventStubs[name] = () => () => {};

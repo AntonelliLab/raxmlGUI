@@ -2,6 +2,7 @@ import { observable, computed, action } from 'mobx';
 import Run from './Run';
 import * as ipc from '../../constants/ipc';
 import AppStore from './AppStore';
+import { runEvents } from './StoreBase';
 
 class RunList extends AppStore {
   @observable runs = [];
@@ -78,11 +79,11 @@ class RunList extends AppStore {
 
   listen = () => {
     this.listenTo( ipc.UNHANDLED_ERROR, this.onUnhandledError );
-    this.listenTo( ipc.ADD_RUN, this.addRun );
-    this.listenTo( ipc.REMOVE_RUN, this.deleteActive );
-    this.listenTo( ipc.TOGGLE_BACKBONE_CONSTRAINT, this.onBackboneConstraint );
-    this.listenTo(
-      ipc.TOGGLE_MULTIFURCATING_CONSTRAINT,
+    this.subscribe( runEvents.onAddRun, this.addRun );
+    this.subscribe( runEvents.onRemoveRun, this.deleteActive );
+    this.subscribe( runEvents.onToggleBackboneConstraint, this.onBackboneConstraint );
+    this.subscribe(
+      runEvents.onToggleMultifurcatingConstraint,
       this.onMultifurcatingConstraint,
     );
   };

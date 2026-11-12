@@ -1,7 +1,37 @@
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
-import { ALIGNMENT_MODEL_SELECTION_FAILURE, ALIGNMENT_MODEL_SELECTION_REQUEST, ALIGNMENT_MODEL_SELECTION_SUCCESS, ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, ASTRAL_REQUEST, ASTRAL_SUCCESS, COPY_TEXT, FILE_SHOW_IN_FOLDER, OPEN_PATH, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, RELOAD, RUN_ERROR, RUN_FINISHED, RUN_START, RUN_STDERR, RUN_STDOUT, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
+import {
+  ADD_RUN,
+  ALIGNMENT_MODEL_SELECTION_FAILURE,
+  ALIGNMENT_MODEL_SELECTION_REQUEST,
+  ALIGNMENT_MODEL_SELECTION_SUCCESS,
+  ALIGNMENT_PARSE,
+  ALIGNMENT_SELECT,
+  ASTRAL_FILE_SELECT,
+  ASTRAL_REQUEST,
+  ASTRAL_SUCCESS,
+  COPY_TEXT,
+  DARK_MODE,
+  FILE_SHOW_IN_FOLDER,
+  LIGHT_MODE,
+  OPEN_PATH,
+  OUTPUT_CHECK,
+  OUTPUT_DIR_SELECT,
+  PARTITION_FILE_SELECT,
+  READ_FILE,
+  RELOAD,
+  REMOVE_RUN,
+  RUN_ERROR,
+  RUN_FINISHED,
+  RUN_START,
+  RUN_STDERR,
+  RUN_STDOUT,
+  TOGGLE_BACKBONE_CONSTRAINT,
+  TOGGLE_MULTIFURCATING_CONSTRAINT,
+  TREE_SELECT,
+  WRITE_FILE,
+} from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -227,6 +257,24 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   onModelSelectionFailure( listener ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_FAILURE, listener );
+  },
+  onAddRun( listener ) {
+    return onEvent( ADD_RUN, listener );
+  },
+  onRemoveRun( listener ) {
+    return onEvent( REMOVE_RUN, listener );
+  },
+  onLightMode( listener ) {
+    return onEvent( LIGHT_MODE, listener );
+  },
+  onDarkMode( listener ) {
+    return onEvent( DARK_MODE, listener );
+  },
+  onToggleBackboneConstraint( listener ) {
+    return onEvent( TOGGLE_BACKBONE_CONSTRAINT, listener );
+  },
+  onToggleMultifurcatingConstraint( listener ) {
+    return onEvent( TOGGLE_MULTIFURCATING_CONSTRAINT, listener );
   },
   getPathForFile( file ) {
     return webUtils.getPathForFile( file );

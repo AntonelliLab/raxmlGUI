@@ -8,6 +8,12 @@ export const runEvents = {
   onRunFinished: 'onRunFinished',
   onRunError: 'onRunError',
   onAstralSuccess: 'onAstralSuccess',
+  onAddRun: 'onAddRun',
+  onRemoveRun: 'onRemoveRun',
+  onLightMode: 'onLightMode',
+  onDarkMode: 'onDarkMode',
+  onToggleBackboneConstraint: 'onToggleBackboneConstraint',
+  onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
 };
 
 export default class StoreBase {

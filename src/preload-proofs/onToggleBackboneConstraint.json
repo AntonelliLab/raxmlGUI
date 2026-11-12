@@ -1,0 +1,7 @@
+{
+  "key": "backboneConstraint",
+  "method": "onToggleBackboneConstraint",
+  "channel": "TOGGLE_BACKBONE_CONSTRAINT",
+  "subscribe": true,
+  "result": null
+}
