@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
 import { selectAlignment } from './selectAlignment';
+import { checkOutput } from './checkOutput';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -137,67 +138,8 @@ ipcMain.on( ipc.FOLDER_OPEN, ( event, fullPath ) => {
   shell.showItemInFolder( fullPath );
 } );
 // Check if raxml output files already exist with current name
-ipcMain.on( ipc.OUTPUT_CHECK, async ( event, data ) => {
-  const { id, outputDir, outputName } = data;
-  const outputFilename = `${outputName}.tre`;
-  console.log( 'Check unused filename:', outputFilename );
-  if ( !outputDir ) {
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      outputDir,
-      outputName,
-      ok: true,
-      notice: '',
-      outputNameUnused: outputName,
-      resultFilenames: [],
-    } );
-    return;
-  }
-  try {
-    const filenames = await fs.readdir( outputDir );
-    let outputNameUnused = outputName;
-    const filterResultFilenames = ( filename ) => filename.startsWith( `${outputNameUnused}.raxml.` ) ||
-            filename.endsWith( outputNameUnused ) ||
-            filename.endsWith( `.${outputNameUnused}.txt` ) ||
-            filename.endsWith( `${outputNameUnused}.tre` );
-    const resultFilenamesMain = filenames.filter( filterResultFilenames );
-    const filterResultFilenamesAdditional = ( filename ) => filename.startsWith( `RAxML_GUI_ModelTest_${outputNameUnused}.` ) ||
-            filename.startsWith( `RAxML_GUI_Settings_${outputNameUnused}.` );
-    const resultFilenamesAdditional = filenames.filter( filterResultFilenamesAdditional );
-    const resultFilenames = resultFilenamesMain.concat( resultFilenamesAdditional );
-    let counter = 1;
-    const matchCounterName = /(\w+)_\d+$/.exec( outputName );
-    const outputNameWithoutCounter = matchCounterName
-      ? matchCounterName[1]
-      : outputName;
-    while ( filenames.find( filterResultFilenames ) ) {
-      outputNameUnused = `${outputNameWithoutCounter}_${counter}`;
-      ++counter;
-    }
-    const ok = outputName === outputNameUnused;
-    const notice = ok
-      ? ''
-      : `Using '${outputNameUnused}'`;
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      outputDir,
-      outputName,
-      ok,
-      notice,
-      outputNameUnused,
-      resultFilenames,
-    } );
-  }
-  catch ( error ) {
-    console.log( ipc.OUTPUT_CHECK, 'error:', error );
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      ok: false,
-      notice: error.message,
-      error,
-      resultFilenames: [],
-    } );
-  }
+ipcMain.handle( ipc.OUTPUT_CHECK, ( _event, { outputDir, outputName } ) => {
+  return checkOutput( { outputDir, outputName } );
 } );
 // Function to combine multiple output trees into one file
 async function combineOutput( outputDir, outputFilename ) {

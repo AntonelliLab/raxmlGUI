@@ -80,6 +80,7 @@ try {
   const copied = await rendererBridge.copyText('bridge-text');
   result.copied = copied === undefined;
   result.alignments = await rendererBridge.selectAlignment('run-7');
+  result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -123,6 +124,16 @@ app.whenReady().then(async () => {
   ipcMain.handle('ALIGNMENT_SELECT', async (_event, runId) => {
     console.log('RUNID ' + runId);
     return [{ path: '/data/primates.fasta', name: 'primates.fasta' }];
+  });
+  ipcMain.handle('OUTPUT_CHECK', async (_event, data) => {
+    return {
+      outputDir: data.outputDir,
+      outputName: data.outputName,
+      ok: true,
+      notice: '',
+      outputNameUnused: data.outputName,
+      resultFilenames: ['tree.raxml.log'],
+    };
   });
   const fs = require('fs');
   ipcMain.handle('READ_FILE', async (_event, filePath) => {
@@ -176,6 +187,14 @@ setTimeout(() => app.exit(2), 8000);
   expect( payload.result.alignments ).toEqual( [
     { path: '/data/primates.fasta', name: 'primates.fasta' },
   ] );
+  expect( payload.result.outputCheck ).toEqual( {
+    outputDir: '/out',
+    outputName: 'tree',
+    ok: true,
+    notice: '',
+    outputNameUnused: 'tree',
+    resultFilenames: ['tree.raxml.log'],
+  } );
   expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
   expect( payload.clip ).toBe( 'bridge-text' );
   expect( payload.result.sent ).toBe( true );

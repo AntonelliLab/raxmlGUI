@@ -794,21 +794,6 @@ class Run extends StoreBase {
 
   id = 0;
 
-  // Async query to electron backend
-  sendAsync = ( channel, payload, onChannel ) => {
-    return new Promise( ( resolve, reject ) => {
-      const { id } = this;
-      const listener = ( event, result ) => {
-        if ( result.id === this.id ) {
-          ipcRenderer.removeListener( onChannel, listener );
-          resolve( result );
-        }
-      };
-      ipcRenderer.on( onChannel, listener );
-      ipcRenderer.send( channel, Object.assign( { id }, payload ) );
-    } );
-  };
-
   binary = new Binary( this );
   numThreads = new NumThreads( this );
 
@@ -903,16 +888,11 @@ class Run extends StoreBase {
       if ( !check ) {
         return defaultValue;
       }
-      const result = await this.sendAsync(
-        ipc.OUTPUT_CHECK,
-        {
-          id,
-          outputDir,
-          outputName: outputNameToCheck,
-        },
-        ipc.OUTPUT_CHECKED,
-      );
-      return result;
+      const { rendererBridge } = /** @type {any} */ ( window );
+      return rendererBridge.checkOutput( {
+        outputDir,
+        outputName: outputNameToCheck,
+      } );
     },
   );
 
