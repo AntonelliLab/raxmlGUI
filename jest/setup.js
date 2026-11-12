@@ -42,8 +42,12 @@ function withBridgeEvents( next ) {
     next.host = host;
   }
   // Run.dispose calls cancel, which calls cancelRun.
+  // Alignment.dispose calls cancelModelTest while model selection is loading.
   if ( typeof next.cancelRun !== 'function' ) {
     next.cancelRun = () => {};
+  }
+  if ( typeof next.cancelModelSelection !== 'function' ) {
+    next.cancelModelSelection = () => {};
   }
   return next;
 }

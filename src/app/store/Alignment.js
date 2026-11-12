@@ -339,7 +339,8 @@ class Alignment extends InputFile {
     cancelModelTest = () => {
       if ( this.modeltestLoading ) {
         this.modeltestLoading = false;
-        ipcRenderer.send( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        rendererBridge.cancelModelSelection( this.id );
       }
     };
 

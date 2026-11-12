@@ -72,6 +72,20 @@ it( 'a model selection result sets the model', () => {
   expect( stops.slice().sort() ).toEqual( ['failure', 'success'] );
 } );
 
+it( 'the model-selection cancel control uses cancelModelSelection', () => {
+  const cancelModelSelection = jest.fn();
+  bridge( { cancelModelSelection } );
+  const run = new Run( { onError() {} }, 'run-7' );
+  run.addAlignments( [{ path: '/data/primates.fasta' }] );
+  const alignment = run.alignments[0];
+  alignment.modeltestLoading = true;
+
+  alignment.cancelModelTest();
+
+  expect( cancelModelSelection ).toHaveBeenCalledWith( 'run-7_/data/primates.fasta' );
+  expect( alignment.modeltestLoading ).toBe( false );
+} );
+
 it( 'a model selection failure shows the error', () => {
   const { listeners } = bridge();
   const run = new Run( { onError() {} }, 'run-7' );

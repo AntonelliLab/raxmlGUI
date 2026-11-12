@@ -138,6 +138,7 @@ The `File` stays on the page.
 Starting model selection calls `rendererBridge.startModelSelection` with `{ id, filePath, outputDir, dataType, numThreads, binaryName }`.
 The chosen model arrives on `rendererBridge.onModelSelectionSuccess` as `{ id, result: { raxml, extraFlag, raxmlNG } }`.
 A failure arrives on `rendererBridge.onModelSelectionFailure` as `{ id, error }`.
+Cancelling model selection calls `rendererBridge.cancelModelSelection` with the alignment id, which resolves null, and the handler returns before `ALIGNMENT_MODEL_SELECTION_SUCCESS` and `ALIGNMENT_MODEL_SELECTION_FAILURE`.
 Starting a run calls `rendererBridge.startRun` with `{ id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath }` and awaits it.
 Stdout and stderr arrive on `onRunStdout` and `onRunStderr` as `{ id, content }`.
 Finish arrives on `onRunFinished` as `{ id, resultDir, resultFilenames, exitCode }`.
