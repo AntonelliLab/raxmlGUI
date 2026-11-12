@@ -135,7 +135,7 @@ const binParentDir = app.isPackaged
     linux: 'Linux',
   } );
 const binaryDir = path.join( getStaticDir(), 'bin', binParentDir );
-ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
+ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
   cancelProcess( id );
   const binaryPath = path.resolve( binaryDir, binaryName );
   console.log( `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args );

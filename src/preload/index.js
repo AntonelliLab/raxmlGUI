@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
-import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
+import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, RUN_ERROR, RUN_FINISHED, RUN_START, RUN_STDERR, RUN_STDOUT, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -142,6 +142,12 @@ contextBridge.exposeInMainWorld( 'require', ( id ) => {
 
 contextBridge.exposeInMainWorld( 'process', publish( load( 'process' ) ) );
 
+function onEvent( channel, listener ) {
+  const wrapped = ( _event, payload ) => listener( payload );
+  ipcRenderer.on( channel, wrapped );
+  return () => ipcRenderer.removeListener( channel, wrapped );
+}
+
 contextBridge.exposeInMainWorld( 'rendererBridge', {
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
@@ -172,6 +178,21 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   selectTree( runId, type ) {
     return ipcRenderer.invoke( TREE_SELECT, runId, type );
+  },
+  startRun( payload ) {
+    return ipcRenderer.invoke( RUN_START, payload );
+  },
+  onRunStdout( listener ) {
+    return onEvent( RUN_STDOUT, listener );
+  },
+  onRunStderr( listener ) {
+    return onEvent( RUN_STDERR, listener );
+  },
+  onRunFinished( listener ) {
+    return onEvent( RUN_FINISHED, listener );
+  },
+  onRunError( listener ) {
+    return onEvent( RUN_ERROR, listener );
   },
   getPathForFile( file ) {
     return webUtils.getPathForFile( file );

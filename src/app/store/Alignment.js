@@ -496,9 +496,8 @@ class Alignment extends InputFile {
         }
       },
     );
-    //TODO: Transform above to the form of below to be able to unlisten on removal
-    this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
-    this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
+    this.subscribe( 'onRunStdout', this.onRunStdout );
+    this.subscribe( 'onRunStderr', this.onRunStderr );
   };
 
   @action clearModified = () => {
@@ -533,7 +532,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStdout = ( event, { id, content } ) => {
+    onRunStdout = ( { id, content } ) => {
       if ( id === this.id ) {
       // TODO: Keep local log?
         this.run.stdout += content;
@@ -541,7 +540,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStderr = ( event, { id, content } ) => {
+    onRunStderr = ( { id, content } ) => {
       if ( id === this.id ) {
         this.run.stderr += content;
       }

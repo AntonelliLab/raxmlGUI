@@ -2003,7 +2003,8 @@ Results saved to: ${this.outputDir}
       }
       await this.writeSettings();
       console.log( `Start run ${id} with args ${args}` );
-      ipcRenderer.send( ipc.RUN_START, {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.startRun( {
         id,
         args,
         binaryName: binary.value,
@@ -2235,10 +2236,10 @@ Results saved to: ${this.outputDir}
   };
 
   listen = () => {
-    this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
-    this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
-    this.listenTo( ipc.RUN_FINISHED, this.onRunFinished );
-    this.listenTo( ipc.RUN_ERROR, this.onRunError );
+    this.subscribe( 'onRunStdout', this.onRunStdout );
+    this.subscribe( 'onRunStderr', this.onRunStderr );
+    this.subscribe( 'onRunFinished', this.onRunFinished );
+    this.subscribe( 'onRunError', this.onRunError );
     this.listenTo( ipc.ASTRAL_SUCCESS, this.onAstralFinished );
   };
 
@@ -2247,14 +2248,14 @@ Results saved to: ${this.outputDir}
   // -----------------------------------------------------------
 
   @action
-    onRunStdout = ( event, { id, content } ) => {
+    onRunStdout = ( { id, content } ) => {
       if ( id === this.id ) {
         this.stdout += content;
       }
     };
 
   @action
-    onRunStderr = ( event, { id, content } ) => {
+    onRunStderr = ( { id, content } ) => {
       if ( id === this.id ) {
         this.stderr += content;
       }
@@ -2273,7 +2274,7 @@ Results saved to: ${this.outputDir}
     };
 
   @action
-    onRunFinished = ( event, { id, resultDir, resultFilenames, exitCode } ) => {
+    onRunFinished = ( { id, resultDir, resultFilenames, exitCode } ) => {
       if ( id === this.id ) {
         console.log(
           `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
@@ -2287,7 +2288,7 @@ Results saved to: ${this.outputDir}
     };
 
   @action
-    onRunError = ( event, { id, error } ) => {
+    onRunError = ( { id, error } ) => {
       if ( id === this.id ) {
         console.log( `Process ${id} finished with error:`, error );
         this.error = error;
