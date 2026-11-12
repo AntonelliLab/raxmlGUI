@@ -16,7 +16,6 @@ import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
 import { selectPartitionFile } from './selectPartitionFile';
 import { selectTree } from './selectTree';
-import { reload } from './reload';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -84,7 +83,7 @@ ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
   await fs.writeFile( filePath, text );
 } );
 ipcMain.handle( ipc.RELOAD, ( event ) => {
-  reload( event.sender );
+  event.sender.reload();
 } );
 ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
   return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );
