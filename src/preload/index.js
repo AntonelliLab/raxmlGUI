@@ -3,6 +3,7 @@ import os from 'node:os';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
 import {
   ADD_RUN,
+  ALIGNMENT_MODEL_SELECTION_CANCEL,
   ALIGNMENT_MODEL_SELECTION_FAILURE,
   ALIGNMENT_MODEL_SELECTION_REQUEST,
   ALIGNMENT_MODEL_SELECTION_SUCCESS,
@@ -255,6 +256,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   startModelSelection( payload ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_REQUEST, payload );
+  },
+  cancelModelSelection( id ) {
+    return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_CANCEL, id );
   },
   onModelSelectionSuccess( listener ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_SUCCESS, listener );
