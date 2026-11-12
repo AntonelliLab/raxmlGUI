@@ -13,6 +13,7 @@ export const RUN_FINISHED = 'RUN_FINISHED';
 export const RUN_ERROR = 'RUN_ERROR';
 export const RUN_CANCEL = 'RUN_CANCEL';
 export const FILE_OPEN = 'FILE_OPEN';
+export const OPEN_PATH = 'OPEN_PATH';
 export const FILE_SHOW_IN_FOLDER = 'FILE_SHOW_IN_FOLDER';
 export const FOLDER_OPEN = 'FOLDER_OPEN';
 export const OUTPUT_CHECK = 'OUTPUT_CHECK';
