@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { contextBridge, ipcRenderer } from 'electron';
-import { ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
+import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -148,6 +148,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   selectAlignment( runId ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
+  },
+  parseAlignment( id, filePath ) {
+    return ipcRenderer.invoke( ALIGNMENT_PARSE, id, filePath );
   },
   selectAstralFile( runId ) {
     return ipcRenderer.invoke( ASTRAL_FILE_SELECT, runId );
