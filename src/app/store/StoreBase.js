@@ -7,6 +7,7 @@ export const runEvents = {
   onRunStderr: 'onRunStderr',
   onRunFinished: 'onRunFinished',
   onRunError: 'onRunError',
+  onAstralSuccess: 'onAstralSuccess',
   onAddRun: 'onAddRun',
   onRemoveRun: 'onRemoveRun',
   onLightMode: 'onLightMode',

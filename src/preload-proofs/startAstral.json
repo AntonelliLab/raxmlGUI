@@ -1,0 +1,13 @@
+{
+  "key": "astralStart",
+  "method": "startAstral",
+  "args": [
+    {
+      "id": "run-7",
+      "binaryName": "astral.5.7.8.jar",
+      "args": [["-i", "/data/trees.tre", "-o", "/out/ASTRAL_run-7.tre"]]
+    }
+  ],
+  "channel": "ASTRAL_REQUEST",
+  "result": null
+}

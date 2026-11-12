@@ -9,6 +9,8 @@ import {
   ALIGNMENT_PARSE,
   ALIGNMENT_SELECT,
   ASTRAL_FILE_SELECT,
+  ASTRAL_REQUEST,
+  ASTRAL_SUCCESS,
   COPY_TEXT,
   DARK_MODE,
   FILE_SHOW_IN_FOLDER,
@@ -236,6 +238,12 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   onRunError( listener ) {
     return onEvent( RUN_ERROR, listener );
+  },
+  startAstral( payload ) {
+    return ipcRenderer.invoke( ASTRAL_REQUEST, payload );
+  },
+  onAstralSuccess( listener ) {
+    return onEvent( ASTRAL_SUCCESS, listener );
   },
   startModelSelection( payload ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_REQUEST, payload );
