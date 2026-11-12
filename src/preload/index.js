@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { contextBridge, ipcRenderer } from 'electron';
-import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, TREE_SELECT } from '../constants/ipc';
+import { ALIGNMENT_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, READ_FILE, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -155,10 +155,10 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   checkOutput( { outputDir, outputName } ) {
     return ipcRenderer.invoke( OUTPUT_CHECK, { outputDir, outputName } );
   },
-  parseAlignment( id, filePath ) {
-    return ipcRenderer.invoke( ALIGNMENT_PARSE, id, filePath );
+  readFile( filePath ) {
+    return ipcRenderer.invoke( READ_FILE, filePath );
   },
-  selectTree( runId, type ) {
-    return ipcRenderer.invoke( TREE_SELECT, runId, type );
+  writeFile( filePath, text ) {
+    return ipcRenderer.invoke( WRITE_FILE, filePath, text );
   },
 } );

@@ -73,6 +73,7 @@ launchCopy( 'copyText resolves void and the clipboard receives the text', () => 
   const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
   const mainFile = path.join( dir, 'main.js' );
   const pageFile = path.join( dir, 'page.html' );
+  fs.writeFileSync( path.join( dir, 'genes.part' ), 'DNA, gene = 1-100\n' );
   fs.writeFileSync( pageFile, `<script type="module">
 const result = {};
 try {
@@ -81,8 +82,6 @@ try {
   result.alignments = await rendererBridge.selectAlignment('run-7');
   result.outputDir = await rendererBridge.selectOutputDir('run-7');
   result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
-  result.parsed = await rendererBridge.parseAlignment('align-1', '/data/primates.fasta');
-  result.tree = await rendererBridge.selectTree('run-7', 'backboneConstraint');
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -106,6 +105,11 @@ try {
     });
   });
   result.ended = true;
+  const readPath = ${JSON.stringify( path.join( dir, 'genes.part' ) )};
+  const writePath = ${JSON.stringify( path.join( dir, 'concat.fasta' ) )};
+  result.text = await rendererBridge.readFile(readPath);
+  const written = await rendererBridge.writeFile(writePath, '>Homo\\nAT');
+  result.written = written === undefined;
 } catch (error) {
   result.error = String(error && error.stack || error);
 }
@@ -136,12 +140,12 @@ app.whenReady().then(async () => {
       resultFilenames: ['tree.raxml.log'],
     };
   });
-  ipcMain.handle('ALIGNMENT_PARSE', async (_event, id, filePath) => {
-    return { alignment: { id, filePath }, change: null };
+  const fs = require('fs');
+  ipcMain.handle('READ_FILE', async (_event, filePath) => {
+    return fs.promises.readFile(filePath, 'utf8');
   });
-  ipcMain.handle('TREE_SELECT', async (_event, runId, type) => {
-    console.log('TREE ' + runId + ' ' + type);
-    return { type, filePath: '/data/backbone.nwk' };
+  ipcMain.handle('WRITE_FILE', async (_event, filePath, text) => {
+    await fs.promises.writeFile(filePath, text);
   });
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
   const win = new BrowserWindow({
@@ -196,18 +200,9 @@ setTimeout(() => app.exit(2), 8000);
     outputNameUnused: 'tree',
     resultFilenames: ['tree.raxml.log'],
   } );
-  expect( payload.result.parsed ).toEqual( {
-    alignment: { id: 'align-1', filePath: '/data/primates.fasta' },
-    change: null,
-  } );
   expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
   expect( payload.result.outputDir ).toBe( '/data/results' );
   expect( `${result.stdout}` ).toContain( 'OUTPUTDIR run-7' );
-  expect( payload.result.tree ).toEqual( {
-    type: 'backboneConstraint',
-    filePath: '/data/backbone.nwk',
-  } );
-  expect( `${result.stdout}` ).toContain( 'TREE run-7 backboneConstraint' );
   expect( payload.clip ).toBe( 'bridge-text' );
   expect( payload.result.sent ).toBe( true );
   expect( payload.result.file ).toBe( 'ok' );
@@ -217,6 +212,9 @@ setTimeout(() => app.exit(2), 8000);
   expect( typeof payload.result.model ).toBe( 'string' );
   expect( payload.result.model.length ).toBeGreaterThan( 0 );
   expect( payload.result.ended ).toBe( true );
+  expect( payload.result.text ).toBe( 'DNA, gene = 1-100\n' );
+  expect( payload.result.written ).toBe( true );
+  expect( fs.readFileSync( path.join( dir, 'concat.fasta' ), 'utf8' ) ).toBe( '>Homo\nAT' );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
 

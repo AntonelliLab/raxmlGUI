@@ -9,11 +9,9 @@ import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
-import { parseAlignment } from './parseAlignment';
 import { selectAlignment } from './selectAlignment';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
-import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -73,6 +71,12 @@ ipcMain.on( ipc.INIT_APP_STATE, ( event ) => {
 } );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );
+} );
+ipcMain.handle( ipc.READ_FILE, ( _event, filePath ) => {
+  return fs.readFile( filePath, 'utf-8' );
+} );
+ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
+  await fs.writeFile( filePath, text );
 } );
 ipcMain.on( ipc.RELOAD, () => {
   BrowserWindow
@@ -398,13 +402,91 @@ async function convertAlignment( alignmentPath ) {
   console.log( stdout, stderr );
   return newPath;
 }
-ipcMain.handle( ipc.ALIGNMENT_PARSE, ( _event, id, filePath ) => {
-  return parseAlignment( id, filePath, {
-    readFormat: readalGetFormat,
-    convert: convertAlignment,
-    parse: io.parseAlignment,
-    write: io.writeAlignment,
-  } );
+// // Receive a new batch of alignments dropped into the app
+ipcMain.on( ipc.ALIGNMENT_PARSE_REQUEST, async ( event, { id, filePath } ) => {
+  console.log( 'Parse alignment', filePath );
+  let format;
+  let newFilePath;
+  let converted;
+  let modified;
+  let modificationMessages = [];
+  // Use readal to check the alignment file format
+  try {
+    format = await readalGetFormat( filePath );
+    if ( format !== 'fasta' && format !== 'phylip' ) {
+      newFilePath = await convertAlignment( filePath );
+      converted = true;
+    }
+  }
+  catch ( error ) {
+    console.log( 'error', error );
+  }
+  try {
+    const actualPath = newFilePath
+      ? newFilePath
+      : filePath;
+    const alignment = await io.parseAlignment( actualPath );
+    // Check if duplicate or invalid taxon names
+    const taxons = new Map();
+    let identicalCounter = 0;
+    alignment.sequences.forEach( async ( sequence, index ) => {
+      // If the taxon name is longer than 256 characters raxml will error out
+      if ( sequence.taxon.length > 256 ) {
+        const message = `Taxon name is too long: '${sequence.taxon}'.`;
+        console.log( message );
+        // Shorten the invalid taxon name
+        alignment.sequences[index].taxon = sequence.taxon.slice( 0, 253 );
+        modified = true;
+        modificationMessages.push( message );
+      }
+      const ind = taxons.get( sequence.taxon );
+      // Check if a sequence with this name is already in the map
+      if ( ind !== undefined ) {
+        const message = `Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`;
+        console.log( message );
+        // Add a digit to the end of the second sequence
+        identicalCounter++;
+        alignment.sequences[index].taxon =
+                    `${sequence.taxon}_${identicalCounter}`;
+        modified = true;
+        modificationMessages.push( message );
+      }
+      // If the taxon name has one of those characters raxml will error out
+      const excludedCharacters = [':', ',', '.', '(', ')', '[', ']', ';', "'"];
+      // Test white-space characters and excluded characters above
+      const testInvalid = new RegExp( `[\\s${excludedCharacters.map( ( c ) => `\\${c}` ).join( '' )}]`, 'g' );
+      if ( testInvalid.test( sequence.taxon ) ) {
+        const message = `Illegal characters in sequence name = taxon '${sequence.taxon}' found.`;
+        console.log( message );
+        // Replace the invalid characters in taxon names with underscores
+        alignment.sequences[index].taxon = sequence.taxon.replace( testInvalid, '_' );
+        modified = true;
+        modificationMessages.push( message );
+      }
+      // Add this taxon to the map for checking
+      taxons.set( sequence.taxon, index );
+    } );
+    if ( modified ) {
+      // Write the new alignment to file
+      const baseName = path.basename( actualPath, path.extname( actualPath ) );
+      newFilePath = actualPath.replace( baseName, `${baseName}_modified` );
+      await io.writeAlignment( newFilePath, alignment );
+    }
+    send( event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment } );
+    if ( newFilePath ) {
+      send( event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, {
+        id,
+        newFilePath,
+        format,
+        converted,
+        modified,
+        modificationMessages,
+      } );
+    }
+  }
+  catch ( error ) {
+    send( event, ipc.ALIGNMENT_PARSE_FAILURE, { id, error } );
+  }
 } );
 // Open a dialog to select alignments
 ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event, _runId ) => {
@@ -557,6 +639,26 @@ ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( event, id ) => {
   console.log( `Cancel modeltest process ${id}...` );
   cancelProcess( id );
 } );
-ipcMain.handle( ipc.TREE_SELECT, ( _event, _runId, type ) => {
-  return selectTree( ( options ) => dialog.showOpenDialog( options ), type );
+// Open a dialog to select a tree file
+ipcMain.on( ipc.TREE_SELECT, ( event, params ) => {
+  const { id, type } = params;
+  dialog
+    .showOpenDialog( {
+      title: 'Select a tree file',
+      properties: ['openFile'],
+    } )
+    .then( ( result ) => {
+      console.debug( ipc.TREE_SELECT, result );
+      if ( result.canceled ) {
+        return;
+      }
+      send( event, ipc.TREE_SELECTED, {
+        id,
+        type,
+        filePath: result.filePaths[0],
+      } );
+    } )
+    .catch( ( err ) => {
+      console.debug( ipc.TREE_SELECT, err );
+    } );
 } );

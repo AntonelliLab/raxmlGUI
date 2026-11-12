@@ -6,7 +6,6 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
-import util from 'util';
 import fs from 'fs';
 import os from 'os';
 
@@ -19,8 +18,6 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
-
-const readFile = util.promisify( fs.readFile );
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlRateOptions = raxmlSettings.rateOptions;
@@ -842,23 +839,26 @@ class Run extends StoreBase {
   backboneConstraint = new BackboneConstraintTree( this );
   multifurcatingConstraint = new MultifurcatingConstraintTree( this );
 
-  chooseTree = async ( type ) => {
-    const { rendererBridge } = /** @type {any} */ ( window );
-    const chosen = await rendererBridge.selectTree( this.id, type );
-    if ( !chosen ) {
-      return;
-    }
-    this.addTreeFiles( chosen.type, [{ path: chosen.filePath }] );
-  };
+  @action
+    loadTreeFile = () => {
+      ipcRenderer.send( ipc.TREE_SELECT, { id: this.id, type: 'tree' } );
+    };
 
   @action
-    loadTreeFile = () => this.chooseTree( 'tree' );
+    loadBackboneConstraintFile = () => {
+      ipcRenderer.send( ipc.TREE_SELECT, {
+        id: this.id,
+        type: 'backboneConstraint',
+      } );
+    };
 
   @action
-    loadBackboneConstraintFile = () => this.chooseTree( 'backboneConstraint' );
-
-  @action
-    loadMultifurcatingConstraintFile = () => this.chooseTree( 'multifurcatingConstraint' );
+    loadMultifurcatingConstraintFile = () => {
+      ipcRenderer.send( ipc.TREE_SELECT, {
+        id: this.id,
+        type: 'multifurcatingConstraint',
+      } );
+    };
 
   @observable disableCheckUndeterminedSequence = true;
 
@@ -2162,7 +2162,8 @@ Results saved to: ${this.outputDir}
         return;
       }
       const { path } = files[0];
-      const content = await readFile( path, 'utf-8' );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      const content = await rendererBridge.readFile( path );
       this.partitionFile = path;
       this.partitionFileContent = content;
     };
@@ -2232,6 +2233,7 @@ Results saved to: ${this.outputDir}
   };
 
   listen = () => {
+    this.listenTo( ipc.TREE_SELECTED, this.onTreeSelected );
     this.listenTo( ipc.PARTITION_FILE_SELECTED, this.onPartitionSelected );
     this.listenTo( ipc.ASTRAL_FILE_SELECTED, this.onAstralFileAdded );
     this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
@@ -2244,6 +2246,13 @@ Results saved to: ${this.outputDir}
   // -----------------------------------------------------------
   // Listeners
   // -----------------------------------------------------------
+
+  @action
+    onTreeSelected = ( event, { id, type, filePath } ) => {
+      if ( id === this.id ) {
+        this.addTreeFiles( type, [{ path: filePath }] );
+      }
+    };
 
   @action
     onAstralFileAdded = ( event, { id, file } ) => {
