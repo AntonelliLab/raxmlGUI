@@ -89,11 +89,33 @@ const result = {};
 try {
   const copied = await rendererBridge.copyText('bridge-text');
   result.copied = copied === undefined;
+  const { ipcRenderer } = require('electron');
   const proofs = ${JSON.stringify( proofs )};
   for (const proof of proofs) {
-    result[proof.key] = await rendererBridge[proof.method](...proof.args);
+    if (proof.subscribe) {
+      result[proof.key] = await new Promise((resolve, reject) => {
+        const heard = [];
+        const hear = (payload) => {
+          heard.push(payload);
+          if (heard.length < 2) return;
+          if (JSON.stringify(heard[0]) !== JSON.stringify(heard[1])) {
+            reject(new Error('listeners disagree'));
+            return;
+          }
+          resolve(heard[0]);
+        };
+        const stop = rendererBridge[proof.method](hear);
+        if (typeof stop !== 'function') {
+          reject(new Error('unsubscribe missing'));
+          return;
+        }
+        rendererBridge[proof.method](hear);
+        ipcRenderer.send('proof-ready', proof.channel);
+      });
+    } else {
+      result[proof.key] = await rendererBridge[proof.method](...proof.args);
+    }
   }
-  const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
   const fs = require('fs');
@@ -169,11 +191,16 @@ app.whenReady().then(async () => {
   });
   const proofs = ${JSON.stringify( proofs )};
   for (const proof of proofs) {
+    if (proof.subscribe) continue;
     ipcMain.handle(proof.channel, async (_event, ...args) => {
       if (proof.log) console.log(proof.log + ' ' + args[0]);
       return proof.result;
     });
   }
+  ipcMain.on('proof-ready', (event, channel) => {
+    const proof = proofs.find((item) => item.subscribe && item.channel === channel);
+    event.sender.send(channel, proof.result);
+  });
   const fs = require('fs');
   ipcMain.handle('READ_FILE', async (_event, filePath) => {
     return fs.promises.readFile(filePath, 'utf8');
