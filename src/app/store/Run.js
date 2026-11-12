@@ -2243,7 +2243,7 @@ Results saved to: ${this.outputDir}
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
     this.subscribe( runEvents.onRunFinished, this.onRunFinished );
     this.subscribe( runEvents.onRunError, this.onRunError );
-    this.subscribe( 'onAstralSuccess', this.onAstralSuccess );
+    this.subscribe( runEvents.onAstralSuccess, this.onAstralSuccess );
   };
 
   // -----------------------------------------------------------

@@ -1,5 +1,6 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
 import Run from './Run';
+import { runEvents } from './StoreBase';
 
 function bridge( extra ) {
   const listeners = {
@@ -7,7 +8,7 @@ function bridge( extra ) {
   };
   const stops = [];
   window.rendererBridge = {
-    onAstralSuccess: ( listener ) => {
+    [runEvents.onAstralSuccess]: ( listener ) => {
       listeners.success.push( listener );
       return () => {
         stops.push( 'success' );

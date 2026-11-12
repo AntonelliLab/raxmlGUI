@@ -16,6 +16,14 @@ module.exports = {
     indent: ['error', 2, { SwitchCase: 1 }],
     'multiline-ternary': ['error', 'always'],
     'space-in-parens': ['error', 'always'],
+    'no-restricted-syntax': [
+      'error',
+      'WithStatement',
+      {
+        selector: "CallExpression[callee.property.name='subscribe'][arguments.0.type='Literal']",
+        message: 'Pass a runEvents value.',
+      },
+    ],
   },
   overrides: [
     {
