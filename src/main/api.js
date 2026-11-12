@@ -461,6 +461,13 @@ ipcMain.handle( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
 } );
 ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
+  const token = beginRun( id );
+  const reportFailure = ( error ) => {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
+    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } );
+  };
   const { name } = parsePath( filePath );
   const outputPath = path.join( outputDir, `RAxML_GUI_ModelTest_${name}` );
   try {
@@ -490,21 +497,23 @@ ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) 
   };
   let exitCode = 0;
   try {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
     console.log( `Run modeltest-ng with args:`, args );
     exitCode = await runProcess( id, event, binaryDir, binaryName, args, {
       onStdOut,
     } );
+    if ( !stillRunning( id, token ) || exitCode === 'SIGTERM' ) {
+      return;
+    }
     if ( exitCode !== 0 ) {
-      if ( exitCode === 'SIGTERM' ) {
-        // Cancelled
-        return;
-      }
       throw new Error( `Error trying to run modeltest-ng, exited with code '${exitCode}'.` );
     }
   }
   catch ( err ) {
     console.error( 'Modeltest run error:', err );
-    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error: err } );
+    reportFailure( err );
     return;
   }
   // Parse stdout to get the best models
@@ -532,10 +541,10 @@ ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) 
     console.log( 'output:', commands );
     const error = new Error( `Couldn't parse best models from modeltest-ng output. Check alignment log.` );
     error.name = 'Modeltest error';
-    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } );
+    reportFailure( error );
   }
 } );
-ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( event, id ) => {
+ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( _event, id ) => {
   console.log( `Cancel modeltest process ${id}...` );
   cancelRun( id );
 } );
