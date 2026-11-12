@@ -19,6 +19,7 @@ import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
+import { cancelRun, finishedRun, forgetRun, runResult, trackRun } from './cancelRun';
 if ( !is.development ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
@@ -57,9 +58,6 @@ process.on( 'unhandledRejection', ( error ) => {
 } );
 const exec = util.promisify( childProcess.exec );
 const execFile = util.promisify( childProcess.execFile );
-const state = {
-  processes: {},
-};
 function send( event, channel, data ) {
   if ( !data.error ) {
     return event.sender.send( channel, data );
@@ -139,7 +137,7 @@ const binParentDir = app.isPackaged
   } );
 const binaryDir = path.join( getStaticDir(), 'bin', binParentDir );
 ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
-  cancelProcess( id );
+  cancelRun( id );
   const binaryPath = path.resolve( binaryDir, binaryName );
   console.log( `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args );
   // Check for deleted input file
@@ -232,6 +230,9 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
       return;
     }
   }
+  if ( !finishedRun( exitCode, { id, exitCode } ) ) {
+    return;
+  }
   if ( combinedOutput ) {
     console.log( 'Combining output...' );
     await combineOutput( outputDir, outputFilename );
@@ -286,20 +287,10 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
     exitCode,
   } );
 } );
-ipcMain.on( ipc.RUN_CANCEL, ( event, arg ) => {
-  const id = arg;
+ipcMain.handle( ipc.RUN_CANCEL, ( _event, id ) => {
   console.log( `Cancel run process ${id}...` );
-  cancelProcess( id );
+  cancelRun( id );
 } );
-function cancelProcess( id ) {
-  const processKey = String( id );
-  if ( state.processes[processKey] ) {
-    const proc = state.processes[processKey];
-    delete state.processes[processKey];
-    proc.kill();
-    console.log( `Killed RAxML process ${id}` );
-  }
-}
 function spawnProcess( binaryDir, binaryName, args ) {
   const binaryPath = path.join( binaryDir, binaryName );
   const proc = childProcess.execFile( get_space_safe_binary_path( binaryPath ), args, {
@@ -309,10 +300,10 @@ function spawnProcess( binaryDir, binaryName, args ) {
 }
 async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = ( _content ) => { }, onStdErr = ( _content ) => { } } = {} ) {
   return new Promise( ( resolve, reject ) => {
-    cancelProcess( id );
+    cancelRun( id );
     try {
       const proc = spawnProcess( binaryDir, binaryName, args );
-      state.processes[String( id )] = proc;
+      trackRun( id, proc );
       let exited = false;
       proc.stdout.on( 'data', ( buffer ) => {
         const content = String( buffer );
@@ -332,7 +323,8 @@ async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = 
         }
         console.log( `Process finished with event '${message}' and error/code/signal:`, signal || code );
         exited = true;
-        delete state.processes[String( id )];
+        forgetRun( id );
+        const result = runResult( proc, message, code, signal );
         const win = activeWindow();
         if ( !win || !win.isFocused() ) {
           const notification = new Notification( {
@@ -341,13 +333,13 @@ async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = 
           } );
           notification.show();
         }
-        if ( message === 'error' ) {
-          return reject( code ); // code is an error object on 'error' event
+        if ( result === 'SIGTERM' ) {
+          return resolve( result );
         }
-        if ( !code ) {
-          return resolve( ( signal || code ) ); // Add code last to get through code 0
+        if ( message === 'error' || result instanceof Error ) {
+          return reject( result ); // code is an error object on 'error' event
         }
-        return reject( new Error( `Exited with code ${signal || code}. Check console output for more information.` ) );
+        return resolve( result ); // Add code last to get through code 0
       };
       ['error', 'exit', 'close'].forEach( ( message ) => {
         proc.on( message, onQuit( message ) );
@@ -528,7 +520,7 @@ ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) 
 } );
 ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( event, id ) => {
   console.log( `Cancel modeltest process ${id}...` );
-  cancelProcess( id );
+  cancelRun( id );
 } );
 ipcMain.handle( ipc.TREE_SELECT, ( _event, _runId, type ) => {
   return selectTree( ( options ) => dialog.showOpenDialog( options ), type );

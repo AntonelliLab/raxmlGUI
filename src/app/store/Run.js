@@ -2022,7 +2022,8 @@ Results saved to: ${this.outputDir}
 
   @action
     cancel = () => {
-      ipcRenderer.send( ipc.RUN_CANCEL, this.id );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      rendererBridge.cancelRun( this.id );
       this.afterRun();
     };
 
