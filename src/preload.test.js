@@ -77,13 +77,14 @@ const launchCopy = canLaunchElectron
   ? it
   : it.skip;
 
-launchCopy( 'copyText resolves void and the clipboard receives the text', () => {
+launchCopy( 'copyText resolves void, the clipboard receives the text, and a dropped file keeps its path', () => {
   const proofs = loadProofs();
   const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
   const mainFile = path.join( dir, 'main.js' );
   const pageFile = path.join( dir, 'page.html' );
   fs.writeFileSync( path.join( dir, 'genes.part' ), 'DNA, gene = 1-100\n' );
-  fs.writeFileSync( pageFile, `<script type="module">
+  fs.writeFileSync( path.join( dir, 'dropped.fasta' ), '>Homo\nAT\n' );
+  fs.writeFileSync( pageFile, `<input id="dropped" type="file"><script type="module">
 const result = {};
 try {
   const copied = await rendererBridge.copyText('bridge-text');
@@ -128,6 +129,19 @@ try {
   result.text = await rendererBridge.readFile(readPath);
   const written = await rendererBridge.writeFile(writePath, '>Homo\\nAT');
   result.written = written === undefined;
+  const input = document.getElementById('dropped');
+  const dropped = await new Promise((resolve) => {
+    const take = () => {
+      if (input.files && input.files[0]) resolve(input.files[0]);
+    };
+    input.addEventListener('change', take);
+    take();
+    setTimeout(() => resolve(null), 3000);
+  });
+  if (!dropped) throw new Error('no dropped file, count ' + (input.files && input.files.length));
+  const droppedPath = rendererBridge.getPathForFile(dropped);
+  result.droppedPath = droppedPath;
+  result.droppedSync = typeof droppedPath === 'string';
 } catch (error) {
   result.error = String(error && error.stack || error);
 }
@@ -136,7 +150,20 @@ globalThis.__result = result;
   fs.writeFileSync( mainFile, `const { app, BrowserWindow, clipboard, ipcMain } = require('electron');
 const Store = require(${JSON.stringify( path.join( root, 'node_modules', 'electron-store' ) )});
 app.whenReady().then(async () => {
+  const fileSends = [];
+  try {
   Store.initRenderer();
+  const droppedName = 'dropped.fasta';
+  const noteFile = (channel, args) => {
+    for (const arg of args) {
+      if (arg && typeof arg === 'object' && arg.name === droppedName) fileSends.push(channel);
+    }
+  };
+  const handle = ipcMain.handle.bind(ipcMain);
+  ipcMain.handle = (channel, listener) => handle(channel, (event, ...args) => {
+    noteFile(channel, args);
+    return listener(event, ...args);
+  });
   ipcMain.handle('COPY_TEXT', async (_event, text) => {
     await clipboard.writeText(text);
   });
@@ -164,8 +191,33 @@ app.whenReady().then(async () => {
       preload: ${JSON.stringify( preloadFile )},
     },
   });
+  win.webContents.on('ipc-message', (_event, channel, ...args) => noteFile(channel, args));
+  win.webContents.on('ipc-message-sync', (_event, channel, ...args) => noteFile(channel, args));
   win.webContents.on('console-message', (event) => console.log('PAGE ' + event.message));
-  await win.loadFile(${JSON.stringify( pageFile )});
+  const droppedFile = ${JSON.stringify( path.join( dir, 'dropped.fasta' ) )};
+  const loaded = win.loadFile(${JSON.stringify( pageFile )});
+  const dbg = win.webContents.debugger;
+  dbg.attach('1.3');
+  await dbg.sendCommand('DOM.enable');
+  let backendNodeId = 0;
+  for (let i = 0; i < 40 && !backendNodeId; i++) {
+    try {
+      const doc = await dbg.sendCommand('DOM.getDocument');
+      const found = await dbg.sendCommand('DOM.querySelector', {
+        nodeId: doc.root.nodeId,
+        selector: '#dropped',
+      });
+      if (found.nodeId) {
+        const described = await dbg.sendCommand('DOM.describeNode', { nodeId: found.nodeId });
+        backendNodeId = described.node.backendNodeId;
+      }
+    } catch (error) {}
+    if (!backendNodeId) await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  if (!backendNodeId) throw new Error('dropped input missing');
+  await dbg.sendCommand('DOM.setFileInputFiles', { backendNodeId, files: [droppedFile] });
+  dbg.detach();
+  await loaded;
   const result = await win.webContents.executeJavaScript(\`new Promise((resolve) => {
     const start = Date.now();
     const timer = setInterval(() => {
@@ -176,10 +228,14 @@ app.whenReady().then(async () => {
     }, 50);
   })\`);
   const clip = await clipboard.readText();
-  console.log('RESULT ' + JSON.stringify({ result, clip }));
+  console.log('RESULT ' + JSON.stringify({ result, clip, fileSends }));
   app.exit(result && result.error ? 1 : 0);
+  } catch (error) {
+    console.log('RESULT ' + JSON.stringify({ result: { error: String(error && error.stack || error) }, clip: '', fileSends }));
+    app.exit(1);
+  }
 });
-setTimeout(() => app.exit(2), 8000);
+setTimeout(() => app.exit(2), 12000);
 ` );
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
@@ -189,12 +245,16 @@ setTimeout(() => app.exit(2), 8000);
     timeout: 20000,
     env,
   } );
-  const line = `${result.stdout}\n${result.stderr}`.split( '\n' ).find( ( item ) => item.startsWith( 'RESULT ' ) );
+  const output = `${result.stdout}\n${result.stderr}`;
+  const line = output.split( '\n' ).find( ( item ) => item.startsWith( 'RESULT ' ) );
   if ( !line ) {
-    throw new Error( result.stderr || result.stdout || `electron exited ${result.status}` );
+    throw new Error( output || `electron exited ${result.status}` );
   }
   const payload = JSON.parse( line.slice( 'RESULT '.length ) );
-  expect( payload.result.error ).toBeUndefined();
+  if ( payload.result.error ) {
+    const pages = output.split( '\n' ).filter( ( item ) => item.startsWith( 'PAGE ' ) );
+    throw new Error( [payload.result.error, ...pages].join( '\n' ) );
+  }
   expect( payload.result.copied ).toBe( true );
   for ( const proof of proofs ) {
     expect( payload.result[proof.key] ).toEqual( proof.result );
@@ -220,6 +280,11 @@ setTimeout(() => app.exit(2), 8000);
   expect( payload.result.ended ).toBe( true );
   expect( payload.result.text ).toBe( 'DNA, gene = 1-100\n' );
   expect( payload.result.written ).toBe( true );
+  expect( payload.fileSends ).toEqual( [] );
+  expect( payload.result.droppedSync ).toBe( true );
+  expect( fs.realpathSync( payload.result.droppedPath ) ).toBe(
+    fs.realpathSync( path.join( dir, 'dropped.fasta' ) ),
+  );
   expect( fs.readFileSync( path.join( dir, 'concat.fasta' ), 'utf8' ) ).toBe( '>Homo\nAT' );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
