@@ -13,6 +13,7 @@ import { selectAlignment } from './selectAlignment';
 import { selectAstralFile } from './selectAstralFile';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
+import { selectPartitionFile } from './selectPartitionFile';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -87,25 +88,8 @@ ipcMain.on( ipc.RELOAD, () => {
 ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
   return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.on( ipc.PARTITION_FILE_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select a partition file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.PARTITION_FILE_SELECT, result );
-      if ( result.canceled ) {
-        return;
-      }
-      send( event, ipc.PARTITION_FILE_SELECTED, {
-        id: runId,
-        filePath: result.filePaths[0],
-      } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.PARTITION_FILE_SELECT, err );
-    } );
+ipcMain.handle( ipc.PARTITION_FILE_SELECT, ( _event, _runId ) => {
+  return selectPartitionFile( ( options ) => dialog.showOpenDialog( options ) );
 } );
 // Open a file with the OS's default file handler
 ipcMain.on( ipc.FILE_OPEN, ( event, fullPath ) => {

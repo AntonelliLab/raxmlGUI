@@ -83,6 +83,7 @@ try {
   result.astral = await rendererBridge.selectAstralFile('run-7');
   result.outputDir = await rendererBridge.selectOutputDir('run-7');
   result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
+  result.partition = await rendererBridge.selectPartitionFile('run-7');
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -152,6 +153,7 @@ app.whenReady().then(async () => {
   ipcMain.handle('WRITE_FILE', async (_event, filePath, text) => {
     await fs.promises.writeFile(filePath, text);
   });
+  ipcMain.handle('PARTITION_FILE_SELECT', async () => '/data/genes.part');
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
   const win = new BrowserWindow({
     show: false,
@@ -207,6 +209,7 @@ setTimeout(() => app.exit(2), 8000);
     outputNameUnused: 'tree',
     resultFilenames: ['tree.raxml.log'],
   } );
+  expect( payload.result.partition ).toBe( '/data/genes.part' );
   expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
   expect( payload.result.outputDir ).toBe( '/data/results' );
   expect( `${result.stdout}` ).toContain( 'OUTPUTDIR run-7' );

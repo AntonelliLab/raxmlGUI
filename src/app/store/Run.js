@@ -2157,8 +2157,13 @@ Results saved to: ${this.outputDir}
     return this.alignments.length === 1 && !this.havePartitionFile;
   }
 
-  @action loadPartitionFile = () => {
-    ipcRenderer.send( ipc.PARTITION_FILE_SELECT, this.id );
+  @action loadPartitionFile = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const filePath = await rendererBridge.selectPartitionFile( this.id );
+    if ( !filePath ) {
+      return;
+    }
+    await this.addPartitionFiles( [{ path: filePath }] );
   };
 
   @action
@@ -2172,12 +2177,6 @@ Results saved to: ${this.outputDir}
       this.partitionFile = path;
       this.partitionFileContent = content;
     };
-
-  @action onPartitionSelected = async ( event, { id, filePath } ) => {
-    if ( id === this.id ) {
-      await this.addPartitionFiles( [{ path: filePath }] );
-    }
-  };
 
   @action
     addTreeFiles = ( type, files ) => {
@@ -2239,7 +2238,6 @@ Results saved to: ${this.outputDir}
 
   listen = () => {
     this.listenTo( ipc.TREE_SELECTED, this.onTreeSelected );
-    this.listenTo( ipc.PARTITION_FILE_SELECTED, this.onPartitionSelected );
     this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
     this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
     this.listenTo( ipc.RUN_FINISHED, this.onRunFinished );
