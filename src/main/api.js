@@ -450,7 +450,7 @@ ipcMain.on( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
     exitCode,
   } );
 } );
-ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
+ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
   const { name } = parsePath( filePath );
   const outputPath = path.join( outputDir, `RAxML_GUI_ModelTest_${name}` );
