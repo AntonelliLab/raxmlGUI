@@ -1994,6 +1994,8 @@ Results saved to: ${this.outputDir}
       }
 
       this.running = true;
+      const startToken = {};
+      this.startToken = startToken;
       if ( this.outputName !== this.outputNameSafe ) {
         this.outputName = this.outputNameSafe;
       }
@@ -2004,6 +2006,9 @@ Results saved to: ${this.outputDir}
         await this.finalAlignment.writePartition();
       }
       await this.writeSettings();
+      if ( this.startToken !== startToken ) {
+        return;
+      }
       console.log( `Start run ${id} with args ${args}` );
       const { rendererBridge } = /** @type {any} */ ( window );
       await rendererBridge.startRun( {
@@ -2022,6 +2027,7 @@ Results saved to: ${this.outputDir}
 
   @action
     cancel = () => {
+      this.startToken = null;
       const { rendererBridge } = /** @type {any} */ ( window );
       rendererBridge.cancelRun( this.id );
       this.afterRun();

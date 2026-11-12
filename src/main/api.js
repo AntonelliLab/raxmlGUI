@@ -19,7 +19,7 @@ import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
-import { cancelRun, finishedRun, forgetRun, runResult, trackRun } from './cancelRun';
+import { beginRun, cancelRun, finishedRun, forgetRun, runResult, stillRunning, stopRun, trackRun } from './cancelRun';
 if ( !is.development ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
@@ -137,7 +137,14 @@ const binParentDir = app.isPackaged
   } );
 const binaryDir = path.join( getStaticDir(), 'bin', binParentDir );
 ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
-  cancelRun( id );
+  const token = beginRun( id );
+  stopRun( id );
+  const reportError = ( error ) => {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
+    send( event, ipc.RUN_ERROR, { id, error } );
+  };
   const binaryPath = path.resolve( binaryDir, binaryName );
   console.log( `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args );
   // Check for deleted input file
@@ -148,7 +155,7 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
   catch ( err ) {
     const error = new UserFixError( `The input file does not exist '${inputPath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   const resultFilePath = path.join( outputDir, outputFilename );
@@ -161,7 +168,7 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
     console.error( 'Error writing to output file:', err );
     const error = new Error( `Error trying to write to output file '${resultFilePath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   finally {
@@ -189,7 +196,7 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
     console.error( 'Error executing binary:', err );
     const error = new Error( `Error trying to execute raxml binary '${binaryPath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
@@ -209,7 +216,7 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
       catch ( err ) {
         console.error( 'Flag check run error:', err );
         Sentry.captureException( err );
-        send( event, ipc.RUN_ERROR, { id, error: err } );
+        reportError( err );
         return;
       }
     }
@@ -226,11 +233,11 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
     catch ( err ) {
       console.error( 'Run error:', err );
       Sentry.captureException( err );
-      send( event, ipc.RUN_ERROR, { id, error: err } );
+      reportError( err );
       return;
     }
   }
-  if ( !finishedRun( exitCode, { id, exitCode } ) ) {
+  if ( !stillRunning( id, token ) || !finishedRun( exitCode ) ) {
     return;
   }
   if ( combinedOutput ) {
@@ -280,6 +287,9 @@ ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir,
   }
   const nextFilenames = await fs.readdir( outputDir );
   const resultFilenames = nextFilenames.filter( ( filename ) => filename.includes( outputName ) );
+  if ( !stillRunning( id, token ) ) {
+    return;
+  }
   send( event, ipc.RUN_FINISHED, {
     id,
     resultDir: outputDir,
@@ -300,7 +310,7 @@ function spawnProcess( binaryDir, binaryName, args ) {
 }
 async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = ( _content ) => { }, onStdErr = ( _content ) => { } } = {} ) {
   return new Promise( ( resolve, reject ) => {
-    cancelRun( id );
+    stopRun( id );
     try {
       const proc = spawnProcess( binaryDir, binaryName, args );
       trackRun( id, proc );
@@ -323,7 +333,7 @@ async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = 
         }
         console.log( `Process finished with event '${message}' and error/code/signal:`, signal || code );
         exited = true;
-        forgetRun( id );
+        forgetRun( id, proc );
         const result = runResult( proc, message, code, signal );
         const win = activeWindow();
         if ( !win || !win.isFocused() ) {

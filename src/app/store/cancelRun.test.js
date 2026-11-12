@@ -1,4 +1,8 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import Run from './Run';
 
 it( 'the cancel control uses cancelRun', () => {
@@ -11,4 +15,45 @@ it( 'the cancel control uses cancelRun', () => {
 
   expect( cancelRun ).toHaveBeenCalledWith( 'run-7' );
   expect( run.running ).toBe( false );
+} );
+
+it( 'cancel before the run is tracked does not start it', async () => {
+  const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-cancel-' ) );
+  let releaseWrite;
+  const writeFile = jest.fn( () => new Promise( ( resolve ) => {
+    releaseWrite = resolve;
+  } ) );
+  const startRun = jest.fn( async () => {} );
+  const cancelRun = jest.fn();
+  window.rendererBridge = {
+    writeFile,
+    startRun,
+    cancelRun,
+    parseAlignment: () => new Promise( () => {} ),
+  };
+  const run = new Run( { onError() {} }, 'run-7' );
+  run.setOutputDir( outputDir );
+  run.addAlignments( [
+    { path: '/data/a.fasta' },
+    { path: '/data/b.fasta' },
+  ] );
+  const sequences = [
+    { taxon: 'A', code: 'A' },
+    { taxon: 'B', code: 'A' },
+    { taxon: 'C', code: 'A' },
+    { taxon: 'D', code: 'A' },
+  ];
+  run.alignments[0].sequences = sequences;
+  run.alignments[1].sequences = sequences;
+
+  try {
+    const pending = run.start();
+    run.cancel();
+    releaseWrite();
+    await pending;
+    expect( startRun ).not.toHaveBeenCalled();
+    expect( cancelRun ).toHaveBeenCalledWith( 'run-7' );
+  } finally {
+    fs.rmSync( outputDir, { recursive: true, force: true } );
+  }
 } );
