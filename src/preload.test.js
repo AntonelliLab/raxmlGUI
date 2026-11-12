@@ -237,12 +237,16 @@ setTimeout(() => app.exit(2), 12000);
     timeout: 20000,
     env,
   } );
-  const line = `${result.stdout}\n${result.stderr}`.split( '\n' ).find( ( item ) => item.startsWith( 'RESULT ' ) );
+  const output = `${result.stdout}\n${result.stderr}`;
+  const line = output.split( '\n' ).find( ( item ) => item.startsWith( 'RESULT ' ) );
   if ( !line ) {
-    throw new Error( result.stderr || result.stdout || `electron exited ${result.status}` );
+    throw new Error( output || `electron exited ${result.status}` );
   }
   const payload = JSON.parse( line.slice( 'RESULT '.length ) );
-  expect( payload.result.error ).toBeUndefined();
+  if ( payload.result.error ) {
+    const pages = output.split( '\n' ).filter( ( item ) => item.startsWith( 'PAGE ' ) );
+    throw new Error( [payload.result.error, ...pages].join( '\n' ) );
+  }
   expect( payload.result.copied ).toBe( true );
   for ( const proof of proofs ) {
     expect( payload.result[proof.key] ).toEqual( proof.result );
