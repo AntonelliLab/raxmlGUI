@@ -1,13 +1,27 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
 import Run from './Run';
 
+const stayParsed = async () => ( {
+  alignment: {
+    sequences: [],
+    fileFormat: 'fasta',
+    numSequences: 0,
+    length: 0,
+    dataType: 'dna',
+    hasInvariantSites: false,
+    typecheckingComplete: true,
+  },
+  change: null,
+} );
+
+
 it( 'the alignment picker adds the chosen alignments', async () => {
   const run = new Run( {}, 'run-7' );
   const selectAlignment = jest.fn( async () => [
     { path: '/data/primates.fasta', name: 'primates.fasta' },
     { path: '/data/cats.phy', name: 'cats.phy' },
   ] );
-  window.rendererBridge = { selectAlignment };
+  window.rendererBridge = { selectAlignment, parseAlignment: stayParsed };
 
   await run.loadAlignmentFiles();
 
@@ -20,8 +34,10 @@ it( 'the alignment picker adds the chosen alignments', async () => {
 
 it( 'cancel leaves the alignments unchanged', async () => {
   const run = new Run( {}, 'run-7' );
+  window.rendererBridge = { parseAlignment: stayParsed };
   run.addAlignments( [{ path: '/data/already.fasta', name: 'already.fasta' }] );
   window.rendererBridge = {
+    parseAlignment: stayParsed,
     selectAlignment: jest.fn( async () => null ),
   };
 
@@ -35,8 +51,10 @@ it( 'cancel leaves the alignments unchanged', async () => {
 
 it( 'a dialog failure fails the alignment choice', async () => {
   const run = new Run( {}, 'run-7' );
+  window.rendererBridge = { parseAlignment: stayParsed };
   run.addAlignments( [{ path: '/data/already.fasta', name: 'already.fasta' }] );
   window.rendererBridge = {
+    parseAlignment: stayParsed,
     selectAlignment: async () => {
       throw new Error( 'dialog failed' );
     },

@@ -421,77 +421,60 @@ class Alignment extends InputFile {
       }
     };
 
+  loadParsedAlignment = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    try {
+      const parsed = await rendererBridge.parseAlignment( this.id, this.path );
+      const { alignment, change } = parsed;
+      const newDataType = getFinalDataType(
+        this.run.alignments
+          .map( ( { dataType } ) => dataType )
+          .concat( alignment.dataType ),
+      );
+      if ( this.run.dataType !== newDataType ) {
+        this.run.substitutionMatrix.value =
+          raxmlMatrixOptions[newDataType].default;
+      }
+      // When the alignment has finished processing take the default substitution model for this datatype
+      this.substitutionModel.value =
+        raxmlNgModelOptions[alignment.dataType]?.default;
+      runInAction( () => {
+        this.sequences = alignment.sequences;
+        this.fileFormat = alignment.fileFormat;
+        this.numSequences = alignment.numSequences;
+        this.length = alignment.length;
+        this.parsingComplete = true;
+        this.numSequencesParsed = this.numSequences;
+        this.dataType = alignment.dataType;
+        this.hasInvariantSites = alignment.hasInvariantSites;
+        this.typecheckingComplete = alignment.typecheckingComplete;
+        this.loading = false;
+        if ( change ) {
+          this.path = change.newFilePath;
+          this.convertedFrom = change.format;
+          this.converted = change.converted;
+          this.modified = change.modified;
+          this.modificationMessages = change.modificationMessages;
+          if ( change.modificationMessages.length > 0 ) {
+            this.showModifiedDialog = true;
+          } else {
+            this.showModifiedSnack = true;
+          }
+        }
+      } );
+    } catch ( error ) {
+      runInAction( () => {
+        console.error( `Error loading file '${this.path}':`, error );
+        this.error = error;
+        this.loading = false;
+        this.run.error = error;
+        this.remove();
+      } );
+    }
+  };
+
   listen = () => {
-    // Send alignments to main process for processing
-    ipcRenderer.send( ipc.ALIGNMENT_PARSE_REQUEST, {
-      id: this.id,
-      filePath: this.path,
-    } );
-    // Listener taken from processAlignments()
-    // Receive a progress update for one of the alignments being parsed
-    ipcRenderer.on( ipc.ALIGNMENT_PARSE_SUCCESS, ( event, { id, alignment } ) => {
-      if ( id === this.id ) {
-        const newDataType = getFinalDataType(
-          this.run.alignments
-            .map( ( { dataType } ) => dataType )
-            .concat( alignment.dataType ),
-        );
-        if ( this.run.dataType !== newDataType ) {
-          this.run.substitutionMatrix.value =
-            raxmlMatrixOptions[newDataType].default;
-        }
-        // When the alignment has finished processing take the default substitution model for this datatype
-        this.substitutionModel.value =
-          raxmlNgModelOptions[alignment.dataType]?.default;
-        runInAction( () => {
-          this.sequences = alignment.sequences;
-          this.fileFormat = alignment.fileFormat;
-          this.numSequences = alignment.numSequences;
-          this.length = alignment.length;
-          this.parsingComplete = true;
-          this.numSequencesParsed = this.numSequences;
-          this.dataType = alignment.dataType;
-          this.hasInvariantSites = alignment.hasInvariantSites;
-          this.typecheckingComplete = alignment.typecheckingComplete;
-          this.loading = false;
-        } );
-      }
-    } );
-    ipcRenderer.on( ipc.ALIGNMENT_PARSE_FAILURE, ( event, { id, error } ) => {
-      if ( id === this.id ) {
-        runInAction( () => {
-          console.error( `Error loading file '${this.path}':`, error );
-          this.error = error;
-          this.loading = false;
-          this.run.error = error;
-          this.remove();
-        } );
-      }
-    } );
-    // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
-    // Also called when the input alignment is modified, due to errors in the alignment
-    ipcRenderer.on(
-      ipc.ALIGNMENT_PARSE_CHANGED_PATH,
-      (
-        event,
-        { id, newFilePath, format, converted, modified, modificationMessages },
-      ) => {
-        if ( id === this.id ) {
-          runInAction( () => {
-            this.path = newFilePath;
-            this.convertedFrom = format;
-            this.converted = converted;
-            this.modified = modified;
-            this.modificationMessages = modificationMessages;
-            if ( modificationMessages.length > 0 ) {
-              this.showModifiedDialog = true;
-            } else {
-              this.showModifiedSnack = true;
-            }
-          } );
-        }
-      },
-    );
+    this.loadParsedAlignment();
     ipcRenderer.on(
       ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
       ( event, { id, result } ) => {
