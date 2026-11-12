@@ -1,0 +1,7 @@
+{
+  "key": "lightMode",
+  "method": "onLightMode",
+  "channel": "LIGHT_MODE",
+  "subscribe": true,
+  "result": null
+}

@@ -1,0 +1,7 @@
+{
+  "key": "multifurcatingConstraint",
+  "method": "onToggleMultifurcatingConstraint",
+  "channel": "TOGGLE_MULTIFURCATING_CONSTRAINT",
+  "subscribe": true,
+  "result": null
+}

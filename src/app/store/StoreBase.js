@@ -9,6 +9,15 @@ export const runEvents = {
   onRunError: 'onRunError',
 };
 
+export const menuEvents = {
+  onAddRun: 'onAddRun',
+  onRemoveRun: 'onRemoveRun',
+  onLightMode: 'onLightMode',
+  onDarkMode: 'onDarkMode',
+  onToggleBackboneConstraint: 'onToggleBackboneConstraint',
+  onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
+};
+
 export default class StoreBase {
   listeners = [];
   eventStops = [];
