@@ -42,6 +42,14 @@ function buildShell() {
   }
 }
 
+function loadProofs() {
+  const dir = path.join( __dirname, 'preload-proofs' );
+  return fs.readdirSync( dir )
+    .filter( ( name ) => name.endsWith( '.json' ) )
+    .sort()
+    .map( ( name ) => JSON.parse( fs.readFileSync( path.join( dir, name ), 'utf8' ) ) );
+}
+
 beforeAll( () => {
   buildShell();
 }, 180000 );
@@ -70,6 +78,7 @@ const launchCopy = canLaunchElectron
   : it.skip;
 
 launchCopy( 'copyText resolves void and the clipboard receives the text', () => {
+  const proofs = loadProofs();
   const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
   const mainFile = path.join( dir, 'main.js' );
   const pageFile = path.join( dir, 'page.html' );
@@ -79,13 +88,10 @@ const result = {};
 try {
   const copied = await rendererBridge.copyText('bridge-text');
   result.copied = copied === undefined;
-  result.alignments = await rendererBridge.selectAlignment('run-7');
-  result.parsed = await rendererBridge.parseAlignment('align-1', '/data/primates.fasta');
-  result.astral = await rendererBridge.selectAstralFile('run-7');
-  result.outputDir = await rendererBridge.selectOutputDir('run-7');
-  result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
-  result.partition = await rendererBridge.selectPartitionFile('run-7');
-  result.tree = await rendererBridge.selectTree('run-7', 'backboneConstraint');
+  const proofs = ${JSON.stringify( proofs )};
+  for (const proof of proofs) {
+    result[proof.key] = await rendererBridge[proof.method](...proof.args);
+  }
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -126,34 +132,13 @@ app.whenReady().then(async () => {
   ipcMain.handle('COPY_TEXT', async (_event, text) => {
     await clipboard.writeText(text);
   });
-  ipcMain.handle('ALIGNMENT_SELECT', async (_event, runId) => {
-    console.log('RUNID ' + runId);
-    return [{ path: '/data/primates.fasta', name: 'primates.fasta' }];
-  });
-  ipcMain.handle('ALIGNMENT_PARSE', async (_event, id, filePath) => {
-    return { alignment: { id, filePath }, change: null };
-  });
-  ipcMain.handle('ASTRAL_FILE_SELECT', async (_event, runId) => {
-    console.log('ASTRAL_RUNID ' + runId);
-    return { path: '/data/trees.tre', name: 'trees.tre' };
-  });
-  ipcMain.handle('OUTPUT_DIR_SELECT', async (_event, runId) => {
-    console.log('OUTPUTDIR ' + runId);
-    return '/data/results';
-  });
-  ipcMain.handle('OUTPUT_CHECK', async (_event, data) => {
-    return {
-      outputDir: data.outputDir,
-      outputName: data.outputName,
-      ok: true,
-      notice: '',
-      outputNameUnused: data.outputName,
-      resultFilenames: ['tree.raxml.log'],
-    };
-  });
-  ipcMain.handle('TREE_SELECT', async (_event, runId, type) => {
-    return { type, filePath: '/data/backbone.nwk' };
-  });
+  const proofs = ${JSON.stringify( proofs )};
+  for (const proof of proofs) {
+    ipcMain.handle(proof.channel, async (_event, ...args) => {
+      if (proof.log) console.log(proof.log + ' ' + args[0]);
+      return proof.result;
+    });
+  }
   const fs = require('fs');
   ipcMain.handle('READ_FILE', async (_event, filePath) => {
     return fs.promises.readFile(filePath, 'utf8');
@@ -161,7 +146,6 @@ app.whenReady().then(async () => {
   ipcMain.handle('WRITE_FILE', async (_event, filePath, text) => {
     await fs.promises.writeFile(filePath, text);
   });
-  ipcMain.handle('PARTITION_FILE_SELECT', async () => '/data/genes.part');
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
   const win = new BrowserWindow({
     show: false,
@@ -204,31 +188,12 @@ setTimeout(() => app.exit(2), 8000);
   const payload = JSON.parse( line.slice( 'RESULT '.length ) );
   expect( payload.result.error ).toBeUndefined();
   expect( payload.result.copied ).toBe( true );
-  expect( payload.result.alignments ).toEqual( [
-    { path: '/data/primates.fasta', name: 'primates.fasta' },
-  ] );
-  expect( payload.result.parsed ).toEqual( {
-    alignment: { id: 'align-1', filePath: '/data/primates.fasta' },
-    change: null,
-  } );
-  expect( payload.result.astral ).toEqual( { path: '/data/trees.tre', name: 'trees.tre' } );
-  expect( `${result.stdout}` ).toContain( 'ASTRAL_RUNID run-7' );
-  expect( payload.result.outputCheck ).toEqual( {
-    outputDir: '/out',
-    outputName: 'tree',
-    ok: true,
-    notice: '',
-    outputNameUnused: 'tree',
-    resultFilenames: ['tree.raxml.log'],
-  } );
-  expect( payload.result.partition ).toBe( '/data/genes.part' );
-  expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
-  expect( payload.result.tree ).toEqual( {
-    type: 'backboneConstraint',
-    filePath: '/data/backbone.nwk',
-  } );
-  expect( payload.result.outputDir ).toBe( '/data/results' );
-  expect( `${result.stdout}` ).toContain( 'OUTPUTDIR run-7' );
+  for ( const proof of proofs ) {
+    expect( payload.result[proof.key] ).toEqual( proof.result );
+    if ( proof.log ) {
+      expect( `${result.stdout}` ).toContain( `${proof.log} ${proof.args[0]}` );
+    }
+  }
   expect( payload.clip ).toBe( 'bridge-text' );
   expect( payload.result.sent ).toBe( true );
   expect( payload.result.file ).toBe( 'ok' );
