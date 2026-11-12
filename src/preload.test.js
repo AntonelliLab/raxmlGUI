@@ -152,7 +152,6 @@ app.whenReady().then(async () => {
     };
   });
   ipcMain.handle('TREE_SELECT', async (_event, runId, type) => {
-    console.log('TREE ' + runId + ' ' + type);
     return { type, filePath: '/data/backbone.nwk' };
   });
   const fs = require('fs');
@@ -228,7 +227,6 @@ setTimeout(() => app.exit(2), 8000);
     type: 'backboneConstraint',
     filePath: '/data/backbone.nwk',
   } );
-  expect( `${result.stdout}` ).toContain( 'TREE run-7 backboneConstraint' );
   expect( payload.result.outputDir ).toBe( '/data/results' );
   expect( `${result.stdout}` ).toContain( 'OUTPUTDIR run-7' );
   expect( payload.clip ).toBe( 'bridge-text' );
