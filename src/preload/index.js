@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import os from 'node:os';
 import { contextBridge, ipcRenderer } from 'electron';
 import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
@@ -142,7 +143,16 @@ contextBridge.exposeInMainWorld( 'require', ( id ) => {
 
 contextBridge.exposeInMainWorld( 'process', publish( load( 'process' ) ) );
 
+const cpu = os.cpus()[0];
+const host = {
+  windows: process.platform === 'win32',
+  release: os.release(),
+  arch: os.arch(),
+  cpuModel: cpu.model,
+};
+
 contextBridge.exposeInMainWorld( 'rendererBridge', {
+  host,
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
   },
