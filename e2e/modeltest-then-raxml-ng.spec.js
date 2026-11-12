@@ -25,6 +25,10 @@ test.describe('ModelTest then raxml-ng', () => {
   });
 
   test('prefilled alignment runs ModelTest and raxml-ng with correct output', async () => {
+    test.skip(
+      process.platform === 'win32',
+      'Windows binary set has no raxml-ng',
+    );
     electronApp = await launchApp();
     const page = await getAppWindow(electronApp);
 
