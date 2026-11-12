@@ -98,6 +98,9 @@ ipcMain.on( ipc.FILE_OPEN, ( event, fullPath ) => {
   console.debug( ipc.FILE_OPEN, fullPath );
   shell.openPath( fullPath );
 } );
+ipcMain.handle( ipc.OPEN_PATH, ( _event, fullPath ) => {
+  return shell.openPath( fullPath );
+} );
 // Open a file in it's folder with native file explorer
 ipcMain.handle( ipc.FILE_SHOW_IN_FOLDER, ( _event, fullPath ) => {
   console.debug( ipc.FILE_SHOW_IN_FOLDER, fullPath );

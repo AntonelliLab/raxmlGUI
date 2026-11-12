@@ -930,8 +930,9 @@ class Run extends StoreBase {
       this.setOutputDir( outputDir );
     };
 
-  @action openOutputDir = () => {
-    shell.openPath( this.outputDir );
+  @action openOutputDir = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.openPath( this.outputDir );
   };
 
   @observable.ref showPartitionFor = null;
@@ -954,8 +955,9 @@ class Run extends StoreBase {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  @action openFile = ( filePath ) => {
-    ipcRenderer.send( ipc.FILE_OPEN, filePath );
+  @action openFile = async ( filePath ) => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.openPath( filePath );
   };
 
   @computed get haveAlignments() {
