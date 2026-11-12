@@ -2068,8 +2068,13 @@ Results saved to: ${this.outputDir}
     };
 
   @action
-    loadAstralTree = () => {
-      ipcRenderer.send( ipc.ASTRAL_FILE_SELECT, this.id );
+    loadAstralTree = async () => {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      const file = await rendererBridge.selectAstralFile( this.id );
+      if ( !file ) {
+        return;
+      }
+      this.addAstralFiles( file );
     };
 
   haveAlignment = ( id ) => {
@@ -2235,7 +2240,6 @@ Results saved to: ${this.outputDir}
   listen = () => {
     this.listenTo( ipc.TREE_SELECTED, this.onTreeSelected );
     this.listenTo( ipc.PARTITION_FILE_SELECTED, this.onPartitionSelected );
-    this.listenTo( ipc.ASTRAL_FILE_SELECTED, this.onAstralFileAdded );
     this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
     this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
     this.listenTo( ipc.RUN_FINISHED, this.onRunFinished );
@@ -2251,13 +2255,6 @@ Results saved to: ${this.outputDir}
     onTreeSelected = ( event, { id, type, filePath } ) => {
       if ( id === this.id ) {
         this.addTreeFiles( type, [{ path: filePath }] );
-      }
-    };
-
-  @action
-    onAstralFileAdded = ( event, { id, file } ) => {
-      if ( id === this.id ) {
-        this.addAstralFiles( file );
       }
     };
 

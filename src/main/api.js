@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
 import { selectAlignment } from './selectAlignment';
+import { selectAstralFile } from './selectAstralFile';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
 import { is, platform, quote } from '../common/utils';
@@ -492,29 +493,8 @@ ipcMain.on( ipc.ALIGNMENT_PARSE_REQUEST, async ( event, { id, filePath } ) => {
 ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event, _runId ) => {
   return selectAlignment( ( options ) => dialog.showOpenDialog( options ) );
 } );
-// Open a dialog to select astral input trees
-ipcMain.on( ipc.ASTRAL_FILE_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select an input trees file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.ASTRAL_FILE_SELECTED, result );
-      if ( result.canceled ) {
-        return;
-      }
-      const files = result.filePaths.map( ( filePath ) => {
-        return {
-          path: filePath,
-          name: path.basename( filePath ),
-        };
-      } );
-      send( event, ipc.ASTRAL_FILE_SELECTED, { id: runId, file: files[0] } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.ASTRAL_FILE_SELECTED, err );
-    } );
+ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event, _runId ) => {
+  return selectAstralFile( ( options ) => dialog.showOpenDialog( options ) );
 } );
 ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
   const staticDir = getStaticDir();

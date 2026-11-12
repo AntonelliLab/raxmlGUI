@@ -80,6 +80,7 @@ try {
   const copied = await rendererBridge.copyText('bridge-text');
   result.copied = copied === undefined;
   result.alignments = await rendererBridge.selectAlignment('run-7');
+  result.astral = await rendererBridge.selectAstralFile('run-7');
   result.outputDir = await rendererBridge.selectOutputDir('run-7');
   result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
   const { ipcRenderer } = require('electron');
@@ -125,6 +126,10 @@ app.whenReady().then(async () => {
   ipcMain.handle('ALIGNMENT_SELECT', async (_event, runId) => {
     console.log('RUNID ' + runId);
     return [{ path: '/data/primates.fasta', name: 'primates.fasta' }];
+  });
+  ipcMain.handle('ASTRAL_FILE_SELECT', async (_event, runId) => {
+    console.log('ASTRAL_RUNID ' + runId);
+    return { path: '/data/trees.tre', name: 'trees.tre' };
   });
   ipcMain.handle('OUTPUT_DIR_SELECT', async (_event, runId) => {
     console.log('OUTPUTDIR ' + runId);
@@ -192,6 +197,8 @@ setTimeout(() => app.exit(2), 8000);
   expect( payload.result.alignments ).toEqual( [
     { path: '/data/primates.fasta', name: 'primates.fasta' },
   ] );
+  expect( payload.result.astral ).toEqual( { path: '/data/trees.tre', name: 'trees.tre' } );
+  expect( `${result.stdout}` ).toContain( 'ASTRAL_RUNID run-7' );
   expect( payload.result.outputCheck ).toEqual( {
     outputDir: '/out',
     outputName: 'tree',
