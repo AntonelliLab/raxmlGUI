@@ -53,8 +53,9 @@ class InputFile extends StoreBase {
     };
 
   @action
-    showFileInFolder = () => {
-      ipcRenderer.send( ipc.FILE_SHOW_IN_FOLDER, this.path );
+    showFileInFolder = async () => {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.showItemInFolder( this.path );
     };
 }
 

@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
-import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
+import { ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, FILE_SHOW_IN_FOLDER, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -182,6 +182,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   selectTree( runId, type ) {
     return ipcRenderer.invoke( TREE_SELECT, runId, type );
+  },
+  showItemInFolder( fullPath ) {
+    return ipcRenderer.invoke( FILE_SHOW_IN_FOLDER, fullPath );
   },
   getPathForFile( file ) {
     return webUtils.getPathForFile( file );

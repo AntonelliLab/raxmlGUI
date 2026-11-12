@@ -695,7 +695,8 @@ class FinalAlignment {
   @action
     showFileInFolder = async () => {
       await this.writeConcatenatedAlignment();
-      ipcRenderer.send( ipc.FILE_SHOW_IN_FOLDER, this.path );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.showItemInFolder( this.path );
     };
 
   @action
