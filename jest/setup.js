@@ -41,6 +41,10 @@ function withBridgeEvents( next ) {
   if ( !Object.prototype.hasOwnProperty.call( next, 'host' ) ) {
     next.host = host;
   }
+  // Run.dispose calls cancel, which calls cancelRun.
+  if ( typeof next.cancelRun !== 'function' ) {
+    next.cancelRun = () => {};
+  }
   return next;
 }
 

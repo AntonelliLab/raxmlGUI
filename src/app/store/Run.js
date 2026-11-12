@@ -1,5 +1,5 @@
 import { observable, computed, action, createAtom } from 'mobx';
-import { ipcRenderer, shell } from 'electron';
+import { shell } from 'electron';
 import { range } from 'd3-array';
 import cpus from 'cpus';
 import { promisedComputed } from 'computed-async-mobx';
@@ -13,7 +13,6 @@ import StoreBase, { runEvents } from './StoreBase';
 import { host } from './host';
 import { basename, dir, join, name, quote } from '../paths';
 import * as raxmlSettings from '../../settings/raxml';
-import * as ipc from '../../constants/ipc';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
 
@@ -1995,6 +1994,8 @@ Results saved to: ${this.outputDir}
       }
 
       this.running = true;
+      const startToken = {};
+      this.startToken = startToken;
       if ( this.outputName !== this.outputNameSafe ) {
         this.outputName = this.outputNameSafe;
       }
@@ -2005,6 +2006,9 @@ Results saved to: ${this.outputDir}
         await this.finalAlignment.writePartition();
       }
       await this.writeSettings();
+      if ( this.startToken !== startToken ) {
+        return;
+      }
       console.log( `Start run ${id} with args ${args}` );
       const { rendererBridge } = /** @type {any} */ ( window );
       await rendererBridge.startRun( {
@@ -2023,7 +2027,9 @@ Results saved to: ${this.outputDir}
 
   @action
     cancel = () => {
-      ipcRenderer.send( ipc.RUN_CANCEL, this.id );
+      this.startToken = null;
+      const { rendererBridge } = /** @type {any} */ ( window );
+      rendererBridge.cancelRun( this.id );
       this.afterRun();
     };
 

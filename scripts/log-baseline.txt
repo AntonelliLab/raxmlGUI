@@ -59,7 +59,7 @@ src/main/api.js: console.log( 'Combining output...' );
 src/main/api.js: console.log(
 src/main/api.js: console.log( `Renaming raxml-ng output files to add .tre or .txt extension...` );
 src/main/api.js: console.log( `Cancel run process ${id}...` );
-src/main/api.js: console.log( `Killed RAxML process ${id}` );
+src/main/cancelRun.js: console.log( `Killed RAxML process ${id}` );
 src/main/api.js: console.log( 'on stdout:', content );
 src/main/api.js: console.error( 'on stderr:', content );
 src/main/api.js: console.log( `Process finished with event '${message}' and error/code/signal:`, signal || code );

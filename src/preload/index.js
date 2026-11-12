@@ -22,6 +22,7 @@ import {
   READ_FILE,
   RELOAD,
   REMOVE_RUN,
+  RUN_CANCEL,
   RUN_ERROR,
   RUN_FINISHED,
   RUN_START,
@@ -230,6 +231,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   startRun( payload ) {
     return ipcRenderer.invoke( RUN_START, payload );
+  },
+  cancelRun( id ) {
+    return ipcRenderer.invoke( RUN_CANCEL, id );
   },
   onRunStdout( listener ) {
     return onEvent( RUN_STDOUT, listener );
