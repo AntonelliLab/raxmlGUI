@@ -1,0 +1,10 @@
+{
+  "key": "astralExit",
+  "method": "onAstralSuccess",
+  "channel": "ASTRAL_SUCCESS",
+  "subscribe": true,
+  "result": {
+    "id": "run-7",
+    "exitCode": 0
+  }
+}

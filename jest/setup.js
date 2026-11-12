@@ -20,6 +20,12 @@ const modelEventStubs = {
   },
 };
 
+const astralEventStubs = {
+  onAstralSuccess() {
+    return () => {};
+  },
+};
+
 const host = {
   windows: process.platform === 'win32',
   release: os.release(),
@@ -36,6 +42,11 @@ function withBridgeEvents( next ) {
   for ( const name of Object.keys( modelEventStubs ) ) {
     if ( typeof next[name] !== 'function' ) {
       next[name] = modelEventStubs[name];
+    }
+  }
+  for ( const name of Object.keys( astralEventStubs ) ) {
+    if ( typeof next[name] !== 'function' ) {
+      next[name] = astralEventStubs[name];
     }
   }
   if ( !Object.prototype.hasOwnProperty.call( next, 'host' ) ) {
