@@ -87,7 +87,8 @@ src/preload.test.js: 'console.log("PRELOAD_CONFIG " + JSON.stringify({',
 src/preload.test.js: if (proof.log) console.log(proof.log + ' ' + args[0]);
 src/preload.test.js: ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
 src/preload.test.js: win.webContents.on('console-message', (event) => console.log('PAGE ' + event.message));
-src/preload.test.js: console.log('RESULT ' + JSON.stringify({ result, clip }));
+src/preload.test.js: console.log('RESULT ' + JSON.stringify({ result, clip, fileSends }));
+src/preload.test.js: console.log('RESULT ' + JSON.stringify({ result: { error: String(error && error.stack || error) }, clip: '', fileSends }));
 src/registerServiceWorker.ts: console.log( 'New content is available; please refresh.' );
 src/registerServiceWorker.ts: console.log( 'Content is cached for offline use.' );
 src/registerServiceWorker.ts: console.error( 'Error during service worker registration:', error );

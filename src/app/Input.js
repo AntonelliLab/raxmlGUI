@@ -9,7 +9,11 @@ import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
-import { webUtils } from 'electron';
+
+function droppedPath( file ) {
+  const { rendererBridge } = /** @type {any} */ ( window );
+  return rendererBridge.getPathForFile( file );
+}
 
 const Input = ( { run } ) => {
   // run.hasAstralTree is the condition on which to show an astral tree card
@@ -21,28 +25,28 @@ const Input = ( { run } ) => {
 
   const onAlignmentDrop = ( acceptedFiles ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
+      path: droppedPath( file ),
     } ) );
     run.addAlignments( droppedPathes );
   };
 
   const onPartitionDrop = ( acceptedFiles ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
+      path: droppedPath( file ),
     } ) );
     run.addPartitionFiles( droppedPathes );
   };
 
   const onTreeDrop = ( type ) => ( acceptedFiles ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
+      path: droppedPath( file ),
     } ) );
     run.addTreeFiles( type, droppedPathes );
   };
 
   const onAstralTreeDrop = ( acceptedFiles ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
-      path: webUtils.getPathForFile( file ),
+      path: droppedPath( file ),
     } ) );
     if ( droppedPathes.length ) {
       run.addAstralFiles( droppedPathes[0] );
