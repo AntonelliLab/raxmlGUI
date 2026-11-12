@@ -1,19 +1,14 @@
 import os from 'node:os';
 
-import { menuEvents, runEvents } from '../src/app/store/StoreBase';
+import { runEvents } from '../src/app/store/StoreBase';
 
 // React 19 flushes a render inside act() when this flag is set.
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Run and an alignment listen at construction. A test assignment keeps its object.
+// Run, an alignment, the run list, and the theme listen at construction. A test assignment keeps its object.
 const runEventStubs = {};
 for ( const name of Object.values( runEvents ) ) {
   runEventStubs[name] = () => () => {};
-}
-
-const menuEventStubs = {};
-for ( const name of Object.values( menuEvents ) ) {
-  menuEventStubs[name] = () => () => {};
 }
 
 const modelEventStubs = {
@@ -36,11 +31,6 @@ function withBridgeEvents( next ) {
   for ( const name of Object.keys( runEventStubs ) ) {
     if ( typeof next[name] !== 'function' ) {
       next[name] = runEventStubs[name];
-    }
-  }
-  for ( const name of Object.keys( menuEventStubs ) ) {
-    if ( typeof next[name] !== 'function' ) {
-      next[name] = menuEventStubs[name];
     }
   }
   for ( const name of Object.keys( modelEventStubs ) ) {

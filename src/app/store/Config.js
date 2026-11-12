@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import StoreBase, { menuEvents } from './StoreBase';
+import StoreBase, { runEvents } from './StoreBase';
 import Store from 'electron-store';
 
 export const store = new Store();
@@ -28,7 +28,7 @@ export default class Config extends StoreBase {
   };
 
   listen = () => {
-    this.subscribe( menuEvents.onLightMode, this.onLightMode );
-    this.subscribe( menuEvents.onDarkMode, this.onDarkMode );
+    this.subscribe( runEvents.onLightMode, this.onLightMode );
+    this.subscribe( runEvents.onDarkMode, this.onDarkMode );
   };
 }

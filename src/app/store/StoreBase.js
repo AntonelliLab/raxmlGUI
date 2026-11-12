@@ -7,9 +7,6 @@ export const runEvents = {
   onRunStderr: 'onRunStderr',
   onRunFinished: 'onRunFinished',
   onRunError: 'onRunError',
-};
-
-export const menuEvents = {
   onAddRun: 'onAddRun',
   onRemoveRun: 'onRemoveRun',
   onLightMode: 'onLightMode',
