@@ -5,11 +5,20 @@ import { runEvents } from '../src/app/store/StoreBase';
 // React 19 flushes a render inside act() when this flag is set.
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Run listens at construction. Tests replace rendererBridge and still need these.
+// Run and an alignment listen at construction. A test assignment keeps its object.
 const runEventStubs = {};
 for ( const name of Object.values( runEvents ) ) {
   runEventStubs[name] = () => () => {};
 }
+
+const modelEventStubs = {
+  onModelSelectionSuccess() {
+    return () => {};
+  },
+  onModelSelectionFailure() {
+    return () => {};
+  },
+};
 
 const host = {
   windows: process.platform === 'win32',
@@ -18,7 +27,24 @@ const host = {
   cpuModel: os.cpus()[0].model,
 };
 
-let bridge = { ...runEventStubs, host };
+function withBridgeEvents( next ) {
+  for ( const name of Object.keys( runEventStubs ) ) {
+    if ( typeof next[name] !== 'function' ) {
+      next[name] = runEventStubs[name];
+    }
+  }
+  for ( const name of Object.keys( modelEventStubs ) ) {
+    if ( typeof next[name] !== 'function' ) {
+      next[name] = modelEventStubs[name];
+    }
+  }
+  if ( !Object.prototype.hasOwnProperty.call( next, 'host' ) ) {
+    next.host = host;
+  }
+  return next;
+}
+
+let bridge = withBridgeEvents( { host } );
 
 Object.defineProperty( window, 'rendererBridge', {
   configurable: true,
@@ -27,14 +53,6 @@ Object.defineProperty( window, 'rendererBridge', {
     return bridge;
   },
   set( next ) {
-    bridge = next;
-    for ( const name of Object.keys( runEventStubs ) ) {
-      if ( typeof bridge[name] !== 'function' ) {
-        bridge[name] = runEventStubs[name];
-      }
-    }
-    if ( !Object.prototype.hasOwnProperty.call( bridge, 'host' ) ) {
-      bridge.host = host;
-    }
+    bridge = withBridgeEvents( next );
   },
 } );

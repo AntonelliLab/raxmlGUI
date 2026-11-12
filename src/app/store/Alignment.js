@@ -310,8 +310,10 @@ class Alignment extends InputFile {
 
   @observable modeltestLoading = false;
 
+  modelStops = [];
+
   @action
-    runModelTest = () => {
+    runModelTest = async () => {
     // Show an error if there are not enough sequences and dont start the run
       if ( this.numSequences < 3 ) {
         this.run.parent.onError(
@@ -322,7 +324,8 @@ class Alignment extends InputFile {
         return;
       }
       this.modeltestLoading = true;
-      ipcRenderer.send( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.startModelSelection( {
         id: this.id,
         filePath: this.path,
         outputDir: this.run.outputDir,
@@ -473,29 +476,32 @@ class Alignment extends InputFile {
     }
   };
 
+  @action
+    onModelSelectionSuccess = ( { id, result } ) => {
+      if ( id === this.id ) {
+        console.log( id, 'Modeltest result:', result );
+        this.setModelFromString( result );
+        this.run.afterRun();
+      }
+    };
+
+  @action
+    onModelSelectionFailure = ( { id, error } ) => {
+      if ( id === this.id ) {
+        this.modeltestLoading = false;
+        console.log( id, 'Modeltest error:', error );
+        this.run.error = error;
+        this.run.afterRun();
+      }
+    };
+
   listen = () => {
     this.loadParsedAlignment();
-    ipcRenderer.on(
-      ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
-      ( event, { id, result } ) => {
-        if ( id === this.id ) {
-          console.log( id, 'Modeltest result:', result );
-          this.setModelFromString( result );
-          this.run.afterRun();
-        }
-      },
-    );
-    ipcRenderer.on(
-      ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
-      ( event, { id, error } ) => {
-        if ( id === this.id ) {
-          this.modeltestLoading = false;
-          console.log( id, 'Modeltest error:', error );
-          this.run.error = error;
-          this.run.afterRun();
-        }
-      },
-    );
+    const { rendererBridge } = /** @type {any} */ ( window );
+    this.modelStops = [
+      rendererBridge.onModelSelectionSuccess( this.onModelSelectionSuccess ),
+      rendererBridge.onModelSelectionFailure( this.onModelSelectionFailure ),
+    ];
     this.subscribe( runEvents.onRunStdout, this.onRunStdout );
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
@@ -507,6 +513,9 @@ class Alignment extends InputFile {
 
   @action
     dispose = () => {
+      while ( this.modelStops.length ) {
+        this.modelStops.pop()();
+      }
       this.unlisten();
       if ( this.modeltestLoading ) {
         this.cancelModelTest();

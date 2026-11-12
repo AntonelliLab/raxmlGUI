@@ -1,0 +1,16 @@
+{
+  "key": "selection",
+  "method": "startModelSelection",
+  "args": [
+    {
+      "id": "run-7_/data/primates.fasta",
+      "filePath": "/data/primates.fasta",
+      "outputDir": "/out",
+      "dataType": "nucleotide",
+      "numThreads": 2,
+      "binaryName": "modeltest-ng"
+    }
+  ],
+  "channel": "ALIGNMENT_MODEL_SELECTION_REQUEST",
+  "result": null
+}
