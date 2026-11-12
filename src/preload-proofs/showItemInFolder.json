@@ -1,0 +1,7 @@
+{
+  "key": "shown",
+  "method": "showItemInFolder",
+  "args": ["/data/primates.fasta"],
+  "channel": "FILE_SHOW_IN_FOLDER",
+  "result": null
+}

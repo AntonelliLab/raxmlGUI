@@ -708,8 +708,9 @@ class TreeFile extends Option {
   @action setFilePath = ( filePath ) => {
     this.filePath = filePath;
   };
-  @action openFolder = () => {
-    shell.showItemInFolder( this.filePath );
+  @action openFolder = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.showItemInFolder( this.filePath );
   };
   @action openFile = () => {
     shell.openPath( this.filePath );

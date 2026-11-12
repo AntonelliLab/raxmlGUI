@@ -102,7 +102,7 @@ ipcMain.handle( ipc.OPEN_PATH, ( _event, fullPath ) => {
   return shell.openPath( fullPath );
 } );
 // Open a file in it's folder with native file explorer
-ipcMain.on( ipc.FILE_SHOW_IN_FOLDER, ( event, fullPath ) => {
+ipcMain.handle( ipc.FILE_SHOW_IN_FOLDER, ( _event, fullPath ) => {
   console.debug( ipc.FILE_SHOW_IN_FOLDER, fullPath );
   shell.showItemInFolder( fullPath );
 } );
