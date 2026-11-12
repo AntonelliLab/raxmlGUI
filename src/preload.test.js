@@ -129,6 +129,14 @@ try {
   result.stem = require('parse-filepath')('/tmp/example.fasta').name;
   result.safe = require('filenamify')('a/b');
   result.model = require('os').cpus()[0].model;
+  const seen = require('os');
+  const host = rendererBridge.host;
+  result.host = host;
+  result.hostSame = host === rendererBridge.host;
+  result.hostMatches = host.windows === (seen.platform() === 'win32')
+    && host.release === seen.release()
+    && host.arch === seen.arch()
+    && host.cpuModel === seen.cpus()[0].model;
   await new Promise((resolve, reject) => {
     const stream = require('fs').createWriteStream(file + '.stream');
     const timer = setTimeout(() => reject(new Error('callback not called')), 2000);
@@ -289,6 +297,13 @@ setTimeout(() => app.exit(2), 12000);
   expect( payload.result.safe ).toBe( 'a!b' );
   expect( typeof payload.result.model ).toBe( 'string' );
   expect( payload.result.model.length ).toBeGreaterThan( 0 );
+  expect( Object.keys( payload.result.host ).sort() ).toEqual( ['arch', 'cpuModel', 'release', 'windows'] );
+  expect( payload.result.hostSame ).toBe( true );
+  expect( payload.result.hostMatches ).toBe( true );
+  expect( typeof payload.result.host.release ).toBe( 'string' );
+  expect( payload.result.host.release.length ).toBeGreaterThan( 0 );
+  expect( typeof payload.result.host.cpuModel ).toBe( 'string' );
+  expect( payload.result.host.cpuModel.length ).toBeGreaterThan( 0 );
   expect( payload.result.ended ).toBe( true );
   expect( payload.result.text ).toBe( 'DNA, gene = 1-100\n' );
   expect( payload.result.written ).toBe( true );
