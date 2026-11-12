@@ -55,12 +55,16 @@ it( 'the model selection handler returns before a terminal event once cancelled'
   const start = source.indexOf( 'ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST' );
   const end = source.indexOf( 'ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL' );
   const handler = source.slice( start, end );
+  const started = handler.indexOf( 'await runProcess' );
   const success = handler.lastIndexOf( 'ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS' );
-  const failure = handler.lastIndexOf( 'ipc.ALIGNMENT_MODEL_SELECTION_FAILURE' );
-  expect( handler.slice( 0, success ) ).toContain( 'beginRun' );
-  expect( handler.slice( 0, success ) ).toContain( 'stillRunning' );
-  expect( handler.slice( 0, failure ) ).toContain( 'stillRunning' );
-  expect( handler ).toContain( "exitCode === 'SIGTERM'" );
+  const failure = handler.indexOf( 'ipc.ALIGNMENT_MODEL_SELECTION_FAILURE' );
+  const beforeStart = handler.slice( handler.indexOf( 'await fs.unlink' ), started );
+  const afterStart = handler.slice( started, success );
+  expect( handler.slice( 0, started ) ).toContain( 'beginRun' );
+  expect( beforeStart ).toContain( '!stillRunning' );
+  expect( afterStart ).toContain( '!stillRunning' );
+  expect( afterStart ).toContain( "exitCode === 'SIGTERM'" );
+  expect( handler.slice( 0, failure ) ).toContain( '!stillRunning' );
 } );
 
 it( 'the run handler returns before a terminal event once the run is no longer current', () => {
@@ -69,7 +73,8 @@ it( 'the run handler returns before a terminal event once the run is no longer c
   const end = source.indexOf( 'ipcMain.handle( ipc.RUN_CANCEL' );
   const handler = source.slice( start, end );
   const finished = handler.lastIndexOf( 'ipc.RUN_FINISHED' );
-  expect( handler.slice( 0, finished ) ).toContain( 'stillRunning' );
+  const tail = handler.slice( handler.lastIndexOf( 'await ', finished ), finished );
+  expect( tail ).toContain( '!stillRunning' );
   expect( handler ).toContain( 'reportError( error )' );
   expect( handler ).toContain( 'reportError( err )' );
   expect( source ).toContain( 'forgetRun( id, proc )' );
