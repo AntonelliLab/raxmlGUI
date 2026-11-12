@@ -1,8 +1,8 @@
 import { observable, computed, action } from 'mobx';
 import { ipcRenderer } from 'electron';
-import parsePath from 'parse-filepath';
 
 import * as ipc from '../../constants/ipc';
+import { base, dir, name } from '../paths';
 import StoreBase from './StoreBase';
 
 class InputFile extends StoreBase {
@@ -24,22 +24,22 @@ class InputFile extends StoreBase {
 
   @computed
   get name() {
-    return parsePath( this.path ).name;
+    return name( this.path );
   }
 
   @computed
   get dir() {
-    return parsePath( this.path ).dir;
+    return dir( this.path );
   }
 
   @computed
   get base() {
-    return parsePath( this.path ).base;
+    return base( this.path );
   }
 
   @computed
   get filename() {
-    return parsePath( this.path ).base;
+    return base( this.path );
   }
 
   @computed

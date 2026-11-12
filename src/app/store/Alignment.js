@@ -1,6 +1,5 @@
 import { observable, computed, action, runInAction } from 'mobx';
 import { ipcRenderer } from 'electron';
-import { join } from 'path';
 import fs from 'fs';
 import util from 'util';
 import union from 'lodash/union';
@@ -15,6 +14,7 @@ import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
 import { host } from './host';
+import { join } from '../paths';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
