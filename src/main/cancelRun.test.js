@@ -4,7 +4,15 @@ import { once } from 'events';
 import fs from 'fs';
 import path from 'path';
 
-import { beginRun, cancelRun, finishedRun, forgetRun, runResult, stillRunning, trackRun } from './cancelRun';
+import {
+  beginRun,
+  cancelRun,
+  finishedRun,
+  forgetRun,
+  runResult,
+  stillRunning,
+  trackRun,
+} from './cancelRun';
 
 it( 'cancelRun stops that run and sends no terminal event', async () => {
   const proc = spawn( process.execPath, ['-e', 'setTimeout(() => {}, 30000)'] );

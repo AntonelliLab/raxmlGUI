@@ -1,0 +1,7 @@
+{
+  "key": "darkMode",
+  "method": "onDarkMode",
+  "channel": "DARK_MODE",
+  "subscribe": true,
+  "result": null
+}

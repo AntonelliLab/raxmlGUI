@@ -1,5 +1,5 @@
 /* global __static */
-import { app, ipcMain, shell, dialog, Notification, BrowserWindow, clipboard } from 'electron';
+import { app, ipcMain, shell, dialog, Notification, clipboard } from 'electron';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
@@ -19,7 +19,16 @@ import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
-import { beginRun, cancelRun, finishedRun, forgetRun, runResult, stillRunning, stopRun, trackRun } from './cancelRun';
+import {
+  beginRun,
+  cancelRun,
+  finishedRun,
+  forgetRun,
+  runResult,
+  stillRunning,
+  stopRun,
+  trackRun,
+} from './cancelRun';
 if ( !is.development ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
@@ -80,10 +89,8 @@ ipcMain.handle( ipc.READ_FILE, ( _event, filePath ) => {
 ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
   await fs.writeFile( filePath, text );
 } );
-ipcMain.on( ipc.RELOAD, () => {
-  BrowserWindow
-    .getCurrentWindow()
-    .reload();
+ipcMain.handle( ipc.RELOAD, ( event ) => {
+  event.sender.reload();
 } );
 ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
   return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );
@@ -424,7 +431,7 @@ ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
     outdir,
   } );
 } );
-ipcMain.on( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
+ipcMain.handle( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
   const { id, binaryName, args } = payload;
   const javaBin = 'java';
   const [arg] = args;
