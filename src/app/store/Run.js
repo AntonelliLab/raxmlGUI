@@ -5,13 +5,12 @@ import cpus from 'cpus';
 import { promisedComputed } from 'computed-async-mobx';
 import filenamify from 'filenamify';
 import fs from 'fs';
-import os from 'os';
 
 import Alignment, { FinalAlignment } from './Alignment';
 import AstralTree from './AstralTree';
 import Option from './Option';
 import StoreBase from './StoreBase';
-import { is } from '../../common/utils';
+import { host } from './host';
 import { basename, dir, join, name, quote } from '../paths';
 import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
@@ -23,12 +22,12 @@ const raxmlRateOptions = raxmlSettings.rateOptions;
 const raxmlIOptions = raxmlSettings.iOptions;
 const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 
-const { windows } = is;
+const { windows } = host;
 
 export const MAX_NUM_CPUS = cpus().length;
 
 // On Windows 7 (= 6.1) use older versions of RAxML
-const [majorVersion, minorVersion] = os.release().split( '.' );
+const [majorVersion, minorVersion] = host.release.split( '.' );
 const winBinaries =
   majorVersion === '6' && minorVersion === '1'
     ? [
@@ -106,7 +105,7 @@ const winBinaries =
     ];
 
 const likelyARM =
-  os.arch().includes( 'arm64' ) || os.cpus()[0].model.includes( 'Apple' );
+  host.arch.includes( 'arm64' ) || host.cpuModel.includes( 'Apple' );
 const armBinaries = [
   {
     name: 'modeltest-ng-ARM64',
@@ -124,7 +123,7 @@ const x64Binaries = [
   },
 ];
 
-const allBinaries = is.windows
+const allBinaries = host.windows
   ? winBinaries
   : [
     ...( !likelyARM

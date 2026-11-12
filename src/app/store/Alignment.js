@@ -4,7 +4,6 @@ import fs from 'fs';
 import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
-import os from 'os';
 
 import * as ipc from '../../constants/ipc';
 import Option from './Option';
@@ -14,7 +13,7 @@ import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
-import { is } from '../../common/utils';
+import { host } from './host';
 import { join } from '../paths';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
@@ -161,9 +160,9 @@ class Alignment extends InputFile {
     this.ngAscertainmentBias = new RaxmlNgModelASC( this );
     this.partition = new Partition( this );
 
-    const [majorVersion, minorVersion] = os.release().split( '.' );
+    const [majorVersion, minorVersion] = host.release.split( '.' );
     this.modeltestDisabled =
-      is.windows && majorVersion === '6' && minorVersion === '1';
+      host.windows && majorVersion === '6' && minorVersion === '1';
 
     this.listen();
   }

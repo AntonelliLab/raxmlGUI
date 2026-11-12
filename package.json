@@ -146,7 +146,7 @@
       "assets/"
     ],
     "dmg": {
-      "icon": "build/disk-image.icns",
+      "icon": "public/disk-image.icns",
       "sign": false
     },
     "mac": {
