@@ -45,8 +45,12 @@ test.describe('raxmlHPC', () => {
     await outputNameField.fill(outputId);
     await expect(outputNameField).toHaveValue(outputId);
 
+    const raxmlHpcBinary =
+      process.platform === 'win32' ? 'raxmlHPC.exe' : 'raxmlHPC';
     await page.locator('#mui-component-select-Binary').click();
-    await page.getByRole('option', { name: 'raxmlHPC', exact: true }).click();
+    await page
+      .getByRole('option', { name: raxmlHpcBinary, exact: true })
+      .click();
 
     await page.locator('#mui-component-select-Analysis').click();
     await page.getByRole('option', { name: 'ML search', exact: true }).click();
