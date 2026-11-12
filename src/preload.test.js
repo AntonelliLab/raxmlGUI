@@ -73,6 +73,7 @@ launchCopy( 'copyText resolves void and the clipboard receives the text', () => 
   const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
   const mainFile = path.join( dir, 'main.js' );
   const pageFile = path.join( dir, 'page.html' );
+  fs.writeFileSync( path.join( dir, 'genes.part' ), 'DNA, gene = 1-100\n' );
   fs.writeFileSync( pageFile, `<script type="module">
 const result = {};
 try {
@@ -102,6 +103,11 @@ try {
     });
   });
   result.ended = true;
+  const readPath = ${JSON.stringify( path.join( dir, 'genes.part' ) )};
+  const writePath = ${JSON.stringify( path.join( dir, 'concat.fasta' ) )};
+  result.text = await rendererBridge.readFile(readPath);
+  const written = await rendererBridge.writeFile(writePath, '>Homo\\nAT');
+  result.written = written === undefined;
 } catch (error) {
   result.error = String(error && error.stack || error);
 }
@@ -117,6 +123,13 @@ app.whenReady().then(async () => {
   ipcMain.handle('ALIGNMENT_SELECT', async (_event, runId) => {
     console.log('RUNID ' + runId);
     return [{ path: '/data/primates.fasta', name: 'primates.fasta' }];
+  });
+  const fs = require('fs');
+  ipcMain.handle('READ_FILE', async (_event, filePath) => {
+    return fs.promises.readFile(filePath, 'utf8');
+  });
+  ipcMain.handle('WRITE_FILE', async (_event, filePath, text) => {
+    await fs.promises.writeFile(filePath, text);
   });
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
   const win = new BrowserWindow({
@@ -173,6 +186,9 @@ setTimeout(() => app.exit(2), 8000);
   expect( typeof payload.result.model ).toBe( 'string' );
   expect( payload.result.model.length ).toBeGreaterThan( 0 );
   expect( payload.result.ended ).toBe( true );
+  expect( payload.result.text ).toBe( 'DNA, gene = 1-100\n' );
+  expect( payload.result.written ).toBe( true );
+  expect( fs.readFileSync( path.join( dir, 'concat.fasta' ), 'utf8' ) ).toBe( '>Homo\nAT' );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
 

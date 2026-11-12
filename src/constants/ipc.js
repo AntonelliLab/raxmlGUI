@@ -51,3 +51,5 @@ export const ASTRAL_SUCCESS = 'ASTRAL_SUCCESS';
 export const ASTRAL_FILE_SELECT = 'ASTRAL_FILE_SELECT';
 export const ASTRAL_FILE_SELECTED = 'ASTRAL_FILE_SELECTED';
 export const COPY_TEXT = 'COPY_TEXT';
+export const READ_FILE = 'READ_FILE';
+export const WRITE_FILE = 'WRITE_FILE';

@@ -70,6 +70,12 @@ ipcMain.on( ipc.INIT_APP_STATE, ( event ) => {
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );
 } );
+ipcMain.handle( ipc.READ_FILE, ( _event, filePath ) => {
+  return fs.readFile( filePath, 'utf-8' );
+} );
+ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
+  await fs.writeFile( filePath, text );
+} );
 ipcMain.on( ipc.RELOAD, () => {
   BrowserWindow
     .getCurrentWindow()

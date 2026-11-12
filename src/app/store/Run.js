@@ -6,7 +6,6 @@ import parsePath from 'parse-filepath';
 import { promisedComputed } from 'computed-async-mobx';
 import { join } from 'path';
 import filenamify from 'filenamify';
-import util from 'util';
 import fs from 'fs';
 import os from 'os';
 
@@ -19,8 +18,6 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as ipc from '../../constants/ipc';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
-
-const readFile = util.promisify( fs.readFile );
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlRateOptions = raxmlSettings.rateOptions;
@@ -2180,7 +2177,8 @@ Results saved to: ${this.outputDir}
         return;
       }
       const { path } = files[0];
-      const content = await readFile( path, 'utf-8' );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      const content = await rendererBridge.readFile( path );
       this.partitionFile = path;
       this.partitionFileContent = content;
     };

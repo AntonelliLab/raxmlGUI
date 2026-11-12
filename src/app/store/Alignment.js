@@ -735,24 +735,20 @@ class FinalAlignment {
         console.log(
           `Write concatenated alignment in FASTA format to ${this.path}..`,
         );
-        const writeStream = fs.createWriteStream( this.path );
-        const write = util.promisify( writeStream.write );
-        const end = util.promisify( writeStream.end );
+        let text = '';
         for ( let i = 0; i < numSequences; ++i ) {
           for ( let j = 0; j < this.numAlignments; ++j ) {
             if ( j === 0 ) {
               const prefix = i === 0
                 ? '>'
                 : '\n>';
-              await write.call( writeStream, `${prefix}${taxons[i]}\n` );
+              text += `${prefix}${taxons[i]}\n`;
             }
-            await write.call(
-              writeStream,
-              this.run.alignments[j].getSequenceCode( taxons[i] ),
-            );
+            text += this.run.alignments[j].getSequenceCode( taxons[i] );
           }
         }
-        await end.call( writeStream );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        await rendererBridge.writeFile( this.path, text );
       } catch ( err ) {
         console.error( 'Error writing concatenated alignment:', err );
         throw err;
