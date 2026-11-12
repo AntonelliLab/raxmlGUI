@@ -20,6 +20,7 @@ import {
   OUTPUT_DIR_SELECT,
   PARTITION_FILE_SELECT,
   READ_FILE,
+  RELOAD,
   REMOVE_RUN,
   RUN_ERROR,
   RUN_FINISHED,
@@ -211,6 +212,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   writeFile( filePath, text ) {
     return ipcRenderer.invoke( WRITE_FILE, filePath, text );
+  },
+  reload() {
+    return ipcRenderer.invoke( RELOAD );
   },
   openPath( fullPath ) {
     return ipcRenderer.invoke( OPEN_PATH, fullPath );
