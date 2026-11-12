@@ -1,6 +1,3 @@
-import { ipcRenderer  } from 'electron';
-import type {IpcRendererEvent} from 'electron';
-import * as ipc from '../constants/ipc';
 import store from './store';
 import nodeProcess from 'process';
 import { join } from './paths';
@@ -17,15 +14,13 @@ interface AlignmentPathRef { path: string }
 // The page build inlines process.env, so the e2e flag is read from Node.
 if ( process.env.NODE_ENV === 'development' || nodeProcess.env.RAXMLGUI_E2E === '1' ) {
   console.log( '\n========= Bootstrapping initial state... =========\n' );
-  ipcRenderer.send( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST );
+  const { rendererBridge } = window as unknown as {
+    rendererBridge: {
+      getExampleFiles: () => Promise<AlignmentExampleFilesPayload>;
+    };
+  };
+  void rendererBridge.getExampleFiles().then( initDev );
 }
-
-ipcRenderer.on(
-  ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS,
-  ( _event: IpcRendererEvent, exampleFiles: AlignmentExampleFilesPayload ) => {
-    initDev( exampleFiles );
-  },
-);
 
 function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
   // if (exampleFiles.length === 0) {

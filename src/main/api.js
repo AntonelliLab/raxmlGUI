@@ -416,7 +416,7 @@ ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event, _runId ) => {
 ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event, _runId ) => {
   return selectAstralFile( ( options ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
+ipcMain.handle( ipc.EXAMPLE_FILES, async () => {
   const staticDir = getStaticDir();
   const dir = path.join( staticDir, 'example-files' );
   const outdir = path.join( staticDir, 'test-results' );
@@ -424,12 +424,12 @@ ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
   await fs.mkdir( outdir, { recursive: true } );
   const fastaFiles = await fs.readdir( path.join( dir, 'fasta' ) );
   const phylipFiles = await fs.readdir( path.join( dir, 'phylip' ) );
-  send( event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
+  return {
     fasta: fastaFiles,
     phylip: phylipFiles,
     dir,
     outdir,
-  } );
+  };
 } );
 ipcMain.handle( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
   const { id, binaryName, args } = payload;
