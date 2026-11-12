@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const baselinePath = path.join(root, 'docs', 'agents', 'typecheck-baseline.txt');
+const baselinePath = path.join(__dirname, 'typecheck-baseline.txt');
 
 function diagnosticLines(text) {
   return text

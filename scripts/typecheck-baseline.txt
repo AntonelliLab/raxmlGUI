@@ -1,0 +1,109 @@
+src/app/App.js(322,24): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: { component: ElementType<any, keyof IntrinsicElements>; } & SvgIconOwnProps & CommonProps & Omit<any, "fontSize" | ... 10 more ... | "titleAccess">): Element', gave the following error.
+    Property 'component' is missing in type '{ onClick: any; sx: { '&:hover': { color: "#999"; }; }; title: string; }' but required in type '{ component: ElementType<any, keyof IntrinsicElements>; }'.
+  Overload 2 of 2, '(props: DefaultComponentProps<SvgIconTypeMap<{}, "svg">>): Element', gave the following error.
+    Type '{ onClick: any; sx: { '&:hover': { color: "#999"; }; }; title: string; }' is not assignable to type 'IntrinsicAttributes & SvgIconOwnProps & CommonProps & Omit<SVGProps<SVGSVGElement>, "fontSize" | ... 10 more ... | "titleAccess">'.
+      Property 'title' does not exist on type 'IntrinsicAttributes & SvgIconOwnProps & CommonProps & Omit<SVGProps<SVGSVGElement>, "fontSize" | ... 10 more ... | "titleAccess">'.
+src/app/App.js(466,12): error TS2739: Type '{ error: any; onClose: any; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
+src/app/App.js(512,10): error TS2739: Type '{ error: any; onClose: () => void; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
+src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
+src/app/store/Alignment.js(27,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Alignment.js(54,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Alignment.js(138,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/index.js(5,8): error TS2551: Property 'store' does not exist on type 'Window & typeof globalThis'. Did you mean 'Storage'?
+src/app/store/Option.js(12,14): error TS2304: Cannot find name 'yup'.
+src/app/store/Run.js(278,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(291,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(306,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(313,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(323,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(333,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(353,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(397,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(409,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(422,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(459,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Run.js(519,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Run.js(554,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Run.js(585,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Run.js(630,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(662,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/Run.js(681,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/Run.js(693,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/StoreBase.js(19,13): error TS2365: Operator '>' cannot be applied to types 'boolean' and 'number'.
+src/common/utils.js(56,5): error TS2322: Type '"macos"' is not assignable to type 'Platform'.
+src/common/utils.js(58,5): error TS2322: Type '"windows"' is not assignable to type 'Platform'.
+src/common/utils.js(86,19): error TS2551: Property 'store' does not exist on type 'Window & typeof globalThis'. Did you mean 'Storage'?
+src/common/utils.js(94,19): error TS2551: Property 'store' does not exist on type 'Window & typeof globalThis'. Did you mean 'Storage'?
+src/electron.js(5,27): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'typeof CrossProcessExports' is not assignable to parameter of type 'string'.
+src/main/api.js(33,10): error TS2304: Cannot find name '__static'.
+src/main/api.js(87,6): error TS2339: Property 'getCurrentWindow' does not exist on type 'typeof BrowserWindow'.
+src/main/api.js(122,52): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; cwd: any; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
+      Property 'encoding' is missing in type '{ shell?: boolean; cwd: any; }' but required in type 'ExecOptionsWithBufferEncoding'.
+  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
+    Argument of type '{ shell?: boolean; cwd: any; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; cwd: any; }' is not assignable to parameter of type 'ExecOptions'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+src/main/api.js(201,99): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
+      Property 'encoding' is missing in type '{ shell?: boolean; }' but required in type 'ExecOptionsWithBufferEncoding'.
+  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptions'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+src/main/api.js(363,52): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
+      Property 'encoding' is missing in type '{ shell?: boolean; }' but required in type 'ExecOptionsWithBufferEncoding'.
+  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptions'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+src/main/api.js(384,52): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
+      Property 'encoding' is missing in type '{ shell?: boolean; }' but required in type 'ExecOptionsWithBufferEncoding'.
+  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
+    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptions'.
+      Types of property 'shell' are incompatible.
+        Type 'boolean' is not assignable to type 'string'.
+src/main/api.js(433,12): error TS2367: This comparison appears to be unintentional because the types 'number' and 'string' have no overlap.
+src/main/api.js(486,12): error TS2367: This comparison appears to be unintentional because the types 'number' and 'string' have no overlap.
+src/main/menu/index.js(47,26): error TS2345: Argument of type '{ label: string; submenu: ({ label: string; click(): never; type?: undefined; role?: undefined; } | { type: string; label?: undefined; click?: undefined; role?: undefined; } | { role: string; label?: undefined; click?: undefined; type?: undefined; })[]; }' is not assignable to parameter of type '{ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; } | { ...; } | { ...; }'.
+  Type '{ label: string; submenu: ({ label: string; click(): never; type?: undefined; role?: undefined; } | { type: string; label?: undefined; click?: undefined; role?: undefined; } | { role: string; label?: undefined; click?: undefined; type?: undefined; })[]; }' is not assignable to type '{ label: string; submenu: { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }[]; }'.
+    Types of property 'submenu' are incompatible.
+      Type '({ label: string; click(): never; type?: undefined; role?: undefined; } | { type: string; label?: undefined; click?: undefined; role?: undefined; } | { role: string; label?: undefined; click?: undefined; type?: undefined; })[]' is not assignable to type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }[]'.
+        Type '{ label: string; click(): never; type?: undefined; role?: undefined; } | { type: string; label?: undefined; click?: undefined; role?: undefined; } | { role: string; label?: undefined; click?: undefined; type?: undefined; }' is not assignable to type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }'.
+          Property 'submenu' is missing in type '{ label: string; click(): never; type?: undefined; role?: undefined; }' but required in type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }'.
+src/main/menu/index.js(51,29): error TS2345: Argument of type '{ label: string; submenu: ({ role: string; type?: undefined; } | { type: string; role?: undefined; })[]; }' is not assignable to parameter of type '{ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; } | { ...; } | { ...; }'.
+  Type '{ label: string; submenu: ({ role: string; type?: undefined; } | { type: string; role?: undefined; })[]; }' is not assignable to type '{ label: string; submenu: { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }[]; }'.
+    Types of property 'submenu' are incompatible.
+      Type '({ role: string; type?: undefined; } | { type: string; role?: undefined; })[]' is not assignable to type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }[]'.
+        Type '{ role: string; type?: undefined; } | { type: string; role?: undefined; }' is not assignable to type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }'.
+          Type '{ role: string; type?: undefined; }' is missing the following properties from type '{ label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; }': label, submenu
+src/main/menu/index.js(53,42): error TS2345: Argument of type '({ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; } | { ...; } | { ...; })[]' is not assignable to parameter of type '(MenuItemConstructorOptions | MenuItem)[]'.
+  Type '{ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; } | { ...; } | { ...; }' is not assignable to type 'MenuItemConstructorOptions | MenuItem'.
+    Type '{ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; }' is not assignable to type 'MenuItemConstructorOptions | MenuItem'.
+      Type '{ label: string; submenu: ({ label: string; accelerator: string; click(): void; submenu?: undefined; } | { label: string; submenu: { label: string; type: string; checked: boolean; click(): void; }[]; accelerator?: undefined; click?: undefined; })[]; }' is missing the following properties from type 'MenuItem': accelerator, accessibilityLabel, checked, click, and 11 more.
