@@ -1956,7 +1956,8 @@ Results saved to: ${this.outputDir}
     const { id, binary, args } = this;
     console.log( `Start astral run ${id}` );
     this.running = true;
-    ipcRenderer.send( ipc.ASTRAL_REQUEST, {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.startAstral( {
       id,
       binaryName: binary.value,
       args,
@@ -2242,7 +2243,7 @@ Results saved to: ${this.outputDir}
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
     this.subscribe( runEvents.onRunFinished, this.onRunFinished );
     this.subscribe( runEvents.onRunError, this.onRunError );
-    this.listenTo( ipc.ASTRAL_SUCCESS, this.onAstralFinished );
+    this.subscribe( runEvents.onAstralSuccess, this.onAstralSuccess );
   };
 
   // -----------------------------------------------------------
@@ -2264,7 +2265,7 @@ Results saved to: ${this.outputDir}
     };
 
   @action
-    onAstralFinished = ( event, { id, exitCode } ) => {
+    onAstralSuccess = ( { id, exitCode } ) => {
       if ( id === this.id ) {
         console.log( `Process ${id} finished with exitCode '${exitCode}'` );
         this.resultDir = this.outputDir;

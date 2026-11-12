@@ -420,7 +420,7 @@ ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
     outdir,
   } );
 } );
-ipcMain.on( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
+ipcMain.handle( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
   const { id, binaryName, args } = payload;
   const javaBin = 'java';
   const [arg] = args;
