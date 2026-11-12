@@ -84,6 +84,7 @@ try {
   result.outputDir = await rendererBridge.selectOutputDir('run-7');
   result.outputCheck = await rendererBridge.checkOutput({ outputDir: '/out', outputName: 'tree' });
   result.partition = await rendererBridge.selectPartitionFile('run-7');
+  result.tree = await rendererBridge.selectTree('run-7', 'backboneConstraint');
   const { ipcRenderer } = require('electron');
   ipcRenderer.send('ping', { n: 7 });
   result.sent = true;
@@ -145,6 +146,10 @@ app.whenReady().then(async () => {
       outputNameUnused: data.outputName,
       resultFilenames: ['tree.raxml.log'],
     };
+  });
+  ipcMain.handle('TREE_SELECT', async (_event, runId, type) => {
+    console.log('TREE ' + runId + ' ' + type);
+    return { type, filePath: '/data/backbone.nwk' };
   });
   const fs = require('fs');
   ipcMain.handle('READ_FILE', async (_event, filePath) => {
@@ -211,6 +216,11 @@ setTimeout(() => app.exit(2), 8000);
   } );
   expect( payload.result.partition ).toBe( '/data/genes.part' );
   expect( `${result.stdout}` ).toContain( 'RUNID run-7' );
+  expect( payload.result.tree ).toEqual( {
+    type: 'backboneConstraint',
+    filePath: '/data/backbone.nwk',
+  } );
+  expect( `${result.stdout}` ).toContain( 'TREE run-7 backboneConstraint' );
   expect( payload.result.outputDir ).toBe( '/data/results' );
   expect( `${result.stdout}` ).toContain( 'OUTPUTDIR run-7' );
   expect( payload.clip ).toBe( 'bridge-text' );

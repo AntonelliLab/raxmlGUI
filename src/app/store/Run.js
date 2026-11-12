@@ -839,26 +839,23 @@ class Run extends StoreBase {
   backboneConstraint = new BackboneConstraintTree( this );
   multifurcatingConstraint = new MultifurcatingConstraintTree( this );
 
-  @action
-    loadTreeFile = () => {
-      ipcRenderer.send( ipc.TREE_SELECT, { id: this.id, type: 'tree' } );
-    };
+  chooseTree = async ( type ) => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const chosen = await rendererBridge.selectTree( this.id, type );
+    if ( !chosen ) {
+      return;
+    }
+    this.addTreeFiles( chosen.type, [{ path: chosen.filePath }] );
+  };
 
   @action
-    loadBackboneConstraintFile = () => {
-      ipcRenderer.send( ipc.TREE_SELECT, {
-        id: this.id,
-        type: 'backboneConstraint',
-      } );
-    };
+    loadTreeFile = () => this.chooseTree( 'tree' );
 
   @action
-    loadMultifurcatingConstraintFile = () => {
-      ipcRenderer.send( ipc.TREE_SELECT, {
-        id: this.id,
-        type: 'multifurcatingConstraint',
-      } );
-    };
+    loadBackboneConstraintFile = () => this.chooseTree( 'backboneConstraint' );
+
+  @action
+    loadMultifurcatingConstraintFile = () => this.chooseTree( 'multifurcatingConstraint' );
 
   @observable disableCheckUndeterminedSequence = true;
 
@@ -2237,7 +2234,6 @@ Results saved to: ${this.outputDir}
   };
 
   listen = () => {
-    this.listenTo( ipc.TREE_SELECTED, this.onTreeSelected );
     this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
     this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
     this.listenTo( ipc.RUN_FINISHED, this.onRunFinished );
@@ -2248,13 +2244,6 @@ Results saved to: ${this.outputDir}
   // -----------------------------------------------------------
   // Listeners
   // -----------------------------------------------------------
-
-  @action
-    onTreeSelected = ( event, { id, type, filePath } ) => {
-      if ( id === this.id ) {
-        this.addTreeFiles( type, [{ path: filePath }] );
-      }
-    };
 
   @action
     onRunStdout = ( event, { id, content } ) => {

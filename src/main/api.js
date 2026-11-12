@@ -14,6 +14,7 @@ import { selectAstralFile } from './selectAstralFile';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
 import { selectPartitionFile } from './selectPartitionFile';
+import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -603,26 +604,6 @@ ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( event, id ) => {
   console.log( `Cancel modeltest process ${id}...` );
   cancelProcess( id );
 } );
-// Open a dialog to select a tree file
-ipcMain.on( ipc.TREE_SELECT, ( event, params ) => {
-  const { id, type } = params;
-  dialog
-    .showOpenDialog( {
-      title: 'Select a tree file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.TREE_SELECT, result );
-      if ( result.canceled ) {
-        return;
-      }
-      send( event, ipc.TREE_SELECTED, {
-        id,
-        type,
-        filePath: result.filePaths[0],
-      } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.TREE_SELECT, err );
-    } );
+ipcMain.handle( ipc.TREE_SELECT, ( _event, _runId, type ) => {
+  return selectTree( ( options ) => dialog.showOpenDialog( options ), type );
 } );
