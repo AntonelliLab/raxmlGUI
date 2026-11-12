@@ -11,6 +11,7 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
+import { runEvents } from './StoreBase';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
 import { host } from './host';
@@ -495,8 +496,8 @@ class Alignment extends InputFile {
         }
       },
     );
-    this.subscribe( 'onRunStdout', this.onRunStdout );
-    this.subscribe( 'onRunStderr', this.onRunStderr );
+    this.subscribe( runEvents.onRunStdout, this.onRunStdout );
+    this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
 
   @action clearModified = () => {

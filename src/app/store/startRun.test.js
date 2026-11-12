@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import Run from './Run';
+import { runEvents } from './StoreBase';
 
 function bridge( extra ) {
   const listeners = {
@@ -20,10 +21,10 @@ function bridge( extra ) {
     };
   };
   window.rendererBridge = {
-    onRunStdout: subscribe( 'stdout' ),
-    onRunStderr: subscribe( 'stderr' ),
-    onRunFinished: subscribe( 'finished' ),
-    onRunError: subscribe( 'error' ),
+    [runEvents.onRunStdout]: subscribe( 'stdout' ),
+    [runEvents.onRunStderr]: subscribe( 'stderr' ),
+    [runEvents.onRunFinished]: subscribe( 'finished' ),
+    [runEvents.onRunError]: subscribe( 'error' ),
     parseAlignment: () => new Promise( () => {} ),
     checkOutput: async () => ( { ok: true, resultFilenames: [] } ),
     ...extra,

@@ -9,7 +9,7 @@ import fs from 'fs';
 import Alignment, { FinalAlignment } from './Alignment';
 import AstralTree from './AstralTree';
 import Option from './Option';
-import StoreBase from './StoreBase';
+import StoreBase, { runEvents } from './StoreBase';
 import { host } from './host';
 import { basename, dir, join, name, quote } from '../paths';
 import * as raxmlSettings from '../../settings/raxml';
@@ -2235,10 +2235,10 @@ Results saved to: ${this.outputDir}
   };
 
   listen = () => {
-    this.subscribe( 'onRunStdout', this.onRunStdout );
-    this.subscribe( 'onRunStderr', this.onRunStderr );
-    this.subscribe( 'onRunFinished', this.onRunFinished );
-    this.subscribe( 'onRunError', this.onRunError );
+    this.subscribe( runEvents.onRunStdout, this.onRunStdout );
+    this.subscribe( runEvents.onRunStderr, this.onRunStderr );
+    this.subscribe( runEvents.onRunFinished, this.onRunFinished );
+    this.subscribe( runEvents.onRunError, this.onRunError );
     this.listenTo( ipc.ASTRAL_SUCCESS, this.onAstralFinished );
   };
 

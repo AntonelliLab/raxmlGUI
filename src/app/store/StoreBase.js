@@ -2,6 +2,13 @@ import { ipcRenderer } from 'electron';
 
 import * as ipc from '../../constants/ipc';
 
+export const runEvents = {
+  onRunStdout: 'onRunStdout',
+  onRunStderr: 'onRunStderr',
+  onRunFinished: 'onRunFinished',
+  onRunError: 'onRunError',
+};
+
 export default class StoreBase {
   listeners = [];
   eventStops = [];
