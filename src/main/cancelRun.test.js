@@ -1,6 +1,8 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { spawn } from 'child_process';
 import { once } from 'events';
+import fs from 'fs';
+import path from 'path';
 
 import { beginRun, cancelRun, finishedRun, forgetRun, runResult, stillRunning, trackRun } from './cancelRun';
 
@@ -38,6 +40,18 @@ it( 'a late exit from a cancelled run leaves the next run tracked', () => {
 it( 'a finished run still reports its result', () => {
   expect( runResult( { cancelled: false }, 'exit', 0, null ) ).toBe( 0 );
   expect( finishedRun( 0 ) ).toBe( true );
+} );
+
+it( 'the run handler returns before a terminal event once the run is no longer current', () => {
+  const source = fs.readFileSync( path.join( __dirname, 'api.js' ), 'utf8' );
+  const start = source.indexOf( 'ipcMain.handle( ipc.RUN_START' );
+  const end = source.indexOf( 'ipcMain.handle( ipc.RUN_CANCEL' );
+  const handler = source.slice( start, end );
+  const finished = handler.lastIndexOf( 'ipc.RUN_FINISHED' );
+  expect( handler.slice( 0, finished ) ).toContain( 'stillRunning' );
+  expect( handler ).toContain( 'reportError( error )' );
+  expect( handler ).toContain( 'reportError( err )' );
+  expect( source ).toContain( 'forgetRun( id, proc )' );
 } );
 
 it( 'a failed run still reports the exit error', () => {
