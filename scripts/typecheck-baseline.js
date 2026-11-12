@@ -12,12 +12,25 @@ function diagnosticLines(text) {
     .filter((line) => line.trim() !== '');
 }
 
+function fingerprint(line) {
+  return line.replace(/\(\d+,\d+\): /, ': ');
+}
+
 function freshLines(actual, known) {
-  const seen = new Set(known);
-  return actual.filter((line) => !seen.has(line));
+  const seen = new Set(known.map(fingerprint));
+  return actual.filter((line) => !seen.has(fingerprint(line)));
 }
 
 function main() {
+  if (!fs.existsSync(baselinePath)) {
+    console.error('typecheck baseline is missing: ' + baselinePath);
+    process.exit(1);
+  }
+  const baseline = diagnosticLines(fs.readFileSync(baselinePath, 'utf8'));
+  if (baseline.length === 0) {
+    console.error('typecheck baseline is empty: ' + baselinePath);
+    process.exit(1);
+  }
   const tsc = path.join(root, 'node_modules', 'typescript', 'bin', 'tsc');
   const result = spawnSync(process.execPath, [tsc, '--noEmit', '--pretty', 'false'], {
     cwd: root,
@@ -29,7 +42,7 @@ function main() {
   }
   const fresh = freshLines(
     diagnosticLines(`${result.stdout || ''}\n${result.stderr || ''}`),
-    diagnosticLines(fs.readFileSync(baselinePath, 'utf8')),
+    baseline,
   );
   if (fresh.length) {
     console.error(fresh.join('\n'));

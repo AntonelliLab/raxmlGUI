@@ -9,3 +9,8 @@ it( 'reports a diagnostic line that the baseline does not list', () => {
     'src/b.js(2,1): error TS2: new',
   ], known ) ).toEqual( ['src/b.js(2,1): error TS2: new'] );
 } );
+
+it( 'treats the same diagnostic at another line as known', () => {
+  const known = ['src/a.js(1,1): error TS1: known'];
+  expect( freshLines( ['src/a.js(9,4): error TS1: known'], known ) ).toEqual( [] );
+} );
