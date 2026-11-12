@@ -1,26 +1,50 @@
-const os = require( 'os' );
+import os from 'node:os';
+
+import { runEvents } from '../src/app/store/StoreBase';
 
 // React 19 flushes a render inside act() when this flag is set.
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
-function withModelEvents( bridge ) {
-  if ( typeof bridge.onModelSelectionSuccess !== 'function' ) {
-    bridge.onModelSelectionSuccess = () => () => {};
-  }
-  if ( typeof bridge.onModelSelectionFailure !== 'function' ) {
-    bridge.onModelSelectionFailure = () => () => {};
-  }
-  return bridge;
+// Run and an alignment listen at construction. A test assignment keeps its object.
+const runEventStubs = {};
+for ( const name of Object.values( runEvents ) ) {
+  runEventStubs[name] = () => () => {};
 }
 
-let bridge = withModelEvents( {
-  host: {
-    windows: process.platform === 'win32',
-    release: os.release(),
-    arch: os.arch(),
-    cpuModel: os.cpus()[0].model,
+const modelEventStubs = {
+  onModelSelectionSuccess() {
+    return () => {};
   },
-} );
+  onModelSelectionFailure() {
+    return () => {};
+  },
+};
+
+const host = {
+  windows: process.platform === 'win32',
+  release: os.release(),
+  arch: os.arch(),
+  cpuModel: os.cpus()[0].model,
+};
+
+function withBridgeEvents( next ) {
+  for ( const name of Object.keys( runEventStubs ) ) {
+    if ( typeof next[name] !== 'function' ) {
+      next[name] = runEventStubs[name];
+    }
+  }
+  for ( const name of Object.keys( modelEventStubs ) ) {
+    if ( typeof next[name] !== 'function' ) {
+      next[name] = modelEventStubs[name];
+    }
+  }
+  if ( !Object.prototype.hasOwnProperty.call( next, 'host' ) ) {
+    next.host = host;
+  }
+  return next;
+}
+
+let bridge = withBridgeEvents( { host } );
 
 Object.defineProperty( window, 'rendererBridge', {
   configurable: true,
@@ -29,6 +53,6 @@ Object.defineProperty( window, 'rendererBridge', {
     return bridge;
   },
   set( next ) {
-    bridge = withModelEvents( next );
+    bridge = withBridgeEvents( next );
   },
 } );

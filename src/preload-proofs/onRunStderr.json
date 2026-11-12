@@ -1,0 +1,7 @@
+{
+  "key": "stderr",
+  "method": "onRunStderr",
+  "channel": "RUN_STDERR",
+  "subscribe": true,
+  "result": { "id": "run-7", "content": "warn\n" }
+}

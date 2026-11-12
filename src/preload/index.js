@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
-import { ALIGNMENT_MODEL_SELECTION_FAILURE, ALIGNMENT_MODEL_SELECTION_REQUEST, ALIGNMENT_MODEL_SELECTION_SUCCESS, ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, FILE_SHOW_IN_FOLDER, OPEN_PATH, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
+import { ALIGNMENT_MODEL_SELECTION_FAILURE, ALIGNMENT_MODEL_SELECTION_REQUEST, ALIGNMENT_MODEL_SELECTION_SUCCESS, ALIGNMENT_PARSE, ALIGNMENT_SELECT, ASTRAL_FILE_SELECT, COPY_TEXT, FILE_SHOW_IN_FOLDER, OPEN_PATH, OUTPUT_CHECK, OUTPUT_DIR_SELECT, PARTITION_FILE_SELECT, READ_FILE, RUN_ERROR, RUN_FINISHED, RUN_START, RUN_STDERR, RUN_STDOUT, TREE_SELECT, WRITE_FILE } from '../constants/ipc';
 import Store from 'electron-store';
 import betterIpc from 'electron-better-ipc';
 import cpus from 'cpus';
@@ -194,6 +194,21 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   showItemInFolder( fullPath ) {
     return ipcRenderer.invoke( FILE_SHOW_IN_FOLDER, fullPath );
+  },
+  startRun( payload ) {
+    return ipcRenderer.invoke( RUN_START, payload );
+  },
+  onRunStdout( listener ) {
+    return onEvent( RUN_STDOUT, listener );
+  },
+  onRunStderr( listener ) {
+    return onEvent( RUN_STDERR, listener );
+  },
+  onRunFinished( listener ) {
+    return onEvent( RUN_FINISHED, listener );
+  },
+  onRunError( listener ) {
+    return onEvent( RUN_ERROR, listener );
   },
   startModelSelection( payload ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_REQUEST, payload );

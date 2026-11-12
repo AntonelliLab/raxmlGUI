@@ -11,6 +11,7 @@ import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
+import { runEvents } from './StoreBase';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
 import { host } from './host';
@@ -501,8 +502,8 @@ class Alignment extends InputFile {
       rendererBridge.onModelSelectionSuccess( this.onModelSelectionSuccess ),
       rendererBridge.onModelSelectionFailure( this.onModelSelectionFailure ),
     ];
-    this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
-    this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
+    this.subscribe( runEvents.onRunStdout, this.onRunStdout );
+    this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
 
   @action clearModified = () => {
@@ -540,7 +541,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStdout = ( event, { id, content } ) => {
+    onRunStdout = ( { id, content } ) => {
       if ( id === this.id ) {
       // TODO: Keep local log?
         this.run.stdout += content;
@@ -548,7 +549,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStderr = ( event, { id, content } ) => {
+    onRunStderr = ( { id, content } ) => {
       if ( id === this.id ) {
         this.run.stderr += content;
       }
