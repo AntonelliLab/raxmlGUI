@@ -2,8 +2,8 @@ import { ipcRenderer  } from 'electron';
 import type {IpcRendererEvent} from 'electron';
 import * as ipc from '../constants/ipc';
 import store from './store';
-import path from 'path';
 import nodeProcess from 'process';
+import { join } from './paths';
 
 interface AlignmentExampleFilesPayload {
   fasta: string[];
@@ -31,7 +31,6 @@ function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
   // if (exampleFiles.length === 0) {
   //   return;
   // }
-  // const exampleFilesDir = path.dirname(exampleFiles[0].path);
   const exampleFilesDir = exampleFiles.dir;
   // const useFiles = exampleFiles.filter(file => exampleFilenames.includes(file.name));
   const useFastaFiles: AlignmentPathRef[] = [
@@ -44,7 +43,7 @@ function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
     // 'multistate.txt',
     'nucleotide.txt',
   ].map( ( filename ) => ( {
-    path: path.join( exampleFilesDir, 'fasta', filename ),
+    path: join( exampleFilesDir, 'fasta', filename ),
   } ) );
   const usePhylipFiles: AlignmentPathRef[] = [
     // 'AA.txt',
@@ -64,7 +63,7 @@ function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
     // 'test_invariant_sites.txt',
     // 'test_lower_case_bases.txt',
   ].map( ( filename ) => ( {
-    path: path.join( exampleFilesDir, 'phylip', filename ),
+    path: join( exampleFilesDir, 'phylip', filename ),
   } ) );
   const useFiles = [].concat( useFastaFiles, usePhylipFiles );
   store.activeRun.addAlignments( useFiles );
