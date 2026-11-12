@@ -1,0 +1,7 @@
+{
+  "key": "reloaded",
+  "method": "reload",
+  "args": [],
+  "channel": "RELOAD",
+  "result": null
+}
