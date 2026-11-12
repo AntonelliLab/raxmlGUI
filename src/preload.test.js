@@ -79,6 +79,12 @@ const launchCopy = canLaunchElectron
 
 launchCopy( 'copyText resolves void, the clipboard receives the text, and a dropped file keeps its path', () => {
   const proofs = loadProofs();
+  const launchFields = new Set( [
+    'copied', 'sent', 'file', 'got', 'stem', 'safe', 'model', 'host', 'hostSame', 'hostMatches',
+    'ended', 'text', 'written', 'droppedPath', 'droppedSync', 'error',
+  ] );
+  const collided = proofs.map( ( proof ) => proof.key ).filter( ( key ) => launchFields.has( key ) );
+  expect( collided ).toEqual( [] );
   const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
   const mainFile = path.join( dir, 'main.js' );
   const pageFile = path.join( dir, 'page.html' );
