@@ -13,6 +13,7 @@ import {
   ASTRAL_SUCCESS,
   COPY_TEXT,
   DARK_MODE,
+  EXAMPLE_FILES,
   FILE_SHOW_IN_FOLDER,
   LIGHT_MODE,
   OPEN_PATH,
@@ -192,6 +193,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   host,
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
+  },
+  getExampleFiles() {
+    return ipcRenderer.invoke( EXAMPLE_FILES );
   },
   selectAlignment( runId ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
