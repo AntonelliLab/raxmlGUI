@@ -1,5 +1,5 @@
 /* global __static */
-import { app, ipcMain, shell, dialog, Notification, BrowserWindow, clipboard } from 'electron';
+import { app, ipcMain, shell, dialog, Notification, clipboard } from 'electron';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
@@ -82,10 +82,8 @@ ipcMain.handle( ipc.READ_FILE, ( _event, filePath ) => {
 ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
   await fs.writeFile( filePath, text );
 } );
-ipcMain.on( ipc.RELOAD, () => {
-  BrowserWindow
-    .getCurrentWindow()
-    .reload();
+ipcMain.handle( ipc.RELOAD, ( event ) => {
+  event.sender.reload();
 } );
 ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
   return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );

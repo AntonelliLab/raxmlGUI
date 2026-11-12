@@ -13,15 +13,14 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { ipcRenderer } from 'electron';
 import {
   reportIssueToGitHub,
   getMailtoLinkToReportError,
 } from '../../common/utils';
-import * as ipc from '../../constants/ipc';
 
 const handleReload = () => {
-  ipcRenderer.send( ipc.RELOAD );
+  const { rendererBridge } = /** @type {any} */ ( window );
+  return rendererBridge.reload();
 };
 
 export default function ErrorDialog( { error, onClose, needReload, title } ) {
