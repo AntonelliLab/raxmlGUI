@@ -7,11 +7,10 @@ import theme from './theme';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import store from './store';
-import { is } from '../common/utils';
 
 import './bootstrap';
 
-if ( !is.development ) {
+if ( process.env.NODE_ENV !== 'development' ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
   } );

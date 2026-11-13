@@ -1,5 +1,4 @@
 import store from './store';
-import nodeProcess from 'process';
 import { join } from './paths';
 
 interface AlignmentExampleFilesPayload {
@@ -11,8 +10,10 @@ interface AlignmentExampleFilesPayload {
 
 interface AlignmentPathRef { path: string }
 
-// The page build inlines process.env, so the e2e flag is read from Node.
-if ( process.env.NODE_ENV === 'development' || nodeProcess.env.RAXMLGUI_E2E === '1' ) {
+const e2e = typeof window !== 'undefined'
+  && new URLSearchParams( window.location.search ).get( 'e2e' ) === '1';
+
+if ( process.env.NODE_ENV === 'development' || e2e ) {
   console.log( '\n========= Bootstrapping initial state... =========\n' );
   const { rendererBridge } = window as unknown as {
     rendererBridge: {

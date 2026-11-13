@@ -1,5 +1,3 @@
-import { ipcRenderer } from 'electron';
-
 export const runEvents = {
   onRunStdout: 'onRunStdout',
   onRunStderr: 'onRunStderr',
@@ -16,17 +14,11 @@ export const runEvents = {
 };
 
 export default class StoreBase {
-  listeners = [];
   eventStops = [];
 
   constructor() {
     this._init();
   }
-
-  listenTo = ( channel, listener ) => {
-    ipcRenderer.on( channel, listener );
-    this.listeners.push( [channel, listener] );
-  };
 
   subscribe = ( name, listener ) => {
     const { rendererBridge } = /** @type {any} */ ( window );
@@ -36,10 +28,6 @@ export default class StoreBase {
   unlisten = () => {
     while ( this.eventStops.length ) {
       this.eventStops.pop()();
-    }
-    while ( this.listeners.length > 0 ) {
-      const [channel, listener] = this.listeners.pop();
-      ipcRenderer.removeListener( channel, listener );
     }
   };
 

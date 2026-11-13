@@ -1,11 +1,7 @@
 import { observable, computed, action, runInAction } from 'mobx';
-import { ipcRenderer } from 'electron';
-import fs from 'fs';
-import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 
-import * as ipc from '../../constants/ipc';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
@@ -19,8 +15,6 @@ import { join } from '../paths';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
-
-const writeFile = util.promisify( fs.writeFile );
 
 class RaxmlNgAlignmentSubstitutionModel extends Option {
   constructor( alignment ) {
@@ -693,13 +687,15 @@ class FinalAlignment {
   @action
     openFile = async () => {
       await this.writeConcatenatedAlignment();
-      ipcRenderer.send( ipc.FILE_OPEN, this.path );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.openPath( this.path );
     };
 
   @action
     openPartition = async () => {
       await this.writeConcatenatedAlignmentAndPartition();
-      ipcRenderer.send( ipc.FILE_OPEN, this.partitionFilePath );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.openPath( this.partitionFilePath );
     };
 
   @action
@@ -712,7 +708,8 @@ class FinalAlignment {
   @action
     openFolder = async () => {
       await this.writeConcatenatedAlignmentAndPartition();
-      ipcRenderer.send( ipc.FOLDER_OPEN, this.dir );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.showItemInFolder( this.dir );
     };
 
   @action
@@ -752,7 +749,8 @@ class FinalAlignment {
     writePartition = async () => {
       try {
         console.log( `Writing partition to ${this.partitionFilePath}...` );
-        await writeFile( this.partitionFilePath, this.partitionFileContent );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        await rendererBridge.writeFile( this.partitionFilePath, this.partitionFileContent );
       } catch ( err ) {
         console.error( 'Error writing partition:', err );
         throw err;

@@ -4619,11 +4619,6 @@ cosmiconfig@^7.0.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
-cpus@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/cpus/-/cpus-1.0.3.tgz#4ef6deea461968d6329d07dd01205685df2934a2"
-  integrity sha512-PXHBvGLuL69u55IkLa5e5838fLhIMHxmkV4ge42a8alGyn7BtawYgI0hQ849EedvtHIOLNNH3i6eQU1BiE9SUA==
-
 crc@^3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/crc/-/crc-3.8.0.tgz#ad60269c2c856f8c299e2c4cc0de4556914056c6"
@@ -5069,13 +5064,6 @@ ejs@^3.1.8:
   integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
-
-electron-better-ipc@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-2.1.1.tgz#fdd708bfdb3c4dc6733782c8297020118ea42965"
-  integrity sha512-Wmkd2c5dJCXgcQGneLpMhh7HZ/n9Szzn8LCsDh1cRKwEVlv6gYilc/+r73SnU2AzxolJwFyAzUKtizVT+Hmd7g==
-  dependencies:
-    serialize-error "^8.1.0"
 
 electron-builder@^24.13.3:
   version "24.13.3"

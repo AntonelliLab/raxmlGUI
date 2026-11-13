@@ -1,22 +1,26 @@
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import StoreBase, { runEvents } from './StoreBase';
-import Store from 'electron-store';
-
-export const store = new Store();
 
 export default class Config extends StoreBase {
   constructor() {
     super();
     this.listen();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    rendererBridge.getDarkMode().then( ( value ) => {
+      runInAction( () => {
+        this.isDarkMode = !!value;
+      } );
+    } );
   }
 
-  @observable isDarkMode = store.get( 'darkMode' );
+  @observable isDarkMode = false;
 
   @action
     setDarkMode = ( value ) => {
       value = !!value;
-      store.set( 'darkMode', value );
       this.isDarkMode = value;
+      const { rendererBridge } = /** @type {any} */ ( window );
+      void rendererBridge.setDarkMode( value );
     };
 
   onLightMode = () => {
