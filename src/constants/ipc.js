@@ -1,8 +1,7 @@
 /*
     Strings for ipc
 */
-export const INIT_APP_STATE = 'INIT_APP_STATE';
-export const INIT_APP_STATE_RECEIVED = 'INIT_APP_STATE_RECEIVED';
+export const GET_VERSION = 'GET_VERSION';
 export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
 export const TREE_SELECT = 'TREE_SELECT';
 export const PARTITION_FILE_SELECT = 'PARTITION_FILE_SELECT';

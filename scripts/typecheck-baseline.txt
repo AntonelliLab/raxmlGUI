@@ -5,7 +5,7 @@ src/app/App.js(322,24): error TS2769: No overload matches this call.
     Type '{ onClick: any; sx: { '&:hover': { color: "#999"; }; }; title: string; }' is not assignable to type 'IntrinsicAttributes & SvgIconOwnProps & CommonProps & Omit<SVGProps<SVGSVGElement>, "fontSize" | ... 10 more ... | "titleAccess">'.
       Property 'title' does not exist on type 'IntrinsicAttributes & SvgIconOwnProps & CommonProps & Omit<SVGProps<SVGSVGElement>, "fontSize" | ... 10 more ... | "titleAccess">'.
 src/app/App.js(466,12): error TS2739: Type '{ error: any; onClose: any; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
-src/app/App.js(512,10): error TS2739: Type '{ error: any; onClose: () => void; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
+src/app/App.js(512,10): error TS2741: Property 'needReload' is missing in type '{ error: any; title: any; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
 src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
 src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
 src/app/store/Alignment.js(27,5): error TS2554: Expected 5-6 arguments, but got 3.

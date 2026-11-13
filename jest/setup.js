@@ -52,6 +52,10 @@ function withBridgeEvents( next ) {
   if ( typeof next.provideStateReport !== 'function' ) {
     next.provideStateReport = () => {};
   }
+  // The page store calls getVersion while it is constructed.
+  if ( typeof next.getVersion !== 'function' ) {
+    next.getVersion = () => Promise.resolve();
+  }
   return next;
 }
 

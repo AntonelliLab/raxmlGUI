@@ -1,7 +1,5 @@
 import { ipcRenderer } from 'electron';
 
-import * as ipc from '../../constants/ipc';
-
 export const runEvents = {
   onRunStdout: 'onRunStdout',
   onRunStderr: 'onRunStderr',
@@ -14,6 +12,7 @@ export const runEvents = {
   onDarkMode: 'onDarkMode',
   onToggleBackboneConstraint: 'onToggleBackboneConstraint',
   onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
+  onUnhandledError: 'onUnhandledError',
 };
 
 export default class StoreBase {
@@ -22,7 +21,6 @@ export default class StoreBase {
 
   constructor() {
     this._init();
-    this._listen();
   }
 
   listenTo = ( channel, listener ) => {
@@ -39,7 +37,7 @@ export default class StoreBase {
     while ( this.eventStops.length ) {
       this.eventStops.pop()();
     }
-    while ( !this.listeners.length > 0 ) {
+    while ( this.listeners.length > 0 ) {
       const [channel, listener] = this.listeners.pop();
       ipcRenderer.removeListener( channel, listener );
     }
@@ -50,14 +48,9 @@ export default class StoreBase {
   };
 
   _init = () => {
-    ipcRenderer.send( ipc.INIT_APP_STATE );
-  };
-
-  _listen = () => {
-    this.listenTo( ipc.INIT_APP_STATE_RECEIVED, this._initAppState );
-  };
-
-  _initAppState = ( event, { version } ) => {
-    this.version = version;
+    const { rendererBridge } = /** @type {any} */ ( window );
+    rendererBridge.getVersion().then( ( version ) => {
+      this.version = version;
+    } );
   };
 }
