@@ -133,7 +133,7 @@ Writing the concatenated FASTA calls `rendererBridge.writeFile` once, which reso
 Showing an alignment, an input file, or a tree in its folder calls `rendererBridge.showItemInFolder`, which resolves void and reveals that path.
 The page's reload action calls `rendererBridge.reload`.
 The handler reloads the calling window with `event.sender.reload()`, and the promise resolves void.
-The page learns the app version from `rendererBridge.getVersion`, which resolves the app version string.
+`StoreBase` construction calls `rendererBridge.getVersion`, which resolves the app version string, and the page shows that value.
 Dropping an alignment, a partition, a tree, a constraint, or an ASTRAL file calls `rendererBridge.getPathForFile`, which returns the path string.
 The `File` stays on the page.
 Starting model selection calls `rendererBridge.startModelSelection` with `{ id, filePath, outputDir, dataType, numThreads, binaryName }`.
