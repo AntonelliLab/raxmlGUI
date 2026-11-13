@@ -17,6 +17,7 @@ import {
   DEBUG_INFO,
   EXAMPLE_FILES,
   FILE_SHOW_IN_FOLDER,
+  GET_VERSION,
   LIGHT_MODE,
   OPEN_EXTERNAL,
   OPEN_PATH,
@@ -32,9 +33,12 @@ import {
   RUN_START,
   RUN_STDERR,
   RUN_STDOUT,
+  STATE_REPORT,
+  STATE_REPORT_RESULT,
   TOGGLE_BACKBONE_CONSTRAINT,
   TOGGLE_MULTIFURCATING_CONSTRAINT,
   TREE_SELECT,
+  UNHANDLED_ERROR,
   WRITE_FILE,
 } from '../constants/ipc';
 import Store from 'electron-store';
@@ -192,13 +196,28 @@ const host = {
   cpuModel: cpu.model,
 };
 
+let stateReport = null;
+
+ipcRenderer.on( STATE_REPORT, ( _event, id ) => {
+  const report = stateReport
+    ? stateReport()
+    : undefined;
+  ipcRenderer.send( STATE_REPORT_RESULT, { id, report } );
+} );
+
 contextBridge.exposeInMainWorld( 'rendererBridge', {
   host,
+  provideStateReport( fn ) {
+    stateReport = fn;
+  },
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
   },
   getExampleFiles() {
     return ipcRenderer.invoke( EXAMPLE_FILES );
+  },
+  getVersion() {
+    return ipcRenderer.invoke( GET_VERSION );
   },
   selectAlignment( runId ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
@@ -295,6 +314,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   onToggleMultifurcatingConstraint( listener ) {
     return onEvent( TOGGLE_MULTIFURCATING_CONSTRAINT, listener );
+  },
+  onUnhandledError( listener ) {
+    return onEvent( UNHANDLED_ERROR, listener );
   },
   getPathForFile( file ) {
     return webUtils.getPathForFile( file );

@@ -2,7 +2,6 @@ import electron from 'electron';
 import os from 'os';
 import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
-import * as ipc from 'electron-better-ipc';
 const processWithElectron = process;
 export const is = {
   macos: process.platform === 'darwin',
@@ -37,14 +36,6 @@ ${process.platform} ${os.release()}
 Locale: ${electron.app.getLocale()}
 `.trim()
   : `Debug info not available in renderer.`;
-if ( is.renderer ) {
-  ipc.ipcRenderer.answerMain( 'get-state-report', async () => {
-    const storeModule = await import( '../app/store' );
-    const store = storeModule.default;
-    const report = store.generateReport();
-    return report;
-  } );
-}
 const getActiveStateSync = () => {
   if ( is.renderer ) {
     return window.store.generateReport();
@@ -53,10 +44,12 @@ const getActiveStateSync = () => {
 };
 export const serializeAndCleanError = ( error ) => {
   const err = serializeError( error );
-  const stack = error instanceof Error
+  const stack = error && typeof error.stack === 'string'
     ? error.stack
     : undefined;
-  err.stack = cleanStack( stack );
+  if ( err && typeof err === 'object' && stack ) {
+    err.stack = cleanStack( stack );
+  }
   return err;
 };
 export function timeout( ms ) {

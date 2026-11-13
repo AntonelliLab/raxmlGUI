@@ -1,8 +1,7 @@
 /*
     Strings for ipc
 */
-export const INIT_APP_STATE = 'INIT_APP_STATE';
-export const INIT_APP_STATE_RECEIVED = 'INIT_APP_STATE_RECEIVED';
+export const GET_VERSION = 'GET_VERSION';
 export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
 export const TREE_SELECT = 'TREE_SELECT';
 export const PARTITION_FILE_SELECT = 'PARTITION_FILE_SELECT';
@@ -46,3 +45,5 @@ export const ASTRAL_FILE_SELECTED = 'ASTRAL_FILE_SELECTED';
 export const COPY_TEXT = 'COPY_TEXT';
 export const READ_FILE = 'READ_FILE';
 export const WRITE_FILE = 'WRITE_FILE';
+export const STATE_REPORT = 'STATE_REPORT';
+export const STATE_REPORT_RESULT = 'STATE_REPORT_RESULT';

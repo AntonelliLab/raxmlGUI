@@ -23,6 +23,10 @@ module.exports = {
         selector: "CallExpression[callee.property.name='subscribe'][arguments.0.type='Literal']",
         message: 'Pass a runEvents value.',
       },
+      {
+        selector: "BinaryExpression[operator=/^(>|<|>=|<=)$/] > UnaryExpression[operator='!'][argument.property.name='length']",
+        message: 'Negate the comparison, not length. Prefer while (list.length > 0).',
+      },
     ],
   },
   overrides: [
