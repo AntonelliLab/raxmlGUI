@@ -19,10 +19,16 @@ it( 'the cancel control uses cancelRun', () => {
 
 it( 'cancel before the run is tracked does not start it', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-cancel-' ) );
-  let releaseWrite;
-  const writeFile = jest.fn( () => new Promise( ( resolve ) => {
-    releaseWrite = resolve;
-  } ) );
+  let holdWrites = true;
+  const waiters = [];
+  const writeFile = jest.fn( () => {
+    if ( !holdWrites ) {
+      return Promise.resolve();
+    }
+    return new Promise( ( resolve ) => {
+      waiters.push( resolve );
+    } );
+  } );
   const startRun = jest.fn( async () => {} );
   const cancelRun = jest.fn();
   window.rendererBridge = {
@@ -49,7 +55,8 @@ it( 'cancel before the run is tracked does not start it', async () => {
   try {
     const pending = run.start();
     run.cancel();
-    releaseWrite();
+    holdWrites = false;
+    waiters.forEach( ( release ) => release() );
     await pending;
     expect( startRun ).not.toHaveBeenCalled();
     expect( cancelRun ).toHaveBeenCalledWith( 'run-7' );

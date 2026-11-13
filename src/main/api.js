@@ -75,6 +75,15 @@ function send( event, channel, data ) {
   }
   return event.sender.send( channel, Object.assign( {}, data, { error: serializeError( data.error ) } ) );
 }
+ipcMain.on( ipc.HOST, ( event ) => {
+  const cpu = os.cpus()[0];
+  event.returnValue = {
+    windows: process.platform === 'win32',
+    release: os.release(),
+    arch: os.arch(),
+    cpuModel: cpu.model,
+  };
+} );
 ipcMain.handle( ipc.GET_VERSION, () => app.getVersion() );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );

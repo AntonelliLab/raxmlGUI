@@ -1,4 +1,4 @@
-import { serializeAndCleanError } from '../common/utils';
+import { serializeAndCleanError } from './report';
 
 function fenced( value ) {
   return `\`\`\`json

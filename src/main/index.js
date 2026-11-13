@@ -7,6 +7,7 @@ import { autoUpdater } from 'electron-updater';
 import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
+import { pageWindowPreferences } from './pageWindowPreferences';
 import { listenForUpdates } from './updates';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
@@ -53,19 +54,11 @@ function initialize() {
       title: app.name,
       backgroundColor: '#333',
       resizable: true,
-      webPreferences: {
-        backgroundThrottling: false,
-        // nodeIntegration: isDevMode,
-        nodeIntegration: true,
-        // The preload exposes the renderer bridge. Node stays available to that script.
-        contextIsolation: true,
-        sandbox: false,
-        ...( fs.existsSync( preloadPath )
-          ? { preload: preloadPath }
-          : {} ),
-        enableRemoteModule: true,
-        allowEval: false,
-      },
+      webPreferences: pageWindowPreferences(
+        fs.existsSync( preloadPath )
+          ? { preloadPath }
+          : {},
+      ),
     };
     if ( process.platform === 'linux' ) {
       // Set a window icon for linux
@@ -75,13 +68,18 @@ function initialize() {
     const win = new BrowserWindow( mainWindowOptions );
     mainWindow = win;
     // and load the index.html of the app.
-    const startUrl = process.env.ELECTRON_RENDERER_URL ||
+    let startUrl = process.env.ELECTRON_RENDERER_URL ||
             process.env.ELECTRON_START_URL ||
             url.format( {
               pathname: path.join( __dirname, '../renderer/index.html' ),
               protocol: 'file:',
               slashes: true,
             } );
+    if ( isE2eMode ) {
+      startUrl += startUrl.includes( '?' )
+        ? '&e2e=1'
+        : '?e2e=1';
+    }
     win.loadURL( startUrl );
     // Open the DevTools.
     // TODO: make conditional as in app.ready

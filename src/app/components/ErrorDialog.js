@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { getMailtoLinkToReportError } from '../../common/utils';
+import { getMailtoLinkToReportError } from '../report';
 import { reportIssueToGitHub } from '../githubIssue';
 
 const handleReload = () => {
@@ -23,6 +23,12 @@ const handleReload = () => {
 
 export default function ErrorDialog( { error, onClose, needReload, title } ) {
   const [reported, setReported] = React.useState( false );
+  const mailtoContent = React.useMemo(
+    () => ( error
+      ? getMailtoLinkToReportError( error )
+      : '' ),
+    [error],
+  );
 
   if ( !error ) {
     return null;
@@ -36,8 +42,6 @@ export default function ErrorDialog( { error, onClose, needReload, title } ) {
   const handleReportToMail = () => {
     setReported( true );
   };
-
-  const mailtoContent = getMailtoLinkToReportError( error );
 
   const closeMessage = needReload
     ? reported

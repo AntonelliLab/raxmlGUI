@@ -47,3 +47,4 @@ export const READ_FILE = 'READ_FILE';
 export const WRITE_FILE = 'WRITE_FILE';
 export const STATE_REPORT = 'STATE_REPORT';
 export const STATE_REPORT_RESULT = 'STATE_REPORT_RESULT';
+export const HOST = 'HOST';

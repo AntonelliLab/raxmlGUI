@@ -27,6 +27,7 @@ function bridge( extra ) {
     [runEvents.onRunError]: subscribe( 'error' ),
     parseAlignment: () => new Promise( () => {} ),
     checkOutput: async () => ( { ok: true, resultFilenames: [] } ),
+    writeFile: async () => {},
     cancelRun() {},
     ...extra,
   };

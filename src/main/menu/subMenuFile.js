@@ -35,6 +35,7 @@ const subMenuFile = {
           type: 'radio',
           checked: !store.get( 'darkMode' ),
           click() {
+            store.set( 'darkMode', false );
             sendToFocusedWindow( ipc.LIGHT_MODE );
           },
         },
@@ -43,6 +44,7 @@ const subMenuFile = {
           type: 'radio',
           checked: Boolean( store.get( 'darkMode' ) ),
           click() {
+            store.set( 'darkMode', true );
             sendToFocusedWindow( ipc.DARK_MODE );
           },
         },

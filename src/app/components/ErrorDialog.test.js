@@ -81,6 +81,8 @@ Locale: en-US`;
   window.rendererBridge = { debugInfo, openExternal };
   const error = new Error( 'boom' );
   const view = renderDialog( error );
+  // Mailto builds its href while painting and also reads the store report.
+  order.length = 0;
 
   await act( async () => {
     view.button( 'Report issue on GitHub' ).click();

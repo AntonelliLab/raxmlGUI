@@ -1,7 +1,5 @@
 import { observable, computed, action } from 'mobx';
-import { ipcRenderer } from 'electron';
 
-import * as ipc from '../../constants/ipc';
 import { base, dir, name } from '../paths';
 import StoreBase from './StoreBase';
 
@@ -48,8 +46,9 @@ class InputFile extends StoreBase {
   }
 
   @action
-    openFile = () => {
-      ipcRenderer.send( ipc.FILE_OPEN, this.path );
+    openFile = async () => {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.openPath( this.path );
     };
 
   @action

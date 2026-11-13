@@ -1,10 +1,7 @@
 import { observable, computed, action, createAtom } from 'mobx';
-import { shell } from 'electron';
 import { range } from 'd3-array';
-import cpus from 'cpus';
 import { promisedComputed } from 'computed-async-mobx';
 import filenamify from 'filenamify';
-import fs from 'fs';
 
 import Alignment, { FinalAlignment } from './Alignment';
 import AstralTree from './AstralTree';
@@ -23,7 +20,7 @@ const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
 
 const { windows } = host;
 
-export const MAX_NUM_CPUS = cpus().length;
+export const MAX_NUM_CPUS = navigator.hardwareConcurrency || 1;
 
 // On Windows 7 (= 6.1) use older versions of RAxML
 const [majorVersion, minorVersion] = host.release.split( '.' );
@@ -711,8 +708,9 @@ class TreeFile extends Option {
     const { rendererBridge } = /** @type {any} */ ( window );
     await rendererBridge.showItemInFolder( this.filePath );
   };
-  @action openFile = () => {
-    shell.openPath( this.filePath );
+  @action openFile = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.openPath( this.filePath );
   };
   @action remove = () => {
     this.setFilePath( '' );
@@ -1944,7 +1942,8 @@ Results saved to: ${this.outputDir}
     writeSettings = async () => {
       try {
         console.log( `Writing settings to ${this.settingsFilePath}...` );
-        await fs.writeFileSync( this.settingsFilePath, this.settingsFileContent );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        await rendererBridge.writeFile( this.settingsFilePath, this.settingsFileContent );
       } catch ( err ) {
         console.error( 'Error writing settings:', err );
         throw err;

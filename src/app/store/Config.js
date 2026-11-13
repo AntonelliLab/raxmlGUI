@@ -1,8 +1,9 @@
 import { observable, action } from 'mobx';
 import StoreBase, { runEvents } from './StoreBase';
-import Store from 'electron-store';
 
-export const store = new Store();
+function readDarkMode() {
+  return window.localStorage.getItem( 'darkMode' ) === 'true';
+}
 
 export default class Config extends StoreBase {
   constructor() {
@@ -10,12 +11,14 @@ export default class Config extends StoreBase {
     this.listen();
   }
 
-  @observable isDarkMode = store.get( 'darkMode' );
+  @observable isDarkMode = readDarkMode();
 
   @action
     setDarkMode = ( value ) => {
       value = !!value;
-      store.set( 'darkMode', value );
+      window.localStorage.setItem( 'darkMode', value
+        ? 'true'
+        : 'false' );
       this.isDarkMode = value;
     };
 

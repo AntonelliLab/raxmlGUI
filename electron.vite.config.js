@@ -1,93 +1,8 @@
-import { builtinModules } from 'node:module';
 import { resolve } from 'node:path';
 import { sentryVitePlugin } from '@sentry/bundler-plugins/vite';
 import { defineConfig } from 'electron-vite';
 import react from '@vitejs/plugin-react';
 import { version } from './package.json';
-
-const nodeBuiltins = builtinModules.filter( ( name ) => !name.startsWith( '_' ) );
-const nodePackages = [
-  'electron',
-  'electron-store',
-  'electron-better-ipc',
-  '@sentry/electron',
-  '@sentry/electron/renderer',
-  '@sentry/electron/main',
-  'cpus',
-  'parse-filepath',
-  'filenamify',
-  'clean-stack',
-];
-const nodeExternals = [
-  ...nodePackages,
-  ...nodeBuiltins,
-  ...nodeBuiltins.map( ( name ) => (
-    name.startsWith( 'node:' )
-      ? name
-      : `node:${name}`
-  ) ),
-];
-
-// electron-vite serves the page as browser ESM. require() keeps Node, which the page still uses.
-function rendererNodeBabel( externals ) {
-  const external = new Set( externals );
-  return ( { types: t } ) => ( {
-    name: 'renderer-node',
-    visitor: {
-      ImportDeclaration( path ) {
-        if ( path.node.importKind === 'type' || !external.has( path.node.source.value ) ) {
-          return;
-        }
-        const specs = path.node.specifiers.filter( ( spec ) => spec.importKind !== 'type' );
-        const req = t.callExpression(
-          t.memberExpression( t.identifier( 'globalThis' ), t.identifier( 'require' ) ),
-          [t.stringLiteral( path.node.source.value )],
-        );
-        const namespace = specs.find( ( spec ) => spec.type === 'ImportNamespaceSpecifier' );
-        const named = specs.filter( ( spec ) => spec.type === 'ImportSpecifier' );
-        const defaults = specs.filter( ( spec ) => spec.type === 'ImportDefaultSpecifier' );
-        if ( namespace ) {
-          path.replaceWith( t.variableDeclaration( 'const', [
-            t.variableDeclarator( namespace.local, req ),
-          ] ) );
-          return;
-        }
-        const pattern = () => t.objectPattern( named.map( ( spec ) => {
-          const imported = spec.imported.type === 'Identifier'
-            ? spec.imported.name
-            : spec.imported.value;
-          const shorthand = imported === spec.local.name;
-          return t.objectProperty(
-            t.identifier( imported ),
-            t.identifier( spec.local.name ),
-            false,
-            shorthand,
-          );
-        } ) );
-        if ( defaults.length && named.length ) {
-          path.replaceWithMultiple( [
-            t.variableDeclaration( 'const', [
-              t.variableDeclarator( defaults[0].local, req ),
-            ] ),
-            t.variableDeclaration( 'const', [
-              t.variableDeclarator( pattern(), t.identifier( defaults[0].local.name ) ),
-            ] ),
-          ] );
-          return;
-        }
-        if ( defaults.length ) {
-          path.replaceWith( t.variableDeclaration( 'const', [
-            t.variableDeclarator( defaults[0].local, req ),
-          ] ) );
-          return;
-        }
-        path.replaceWith( t.variableDeclaration( 'const', [
-          t.variableDeclarator( pattern(), req ),
-        ] ) );
-      },
-    },
-  } );
-}
 
 // The menu no longer imports the store. The shared helper still dynamic-imports it, and only on the page.
 function leaveDecoratedStoreOutOfMain() {
@@ -124,12 +39,6 @@ export default defineConfig( ( { command } ) => ( {
     plugins: [leaveDecoratedStoreOutOfMain(), ...sourceMapUpload( command )],
   },
   preload: {
-    resolve: {
-      // cpus points its browser field at a stub. The page reads the real CPU list.
-      alias: {
-        cpus: resolve( __dirname, 'node_modules/cpus/index.js' ),
-      },
-    },
     build: {
       externalizeDeps: false,
     },
@@ -137,6 +46,12 @@ export default defineConfig( ( { command } ) => ( {
   renderer: {
     root: '.',
     publicDir: false,
+    resolve: {
+      // Default entry also loads filenamify-path, which needs Node's path.
+      alias: {
+        filenamify: resolve( __dirname, 'node_modules/filenamify/filenamify.js' ),
+      },
+    },
     optimizeDeps: {
       // The page keeps JSX in .js files. The dep scanner parses those only when .js is jsx.
       rolldownOptions: {
@@ -144,7 +59,6 @@ export default defineConfig( ( { command } ) => ( {
           '.js': 'jsx',
         },
       },
-      exclude: nodePackages,
     },
     plugins: [
       // plugin-react 5: its babel option compiles legacy MobX decorators. 6 dropped babel.
@@ -155,7 +69,6 @@ export default defineConfig( ( { command } ) => ( {
             ['@babel/plugin-proposal-decorators', { legacy: true }],
             ['@babel/plugin-proposal-class-properties', { loose: true }],
             ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-            rendererNodeBabel( nodeExternals ),
           ],
         },
       } ),
