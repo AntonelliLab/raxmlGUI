@@ -304,8 +304,6 @@ class Alignment extends InputFile {
 
   @observable modeltestLoading = false;
 
-  modelStops = [];
-
   @action
     runModelTest = async () => {
     // Show an error if there are not enough sequences and dont start the run
@@ -492,11 +490,8 @@ class Alignment extends InputFile {
 
   listen = () => {
     this.loadParsedAlignment();
-    const { rendererBridge } = /** @type {any} */ ( window );
-    this.modelStops = [
-      rendererBridge.onModelSelectionSuccess( this.onModelSelectionSuccess ),
-      rendererBridge.onModelSelectionFailure( this.onModelSelectionFailure ),
-    ];
+    this.subscribe( runEvents.onModelSelectionSuccess, this.onModelSelectionSuccess );
+    this.subscribe( runEvents.onModelSelectionFailure, this.onModelSelectionFailure );
     this.subscribe( runEvents.onRunStdout, this.onRunStdout );
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
@@ -508,9 +503,6 @@ class Alignment extends InputFile {
 
   @action
     dispose = () => {
-      while ( this.modelStops.length ) {
-        this.modelStops.pop()();
-      }
       this.unlisten();
       if ( this.modeltestLoading ) {
         this.cancelModelTest();

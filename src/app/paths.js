@@ -42,7 +42,6 @@ export const basename = base;
 export const name = ( filePath ) => parsed( filePath ).name;
 export const dir = ( filePath ) => parsed( filePath ).dir;
 
-// shortcut: does not resolve . or .., upgrade when a caller passes them
 export const join = ( ...parts ) => {
   const present = parts.filter( ( part ) => part !== '' );
   if ( present.length === 0 ) {

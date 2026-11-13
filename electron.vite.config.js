@@ -4,20 +4,6 @@ import { defineConfig } from 'electron-vite';
 import react from '@vitejs/plugin-react';
 import { version } from './package.json';
 
-// The menu no longer imports the store. The shared helper still dynamic-imports it, and only on the page.
-function leaveDecoratedStoreOutOfMain() {
-  return {
-    name: 'leave-decorated-store-out-of-main',
-    enforce: 'pre',
-    resolveId( source ) {
-      if ( source.replaceAll( '\\', '/' ).includes( '/app/store' ) ) {
-        return { id: source, external: true };
-      }
-      return null;
-    },
-  };
-}
-
 // Dev still builds main, so this gates on electron-vite's command. Leave build.sourcemap unset: this plugin turns hidden maps on and deletes them. An explicit true or "hidden" leaves .map files in out/, which the pack includes. The upload also needs SENTRY_PROJECT in the environment.
 function sourceMapUpload( command ) {
   if ( command !== 'build' || !process.env.SENTRY_ORG || !process.env.SENTRY_AUTH_TOKEN ) {
@@ -36,7 +22,7 @@ export default defineConfig( ( { command } ) => ( {
     define: {
       __static: JSON.stringify( resolve( __dirname, 'static' ) ),
     },
-    plugins: [leaveDecoratedStoreOutOfMain(), ...sourceMapUpload( command )],
+    plugins: sourceMapUpload( command ),
   },
   preload: {
     build: {

@@ -1,5 +1,6 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
 import Run from './Run';
+import { runEvents } from './StoreBase';
 
 function bridge( extra ) {
   const listeners = {
@@ -15,8 +16,8 @@ function bridge( extra ) {
   };
   window.rendererBridge = {
     parseAlignment: () => new Promise( () => {} ),
-    onModelSelectionSuccess: subscribe( 'success' ),
-    onModelSelectionFailure: subscribe( 'failure' ),
+    [runEvents.onModelSelectionSuccess]: subscribe( 'success' ),
+    [runEvents.onModelSelectionFailure]: subscribe( 'failure' ),
     ...extra,
   };
   return { listeners, stops };

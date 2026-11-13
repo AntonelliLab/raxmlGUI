@@ -19,7 +19,7 @@ async function packFilters() {
     isPrepackedAppAsar: false,
     config,
     projectDir: root,
-    buildResourcesDir: 'build',
+    buildResourcesDir: 'public',
     debugLogger: { isEnabled: false },
   };
   const destination = path.join( root, 'unused-dest' );
@@ -45,12 +45,19 @@ it( 'packs the built shell and the production dependencies', async () => {
   const patterns = config.files.flatMap( ( set ) => set.filter );
 
   expect( patterns.every( ( pattern ) => pattern.startsWith( '!' ) ) ).toBe( true );
+  expect( config.directories.buildResources ).toBe( 'public' );
   expect( included( main, 'out/main/index.js' ) ).toBe( true );
   expect( included( main, 'README.md' ) ).toBe( true );
   expect( included( main, 'src/main/index.js' ) ).toBe( false );
   expect( included( main, 'e2e/raxmlHPC.spec.js' ) ).toBe( false );
   expect( included( main, 'docs/_config.yml' ) ).toBe( false );
   expect( included( main, 'electron.vite.config.js' ) ).toBe( false );
+  expect( included( main, 'static/bin/Mac/raxml-ng' ) ).toBe( false );
+  expect( included( main, 'scripts/notarize.js' ) ).toBe( false );
+  expect( included( main, 'jest/setup.js' ) ).toBe( false );
+  expect( included( main, 'test-results/results.json' ) ).toBe( false );
+  expect( included( main, 'playwright-report/index.html' ) ).toBe( false );
+  expect( included( main, 'public/favicon.ico' ) ).toBe( false );
   expect( included( modules, 'node_modules/electron-log/package.json' ) ).toBe( true );
 
   expect( config.afterSign ).toBe( './scripts/notarize.js' );

@@ -89,7 +89,7 @@ electron-vite does not support `nodeIntegration`. The page build is a browser bu
 
 This is how this repo packs today. It is not a description of electron-vite.
 
-`package.json` `"main"` is `./out/main/index.js`. `yarn start` and `yarn build` both emit that electron-vite bundle. There is no separate copy step. The `build` key sets `afterSign` to `./scripts/notarize.js`, `extraResources` to `assets/` plus per-platform `static/bin` copies, `publish` to `{ "provider": "github" }`, `directories.output` to `dist`, `directories.buildResources` to `build`, and `"extends": null`. `files` is an exclusion list: `!src{,/**/*}`, `!e2e{,/**/*}`, `!docs{,/**/*}`, `!electron.vite.config.js`. That keeps the default `**/*` set, which packs `out/` and leaves production `node_modules` to electron-builder's dependency copy.
+`package.json` `"main"` is `./out/main/index.js`. `yarn start` and `yarn build` both emit that electron-vite bundle. There is no separate copy step. The `build` key sets `afterSign` to `./scripts/notarize.js`, `extraResources` to `assets/` plus per-platform `static/bin` copies, `publish` to `{ "provider": "github" }`, `directories.output` to `dist`, `directories.buildResources` to `public`, and `"extends": null`. `files` is an exclusion list: `!src{,/**/*}`, `!e2e{,/**/*}`, `!docs{,/**/*}`, `!electron.vite.config.js`, `!static{,/**/*}`, `!scripts{,/**/*}`, `!jest{,/**/*}`, `!test-results{,/**/*}`, `!playwright-report{,/**/*}`. That keeps the default `**/*` set, which packs `out/` and leaves production `node_modules` to electron-builder's dependency copy. `public` is already out of the asar as `buildResources`; `static` ships through `extraResources`.
 
 `scripts/notarize.js` exports a default function of electron-builder's afterSign context. On darwin it notarizes `${appOutDir}/${productFilename}.app`. It does not read the JavaScript bundle path.
 
@@ -101,7 +101,7 @@ A production build uploads JavaScript source maps for the main process and the p
 
 ## Dev command
 
-`yarn start` is `electron-vite dev`. It starts main, preload, and the page together, and it sets `ELECTRON_RENDERER_URL` to the page's dev server (default `http://localhost:5173/`). The window loads that URL, then `ELECTRON_START_URL` when a launch sets it, then `out/renderer/index.html`.
+`yarn start` is `electron-vite dev`. It starts main, preload, and the page together, and it sets `ELECTRON_RENDERER_URL` to the page's dev server (default `http://localhost:5173/`). The window loads that URL, then `out/renderer/index.html`.
 
 `yarn test:e2e` runs the production build, then Playwright. Playwright launches `out/main/index.js` with `RAXMLGUI_E2E=1` and no page URL, so the window is the built page.
 
@@ -151,7 +151,7 @@ Reporting an issue on GitHub builds the issue body on the page, calls `rendererB
 Dropping an alignment, a partition, a tree, a constraint, or an ASTRAL file calls `rendererBridge.getPathForFile`, which returns the path string.
 The `File` stays on the page.
 The page registers `rendererBridge.provideStateReport` once with the store's report.
-The main process receives that report when it asks.
+The main process asks on `STATE_REPORT` with an `id` through `src/main/getActiveState.js` and receives `{ id, report }` on `STATE_REPORT_RESULT`.
 Starting model selection calls `rendererBridge.startModelSelection` with `{ id, filePath, outputDir, dataType, numThreads, binaryName }`.
 The chosen model arrives on `rendererBridge.onModelSelectionSuccess` as `{ id, result: { raxml, extraFlag, raxmlNG } }`.
 A failure arrives on `rendererBridge.onModelSelectionFailure` as `{ id, error }`.

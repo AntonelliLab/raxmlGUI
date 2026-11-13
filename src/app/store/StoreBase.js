@@ -4,6 +4,8 @@ export const runEvents = {
   onRunFinished: 'onRunFinished',
   onRunError: 'onRunError',
   onAstralSuccess: 'onAstralSuccess',
+  onModelSelectionSuccess: 'onModelSelectionSuccess',
+  onModelSelectionFailure: 'onModelSelectionFailure',
   onAddRun: 'onAddRun',
   onRemoveRun: 'onRemoveRun',
   onLightMode: 'onLightMode',
