@@ -16,6 +16,13 @@ module.exports = {
     indent: ['error', 2, { SwitchCase: 1 }],
     'multiline-ternary': ['error', 'always'],
     'space-in-parens': ['error', 'always'],
+    'no-warning-comments': [
+      'error',
+      {
+        terms: [ 'shortcut:' ],
+        location: 'anywhere',
+      },
+    ],
     'no-restricted-syntax': [
       'error',
       'WithStatement',
@@ -30,6 +37,27 @@ module.exports = {
     ],
   },
   overrides: [
+    {
+      files: [ 'src/app/store/**/*.{js,jsx,ts,tsx}' ],
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          'WithStatement',
+          {
+            selector: "CallExpression[callee.property.name='subscribe'][arguments.0.type='Literal']",
+            message: 'Pass a runEvents value.',
+          },
+          {
+            selector: "BinaryExpression[operator=/^(>|<|>=|<=)$/] > UnaryExpression[operator='!'][argument.property.name='length']",
+            message: 'Negate the comparison, not length. Prefer while (list.length > 0).',
+          },
+          {
+            selector: "CallExpression[callee.object.name='rendererBridge'][callee.property.name=/^on[A-Z]/]",
+            message: 'Subscribe through runEvents and StoreBase.subscribe.',
+          },
+        ],
+      },
+    },
     {
       // `yarn lint` does not include e2e, and that tree does not use the src parenthesis style.
       files: ['e2e/**/*.js'],

@@ -1,4 +1,5 @@
 // @ts-nocheck — electron-builder's pack matcher has no types.
+import fs from 'fs';
 import path from 'path';
 
 const { getConfig } = require( 'app-builder-lib/out/util/config' );
@@ -14,12 +15,13 @@ function included( filter, relativePath ) {
 
 async function packFilters() {
   const config = await getConfig( root, null, null );
+  const buildResourcesDir = config.directories.buildResources;
   const macroExpander = ( pattern ) => pattern;
   const info = {
     isPrepackedAppAsar: false,
     config,
     projectDir: root,
-    buildResourcesDir: 'public',
+    buildResourcesDir,
     debugLogger: { isEnabled: false },
   };
   const destination = path.join( root, 'unused-dest' );
@@ -35,17 +37,23 @@ async function packFilters() {
   const modules = getNodeModuleFileMatcher( root, destination, macroExpander, {}, info );
   return {
     config,
+    buildResourcesDir,
     main: main[ 0 ].createFilter(),
     modules: modules.createFilter(),
   };
 }
 
 it( 'packs the built shell and the production dependencies', async () => {
-  const { config, main, modules } = await packFilters();
+  const {
+    config, buildResourcesDir, main, modules,
+  } = await packFilters();
   const patterns = config.files.flatMap( ( set ) => set.filter );
+  const icons = path.join( root, buildResourcesDir );
 
   expect( patterns.every( ( pattern ) => pattern.startsWith( '!' ) ) ).toBe( true );
-  expect( config.directories.buildResources ).toBe( 'public' );
+  expect( buildResourcesDir ).toBe( 'public' );
+  expect( fs.existsSync( path.join( icons, 'icon.icns' ) ) ).toBe( true );
+  expect( fs.existsSync( path.join( icons, 'icon.ico' ) ) ).toBe( true );
   expect( included( main, 'out/main/index.js' ) ).toBe( true );
   expect( included( main, 'README.md' ) ).toBe( true );
   expect( included( main, 'src/main/index.js' ) ).toBe( false );
@@ -57,7 +65,7 @@ it( 'packs the built shell and the production dependencies', async () => {
   expect( included( main, 'jest/setup.js' ) ).toBe( false );
   expect( included( main, 'test-results/results.json' ) ).toBe( false );
   expect( included( main, 'playwright-report/index.html' ) ).toBe( false );
-  expect( included( main, 'public/favicon.ico' ) ).toBe( false );
+  expect( included( main, path.join( buildResourcesDir, 'favicon.ico' ) ) ).toBe( false );
   expect( included( modules, 'node_modules/electron-log/package.json' ) ).toBe( true );
 
   expect( config.afterSign ).toBe( './scripts/notarize.js' );

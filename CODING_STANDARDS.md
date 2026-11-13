@@ -2,7 +2,11 @@
 
 ## ipc constants
 
-An `ipc` export names a live channel the preload or main handler uses. A log label that is not a channel is a string literal in the call.
+An `ipc` export names a live channel the preload or main handler uses. A log label that is not a channel is a string literal in the call. `src/ipcLive.test.js` fails when an export has no use in `src/preload` or `src/main`.
+
+## Main asks
+
+A criterion that names main-process behavior is not done when only the preload and a proof exercise the channel. Look for a production caller in `src/main` (for state report: `getActiveState` sending `STATE_REPORT`).
 
 ## Test doubles
 
