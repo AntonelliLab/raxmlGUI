@@ -1,5 +1,4 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
-import * as ipc from '../constants/ipc';
 import { selectAlignment } from './selectAlignment';
 
 it( 'selectAlignment resolves the chosen alignment paths and names', async () => {
@@ -21,7 +20,7 @@ it( 'selectAlignment resolves the chosen alignment paths and names', async () =>
     { path: '/data/primates.fasta', name: 'primates.fasta' },
     { path: '/data/cats.phy', name: 'cats.phy' },
   ] );
-  expect( debug ).toHaveBeenCalledWith( ipc.ALIGNMENT_SELECTED, dialogResult );
+  expect( debug ).toHaveBeenCalledWith( 'ALIGNMENT_SELECTED', dialogResult );
   debug.mockRestore();
 } );
 
@@ -41,6 +40,6 @@ it( 'selectAlignment rejects when the dialog fails', async () => {
   await expect( selectAlignment( async () => {
     throw err;
   } ) ).rejects.toThrow( 'dialog failed' );
-  expect( debug ).toHaveBeenCalledWith( ipc.ALIGNMENT_SELECTED, err );
+  expect( debug ).toHaveBeenCalledWith( 'ALIGNMENT_SELECTED', err );
   debug.mockRestore();
 } );
