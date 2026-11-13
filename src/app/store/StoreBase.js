@@ -12,6 +12,7 @@ export const runEvents = {
   onDarkMode: 'onDarkMode',
   onToggleBackboneConstraint: 'onToggleBackboneConstraint',
   onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
+  onUnhandledError: 'onUnhandledError',
 };
 
 export default class StoreBase {

@@ -1,0 +1,13 @@
+{
+  "key": "unhandledError",
+  "method": "onUnhandledError",
+  "channel": "UNHANDLED_ERROR",
+  "subscribe": true,
+  "result": {
+    "title": "Unhandled Error",
+    "error": {
+      "name": "Error",
+      "message": "disk full"
+    }
+  }
+}
