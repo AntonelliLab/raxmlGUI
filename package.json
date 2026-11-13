@@ -130,14 +130,19 @@
     "afterSign": "./scripts/notarize.js",
     "extends": null,
     "directories": {
-      "buildResources": "build",
+      "buildResources": "public",
       "output": "dist"
     },
     "files": [
       "!src{,/**/*}",
       "!e2e{,/**/*}",
       "!docs{,/**/*}",
-      "!electron.vite.config.js"
+      "!electron.vite.config.js",
+      "!static{,/**/*}",
+      "!scripts{,/**/*}",
+      "!jest{,/**/*}",
+      "!test-results{,/**/*}",
+      "!playwright-report{,/**/*}"
     ],
     "extraResources": [
       "assets/"

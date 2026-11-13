@@ -11,15 +11,6 @@ for ( const name of Object.values( runEvents ) ) {
   runEventStubs[name] = () => () => {};
 }
 
-const modelEventStubs = {
-  onModelSelectionSuccess() {
-    return () => {};
-  },
-  onModelSelectionFailure() {
-    return () => {};
-  },
-};
-
 const host = {
   windows: process.platform === 'win32',
   release: os.release(),
@@ -31,11 +22,6 @@ function withBridgeEvents( next ) {
   for ( const name of Object.keys( runEventStubs ) ) {
     if ( typeof next[name] !== 'function' ) {
       next[name] = runEventStubs[name];
-    }
-  }
-  for ( const name of Object.keys( modelEventStubs ) ) {
-    if ( typeof next[name] !== 'function' ) {
-      next[name] = modelEventStubs[name];
     }
   }
   if ( !Object.prototype.hasOwnProperty.call( next, 'host' ) ) {

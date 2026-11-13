@@ -121,22 +121,12 @@ ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
 ipcMain.handle( ipc.PARTITION_FILE_SELECT, ( _event, _runId ) => {
   return selectPartitionFile( ( options ) => dialog.showOpenDialog( options ) );
 } );
-// Open a file with the OS's default file handler
-ipcMain.on( ipc.FILE_OPEN, ( event, fullPath ) => {
-  console.debug( ipc.FILE_OPEN, fullPath );
-  shell.openPath( fullPath );
-} );
 ipcMain.handle( ipc.OPEN_PATH, ( _event, fullPath ) => {
   return shell.openPath( fullPath );
 } );
 // Open a file in it's folder with native file explorer
 ipcMain.handle( ipc.FILE_SHOW_IN_FOLDER, ( _event, fullPath ) => {
   console.debug( ipc.FILE_SHOW_IN_FOLDER, fullPath );
-  shell.showItemInFolder( fullPath );
-} );
-// Open a folder
-ipcMain.on( ipc.FOLDER_OPEN, ( event, fullPath ) => {
-  console.debug( ipc.FOLDER_OPEN, fullPath );
   shell.showItemInFolder( fullPath );
 } );
 // Check if raxml output files already exist with current name

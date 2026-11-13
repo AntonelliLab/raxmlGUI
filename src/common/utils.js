@@ -2,6 +2,7 @@ import electron from 'electron';
 import os from 'os';
 import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
+import { getActiveState as askActiveState } from '../main/getActiveState';
 const processWithElectron = process;
 export const is = {
   macos: process.platform === 'darwin',
@@ -36,12 +37,7 @@ ${process.platform} ${os.release()}
 Locale: ${electron.app.getLocale()}
 `.trim()
   : `Debug info not available in renderer.`;
-const getActiveStateSync = () => {
-  if ( is.renderer ) {
-    return window.store.generateReport();
-  }
-  return `Current state not available on synchronous call from main`;
-};
+export const getActiveState = () => askActiveState();
 export const serializeAndCleanError = ( error ) => {
   const err = serializeError( error );
   const stack = error && typeof error.stack === 'string'
@@ -71,8 +67,8 @@ Process: ${is.renderer
     ? 'renderer'
     : 'main'}
 ${debugInfo()}` );
-export const getMailtoLinkToReportError = ( error ) => {
-  const activeState = getActiveStateSync();
+export const getMailtoLinkToReportError = async ( error ) => {
+  const activeState = await getActiveState();
   const mailtoLinkContent = `mailto:raxmlgui.help@googlemail.com?subject=${encodeURI( error.name )}&body=${createReportBodyForMail( error, activeState )}`;
   return mailtoLinkContent;
 };
