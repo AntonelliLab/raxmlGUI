@@ -1,5 +1,9 @@
 # Coding standards
 
+## ipc constants
+
+An `ipc` export names a live channel the preload or main handler uses. A log label that is not a channel is a string literal in the call.
+
 ## Test doubles
 
 A double stays when `dispose`, a constructor, or an imported package calls it. Trace those calls before reporting the double unused.
