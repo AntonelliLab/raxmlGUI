@@ -5114,13 +5114,6 @@ electron-log@^4.4.8:
   resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-4.4.8.tgz#fcb9f714dbcaefb6ac7984c4683912c74730248a"
   integrity sha512-QQ4GvrXO+HkgqqEOYbi+DHL7hj5JM+nHi/j+qrN9zeeXVKy8ZABgbu4CnG+BBqDZ2+tbeq9tUC4DZfIWFU5AZA==
 
-electron-progressbar@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/electron-progressbar/-/electron-progressbar-2.2.1.tgz#15c1c22987fb7dd17dfbd6739d2b38157eb83ee5"
-  integrity sha512-LQ9bxM3Tf5PG/1QngY8ywvht7IKvQ8tEIra8uh3RkLASqN/GYvr4r0uU9qz38r0Zn72UcouYzumKDfLwoI/rsw==
-  dependencies:
-    extend "^3.0.1"
-
 electron-publish@24.13.1:
   version "24.13.1"
   resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-24.13.1.tgz#57289b2f7af18737dc2ad134668cdd4a1b574a0c"
@@ -5714,7 +5707,7 @@ ext-name@^5.0.0:
     ext-list "^2.0.0"
     sort-keys-length "^1.0.0"
 
-extend@^3.0.1, extend@~3.0.2:
+extend@~3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
   integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
