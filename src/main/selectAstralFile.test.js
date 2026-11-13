@@ -1,5 +1,4 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
-import * as ipc from '../constants/ipc';
 import { selectAstralFile } from './selectAstralFile';
 
 it( 'selectAstralFile resolves the chosen ASTRAL path and name', async () => {
@@ -18,7 +17,7 @@ it( 'selectAstralFile resolves the chosen ASTRAL path and name', async () => {
     properties: ['openFile'],
   } );
   expect( chosen ).toEqual( { path: '/data/trees.tre', name: 'trees.tre' } );
-  expect( debug ).toHaveBeenCalledWith( ipc.ASTRAL_FILE_SELECTED, dialogResult );
+  expect( debug ).toHaveBeenCalledWith( 'ASTRAL_FILE_SELECTED', dialogResult );
   debug.mockRestore();
 } );
 
@@ -38,6 +37,6 @@ it( 'selectAstralFile rejects when the dialog fails', async () => {
   await expect( selectAstralFile( async () => {
     throw err;
   } ) ).rejects.toThrow( 'dialog failed' );
-  expect( debug ).toHaveBeenCalledWith( ipc.ASTRAL_FILE_SELECTED, err );
+  expect( debug ).toHaveBeenCalledWith( 'ASTRAL_FILE_SELECTED', err );
   debug.mockRestore();
 } );
