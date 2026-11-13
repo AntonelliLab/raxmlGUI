@@ -156,7 +156,7 @@ The run listens for stdout, stderr, finish, failure, and `onAstralSuccess`.
 An alignment listens for stdout and stderr.
 New Tab, Close Tab, Light mode, Dark mode, Use backbone constraint, and Use multifurcating constraint arrive with no payload.
 The page's runs, theme, and those constraints follow.
-An unhandled error arrives on `rendererBridge.onUnhandledError` as `{ title, error }`, and the page shows that title and error.
+An unhandled error arrives on `rendererBridge.onUnhandledError` as `{ title, error }` with `error` serialized, and the page shows that title and error.
 Cancel resolves `null`.
 A dialog failure rejects.
 
