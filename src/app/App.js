@@ -509,7 +509,7 @@ const App = () => {
             </Modal>
           )
           : null}
-        <ErrorDialog error={store.error} onClose={store.clearError} />
+        <ErrorDialog error={store.error} title={store.errorTitle} onClose={store.clearError} />
       </Box>
     </React.Fragment>
   );

@@ -97,10 +97,12 @@ const getActiveStateSync = () => {
 };
 const serializeAndCleanError = ( error ) => {
   const err = serializeError( error );
-  const stack = error instanceof Error
+  const stack = error && typeof error.stack === 'string'
     ? error.stack
     : undefined;
-  err.stack = cleanStack( stack );
+  if ( err && typeof err === 'object' && stack ) {
+    err.stack = cleanStack( stack );
+  }
   return err;
 };
 export function timeout( ms ) {

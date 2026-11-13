@@ -33,6 +33,7 @@ import {
   TOGGLE_BACKBONE_CONSTRAINT,
   TOGGLE_MULTIFURCATING_CONSTRAINT,
   TREE_SELECT,
+  UNHANDLED_ERROR,
   WRITE_FILE,
 } from '../constants/ipc';
 import Store from 'electron-store';
@@ -287,6 +288,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   onToggleMultifurcatingConstraint( listener ) {
     return onEvent( TOGGLE_MULTIFURCATING_CONSTRAINT, listener );
+  },
+  onUnhandledError( listener ) {
+    return onEvent( UNHANDLED_ERROR, listener );
   },
   getPathForFile( file ) {
     return webUtils.getPathForFile( file );
