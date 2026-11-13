@@ -49,6 +49,9 @@ function withBridgeEvents( next ) {
   if ( typeof next.cancelModelSelection !== 'function' ) {
     next.cancelModelSelection = () => {};
   }
+  if ( typeof next.provideStateReport !== 'function' ) {
+    next.provideStateReport = () => {};
+  }
   return next;
 }
 

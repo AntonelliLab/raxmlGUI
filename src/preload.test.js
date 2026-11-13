@@ -81,7 +81,7 @@ launchCopy( 'copyText resolves void, the clipboard receives the text, and a drop
   const proofs = loadProofs();
   const launchFields = new Set( [
     'copied', 'sent', 'file', 'got', 'stem', 'safe', 'model', 'host', 'hostSame', 'hostMatches',
-    'ended', 'text', 'written', 'droppedPath', 'droppedSync', 'error',
+    'ended', 'text', 'written', 'droppedPath', 'droppedSync', 'stateReport', 'error',
   ] );
   const collided = proofs.map( ( proof ) => proof.key ).filter( ( key ) => launchFields.has( key ) );
   expect( collided ).toEqual( [] );
@@ -170,6 +170,15 @@ try {
   const droppedPath = rendererBridge.getPathForFile(dropped);
   result.droppedPath = droppedPath;
   result.droppedSync = typeof droppedPath === 'string';
+  rendererBridge.provideStateReport(() => ({ from: 'page' }));
+  result.stateReport = await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('state report timeout')), 2000);
+    ipcRenderer.once('STATE_REPORT_TEST_RESULT', (_event, report) => {
+      clearTimeout(timer);
+      resolve(report);
+    });
+    ipcRenderer.send('STATE_REPORT_TEST_ASK');
+  });
 } catch (error) {
   result.error = String(error && error.stack || error);
 }
@@ -215,6 +224,16 @@ app.whenReady().then(async () => {
     await fs.promises.writeFile(filePath, text);
   });
   ipcMain.on('ping', (_event, data) => { console.log('PING ' + JSON.stringify(data)); });
+  ipcMain.on('STATE_REPORT_TEST_ASK', (event) => {
+    const id = 'preload-state-report';
+    const onResult = (resultEvent, payload) => {
+      if (!payload || payload.id !== id) return;
+      ipcMain.removeListener('STATE_REPORT_RESULT', onResult);
+      event.sender.send('STATE_REPORT_TEST_RESULT', payload.report);
+    };
+    ipcMain.on('STATE_REPORT_RESULT', onResult);
+    event.sender.send('STATE_REPORT', id);
+  });
   const win = new BrowserWindow({
     show: false,
     webPreferences: {
@@ -318,6 +337,7 @@ setTimeout(() => app.exit(2), 12000);
   expect( fs.realpathSync( payload.result.droppedPath ) ).toBe(
     fs.realpathSync( path.join( dir, 'dropped.fasta' ) ),
   );
+  expect( payload.result.stateReport ).toEqual( { from: 'page' } );
   expect( fs.readFileSync( path.join( dir, 'concat.fasta' ), 'utf8' ) ).toBe( '>Homo\nAT' );
   expect( `${result.stdout}` ).toContain( '"n":7' );
 }, 30000 );
