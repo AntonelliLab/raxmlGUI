@@ -1,0 +1,8 @@
+{
+  "key": "opened",
+  "method": "openPath",
+  "args": ["/data/results/tree.raxml.bestTree"],
+  "channel": "OPEN_PATH",
+  "log": "PATH",
+  "result": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "examples",
+  "method": "getExampleFiles",
+  "args": [],
+  "channel": "EXAMPLE_FILES",
+  "result": {
+    "fasta": ["nucleotide.txt"],
+    "phylip": ["dna_sequential.txt"],
+    "dir": "/static/example-files",
+    "outdir": "/static/test-results"
+  }
+}

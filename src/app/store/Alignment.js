@@ -1,26 +1,20 @@
 import { observable, computed, action, runInAction } from 'mobx';
-import { ipcRenderer } from 'electron';
-import { join } from 'path';
-import fs from 'fs';
-import util from 'util';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
-import os from 'os';
 
-import * as ipc from '../../constants/ipc';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
 import Partition, { FinalPartition } from './Partition';
 import InputFile from './InputFile';
+import { runEvents } from './StoreBase';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
-import { is } from '../../common/utils';
+import { host } from './host';
+import { join } from '../paths';
 
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
-
-const writeFile = util.promisify( fs.writeFile );
 
 class RaxmlNgAlignmentSubstitutionModel extends Option {
   constructor( alignment ) {
@@ -161,9 +155,9 @@ class Alignment extends InputFile {
     this.ngAscertainmentBias = new RaxmlNgModelASC( this );
     this.partition = new Partition( this );
 
-    const [majorVersion, minorVersion] = os.release().split( '.' );
+    const [majorVersion, minorVersion] = host.release.split( '.' );
     this.modeltestDisabled =
-      is.windows && majorVersion === '6' && minorVersion === '1';
+      host.windows && majorVersion === '6' && minorVersion === '1';
 
     this.listen();
   }
@@ -311,7 +305,7 @@ class Alignment extends InputFile {
   @observable modeltestLoading = false;
 
   @action
-    runModelTest = () => {
+    runModelTest = async () => {
     // Show an error if there are not enough sequences and dont start the run
       if ( this.numSequences < 3 ) {
         this.run.parent.onError(
@@ -322,7 +316,8 @@ class Alignment extends InputFile {
         return;
       }
       this.modeltestLoading = true;
-      ipcRenderer.send( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, {
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.startModelSelection( {
         id: this.id,
         filePath: this.path,
         outputDir: this.run.outputDir,
@@ -336,7 +331,8 @@ class Alignment extends InputFile {
     cancelModelTest = () => {
       if ( this.modeltestLoading ) {
         this.modeltestLoading = false;
-        ipcRenderer.send( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, this.id );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        rendererBridge.cancelModelSelection( this.id );
       }
     };
 
@@ -421,101 +417,83 @@ class Alignment extends InputFile {
       }
     };
 
+  loadParsedAlignment = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    try {
+      const parsed = await rendererBridge.parseAlignment( this.id, this.path );
+      const { alignment, change } = parsed;
+      const newDataType = getFinalDataType(
+        this.run.alignments
+          .map( ( { dataType } ) => dataType )
+          .concat( alignment.dataType ),
+      );
+      if ( this.run.dataType !== newDataType ) {
+        this.run.substitutionMatrix.value =
+          raxmlMatrixOptions[newDataType].default;
+      }
+      // When the alignment has finished processing take the default substitution model for this datatype
+      this.substitutionModel.value =
+        raxmlNgModelOptions[alignment.dataType]?.default;
+      runInAction( () => {
+        this.sequences = alignment.sequences;
+        this.fileFormat = alignment.fileFormat;
+        this.numSequences = alignment.numSequences;
+        this.length = alignment.length;
+        this.parsingComplete = true;
+        this.numSequencesParsed = this.numSequences;
+        this.dataType = alignment.dataType;
+        this.hasInvariantSites = alignment.hasInvariantSites;
+        this.typecheckingComplete = alignment.typecheckingComplete;
+        this.loading = false;
+        if ( change ) {
+          this.path = change.newFilePath;
+          this.convertedFrom = change.format;
+          this.converted = change.converted;
+          this.modified = change.modified;
+          this.modificationMessages = change.modificationMessages;
+          if ( change.modificationMessages.length > 0 ) {
+            this.showModifiedDialog = true;
+          } else {
+            this.showModifiedSnack = true;
+          }
+        }
+      } );
+    } catch ( error ) {
+      runInAction( () => {
+        console.error( `Error loading file '${this.path}':`, error );
+        this.error = error;
+        this.loading = false;
+        this.run.error = error;
+        this.remove();
+      } );
+    }
+  };
+
+  @action
+    onModelSelectionSuccess = ( { id, result } ) => {
+      if ( id === this.id ) {
+        console.log( id, 'Modeltest result:', result );
+        this.setModelFromString( result );
+        this.run.afterRun();
+      }
+    };
+
+  @action
+    onModelSelectionFailure = ( { id, error } ) => {
+      if ( id === this.id ) {
+        this.modeltestLoading = false;
+        console.log( id, 'Modeltest error:', error );
+        this.run.error = error;
+        this.run.afterRun();
+      }
+    };
+
   listen = () => {
-    // Send alignments to main process for processing
-    ipcRenderer.send( ipc.ALIGNMENT_PARSE_REQUEST, {
-      id: this.id,
-      filePath: this.path,
-    } );
-    // Listener taken from processAlignments()
-    // Receive a progress update for one of the alignments being parsed
-    ipcRenderer.on( ipc.ALIGNMENT_PARSE_SUCCESS, ( event, { id, alignment } ) => {
-      if ( id === this.id ) {
-        const newDataType = getFinalDataType(
-          this.run.alignments
-            .map( ( { dataType } ) => dataType )
-            .concat( alignment.dataType ),
-        );
-        if ( this.run.dataType !== newDataType ) {
-          this.run.substitutionMatrix.value =
-            raxmlMatrixOptions[newDataType].default;
-        }
-        // When the alignment has finished processing take the default substitution model for this datatype
-        this.substitutionModel.value =
-          raxmlNgModelOptions[alignment.dataType]?.default;
-        runInAction( () => {
-          this.sequences = alignment.sequences;
-          this.fileFormat = alignment.fileFormat;
-          this.numSequences = alignment.numSequences;
-          this.length = alignment.length;
-          this.parsingComplete = true;
-          this.numSequencesParsed = this.numSequences;
-          this.dataType = alignment.dataType;
-          this.hasInvariantSites = alignment.hasInvariantSites;
-          this.typecheckingComplete = alignment.typecheckingComplete;
-          this.loading = false;
-        } );
-      }
-    } );
-    ipcRenderer.on( ipc.ALIGNMENT_PARSE_FAILURE, ( event, { id, error } ) => {
-      if ( id === this.id ) {
-        runInAction( () => {
-          console.error( `Error loading file '${this.path}':`, error );
-          this.error = error;
-          this.loading = false;
-          this.run.error = error;
-          this.remove();
-        } );
-      }
-    } );
-    // Called when an alignment is neither fasta nor phylip, in which case we are converting it into fasta
-    // Also called when the input alignment is modified, due to errors in the alignment
-    ipcRenderer.on(
-      ipc.ALIGNMENT_PARSE_CHANGED_PATH,
-      (
-        event,
-        { id, newFilePath, format, converted, modified, modificationMessages },
-      ) => {
-        if ( id === this.id ) {
-          runInAction( () => {
-            this.path = newFilePath;
-            this.convertedFrom = format;
-            this.converted = converted;
-            this.modified = modified;
-            this.modificationMessages = modificationMessages;
-            if ( modificationMessages.length > 0 ) {
-              this.showModifiedDialog = true;
-            } else {
-              this.showModifiedSnack = true;
-            }
-          } );
-        }
-      },
-    );
-    ipcRenderer.on(
-      ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS,
-      ( event, { id, result } ) => {
-        if ( id === this.id ) {
-          console.log( id, 'Modeltest result:', result );
-          this.setModelFromString( result );
-          this.run.afterRun();
-        }
-      },
-    );
-    ipcRenderer.on(
-      ipc.ALIGNMENT_MODEL_SELECTION_FAILURE,
-      ( event, { id, error } ) => {
-        if ( id === this.id ) {
-          this.modeltestLoading = false;
-          console.log( id, 'Modeltest error:', error );
-          this.run.error = error;
-          this.run.afterRun();
-        }
-      },
-    );
-    //TODO: Transform above to the form of below to be able to unlisten on removal
-    this.listenTo( ipc.RUN_STDOUT, this.onRunStdout );
-    this.listenTo( ipc.RUN_STDERR, this.onRunStderr );
+    this.loadParsedAlignment();
+    this.subscribe( runEvents.onModelSelectionSuccess, this.onModelSelectionSuccess );
+    this.subscribe( runEvents.onModelSelectionFailure, this.onModelSelectionFailure );
+    this.subscribe( runEvents.onRunStdout, this.onRunStdout );
+    this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
 
   @action clearModified = () => {
@@ -550,7 +528,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStdout = ( event, { id, content } ) => {
+    onRunStdout = ( { id, content } ) => {
       if ( id === this.id ) {
       // TODO: Keep local log?
         this.run.stdout += content;
@@ -558,7 +536,7 @@ class Alignment extends InputFile {
     };
 
   @action
-    onRunStderr = ( event, { id, content } ) => {
+    onRunStderr = ( { id, content } ) => {
       if ( id === this.id ) {
         this.run.stderr += content;
       }
@@ -701,25 +679,29 @@ class FinalAlignment {
   @action
     openFile = async () => {
       await this.writeConcatenatedAlignment();
-      ipcRenderer.send( ipc.FILE_OPEN, this.path );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.openPath( this.path );
     };
 
   @action
     openPartition = async () => {
       await this.writeConcatenatedAlignmentAndPartition();
-      ipcRenderer.send( ipc.FILE_OPEN, this.partitionFilePath );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.openPath( this.partitionFilePath );
     };
 
   @action
     showFileInFolder = async () => {
       await this.writeConcatenatedAlignment();
-      ipcRenderer.send( ipc.FILE_SHOW_IN_FOLDER, this.path );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.showItemInFolder( this.path );
     };
 
   @action
     openFolder = async () => {
       await this.writeConcatenatedAlignmentAndPartition();
-      ipcRenderer.send( ipc.FOLDER_OPEN, this.dir );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.showItemInFolder( this.dir );
     };
 
   @action
@@ -735,24 +717,20 @@ class FinalAlignment {
         console.log(
           `Write concatenated alignment in FASTA format to ${this.path}..`,
         );
-        const writeStream = fs.createWriteStream( this.path );
-        const write = util.promisify( writeStream.write );
-        const end = util.promisify( writeStream.end );
+        let text = '';
         for ( let i = 0; i < numSequences; ++i ) {
           for ( let j = 0; j < this.numAlignments; ++j ) {
             if ( j === 0 ) {
               const prefix = i === 0
                 ? '>'
                 : '\n>';
-              await write.call( writeStream, `${prefix}${taxons[i]}\n` );
+              text += `${prefix}${taxons[i]}\n`;
             }
-            await write.call(
-              writeStream,
-              this.run.alignments[j].getSequenceCode( taxons[i] ),
-            );
+            text += this.run.alignments[j].getSequenceCode( taxons[i] );
           }
         }
-        await end.call( writeStream );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        await rendererBridge.writeFile( this.path, text );
       } catch ( err ) {
         console.error( 'Error writing concatenated alignment:', err );
         throw err;
@@ -763,7 +741,8 @@ class FinalAlignment {
     writePartition = async () => {
       try {
         console.log( `Writing partition to ${this.partitionFilePath}...` );
-        await writeFile( this.partitionFilePath, this.partitionFileContent );
+        const { rendererBridge } = /** @type {any} */ ( window );
+        await rendererBridge.writeFile( this.partitionFilePath, this.partitionFileContent );
       } catch ( err ) {
         console.error( 'Error writing partition:', err );
         throw err;

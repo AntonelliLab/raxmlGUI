@@ -1,0 +1,7 @@
+{
+  "key": "addRun",
+  "method": "onAddRun",
+  "channel": "ADD_RUN",
+  "subscribe": true,
+  "result": null
+}

@@ -1,0 +1,8 @@
+{
+  "key": "openedExternal",
+  "method": "openExternal",
+  "args": ["https://github.com/AntonelliLab/raxmlGUI/issues/new"],
+  "channel": "OPEN_EXTERNAL",
+  "log": "URL",
+  "result": null
+}

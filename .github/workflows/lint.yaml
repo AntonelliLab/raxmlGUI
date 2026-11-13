@@ -22,3 +22,9 @@ jobs:
 
       - name: ESLint
         run: yarn lint
+
+      - name: Typecheck baseline
+        run: yarn typecheck:baseline
+
+      - name: Page render test
+        run: yarn react-test

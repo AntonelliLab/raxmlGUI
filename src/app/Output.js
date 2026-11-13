@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Link, Typography } from '@mui/material';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
-import { join } from 'path';
+import { join } from './paths';
 
 const Output = ( { run } ) => {
   const { resultFilenames } = run;

@@ -1,0 +1,10 @@
+{
+  "key": "parsed",
+  "method": "parseAlignment",
+  "args": ["align-1", "/data/primates.fasta"],
+  "channel": "ALIGNMENT_PARSE",
+  "result": {
+    "alignment": { "id": "align-1", "filePath": "/data/primates.fasta" },
+    "change": null
+  }
+}

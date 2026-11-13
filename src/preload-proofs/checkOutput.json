@@ -1,0 +1,14 @@
+{
+  "key": "outputCheck",
+  "method": "checkOutput",
+  "args": [{ "outputDir": "/out", "outputName": "tree" }],
+  "channel": "OUTPUT_CHECK",
+  "result": {
+    "outputDir": "/out",
+    "outputName": "tree",
+    "ok": true,
+    "notice": "",
+    "outputNameUnused": "tree",
+    "resultFilenames": ["tree.raxml.log"]
+  }
+}

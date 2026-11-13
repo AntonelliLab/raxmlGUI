@@ -1,0 +1,20 @@
+{
+  "key": "started",
+  "method": "startRun",
+  "args": [
+    {
+      "id": "run-7",
+      "args": [["--all"]],
+      "binaryName": "raxml-ng",
+      "outputDir": "/out",
+      "outputFilename": "run-7.tre",
+      "outputName": "run-7",
+      "combinedOutput": false,
+      "usesRaxmlNg": true,
+      "usesModeltestNg": false,
+      "inputPath": "/data/primates.fasta"
+    }
+  ],
+  "channel": "RUN_START",
+  "result": null
+}

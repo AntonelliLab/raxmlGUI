@@ -1,6 +1,4 @@
 import { observable, action, computed } from 'mobx';
-import { ipcRenderer } from 'electron';
-import * as ipc from '../../constants/ipc';
 
 export default class Citation {
   @observable visible = false;
@@ -207,7 +205,8 @@ ER  - `,
     };
 
   copyToClipboard = async () => {
-    await ipcRenderer.invoke( ipc.COPY_TEXT, this.allText );
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.copyText( this.allText );
     console.log( 'Copied citation to clipboard' );
   };
 }

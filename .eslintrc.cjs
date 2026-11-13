@@ -16,8 +16,22 @@ module.exports = {
     indent: ['error', 2, { SwitchCase: 1 }],
     'multiline-ternary': ['error', 'always'],
     'space-in-parens': ['error', 'always'],
+    'no-warning-comments': [
+      'error',
+      {
+        terms: [ 'shortcut:' ],
+        location: 'anywhere',
+      },
+    ],
   },
   overrides: [
+    {
+      // `yarn lint` does not include e2e, and that tree does not use the src parenthesis style.
+      files: ['e2e/**/*.js'],
+      rules: {
+        'space-in-parens': 'off',
+      },
+    },
     {
       files: ['**/*.{ts,tsx}'],
       rules: {

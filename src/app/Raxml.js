@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import { ipcRenderer } from 'electron';
-import * as ipc from '../constants/ipc';
 import { observer } from 'mobx-react-lite';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
@@ -14,7 +12,8 @@ import { FormHelperText } from '@mui/material';
 
 const Raxml = ( { run, store } ) => {
   const copyCommand = useCallback( async () => {
-    await ipcRenderer.invoke( ipc.COPY_TEXT, run.command );
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.copyText( run.command );
     store.setAppSnack();
   }, [run.command, store] );
 

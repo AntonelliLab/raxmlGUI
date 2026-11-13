@@ -4,17 +4,18 @@ A desktop GUI for RAxML.
 
 ## Development
 
-This is a an [Electron](https://electronjs.org/) App that was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an [Electron](https://electronjs.org/) app. The shell is built with electron-vite.
 
-```yarn start``` will start the Electron app and the React app at the same time.  
-```yarn build``` will build the React app and package it along the Electron app.
+```yarn start``` starts the shell.  
+```yarn build``` compiles the shell into `out/`.  
+```yarn build-mac```, ```yarn build-win```, and ```yarn build-linux``` compile the shell, then pack it with electron-builder.
 
 ### End-to-end tests
 
-E2e tests use [Playwright](https://playwright.dev/) to drive the real Electron app against the CRA dev server and the bundled RAxML binaries. Specs in `e2e/` load the dev prefilled nucleotide alignment and check the UI and output files:
+`yarn test:e2e` builds the shell, then [Playwright](https://playwright.dev/) launches `out/main/index.js`. There is no dev server. Specs in `e2e/` check the UI and output files:
 
 - `modeltest-then-raxml-ng.spec.js` — ModelTest, then a full raxml-ng analysis
-- `raxmlHPC.spec.js` — classic raxmlHPC (ML search)
+- `raxmlHPC.spec.js` — classic raxmlHPC (ML search), including copying the command and the citation
 
 Download binaries once, then run:
 
@@ -23,7 +24,7 @@ yarn download-binaries
 yarn test:e2e
 ```
 
-The test harness sets `RAXMLGUI_E2E=1` when launching Electron. That disables DevTools and auto-update checks, and points the main process at the repo `static/` directory (example files, binaries, and test output) instead of the packaged app resources path.
+The launch sets `RAXMLGUI_E2E=1`. That skips auto-update checks and points the main process at the repo `static/` directory (example files, binaries, and test output). The built page loads that example alignment from the same flag.
 
 
 ## Input formats

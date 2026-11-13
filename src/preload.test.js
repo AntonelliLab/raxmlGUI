@@ -1,0 +1,337 @@
+// @ts-nocheck — Jest globals. checkJs has no test runner types.
+const { spawnSync } = require( 'child_process' );
+const fs = require( 'fs' );
+const os = require( 'os' );
+const path = require( 'path' );
+
+const root = path.join( __dirname, '..' );
+const configFile = path.join( root, 'electron.vite.config.js' );
+const preloadFile = path.join( root, 'out', 'preload', 'index.js' );
+const electronBin = path.join( root, 'node_modules', 'electron', 'cli.js' );
+
+function loadPreloadConfig() {
+  const script = [
+    "import { loadConfigFromFile } from 'electron-vite';",
+    `const loaded = await loadConfigFromFile({ command: 'build', mode: 'production' }, ${JSON.stringify( configFile )}, ${JSON.stringify( root )});`,
+    'const preload = loaded.config.preload;',
+    'const plugins = (preload.plugins || []).flat().filter(Boolean).map((item) => item.name);',
+    'console.log("PRELOAD_CONFIG " + JSON.stringify({',
+    '  externalizeDeps: preload.build && preload.build.externalizeDeps,',
+    '  plugins,',
+    '}));',
+  ].join( '\n' );
+  const result = spawnSync( process.execPath, ['--input-type=module', '-e', script], {
+    cwd: root,
+    encoding: 'utf8',
+  } );
+  if ( result.status !== 0 ) {
+    throw new Error( result.stderr || result.stdout );
+  }
+  const line = result.stdout.split( '\n' ).find( ( item ) => item.startsWith( 'PRELOAD_CONFIG ' ) );
+  return JSON.parse( line.slice( 'PRELOAD_CONFIG '.length ) );
+}
+
+function buildShell() {
+  const result = spawnSync(
+    process.execPath,
+    [path.join( root, 'node_modules', 'electron-vite', 'bin', 'electron-vite.js' ), 'build'],
+    { cwd: root, encoding: 'utf8', timeout: 180000 },
+  );
+  if ( result.status !== 0 ) {
+    throw new Error( result.stderr || result.stdout );
+  }
+}
+
+function loadProofs() {
+  const dir = path.join( __dirname, 'preload-proofs' );
+  return fs.readdirSync( dir )
+    .filter( ( name ) => name.endsWith( '.json' ) )
+    .sort()
+    .map( ( name ) => JSON.parse( fs.readFileSync( path.join( dir, name ), 'utf8' ) ) );
+}
+
+beforeAll( () => {
+  buildShell();
+}, 180000 );
+
+it( 'builds one CommonJS preload with dependencies inlined and electron external', () => {
+  const config = loadPreloadConfig();
+  expect( config.externalizeDeps ).toBe( false );
+  expect( config.plugins ).not.toContain( 'vite:externalize-deps' );
+
+  const scripts = fs.readdirSync( path.join( root, 'out', 'preload' ) ).filter( ( name ) => name.endsWith( '.js' ) || name.endsWith( '.mjs' ) );
+  expect( scripts ).toEqual( ['index.js'] );
+  const code = fs.readFileSync( preloadFile, 'utf8' );
+  expect( code ).toContain( 'contextBridge' );
+  expect( code ).toContain( 'exposeInMainWorld' );
+  expect( code ).toMatch( /require\(["']electron["']\)/ );
+  expect( code ).not.toMatch( /require\(["']electron-store["']\)/ );
+  expect( code ).not.toMatch( /require\(["']electron-better-ipc["']\)/ );
+  expect( code ).not.toMatch( /require\(["']@sentry\/electron\/renderer["']\)/ );
+  expect( code ).not.toContain( 'ALIGNMENT_PARSE_REQUEST' );
+} );
+
+const canLaunchElectron = process.platform === 'darwin' || Boolean( process.env.DISPLAY );
+
+const launchCopy = canLaunchElectron
+  ? it
+  : it.skip;
+
+launchCopy( 'copyText resolves void, the clipboard receives the text, and a dropped file keeps its path', () => {
+  const proofs = loadProofs();
+  const launchFields = new Set( [
+    'copied', 'host', 'hostSame', 'hostMatches', 'noNode',
+    'text', 'written', 'droppedPath', 'droppedSync', 'stateReport', 'error',
+  ] );
+  const collided = proofs.map( ( proof ) => proof.key ).filter( ( key ) => launchFields.has( key ) );
+  expect( collided ).toEqual( [] );
+  const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-preload-' ) );
+  const mainFile = path.join( dir, 'main.js' );
+  const pageFile = path.join( dir, 'page.html' );
+  fs.writeFileSync( path.join( dir, 'genes.part' ), 'DNA, gene = 1-100\n' );
+  fs.writeFileSync( path.join( dir, 'dropped.fasta' ), '>Homo\nAT\n' );
+  fs.writeFileSync( pageFile, `<input id="dropped" type="file"><script type="module">
+const result = {};
+try {
+  const copied = await rendererBridge.copyText('bridge-text');
+  result.copied = copied === undefined;
+  const proofs = ${JSON.stringify( proofs )};
+  for (const proof of proofs) {
+    if (proof.subscribe) {
+      result[proof.key] = await new Promise((resolve, reject) => {
+        const heard = [];
+        const hear = (payload) => {
+          heard.push(payload);
+          if (heard.length < 2) return;
+          if (JSON.stringify(heard[0]) !== JSON.stringify(heard[1])) {
+            reject(new Error('listeners disagree'));
+            return;
+          }
+          resolve(heard[0]);
+        };
+        const stop = rendererBridge[proof.method](hear);
+        if (typeof stop !== 'function') {
+          reject(new Error('unsubscribe missing'));
+          return;
+        }
+        rendererBridge[proof.method](hear);
+        globalThis.__proofReady = proof.channel;
+      });
+    } else {
+      result[proof.key] = await rendererBridge[proof.method](...proof.args);
+    }
+  }
+  const host = rendererBridge.host;
+  result.host = host;
+  result.hostSame = host === rendererBridge.host;
+  result.noNode = typeof require === 'undefined'
+    && typeof window.require === 'undefined'
+    && typeof window.process === 'undefined';
+  const readPath = ${JSON.stringify( path.join( dir, 'genes.part' ) )};
+  const writePath = ${JSON.stringify( path.join( dir, 'concat.fasta' ) )};
+  result.text = await rendererBridge.readFile(readPath);
+  const written = await rendererBridge.writeFile(writePath, '>Homo\\nAT');
+  result.written = written === undefined;
+  const input = document.getElementById('dropped');
+  const dropped = await new Promise((resolve) => {
+    const take = () => {
+      if (input.files && input.files[0]) resolve(input.files[0]);
+    };
+    input.addEventListener('change', take);
+    take();
+    setTimeout(() => resolve(null), 3000);
+  });
+  if (!dropped) throw new Error('no dropped file, count ' + (input.files && input.files.length));
+  const droppedPath = rendererBridge.getPathForFile(dropped);
+  result.droppedPath = droppedPath;
+  result.droppedSync = typeof droppedPath === 'string';
+  rendererBridge.provideStateReport(() => ({ from: 'page' }));
+  globalThis.__stateReportAsk = true;
+  result.stateReport = await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('state report timeout')), 2000);
+    const poll = setInterval(() => {
+      if (globalThis.__stateReportResult !== undefined) {
+        clearInterval(poll);
+        clearTimeout(timer);
+        resolve(globalThis.__stateReportResult);
+      }
+    }, 20);
+  });
+} catch (error) {
+  result.error = String(error && error.stack || error);
+}
+globalThis.__result = result;
+</script>` );
+  fs.writeFileSync( mainFile, `const { app, BrowserWindow, clipboard, ipcMain } = require('electron');
+const os = require('os');
+app.whenReady().then(async () => {
+  const fileSends = [];
+  try {
+  const droppedName = 'dropped.fasta';
+  const noteFile = (channel, args) => {
+    for (const arg of args) {
+      if (arg && typeof arg === 'object' && arg.name === droppedName) fileSends.push(channel);
+    }
+  };
+  const handle = ipcMain.handle.bind(ipcMain);
+  ipcMain.handle = (channel, listener) => handle(channel, (event, ...args) => {
+    noteFile(channel, args);
+    return listener(event, ...args);
+  });
+  ipcMain.on('HOST', (event) => {
+    const cpu = os.cpus()[0];
+    event.returnValue = {
+      windows: process.platform === 'win32',
+      release: os.release(),
+      arch: os.arch(),
+      cpuModel: cpu.model,
+    };
+  });
+  ipcMain.handle('COPY_TEXT', async (_event, text) => {
+    await clipboard.writeText(text);
+  });
+  const proofs = ${JSON.stringify( proofs )};
+  for (const proof of proofs) {
+    if (proof.subscribe) continue;
+    ipcMain.handle(proof.channel, async (_event, ...args) => {
+      if (proof.log) console.log(proof.log + ' ' + args[0]);
+      return proof.result;
+    });
+  }
+  const fs = require('fs');
+  ipcMain.handle('READ_FILE', async (_event, filePath) => {
+    return fs.promises.readFile(filePath, 'utf8');
+  });
+  ipcMain.handle('WRITE_FILE', async (_event, filePath, text) => {
+    await fs.promises.writeFile(filePath, text);
+  });
+  const win = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      preload: ${JSON.stringify( preloadFile )},
+    },
+  });
+  win.webContents.on('ipc-message', (_event, channel, ...args) => noteFile(channel, args));
+  win.webContents.on('ipc-message-sync', (_event, channel, ...args) => noteFile(channel, args));
+  win.webContents.on('console-message', (event) => console.log('PAGE ' + event.message));
+  const droppedFile = ${JSON.stringify( path.join( dir, 'dropped.fasta' ) )};
+  const loaded = win.loadFile(${JSON.stringify( pageFile )});
+  const dbg = win.webContents.debugger;
+  dbg.attach('1.3');
+  await dbg.sendCommand('DOM.enable');
+  let backendNodeId = 0;
+  for (let i = 0; i < 40 && !backendNodeId; i++) {
+    try {
+      const doc = await dbg.sendCommand('DOM.getDocument');
+      const found = await dbg.sendCommand('DOM.querySelector', {
+        nodeId: doc.root.nodeId,
+        selector: '#dropped',
+      });
+      if (found.nodeId) {
+        const described = await dbg.sendCommand('DOM.describeNode', { nodeId: found.nodeId });
+        backendNodeId = described.node.backendNodeId;
+      }
+    } catch (error) {}
+    if (!backendNodeId) await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  if (!backendNodeId) throw new Error('dropped input missing');
+  await dbg.sendCommand('DOM.setFileInputFiles', { backendNodeId, files: [droppedFile] });
+  dbg.detach();
+  await loaded;
+  const hostExpected = {
+    windows: process.platform === 'win32',
+    release: os.release(),
+    arch: os.arch(),
+    cpuModel: os.cpus()[0].model,
+  };
+  const deadline = Date.now() + 8000;
+  let result;
+  while (Date.now() < deadline) {
+    const channel = await win.webContents.executeJavaScript('globalThis.__proofReady || null');
+    if (channel) {
+      await win.webContents.executeJavaScript('globalThis.__proofReady = null');
+      const proof = proofs.find((item) => item.subscribe && item.channel === channel);
+      win.webContents.send(channel, proof.result);
+    }
+    const ask = await win.webContents.executeJavaScript('globalThis.__stateReportAsk || false');
+    if (ask) {
+      await win.webContents.executeJavaScript('globalThis.__stateReportAsk = false');
+      const id = 'preload-state-report';
+      const onResult = (_event, payload) => {
+        if (!payload || payload.id !== id) return;
+        ipcMain.removeListener('STATE_REPORT_RESULT', onResult);
+        win.webContents.executeJavaScript(
+          'globalThis.__stateReportResult = ' + JSON.stringify(payload.report),
+        );
+      };
+      ipcMain.on('STATE_REPORT_RESULT', onResult);
+      win.webContents.send('STATE_REPORT', id);
+    }
+    result = await win.webContents.executeJavaScript('globalThis.__result || null');
+    if (result) break;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  if (!result) result = { error: 'no result' };
+  result.hostMatches = result.host
+    && result.host.windows === hostExpected.windows
+    && result.host.release === hostExpected.release
+    && result.host.arch === hostExpected.arch
+    && result.host.cpuModel === hostExpected.cpuModel;
+  const clip = await clipboard.readText();
+  console.log('RESULT ' + JSON.stringify({ result, clip, fileSends }));
+  app.exit(result && result.error ? 1 : 0);
+  } catch (error) {
+    console.log('RESULT ' + JSON.stringify({ result: { error: String(error && error.stack || error) }, clip: '', fileSends }));
+    app.exit(1);
+  }
+});
+setTimeout(() => app.exit(2), 12000);
+` );
+  const env = { ...process.env };
+  delete env.ELECTRON_RUN_AS_NODE;
+  const result = spawnSync( process.execPath, [electronBin, mainFile], {
+    cwd: root,
+    encoding: 'utf8',
+    timeout: 20000,
+    env,
+  } );
+  const output = `${result.stdout}\n${result.stderr}`;
+  const line = output.split( '\n' ).find( ( item ) => item.startsWith( 'RESULT ' ) );
+  if ( !line ) {
+    throw new Error( output || `electron exited ${result.status}` );
+  }
+  const payload = JSON.parse( line.slice( 'RESULT '.length ) );
+  if ( payload.result.error ) {
+    const pages = output.split( '\n' ).filter( ( item ) => item.startsWith( 'PAGE ' ) );
+    throw new Error( [payload.result.error, ...pages].join( '\n' ) );
+  }
+  expect( payload.result.copied ).toBe( true );
+  for ( const proof of proofs ) {
+    expect( payload.result[proof.key] ).toEqual( proof.result );
+    if ( proof.log ) {
+      expect( `${result.stdout}` ).toContain( `${proof.log} ${proof.args[0]}` );
+    }
+  }
+  expect( payload.clip ).toBe( 'bridge-text' );
+  expect( Object.keys( payload.result.host ).sort() ).toEqual( ['arch', 'cpuModel', 'release', 'windows'] );
+  expect( payload.result.hostSame ).toBe( true );
+  expect( payload.result.hostMatches ).toBe( true );
+  expect( typeof payload.result.host.release ).toBe( 'string' );
+  expect( payload.result.host.release.length ).toBeGreaterThan( 0 );
+  expect( typeof payload.result.host.cpuModel ).toBe( 'string' );
+  expect( payload.result.host.cpuModel.length ).toBeGreaterThan( 0 );
+  expect( payload.result.noNode ).toBe( true );
+  expect( payload.result.text ).toBe( 'DNA, gene = 1-100\n' );
+  expect( payload.result.written ).toBe( true );
+  expect( payload.fileSends ).toEqual( [] );
+  expect( payload.result.droppedSync ).toBe( true );
+  expect( fs.realpathSync( payload.result.droppedPath ) ).toBe(
+    fs.realpathSync( path.join( dir, 'dropped.fasta' ) ),
+  );
+  expect( payload.result.stateReport ).toEqual( { from: 'page' } );
+  expect( fs.readFileSync( path.join( dir, 'concat.fasta' ), 'utf8' ) ).toBe( '>Homo\nAT' );
+}, 30000 );
+

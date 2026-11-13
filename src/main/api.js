@@ -1,5 +1,6 @@
 /* global __static */
-import { app, ipcMain, shell, dialog, Notification, BrowserWindow, clipboard } from 'electron';
+import { app, ipcMain, shell, dialog, Notification, clipboard } from 'electron';
+import os from 'os';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
@@ -9,9 +10,28 @@ import parsePath from 'parse-filepath';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
+import { parseAlignment } from './parseAlignment';
+import { selectAlignment } from './selectAlignment';
+import { selectAstralFile } from './selectAstralFile';
+import { selectOutputDir } from './selectOutputDir';
+import { checkOutput } from './checkOutput';
+import { debugInfo } from './debugInfo';
+import { selectPartitionFile } from './selectPartitionFile';
+import { selectTree } from './selectTree';
+import { appStore } from './appStore';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
+import {
+  beginRun,
+  cancelRun,
+  finishedRun,
+  forgetRun,
+  runResult,
+  stillRunning,
+  stopRun,
+  trackRun,
+} from './cancelRun';
 if ( !is.development ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
@@ -50,147 +70,68 @@ process.on( 'unhandledRejection', ( error ) => {
 } );
 const exec = util.promisify( childProcess.exec );
 const execFile = util.promisify( childProcess.execFile );
-const state = {
-  processes: {},
-};
 function send( event, channel, data ) {
   if ( !data.error ) {
     return event.sender.send( channel, data );
   }
   return event.sender.send( channel, Object.assign( {}, data, { error: serializeError( data.error ) } ) );
 }
-// Init the app state with some relevant information
-ipcMain.on( ipc.INIT_APP_STATE, ( event ) => {
-  const version = app.getVersion();
-  send( event, ipc.INIT_APP_STATE_RECEIVED, {
-    version,
-  } );
+ipcMain.on( ipc.HOST, ( event ) => {
+  const cpu = os.cpus()[0];
+  event.returnValue = {
+    windows: process.platform === 'win32',
+    release: os.release(),
+    arch: os.arch(),
+    cpuModel: cpu.model,
+  };
+} );
+ipcMain.handle( ipc.GET_VERSION, () => app.getVersion() );
+ipcMain.handle( ipc.GET_DARK_MODE, () => Boolean( appStore.get( 'darkMode' ) ) );
+ipcMain.handle( ipc.SET_DARK_MODE, ( _event, value ) => {
+  appStore.set( 'darkMode', !!value );
 } );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );
 } );
-ipcMain.on( ipc.RELOAD, () => {
-  BrowserWindow
-    .getCurrentWindow()
-    .reload();
+ipcMain.handle( ipc.READ_FILE, ( _event, filePath ) => {
+  return fs.readFile( filePath, 'utf-8' );
 } );
-ipcMain.on( ipc.OUTPUT_DIR_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select a directory for RAxML output',
-      properties: ['openFile', 'openDirectory'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.OUTPUT_DIR_SELECT, result );
-      if ( result.canceled ) {
-        return;
-      }
-      send( event, ipc.OUTPUT_DIR_SELECTED, {
-        id: runId,
-        outputDir: result.filePaths[0],
-      } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.OUTPUT_DIR_SELECT, err );
-    } );
+ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
+  await fs.writeFile( filePath, text );
 } );
-ipcMain.on( ipc.PARTITION_FILE_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select a partition file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.PARTITION_FILE_SELECT, result );
-      if ( result.canceled ) {
-        return;
-      }
-      send( event, ipc.PARTITION_FILE_SELECTED, {
-        id: runId,
-        filePath: result.filePaths[0],
-      } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.PARTITION_FILE_SELECT, err );
-    } );
+ipcMain.handle( ipc.RELOAD, ( event ) => {
+  event.sender.reload();
 } );
-// Open a file with the OS's default file handler
-ipcMain.on( ipc.FILE_OPEN, ( event, fullPath ) => {
-  console.debug( ipc.FILE_OPEN, fullPath );
-  shell.openPath( fullPath );
+ipcMain.handle( ipc.DEBUG_INFO, () => {
+  return debugInfo( {
+    name: app.getName(),
+    version: app.getVersion(),
+    electron: process.versions.electron,
+    platform: process.platform,
+    release: os.release(),
+    locale: app.getLocale(),
+  } );
+} );
+ipcMain.handle( ipc.OPEN_EXTERNAL, ( _event, url ) => {
+  return shell.openExternal( url );
+} );
+ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
+  return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );
+} );
+ipcMain.handle( ipc.PARTITION_FILE_SELECT, ( _event, _runId ) => {
+  return selectPartitionFile( ( options ) => dialog.showOpenDialog( options ) );
+} );
+ipcMain.handle( ipc.OPEN_PATH, ( _event, fullPath ) => {
+  return shell.openPath( fullPath );
 } );
 // Open a file in it's folder with native file explorer
-ipcMain.on( ipc.FILE_SHOW_IN_FOLDER, ( event, fullPath ) => {
+ipcMain.handle( ipc.FILE_SHOW_IN_FOLDER, ( _event, fullPath ) => {
   console.debug( ipc.FILE_SHOW_IN_FOLDER, fullPath );
   shell.showItemInFolder( fullPath );
 } );
-// Open a folder
-ipcMain.on( ipc.FOLDER_OPEN, ( event, fullPath ) => {
-  console.debug( ipc.FOLDER_OPEN, fullPath );
-  shell.showItemInFolder( fullPath );
-} );
 // Check if raxml output files already exist with current name
-ipcMain.on( ipc.OUTPUT_CHECK, async ( event, data ) => {
-  const { id, outputDir, outputName } = data;
-  const outputFilename = `${outputName}.tre`;
-  console.log( 'Check unused filename:', outputFilename );
-  if ( !outputDir ) {
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      outputDir,
-      outputName,
-      ok: true,
-      notice: '',
-      outputNameUnused: outputName,
-      resultFilenames: [],
-    } );
-    return;
-  }
-  try {
-    const filenames = await fs.readdir( outputDir );
-    let outputNameUnused = outputName;
-    const filterResultFilenames = ( filename ) => filename.startsWith( `${outputNameUnused}.raxml.` ) ||
-            filename.endsWith( outputNameUnused ) ||
-            filename.endsWith( `.${outputNameUnused}.txt` ) ||
-            filename.endsWith( `${outputNameUnused}.tre` );
-    const resultFilenamesMain = filenames.filter( filterResultFilenames );
-    const filterResultFilenamesAdditional = ( filename ) => filename.startsWith( `RAxML_GUI_ModelTest_${outputNameUnused}.` ) ||
-            filename.startsWith( `RAxML_GUI_Settings_${outputNameUnused}.` );
-    const resultFilenamesAdditional = filenames.filter( filterResultFilenamesAdditional );
-    const resultFilenames = resultFilenamesMain.concat( resultFilenamesAdditional );
-    let counter = 1;
-    const matchCounterName = /(\w+)_\d+$/.exec( outputName );
-    const outputNameWithoutCounter = matchCounterName
-      ? matchCounterName[1]
-      : outputName;
-    while ( filenames.find( filterResultFilenames ) ) {
-      outputNameUnused = `${outputNameWithoutCounter}_${counter}`;
-      ++counter;
-    }
-    const ok = outputName === outputNameUnused;
-    const notice = ok
-      ? ''
-      : `Using '${outputNameUnused}'`;
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      outputDir,
-      outputName,
-      ok,
-      notice,
-      outputNameUnused,
-      resultFilenames,
-    } );
-  }
-  catch ( error ) {
-    console.log( ipc.OUTPUT_CHECK, 'error:', error );
-    send( event, ipc.OUTPUT_CHECKED, {
-      id,
-      ok: false,
-      notice: error.message,
-      error,
-      resultFilenames: [],
-    } );
-  }
+ipcMain.handle( ipc.OUTPUT_CHECK, ( _event, { outputDir, outputName } ) => {
+  return checkOutput( { outputDir, outputName } );
 } );
 // Function to combine multiple output trees into one file
 async function combineOutput( outputDir, outputFilename ) {
@@ -215,8 +156,15 @@ const binParentDir = app.isPackaged
     linux: 'Linux',
   } );
 const binaryDir = path.join( getStaticDir(), 'bin', binParentDir );
-ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
-  cancelProcess( id );
+ipcMain.handle( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath } ) => {
+  const token = beginRun( id );
+  stopRun( id );
+  const reportError = ( error ) => {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
+    send( event, ipc.RUN_ERROR, { id, error } );
+  };
   const binaryPath = path.resolve( binaryDir, binaryName );
   console.log( `Run ${id}:\n  output filename id: ${outputFilename}\n  output dir: ${outputDir}\n  binary: ${binaryName}\n  binary path: ${binaryDir}\n  args:`, args );
   // Check for deleted input file
@@ -227,7 +175,7 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
   catch ( err ) {
     const error = new UserFixError( `The input file does not exist '${inputPath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   const resultFilePath = path.join( outputDir, outputFilename );
@@ -240,7 +188,7 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
     console.error( 'Error writing to output file:', err );
     const error = new Error( `Error trying to write to output file '${resultFilePath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   finally {
@@ -268,7 +216,7 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
     console.error( 'Error executing binary:', err );
     const error = new Error( `Error trying to execute raxml binary '${binaryPath}': ${err.message}` );
     Sentry.captureException( err );
-    send( event, ipc.RUN_ERROR, { id, error } );
+    reportError( error );
     return;
   }
   // TODO: When packaged, RAxML throws error trying to write the file RAxML_flagCheck:
@@ -288,7 +236,7 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
       catch ( err ) {
         console.error( 'Flag check run error:', err );
         Sentry.captureException( err );
-        send( event, ipc.RUN_ERROR, { id, error: err } );
+        reportError( err );
         return;
       }
     }
@@ -305,9 +253,12 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
     catch ( err ) {
       console.error( 'Run error:', err );
       Sentry.captureException( err );
-      send( event, ipc.RUN_ERROR, { id, error: err } );
+      reportError( err );
       return;
     }
+  }
+  if ( !stillRunning( id, token ) || !finishedRun( exitCode ) ) {
+    return;
   }
   if ( combinedOutput ) {
     console.log( 'Combining output...' );
@@ -356,6 +307,9 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
   }
   const nextFilenames = await fs.readdir( outputDir );
   const resultFilenames = nextFilenames.filter( ( filename ) => filename.includes( outputName ) );
+  if ( !stillRunning( id, token ) ) {
+    return;
+  }
   send( event, ipc.RUN_FINISHED, {
     id,
     resultDir: outputDir,
@@ -363,20 +317,10 @@ ipcMain.on( ipc.RUN_START, async ( event, { id, args, binaryName, outputDir, out
     exitCode,
   } );
 } );
-ipcMain.on( ipc.RUN_CANCEL, ( event, arg ) => {
-  const id = arg;
+ipcMain.handle( ipc.RUN_CANCEL, ( _event, id ) => {
   console.log( `Cancel run process ${id}...` );
-  cancelProcess( id );
+  cancelRun( id );
 } );
-function cancelProcess( id ) {
-  const processKey = String( id );
-  if ( state.processes[processKey] ) {
-    const proc = state.processes[processKey];
-    delete state.processes[processKey];
-    proc.kill();
-    console.log( `Killed RAxML process ${id}` );
-  }
-}
 function spawnProcess( binaryDir, binaryName, args ) {
   const binaryPath = path.join( binaryDir, binaryName );
   const proc = childProcess.execFile( get_space_safe_binary_path( binaryPath ), args, {
@@ -386,10 +330,10 @@ function spawnProcess( binaryDir, binaryName, args ) {
 }
 async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = ( _content ) => { }, onStdErr = ( _content ) => { } } = {} ) {
   return new Promise( ( resolve, reject ) => {
-    cancelProcess( id );
+    stopRun( id );
     try {
       const proc = spawnProcess( binaryDir, binaryName, args );
-      state.processes[String( id )] = proc;
+      trackRun( id, proc );
       let exited = false;
       proc.stdout.on( 'data', ( buffer ) => {
         const content = String( buffer );
@@ -409,7 +353,8 @@ async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = 
         }
         console.log( `Process finished with event '${message}' and error/code/signal:`, signal || code );
         exited = true;
-        delete state.processes[String( id )];
+        forgetRun( id, proc );
+        const result = runResult( proc, message, code, signal );
         const win = activeWindow();
         if ( !win || !win.isFocused() ) {
           const notification = new Notification( {
@@ -418,13 +363,13 @@ async function runProcess( id, event, binaryDir, binaryName, args, { onStdOut = 
           } );
           notification.show();
         }
-        if ( message === 'error' ) {
-          return reject( code ); // code is an error object on 'error' event
+        if ( result === 'SIGTERM' ) {
+          return resolve( result );
         }
-        if ( !code ) {
-          return resolve( ( signal || code ) ); // Add code last to get through code 0
+        if ( message === 'error' || result instanceof Error ) {
+          return reject( result ); // code is an error object on 'error' event
         }
-        return reject( new Error( `Exited with code ${signal || code}. Check console output for more information.` ) );
+        return resolve( result ); // Add code last to get through code 0
       };
       ['error', 'exit', 'close'].forEach( ( message ) => {
         proc.on( message, onQuit( message ) );
@@ -469,141 +414,22 @@ async function convertAlignment( alignmentPath ) {
   console.log( stdout, stderr );
   return newPath;
 }
-// // Receive a new batch of alignments dropped into the app
-ipcMain.on( ipc.ALIGNMENT_PARSE_REQUEST, async ( event, { id, filePath } ) => {
-  console.log( 'Parse alignment', filePath );
-  let format;
-  let newFilePath;
-  let converted;
-  let modified;
-  let modificationMessages = [];
-  // Use readal to check the alignment file format
-  try {
-    format = await readalGetFormat( filePath );
-    if ( format !== 'fasta' && format !== 'phylip' ) {
-      newFilePath = await convertAlignment( filePath );
-      converted = true;
-    }
-  }
-  catch ( error ) {
-    console.log( 'error', error );
-  }
-  try {
-    const actualPath = newFilePath
-      ? newFilePath
-      : filePath;
-    const alignment = await io.parseAlignment( actualPath );
-    // Check if duplicate or invalid taxon names
-    const taxons = new Map();
-    let identicalCounter = 0;
-    alignment.sequences.forEach( async ( sequence, index ) => {
-      // If the taxon name is longer than 256 characters raxml will error out
-      if ( sequence.taxon.length > 256 ) {
-        const message = `Taxon name is too long: '${sequence.taxon}'.`;
-        console.log( message );
-        // Shorten the invalid taxon name
-        alignment.sequences[index].taxon = sequence.taxon.slice( 0, 253 );
-        modified = true;
-        modificationMessages.push( message );
-      }
-      const ind = taxons.get( sequence.taxon );
-      // Check if a sequence with this name is already in the map
-      if ( ind !== undefined ) {
-        const message = `Identical sequence names: ${ind + 1} and ${index + 1} = ${sequence.taxon}`;
-        console.log( message );
-        // Add a digit to the end of the second sequence
-        identicalCounter++;
-        alignment.sequences[index].taxon =
-                    `${sequence.taxon}_${identicalCounter}`;
-        modified = true;
-        modificationMessages.push( message );
-      }
-      // If the taxon name has one of those characters raxml will error out
-      const excludedCharacters = [':', ',', '.', '(', ')', '[', ']', ';', "'"];
-      // Test white-space characters and excluded characters above
-      const testInvalid = new RegExp( `[\\s${excludedCharacters.map( ( c ) => `\\${c}` ).join( '' )}]`, 'g' );
-      if ( testInvalid.test( sequence.taxon ) ) {
-        const message = `Illegal characters in sequence name = taxon '${sequence.taxon}' found.`;
-        console.log( message );
-        // Replace the invalid characters in taxon names with underscores
-        alignment.sequences[index].taxon = sequence.taxon.replace( testInvalid, '_' );
-        modified = true;
-        modificationMessages.push( message );
-      }
-      // Add this taxon to the map for checking
-      taxons.set( sequence.taxon, index );
-    } );
-    if ( modified ) {
-      // Write the new alignment to file
-      const baseName = path.basename( actualPath, path.extname( actualPath ) );
-      newFilePath = actualPath.replace( baseName, `${baseName}_modified` );
-      await io.writeAlignment( newFilePath, alignment );
-    }
-    send( event, ipc.ALIGNMENT_PARSE_SUCCESS, { id, alignment } );
-    if ( newFilePath ) {
-      send( event, ipc.ALIGNMENT_PARSE_CHANGED_PATH, {
-        id,
-        newFilePath,
-        format,
-        converted,
-        modified,
-        modificationMessages,
-      } );
-    }
-  }
-  catch ( error ) {
-    send( event, ipc.ALIGNMENT_PARSE_FAILURE, { id, error } );
-  }
+ipcMain.handle( ipc.ALIGNMENT_PARSE, ( _event, id, filePath ) => {
+  return parseAlignment( id, filePath, {
+    readFormat: readalGetFormat,
+    convert: convertAlignment,
+    parse: io.parseAlignment,
+    write: io.writeAlignment,
+  } );
 } );
 // Open a dialog to select alignments
-ipcMain.on( ipc.ALIGNMENT_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select an alignment',
-      properties: ['openFile', 'multiSelections'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.ALIGNMENT_SELECTED, result );
-      if ( result.canceled ) {
-        return;
-      }
-      const alignments = result.filePaths.map( ( filePath ) => {
-        return {
-          path: filePath,
-          name: path.basename( filePath ),
-        };
-      } );
-      send( event, ipc.ALIGNMENT_SELECTED, { id: runId, alignments } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.ALIGNMENT_SELECTED, err );
-    } );
+ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event, _runId ) => {
+  return selectAlignment( ( options ) => dialog.showOpenDialog( options ) );
 } );
-// Open a dialog to select astral input trees
-ipcMain.on( ipc.ASTRAL_FILE_SELECT, ( event, runId ) => {
-  dialog
-    .showOpenDialog( {
-      title: 'Select an input trees file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.ASTRAL_FILE_SELECTED, result );
-      if ( result.canceled ) {
-        return;
-      }
-      const files = result.filePaths.map( ( filePath ) => {
-        return {
-          path: filePath,
-          name: path.basename( filePath ),
-        };
-      } );
-      send( event, ipc.ASTRAL_FILE_SELECTED, { id: runId, file: files[0] } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.ASTRAL_FILE_SELECTED, err );
-    } );
+ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event, _runId ) => {
+  return selectAstralFile( ( options ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
+ipcMain.handle( ipc.EXAMPLE_FILES, async () => {
   const staticDir = getStaticDir();
   const dir = path.join( staticDir, 'example-files' );
   const outdir = path.join( staticDir, 'test-results' );
@@ -611,14 +437,14 @@ ipcMain.on( ipc.ALIGNMENT_EXAMPLE_FILES_GET_REQUEST, async ( event ) => {
   await fs.mkdir( outdir, { recursive: true } );
   const fastaFiles = await fs.readdir( path.join( dir, 'fasta' ) );
   const phylipFiles = await fs.readdir( path.join( dir, 'phylip' ) );
-  send( event, ipc.ALIGNMENT_EXAMPLE_FILES_GET_SUCCESS, {
+  return {
     fasta: fastaFiles,
     phylip: phylipFiles,
     dir,
     outdir,
-  } );
+  };
 } );
-ipcMain.on( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
+ipcMain.handle( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
   const { id, binaryName, args } = payload;
   const javaBin = 'java';
   const [arg] = args;
@@ -646,8 +472,15 @@ ipcMain.on( ipc.ASTRAL_REQUEST, async ( event, payload ) => {
     exitCode,
   } );
 } );
-ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
+ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;
+  const token = beginRun( id );
+  const reportFailure = ( error ) => {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
+    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } );
+  };
   const { name } = parsePath( filePath );
   const outputPath = path.join( outputDir, `RAxML_GUI_ModelTest_${name}` );
   try {
@@ -677,21 +510,23 @@ ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
   };
   let exitCode = 0;
   try {
+    if ( !stillRunning( id, token ) ) {
+      return;
+    }
     console.log( `Run modeltest-ng with args:`, args );
     exitCode = await runProcess( id, event, binaryDir, binaryName, args, {
       onStdOut,
     } );
+    if ( !stillRunning( id, token ) || exitCode === 'SIGTERM' ) {
+      return;
+    }
     if ( exitCode !== 0 ) {
-      if ( exitCode === 'SIGTERM' ) {
-        // Cancelled
-        return;
-      }
       throw new Error( `Error trying to run modeltest-ng, exited with code '${exitCode}'.` );
     }
   }
   catch ( err ) {
     console.error( 'Modeltest run error:', err );
-    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error: err } );
+    reportFailure( err );
     return;
   }
   // Parse stdout to get the best models
@@ -719,33 +554,13 @@ ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, async ( event, payload ) => {
     console.log( 'output:', commands );
     const error = new Error( `Couldn't parse best models from modeltest-ng output. Check alignment log.` );
     error.name = 'Modeltest error';
-    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } );
+    reportFailure( error );
   }
 } );
-ipcMain.on( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( event, id ) => {
+ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( _event, id ) => {
   console.log( `Cancel modeltest process ${id}...` );
-  cancelProcess( id );
+  cancelRun( id );
 } );
-// Open a dialog to select a tree file
-ipcMain.on( ipc.TREE_SELECT, ( event, params ) => {
-  const { id, type } = params;
-  dialog
-    .showOpenDialog( {
-      title: 'Select a tree file',
-      properties: ['openFile'],
-    } )
-    .then( ( result ) => {
-      console.debug( ipc.TREE_SELECT, result );
-      if ( result.canceled ) {
-        return;
-      }
-      send( event, ipc.TREE_SELECTED, {
-        id,
-        type,
-        filePath: result.filePaths[0],
-      } );
-    } )
-    .catch( ( err ) => {
-      console.debug( ipc.TREE_SELECT, err );
-    } );
+ipcMain.handle( ipc.TREE_SELECT, ( _event, _runId, type ) => {
+  return selectTree( ( options ) => dialog.showOpenDialog( options ), type );
 } );

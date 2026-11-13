@@ -1,0 +1,7 @@
+{
+  "key": "debug",
+  "method": "debugInfo",
+  "args": [],
+  "channel": "DEBUG_INFO",
+  "result": "raxmlGUI 2.0.18\nElectron 45.2.3\ndarwin 25.6.0\nLocale: en-US"
+}

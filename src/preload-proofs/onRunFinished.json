@@ -1,0 +1,12 @@
+{
+  "key": "finished",
+  "method": "onRunFinished",
+  "channel": "RUN_FINISHED",
+  "subscribe": true,
+  "result": {
+    "id": "run-7",
+    "resultDir": "/out",
+    "resultFilenames": ["primates.tre"],
+    "exitCode": 0
+  }
+}

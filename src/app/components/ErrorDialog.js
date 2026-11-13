@@ -13,34 +13,35 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { ipcRenderer } from 'electron';
-import {
-  reportIssueToGitHub,
-  getMailtoLinkToReportError,
-} from '../../common/utils';
-import * as ipc from '../../constants/ipc';
+import { getMailtoLinkToReportError } from '../report';
+import { reportIssueToGitHub } from '../githubIssue';
 
 const handleReload = () => {
-  ipcRenderer.send( ipc.RELOAD );
+  const { rendererBridge } = /** @type {any} */ ( window );
+  return rendererBridge.reload();
 };
 
 export default function ErrorDialog( { error, onClose, needReload, title } ) {
   const [reported, setReported] = React.useState( false );
+  const mailtoContent = React.useMemo(
+    () => ( error
+      ? getMailtoLinkToReportError( error )
+      : '' ),
+    [error],
+  );
 
   if ( !error ) {
     return null;
   }
 
-  const handleReportToGithub = () => {
-    reportIssueToGitHub( error );
+  const handleReportToGithub = async () => {
+    await reportIssueToGitHub( error );
     setReported( true );
   };
 
   const handleReportToMail = () => {
     setReported( true );
   };
-
-  const mailtoContent = getMailtoLinkToReportError( error );
 
   const closeMessage = needReload
     ? reported
