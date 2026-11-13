@@ -4,10 +4,10 @@ import fs from 'fs';
 import url from 'url';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import ProgressBar from 'electron-progressbar';
 import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
+import { listenForUpdates } from './updates';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
@@ -33,79 +33,7 @@ const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
-let progressBar;
-autoUpdater.on( 'checking-for-update', () => {
-  log.info( 'Checking for update...' );
-} );
-autoUpdater.on( 'update-available', ( info ) => {
-  dialog
-    .showMessageBox( {
-      type: 'info',
-      title: 'Found Updates',
-      message: 'An update for RAxML-GUI is available, do you want to update now and restart?',
-      buttons: ['Yes', 'No'],
-      cancelId: 1,
-    } )
-    .then( ( r ) => {
-      // Button index
-      if ( r.response === 0 ) {
-        progressBar = new ProgressBar( {
-          text: 'Downloading the update for the app',
-          browserWindow: {
-            webPreferences: {
-              nodeIntegration: true,
-            },
-          },
-        } );
-        progressBar
-          .on( 'completed', function () {
-            console.info( `completed...` );
-            progressBar.detail = 'Download completed. Exiting...';
-          } )
-          .on( 'aborted', function () {
-            console.info( `aborted...` );
-          } );
-        autoUpdater.downloadUpdate();
-      }
-    } );
-  log.info( 'Update available.' );
-} );
-autoUpdater.on( 'update-not-available', ( info ) => {
-  log.info( 'Update not available.' );
-} );
-autoUpdater.on( 'error', ( error ) => {
-  log.info( 'Error in auto-updater. ' + error );
-  const message = error == null
-    ? 'unknown'
-    : error instanceof Error
-      ? error.stack || error.message
-      : String( error );
-  dialog.showErrorBox( 'Error: ', message );
-} );
-autoUpdater.on( 'download-progress', ( progressObj ) => {
-  let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message =
-        log_message +
-            ' (' +
-            progressObj.transferred +
-            '/' +
-            progressObj.total +
-            ')';
-  log.info( log_message );
-} );
-autoUpdater.on( 'update-downloaded', ( info ) => {
-  progressBar.setCompleted();
-  dialog
-    .showMessageBox( {
-      title: 'Install Updates',
-      message: 'Updates downloaded, the application will now quit to update...',
-    } )
-    .then( () => {
-      setImmediate( () => autoUpdater.quitAndInstall() );
-    } );
-  log.info( 'Update downloaded' );
-} );
+listenForUpdates( autoUpdater, dialog );
 /**
  * Add event listeners...
  */
