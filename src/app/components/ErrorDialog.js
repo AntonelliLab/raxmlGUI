@@ -13,10 +13,8 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import {
-  reportIssueToGitHub,
-  getMailtoLinkToReportError,
-} from '../../common/utils';
+import { getMailtoLinkToReportError } from '../../common/utils';
+import { reportIssueToGitHub } from '../githubIssue';
 
 const handleReload = () => {
   const { rendererBridge } = /** @type {any} */ ( window );
@@ -30,8 +28,8 @@ export default function ErrorDialog( { error, onClose, needReload, title } ) {
     return null;
   }
 
-  const handleReportToGithub = () => {
-    reportIssueToGitHub( error );
+  const handleReportToGithub = async () => {
+    await reportIssueToGitHub( error );
     setReported( true );
   };
 

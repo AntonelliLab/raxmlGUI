@@ -1,5 +1,6 @@
 /* global __static */
 import { app, ipcMain, shell, dialog, Notification, clipboard } from 'electron';
+import os from 'os';
 import path from 'path';
 import util from 'util';
 import _fs from 'fs';
@@ -14,6 +15,7 @@ import { selectAlignment } from './selectAlignment';
 import { selectAstralFile } from './selectAstralFile';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
+import { debugInfo } from './debugInfo';
 import { selectPartitionFile } from './selectPartitionFile';
 import { selectTree } from './selectTree';
 import { is, platform, quote } from '../common/utils';
@@ -85,6 +87,19 @@ ipcMain.handle( ipc.WRITE_FILE, async ( _event, filePath, text ) => {
 } );
 ipcMain.handle( ipc.RELOAD, ( event ) => {
   event.sender.reload();
+} );
+ipcMain.handle( ipc.DEBUG_INFO, () => {
+  return debugInfo( {
+    name: app.getName(),
+    version: app.getVersion(),
+    electron: process.versions.electron,
+    platform: process.platform,
+    release: os.release(),
+    locale: app.getLocale(),
+  } );
+} );
+ipcMain.handle( ipc.OPEN_EXTERNAL, ( _event, url ) => {
+  return shell.openExternal( url );
 } );
 ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event, _runId ) => {
   return selectOutputDir( ( options ) => dialog.showOpenDialog( options ) );
