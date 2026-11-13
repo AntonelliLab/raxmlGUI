@@ -14,9 +14,11 @@ import {
   ASTRAL_SUCCESS,
   COPY_TEXT,
   DARK_MODE,
+  DEBUG_INFO,
   EXAMPLE_FILES,
   FILE_SHOW_IN_FOLDER,
   LIGHT_MODE,
+  OPEN_EXTERNAL,
   OPEN_PATH,
   OUTPUT_CHECK,
   OUTPUT_DIR_SELECT,
@@ -221,6 +223,12 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   reload() {
     return ipcRenderer.invoke( RELOAD );
+  },
+  debugInfo() {
+    return ipcRenderer.invoke( DEBUG_INFO );
+  },
+  openExternal( url ) {
+    return ipcRenderer.invoke( OPEN_EXTERNAL, url );
   },
   openPath( fullPath ) {
     return ipcRenderer.invoke( OPEN_PATH, fullPath );
