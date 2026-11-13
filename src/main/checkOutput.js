@@ -1,7 +1,10 @@
 import fs from 'fs';
 import { serializeError } from 'serialize-error';
+import * as ipc from '../constants/ipc';
 
 export async function checkOutput( { outputDir, outputName } ) {
+  const outputFilename = `${outputName}.tre`;
+  console.log( 'Check unused filename:', outputFilename );
   if ( !outputDir ) {
     return {
       outputDir,
@@ -44,6 +47,7 @@ export async function checkOutput( { outputDir, outputName } ) {
       resultFilenames,
     };
   } catch ( error ) {
+    console.log( ipc.OUTPUT_CHECK, 'error:', error );
     return {
       outputDir,
       outputName,
