@@ -111,6 +111,12 @@ A production build uploads JavaScript source maps for the main process and the p
 
 electron-vite does not bundle Node into the page. This window sets `nodeIntegration: true`, `contextIsolation: true`, and `sandbox: false`. The page joins, names, and quotes paths through `src/app/paths.js` (`join`, `base`, `basename`, `name`, `dir`, and `quote(dir, { windows })`) and does not import Node's `path` or `parse-filepath`. Page imports of `electron`, `fs`, `os`, `util`, `electron-store`, `electron-better-ipc`, `@sentry/electron`, `cpus`, `filenamify`, and `clean-stack` are rewritten to `globalThis.require(...)`. A bare `require` is not defined in those ESM modules. Prebundling those packages gives them a browser stub of `path`. The production page build inlines `process.env`, so a check such as `process.env.NODE_ENV === 'development'` in `src/app/bootstrap.ts` is compiled out of `out/renderer`. A flag the built page must see at runtime is read from Node: `globalThis.require('process').env`. With context isolation on, Node stays off the page even when `nodeIntegration` stays on, so that `require` is the function the preload exposes with `contextBridge`. Electron 45 `clipboard.readText` and `clipboard.writeText` return promises. `JSON.stringify` of a promise is `{}`.
 
+Found Updates still asks before a download; No leaves the current version.
+Yes downloads through `electron-updater` with no progress window, no bar, and no percent.
+Completion is the Install Updates dialog, then `quitAndInstall`.
+A failed update uses the existing error dialog.
+`electron-progressbar` is not a dependency, and the shell opens no update window.
+
 The preload build is one CommonJS file.
 npm dependencies are inlined and `electron` stays external.
 `cpus` is aliased to its Node entry because its browser field is a stub.
