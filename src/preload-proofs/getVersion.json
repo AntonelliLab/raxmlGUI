@@ -1,0 +1,7 @@
+{
+  "key": "version",
+  "method": "getVersion",
+  "args": [],
+  "channel": "GET_VERSION",
+  "result": "2.0.18"
+}
