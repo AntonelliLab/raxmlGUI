@@ -175,7 +175,7 @@ A dialog failure rejects.
 
 JSX stays in `.js` files. Vite 8's oxc parser does not treat `.js` as JSX, so the page build compiles JSX in Babel before oxc sees the file. The dependency scanner needs `optimizeDeps.rolldownOptions.moduleTypes['.js']` set to `jsx`.
 
-Legacy MobX decorators stay on the page only. `@vitejs/plugin-react` 6 has no `babel` option. The page build uses 5.2.0 with `@babel/plugin-proposal-decorators` (`legacy: true`) and `@babel/plugin-proposal-class-properties` (`loose: true`). The main build does not get that transform. Main must not import `src/app/store`. The file menu keeps its own `electron-store`. `src/common/utils.js` imports the store only in the renderer. The main config externalizes ids containing `/app/store`.
+Legacy MobX decorators stay on the page only. `@vitejs/plugin-react` 6 has no `babel` option. The page build uses 5.2.0 with `@babel/plugin-proposal-decorators` (`legacy: true`) and `@babel/plugin-proposal-class-properties` (`loose: true`). The main build does not get that transform. Main must not import `src/app/store`. The file menu keeps its own `electron-store`. The page keeps dark mode in `localStorage`; the menu writes `electron-store` when the theme radio is chosen. Page report helpers live in `src/app/report.js`. `src/common/utils.js` loads only in the main process. The main config externalizes ids containing `/app/store`.
 
 `@babel/plugin-transform-react-jsx` stays at 7.25.2. 7.29.7 nested `@babel/helper-validator-identifier` 8, whose published entry is ESM. The 8.x plugin peers `@babel/core` 8.
 

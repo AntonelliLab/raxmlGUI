@@ -1,14 +1,27 @@
+const fs = require('fs');
 const path = require('path');
 const { _electron: electron } = require('playwright/test');
 
 const repoRoot = path.join(__dirname, '..', '..');
 const mainEntry = path.join(repoRoot, 'out', 'main', 'index.js');
+const binParent =
+  process.platform === 'darwin'
+    ? 'Mac'
+    : process.platform === 'win32'
+      ? 'Windows'
+      : 'Linux';
+const binDir = path.join(repoRoot, 'static', 'bin', binParent);
 
 /**
  * Launch the built shell. No dev server and no page URL override.
  * @returns {Promise<import('playwright/test').ElectronApplication>}
  */
 async function launchApp() {
+  if (!fs.existsSync(binDir)) {
+    throw new Error(
+      `Missing ${binDir}. From the main checkout, link static/bin into this worktree (see AGENTS.md Worktree).`,
+    );
+  }
   const env = {
     ...process.env,
     NODE_ENV: 'production',
