@@ -31,6 +31,8 @@ import {
   RUN_START,
   RUN_STDERR,
   RUN_STDOUT,
+  STATE_REPORT,
+  STATE_REPORT_RESULT,
   TOGGLE_BACKBONE_CONSTRAINT,
   TOGGLE_MULTIFURCATING_CONSTRAINT,
   TREE_SELECT,
@@ -192,8 +194,20 @@ const host = {
   cpuModel: cpu.model,
 };
 
+let stateReport = null;
+
+ipcRenderer.on( STATE_REPORT, ( _event, id ) => {
+  const report = stateReport
+    ? stateReport()
+    : undefined;
+  ipcRenderer.send( STATE_REPORT_RESULT, { id, report } );
+} );
+
 contextBridge.exposeInMainWorld( 'rendererBridge', {
   host,
+  provideStateReport( fn ) {
+    stateReport = fn;
+  },
   copyText( text ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
   },

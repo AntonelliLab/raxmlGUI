@@ -2,7 +2,7 @@ import electron from 'electron';
 import os from 'os';
 import { serializeError } from 'serialize-error';
 import cleanStack from 'clean-stack';
-import * as ipc from 'electron-better-ipc';
+import { STATE_REPORT, STATE_REPORT_RESULT } from '../constants/ipc';
 import { activeWindow } from '../main/utils/utils';
 const processWithElectron = process;
 function newGithubIssueUrl( options = {} ) {
@@ -73,21 +73,27 @@ ${process.platform} ${os.release()}
 Locale: ${electron.app.getLocale()}
 `.trim()
   : `Debug info not available in renderer.`;
-if ( is.renderer ) {
-  ipc.ipcRenderer.answerMain( 'get-state-report', async () => {
-    const storeModule = await import( '../app/store' );
-    const store = storeModule.default;
-    const report = store.generateReport();
-    return report;
-  } );
-}
 const getActiveState = async () => {
   if ( is.renderer ) {
     return window.store.generateReport();
   }
   const win = activeWindow();
-  const report = await ipc.ipcMain.callRenderer( win, 'get-state-report' );
-  return report;
+  const id = `${Date.now()}-${Math.random().toString( 16 ).slice( 2 )}`;
+  return new Promise( ( resolve ) => {
+    const onResult = ( event, payload ) => {
+      if ( !payload || payload.id !== id ) {
+        return;
+      }
+      const from = electron.BrowserWindow.fromWebContents( event.sender );
+      if ( !from || from.id !== win.id ) {
+        return;
+      }
+      electron.ipcMain.removeListener( STATE_REPORT_RESULT, onResult );
+      resolve( payload.report );
+    };
+    electron.ipcMain.on( STATE_REPORT_RESULT, onResult );
+    win.webContents.send( STATE_REPORT, id );
+  } );
 };
 const getActiveStateSync = () => {
   if ( is.renderer ) {

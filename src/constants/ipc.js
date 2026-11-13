@@ -43,3 +43,5 @@ export const ASTRAL_FILE_SELECTED = 'ASTRAL_FILE_SELECTED';
 export const COPY_TEXT = 'COPY_TEXT';
 export const READ_FILE = 'READ_FILE';
 export const WRITE_FILE = 'WRITE_FILE';
+export const STATE_REPORT = 'STATE_REPORT';
+export const STATE_REPORT_RESULT = 'STATE_REPORT_RESULT';
