@@ -73,13 +73,7 @@ function send( event, channel, data ) {
   }
   return event.sender.send( channel, Object.assign( {}, data, { error: serializeError( data.error ) } ) );
 }
-// Init the app state with some relevant information
-ipcMain.on( ipc.INIT_APP_STATE, ( event ) => {
-  const version = app.getVersion();
-  send( event, ipc.INIT_APP_STATE_RECEIVED, {
-    version,
-  } );
-} );
+ipcMain.handle( ipc.GET_VERSION, () => app.getVersion() );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );
 } );

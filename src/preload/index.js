@@ -16,6 +16,7 @@ import {
   DARK_MODE,
   EXAMPLE_FILES,
   FILE_SHOW_IN_FOLDER,
+  GET_VERSION,
   LIGHT_MODE,
   OPEN_PATH,
   OUTPUT_CHECK,
@@ -197,6 +198,9 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   getExampleFiles() {
     return ipcRenderer.invoke( EXAMPLE_FILES );
+  },
+  getVersion() {
+    return ipcRenderer.invoke( GET_VERSION );
   },
   selectAlignment( runId ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );

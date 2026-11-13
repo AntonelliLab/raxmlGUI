@@ -49,6 +49,10 @@ function withBridgeEvents( next ) {
   if ( typeof next.cancelModelSelection !== 'function' ) {
     next.cancelModelSelection = () => {};
   }
+  // The page store calls getVersion while it is constructed.
+  if ( typeof next.getVersion !== 'function' ) {
+    next.getVersion = () => Promise.resolve();
+  }
   return next;
 }
 
