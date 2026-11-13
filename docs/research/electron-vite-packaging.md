@@ -173,6 +173,8 @@ The page's runs, theme, and those constraints follow.
 An unhandled error arrives on `rendererBridge.onUnhandledError` as `{ title, error }` with `error` serialized, and the page shows that title and error.
 Cancel resolves `null`.
 A dialog failure rejects.
+A dialog helper logs the dialog result or the thrown error beside that mapping; a log label that is not a live channel is a string literal.
+`#44` restored the logs the shell extraction dropped beside `select*`, `checkOutput`, and `parseAlignment`, and removed the log-baseline lint check.
 
 JSX stays in `.js` files. Vite 8's oxc parser does not treat `.js` as JSX, so the page build compiles JSX in Babel before oxc sees the file. The dependency scanner needs `optimizeDeps.rolldownOptions.moduleTypes['.js']` set to `jsx`.
 
