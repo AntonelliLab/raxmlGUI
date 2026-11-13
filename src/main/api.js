@@ -18,6 +18,7 @@ import { checkOutput } from './checkOutput';
 import { debugInfo } from './debugInfo';
 import { selectPartitionFile } from './selectPartitionFile';
 import { selectTree } from './selectTree';
+import { appStore } from './appStore';
 import { is, platform, quote } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
@@ -85,6 +86,10 @@ ipcMain.on( ipc.HOST, ( event ) => {
   };
 } );
 ipcMain.handle( ipc.GET_VERSION, () => app.getVersion() );
+ipcMain.handle( ipc.GET_DARK_MODE, () => Boolean( appStore.get( 'darkMode' ) ) );
+ipcMain.handle( ipc.SET_DARK_MODE, ( _event, value ) => {
+  appStore.set( 'darkMode', !!value );
+} );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event, text ) => {
   await clipboard.writeText( text );
 } );

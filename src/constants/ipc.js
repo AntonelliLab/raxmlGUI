@@ -2,6 +2,8 @@
     Strings for ipc
 */
 export const GET_VERSION = 'GET_VERSION';
+export const GET_DARK_MODE = 'GET_DARK_MODE';
+export const SET_DARK_MODE = 'SET_DARK_MODE';
 export const OUTPUT_DIR_SELECT = 'OUTPUT_DIR_SELECT';
 export const TREE_SELECT = 'TREE_SELECT';
 export const PARTITION_FILE_SELECT = 'PARTITION_FILE_SELECT';

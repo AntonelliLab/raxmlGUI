@@ -1,25 +1,26 @@
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import StoreBase, { runEvents } from './StoreBase';
-
-function readDarkMode() {
-  return window.localStorage.getItem( 'darkMode' ) === 'true';
-}
 
 export default class Config extends StoreBase {
   constructor() {
     super();
     this.listen();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    rendererBridge.getDarkMode().then( ( value ) => {
+      runInAction( () => {
+        this.isDarkMode = !!value;
+      } );
+    } );
   }
 
-  @observable isDarkMode = readDarkMode();
+  @observable isDarkMode = false;
 
   @action
     setDarkMode = ( value ) => {
       value = !!value;
-      window.localStorage.setItem( 'darkMode', value
-        ? 'true'
-        : 'false' );
       this.isDarkMode = value;
+      const { rendererBridge } = /** @type {any} */ ( window );
+      void rendererBridge.setDarkMode( value );
     };
 
   onLightMode = () => {

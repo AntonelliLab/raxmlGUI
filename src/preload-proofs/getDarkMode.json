@@ -1,0 +1,7 @@
+{
+  "key": "gotDarkMode",
+  "method": "getDarkMode",
+  "args": [],
+  "channel": "GET_DARK_MODE",
+  "result": true
+}

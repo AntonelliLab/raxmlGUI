@@ -56,6 +56,13 @@ function withBridgeEvents( next ) {
   if ( typeof next.getVersion !== 'function' ) {
     next.getVersion = () => Promise.resolve();
   }
+  // Config construction reads and may write dark mode.
+  if ( typeof next.getDarkMode !== 'function' ) {
+    next.getDarkMode = () => Promise.resolve( false );
+  }
+  if ( typeof next.setDarkMode !== 'function' ) {
+    next.setDarkMode = () => Promise.resolve();
+  }
   return next;
 }
 

@@ -15,8 +15,10 @@ import {
   DEBUG_INFO,
   EXAMPLE_FILES,
   FILE_SHOW_IN_FOLDER,
+  GET_DARK_MODE,
   GET_VERSION,
   HOST,
+  SET_DARK_MODE,
   LIGHT_MODE,
   OPEN_EXTERNAL,
   OPEN_PATH,
@@ -72,6 +74,12 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   },
   getVersion() {
     return ipcRenderer.invoke( GET_VERSION );
+  },
+  getDarkMode() {
+    return ipcRenderer.invoke( GET_DARK_MODE );
+  },
+  setDarkMode( value ) {
+    return ipcRenderer.invoke( SET_DARK_MODE, value );
   },
   selectAlignment( runId ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
