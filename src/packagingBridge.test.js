@@ -13,7 +13,7 @@ function bridgeMethods( source ) {
 it( 'the packaging note names every rendererBridge method', () => {
   const preload = fs.readFileSync( path.join( root, 'src', 'preload', 'index.js' ), 'utf8' );
   const note = fs.readFileSync(
-    path.join( root, 'docs', 'research', 'electron-vite-packaging.md' ),
+    path.join( root, 'docs', 'research' ),
     'utf8',
   );
   const missing = bridgeMethods( preload )
