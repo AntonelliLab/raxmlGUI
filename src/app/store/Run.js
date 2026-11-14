@@ -2,7 +2,8 @@ import { observable, computed, action, createAtom } from 'mobx';
 import { promisedComputed } from 'computed-async-mobx';
 import filenamify from 'filenamify';
 
-import Alignment, { FinalAlignment } from './Alignment';
+import Alignment from './Alignment';
+import FinalAlignment from './FinalAlignment';
 import AstralTree from './AstralTree';
 import StoreBase, { runEvents } from './StoreBase';
 import { host } from './host';
