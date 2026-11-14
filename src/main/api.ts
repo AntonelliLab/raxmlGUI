@@ -66,8 +66,8 @@ ipcMain.on( ipc.HOST, ( event: IpcMainEvent ) => {
 } );
 ipcMain.handle( ipc.GET_VERSION, (): string => app.getVersion() );
 ipcMain.handle( ipc.GET_DARK_MODE, (): boolean => Boolean( appStore.get( 'darkMode' ) ) );
-ipcMain.handle( ipc.SET_DARK_MODE, ( _event: IpcMainInvokeEvent, value: unknown ): void => {
-  appStore.set( 'darkMode', !!value );
+ipcMain.handle( ipc.SET_DARK_MODE, ( _event: IpcMainInvokeEvent, value: boolean ): void => {
+  appStore.set( 'darkMode', value );
 } );
 ipcMain.handle( ipc.COPY_TEXT, async ( _event: IpcMainInvokeEvent, text: string ): Promise<void> => {
   await clipboard.writeText( text );
@@ -94,10 +94,10 @@ ipcMain.handle( ipc.DEBUG_INFO, (): string => {
 ipcMain.handle( ipc.OPEN_EXTERNAL, ( _event: IpcMainInvokeEvent, url: string ): Promise<void> => {
   return shell.openExternal( url );
 } );
-ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event: IpcMainInvokeEvent, _runId: unknown ) => {
+ipcMain.handle( ipc.OUTPUT_DIR_SELECT, ( _event: IpcMainInvokeEvent, _runId: number ) => {
   return selectOutputDir( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.handle( ipc.PARTITION_FILE_SELECT, ( _event: IpcMainInvokeEvent, _runId: unknown ) => {
+ipcMain.handle( ipc.PARTITION_FILE_SELECT, ( _event: IpcMainInvokeEvent, _runId: number ) => {
   return selectPartitionFile( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ) );
 } );
 ipcMain.handle( ipc.OPEN_PATH, ( _event: IpcMainInvokeEvent, fullPath: string ): Promise<string> => {
@@ -113,7 +113,7 @@ ipcMain.handle( ipc.OUTPUT_CHECK, ( _event: IpcMainInvokeEvent, { outputDir, out
   return checkOutput( { outputDir, outputName } );
 } );
 ipcMain.handle( ipc.RUN_START, startRun );
-ipcMain.handle( ipc.RUN_CANCEL, ( _event: IpcMainInvokeEvent, id: string | number ): void => {
+ipcMain.handle( ipc.RUN_CANCEL, ( _event: IpcMainInvokeEvent, id: number ): void => {
   console.log( `Cancel run process ${id}...` );
   cancelRun( id );
 } );
@@ -159,10 +159,10 @@ ipcMain.handle( ipc.ALIGNMENT_PARSE, ( _event: IpcMainInvokeEvent, id: string, f
   } );
 } );
 // Open a dialog to select alignments
-ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event: IpcMainInvokeEvent, _runId: unknown ) => {
+ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event: IpcMainInvokeEvent, _runId: number ) => {
   return selectAlignment( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event: IpcMainInvokeEvent, _runId: unknown ) => {
+ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event: IpcMainInvokeEvent, _runId: number ) => {
   return selectAstralFile( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ) );
 } );
 ipcMain.handle( ipc.EXAMPLE_FILES, async (): Promise<{
@@ -187,10 +187,10 @@ ipcMain.handle( ipc.EXAMPLE_FILES, async (): Promise<{
 } );
 ipcMain.handle( ipc.ASTRAL_REQUEST, runAstral );
 ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_REQUEST, runModelSelection );
-ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( _event: IpcMainInvokeEvent, id: string | number ): void => {
+ipcMain.handle( ipc.ALIGNMENT_MODEL_SELECTION_CANCEL, ( _event: IpcMainInvokeEvent, id: string ): void => {
   console.log( `Cancel modeltest process ${id}...` );
   cancelRun( id );
 } );
-ipcMain.handle( ipc.TREE_SELECT, ( _event: IpcMainInvokeEvent, _runId: unknown, type: string ) => {
+ipcMain.handle( ipc.TREE_SELECT, ( _event: IpcMainInvokeEvent, _runId: number, type: string ) => {
   return selectTree( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ), type );
 } );
