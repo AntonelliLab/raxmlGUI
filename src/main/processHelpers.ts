@@ -14,8 +14,6 @@ import {
   trackRun,
 } from './cancelRun';
 
-declare const __static: string;
-
 /** Run number, or alignment composite `${run.id}_${path}`. */
 type TrackedId = string | number;
 
