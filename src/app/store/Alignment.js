@@ -165,6 +165,7 @@ class Alignment extends InputFile {
   @observable error = null;
 
   @observable dataType = undefined;
+  /** @type {string} */
   @observable aaMatrixName =
     raxmlSettings.aminoAcidSubstitutionMatrixOptions.default;
 

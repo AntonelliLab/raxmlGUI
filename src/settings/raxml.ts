@@ -3,29 +3,29 @@ export const kMultistateSubstitutionModelOptions = {
   argument: 'K',
   default: 'GTR',
   options: ['ORDERED', 'MK', 'GTR'],
-};
+} as const;
 export const mixedSubstitutionMatrixOptions = {
   default: 'GTR',
   options: ['GTR', 'BIN', 'MULTI'],
-};
+} as const;
 // -m
 export const binarySubstitutionMatrixOptions = {
   argument: 'm',
   default: 'BIN',
   options: ['BIN'],
-};
+} as const;
 export const nucleotideSubstitutionMatrixOptions = {
   default: 'GTR',
   options: ['JC', 'K80', 'HKY', 'GTR'],
-};
+} as const;
 export const rateOptions = {
   default: 'GAMMA',
   options: ['CAT', 'GAMMA'],
-};
+} as const;
 export const iOptions = {
   default: 'none',
   options: ['none', '+I (ML estimate)'],
-};
+} as const;
 export const ascertainmentOptions = {
   default: 'none',
   options: [
@@ -34,12 +34,12 @@ export const ascertainmentOptions = {
     "Felsenstein's method",
     "Stamatakis' method",
   ],
-};
+} as const;
 // -m
 export const multistateSubstitutionMatrixOptions = {
   default: 'MULTI',
   options: ['MULTI'],
-};
+} as const;
 // -m
 export const aminoAcidSubstitutionMatrixOptions = {
   argument: 'm',
@@ -73,7 +73,7 @@ export const aminoAcidSubstitutionMatrixOptions = {
     'GTR_UNLINKED',
     'GTR',
   ],
-};
+} as const;
 export const matrixOptions = {
   protein: aminoAcidSubstitutionMatrixOptions,
   binary: binarySubstitutionMatrixOptions,
@@ -82,4 +82,4 @@ export const matrixOptions = {
   dna: nucleotideSubstitutionMatrixOptions,
   rna: nucleotideSubstitutionMatrixOptions,
   nucleotide: nucleotideSubstitutionMatrixOptions,
-};
+} as const;
