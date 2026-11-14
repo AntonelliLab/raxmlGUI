@@ -34,27 +34,3 @@ src/app/store/Run.js(693,5): error TS2554: Expected 5-6 arguments, but got 4.
 src/electron.js(5,27): error TS2769: No overload matches this call.
   The last overload gave the following error.
     Argument of type 'typeof CrossProcessExports' is not assignable to parameter of type 'string'.
-src/main/api.js(122,52): error TS2769: No overload matches this call.
-  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
-      Property 'encoding' is missing in type '{ shell?: boolean; }' but required in type 'ExecOptionsWithBufferEncoding'.
-  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
-      Types of property 'shell' are incompatible.
-        Type 'boolean' is not assignable to type 'string'.
-  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptions'.
-      Types of property 'shell' are incompatible.
-        Type 'boolean' is not assignable to type 'string'.
-src/main/api.js(143,52): error TS2769: No overload matches this call.
-  Overload 1 of 4, '(command: string, options: ExecOptionsWithBufferEncoding): PromiseWithChild<{ stdout: NonSharedBuffer; stderr: NonSharedBuffer; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithBufferEncoding'.
-      Property 'encoding' is missing in type '{ shell?: boolean; }' but required in type 'ExecOptionsWithBufferEncoding'.
-  Overload 2 of 4, '(command: string, options: ExecOptionsWithStringEncoding): PromiseWithChild<{ stdout: string; stderr: string; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptionsWithStringEncoding'.
-      Types of property 'shell' are incompatible.
-        Type 'boolean' is not assignable to type 'string'.
-  Overload 3 of 4, '(command: string, options: ExecOptions): PromiseWithChild<{ stdout: string | NonSharedBuffer; stderr: string | NonSharedBuffer; }>', gave the following error.
-    Argument of type '{ shell?: boolean; }' is not assignable to parameter of type 'ExecOptions'.
-      Types of property 'shell' are incompatible.
-        Type 'boolean' is not assignable to type 'string'.
