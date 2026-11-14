@@ -43,6 +43,29 @@ function unusedLines(known, actual) {
   return known.filter( (line, i) => !seen.has(knownOwned[i]) );
 }
 
+/**
+ * Repoint baseline entries from one file path to another after a pure move.
+ * An entry is rewritten only when tsc reports the same code and message at the
+ * new path, so the rename can never shelter a new diagnostic.
+ */
+function renameLines(known, actual, from, to) {
+  const unclaimed = actual.filter( (line) => line.startsWith(`${to}(`) );
+  const missing = [];
+  const renamed = known.map((line) => {
+    if (!line.startsWith(`${from}(`)) {
+      return line;
+    }
+    const want = fingerprint(`${to}${line.slice(from.length)}`);
+    const i = unclaimed.findIndex( (candidate) => fingerprint(candidate) === want );
+    if (i === -1) {
+      missing.push(line);
+      return line;
+    }
+    return unclaimed.splice(i, 1)[0];
+  });
+  return { renamed, missing };
+}
+
 function main() {
   if (!fs.existsSync(baselinePath)) {
     console.error('typecheck baseline is missing: ' + baselinePath);
@@ -63,6 +86,25 @@ function main() {
     process.exit(result.status || 1);
   }
   const actual = diagnosticLines(`${result.stdout || ''}\n${result.stderr || ''}`);
+  const renameAt = process.argv.indexOf('--rename');
+  if (renameAt !== -1) {
+    const [from, to] = process.argv.slice(renameAt + 1, renameAt + 3);
+    if (!from || !to) {
+      console.error('usage: typecheck-baseline.js --rename <old path> <new path>');
+      process.exit(1);
+    }
+    if (!baseline.some( (line) => line.startsWith(`${from}(`) )) {
+      console.error('no baseline entries at ' + from);
+      process.exit(1);
+    }
+    const { renamed, missing } = renameLines(baseline, actual, from, to);
+    if (missing.length) {
+      console.error('no matching diagnostic at ' + to + ' for:\n' + missing.join('\n'));
+      process.exit(1);
+    }
+    fs.writeFileSync(baselinePath, renamed.join('\n') + '\n');
+    return;
+  }
   const fresh = freshLines(actual, baseline);
   const unused = unusedLines(baseline, actual);
   if (fresh.length || unused.length) {
@@ -80,4 +122,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { diagnosticLines, freshLines, unusedLines, ownedFingerprints };
+module.exports = { diagnosticLines, freshLines, unusedLines, ownedFingerprints, renameLines };
