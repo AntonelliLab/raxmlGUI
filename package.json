@@ -23,6 +23,7 @@
   "main": "./out/main/index.js",
   "scripts": {
     "start": "electron-vite dev",
+    "test": "jest --watchAll=false",
     "react-test": "jest --watchAll=false",
     "test:e2e": "yarn build && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
     "test:docs": "node node_modules/playwright/cli.js test --config e2e/docs/playwright.config.js",
