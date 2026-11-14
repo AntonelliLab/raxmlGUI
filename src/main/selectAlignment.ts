@@ -1,6 +1,18 @@
 import path from 'path';
+import type { OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 
-export async function selectAlignment( showOpenDialog ) {
+type ShowOpenDialog = (
+  options: OpenDialogOptions,
+) => Promise<OpenDialogReturnValue>;
+
+interface SelectedAlignment {
+  path: string;
+  name: string;
+}
+
+export async function selectAlignment(
+  showOpenDialog: ShowOpenDialog,
+): Promise<SelectedAlignment[] | null> {
   try {
     const result = await showOpenDialog( {
       title: 'Select an alignment',
@@ -14,7 +26,7 @@ export async function selectAlignment( showOpenDialog ) {
       path: filePath,
       name: path.basename( filePath ),
     } ) );
-  } catch ( err ) {
+  } catch ( err: unknown ) {
     console.debug( 'ALIGNMENT_SELECTED', err );
     throw err;
   }

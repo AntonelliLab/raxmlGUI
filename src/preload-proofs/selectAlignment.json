@@ -1,7 +1,7 @@
 {
   "key": "alignments",
   "method": "selectAlignment",
-  "args": ["run-7"],
+  "args": [7],
   "channel": "ALIGNMENT_SELECT",
   "log": "RUNID",
   "result": [{ "path": "/data/primates.fasta", "name": "primates.fasta" }]

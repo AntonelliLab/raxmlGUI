@@ -1,4 +1,5 @@
 import electron, { BrowserWindow } from 'electron';
+import type { BrowserWindowConstructorOptions } from 'electron';
 import path from 'path';
 import url from 'url';
 import log from 'electron-log';
@@ -32,20 +33,20 @@ const isDevMode = is.development && process.argv.indexOf( '--noDevServer' ) === 
 const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow = null;
+let mainWindow: BrowserWindow | null = null;
 listenForUpdates( autoUpdater, dialog );
 /**
  * Add event listeners...
  */
-function initialize() {
+function initialize(): void {
   // Make this a single instance app
   const shouldQuit = makeSingleInstance();
   if ( shouldQuit )
     return app.quit();
-  function createMainWindow() {
+  function createMainWindow(): void {
     const preloadPath = path.join( __dirname, '../preload/index.js' );
     // Window options for the main window
-    const mainWindowOptions = {
+    const mainWindowOptions: BrowserWindowConstructorOptions = {
       width: 1280,
       minWidth: 960,
       height: 790,
@@ -140,7 +141,7 @@ function initialize() {
 //
 // Returns true if the current version of the app should quit instead of
 // launching.
-function makeSingleInstance() {
+function makeSingleInstance(): boolean | void {
   const processWithMas = process;
   if ( processWithMas.mas )
     return false;

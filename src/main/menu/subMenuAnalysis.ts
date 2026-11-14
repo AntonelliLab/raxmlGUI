@@ -1,13 +1,16 @@
+import type { MenuItemConstructorOptions } from 'electron';
 import * as ipc from '../../constants/ipc';
 import { activeWindow } from '../utils/utils';
-const sendToFocusedWindow = ( channel ) => {
+
+const sendToFocusedWindow = ( channel: string ): void => {
   const win = activeWindow();
   if ( !win ) {
     return;
   }
   win.webContents.send( channel );
 };
-const subMenuAnalysis = {
+
+const subMenuAnalysis: MenuItemConstructorOptions = {
   label: 'Analysis',
   submenu: [
     {
@@ -17,7 +20,7 @@ const subMenuAnalysis = {
           label: 'Use backbone constraint',
           type: 'checkbox',
           checked: false,
-          click() {
+          click(): void {
             sendToFocusedWindow( ipc.TOGGLE_BACKBONE_CONSTRAINT );
           },
         },
@@ -25,7 +28,7 @@ const subMenuAnalysis = {
           label: 'Use multifurcating constraint',
           type: 'checkbox',
           checked: false,
-          click() {
+          click(): void {
             sendToFocusedWindow( ipc.TOGGLE_MULTIFURCATING_CONSTRAINT );
           },
         },
@@ -33,4 +36,5 @@ const subMenuAnalysis = {
     },
   ],
 };
+
 export default subMenuAnalysis;

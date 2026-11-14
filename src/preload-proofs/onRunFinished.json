@@ -4,7 +4,7 @@
   "channel": "RUN_FINISHED",
   "subscribe": true,
   "result": {
-    "id": "run-7",
+    "id": 7,
     "resultDir": "/out",
     "resultFilenames": ["primates.tre"],
     "exitCode": 0

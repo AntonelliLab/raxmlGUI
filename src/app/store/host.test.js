@@ -33,8 +33,8 @@ it( 'reads the host once and uses it for Windows 7', () => {
     cpuModel: 'Intel',
   } );
   const { Run, Alignment } = load();
-  const run = new Run( {}, 'run-7' );
-  const alignment = new Alignment( { id: 'run-7' }, '/data/primates.fasta' );
+  const run = new Run( {}, 7 );
+  const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
 
   expect( reads() ).toBe( 1 );
   expect( run.binary.options.map( ( option ) => option.value ) ).toContain( 'raxmlHPC_Win7.exe' );
@@ -50,8 +50,8 @@ it( 'uses the later Windows binaries when the release is not 6.1', () => {
     cpuModel: 'Intel',
   } );
   const { Run, Alignment } = load();
-  const run = new Run( {}, 'run-7' );
-  const alignment = new Alignment( { id: 'run-7' }, '/data/primates.fasta' );
+  const run = new Run( {}, 7 );
+  const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
 
   expect( run.binary.options.map( ( option ) => option.value ) ).toContain( 'raxmlHPC.exe' );
   expect( run.binary.options.map( ( option ) => option.value ) ).not.toContain( 'raxmlHPC_Win7.exe' );
@@ -66,7 +66,7 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
     cpuModel: 'Intel',
   } );
   let { Run } = load();
-  expect( new Run( {}, 'run-7' ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
+  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
     windows: false,
@@ -75,7 +75,7 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
     cpuModel: 'Apple M4',
   } );
   ( { Run } = load() );
-  expect( new Run( {}, 'run-7' ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
+  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
     windows: false,
@@ -84,5 +84,5 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
     cpuModel: 'Intel',
   } );
   ( { Run } = load() );
-  expect( new Run( {}, 'run-7' ).modeltestName ).toBe( 'modeltest-ng' );
+  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng' );
 } );

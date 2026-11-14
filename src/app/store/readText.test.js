@@ -2,7 +2,7 @@
 import Run from './Run';
 
 it( 'reads a text file through the renderer bridge', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   const readFile = jest.fn( async () => 'DNA, gene = 1-100\n' );
   window.rendererBridge = { readFile };
 

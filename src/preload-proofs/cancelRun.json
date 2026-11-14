@@ -1,7 +1,7 @@
 {
   "key": "cancelled",
   "method": "cancelRun",
-  "args": ["run-7"],
+  "args": [7],
   "channel": "RUN_CANCEL",
   "result": null
 }

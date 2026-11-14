@@ -1,7 +1,7 @@
 {
   "key": "tree",
   "method": "selectTree",
-  "args": ["run-7", "backboneConstraint"],
+  "args": [7, "backboneConstraint"],
   "channel": "TREE_SELECT",
   "result": { "type": "backboneConstraint", "filePath": "/data/backbone.nwk" }
 }

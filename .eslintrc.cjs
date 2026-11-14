@@ -68,5 +68,25 @@ module.exports = {
         ],
       },
     },
+    {
+      // Main TypeScript (#67): full typing under non-strict — typed catch, typed exports.
+      files: ['src/main/**/*.{ts,tsx}', 'src/common/**/*.{ts,tsx}'],
+      rules: {
+        '@typescript-eslint/explicit-module-boundary-types': 'error',
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'CatchClause[param][param.typeAnnotation=undefined]',
+            message: 'Annotate catch bindings (use unknown).',
+          },
+          {
+            selector:
+              'CatchClause BinaryExpression[operator="instanceof"][right.name="Error"]',
+            message:
+              'Read (error as Error).message; jsdom Error is a different realm from Node throws.',
+          },
+        ],
+      },
+    },
   ],
 };

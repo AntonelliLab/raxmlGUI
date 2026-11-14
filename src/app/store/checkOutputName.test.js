@@ -12,7 +12,7 @@ it( 'the output-name check uses checkOutput', async () => {
     resultFilenames: ['tree.raxml.log'],
   } ) );
   window.rendererBridge = { checkOutput };
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   run.setOutputDir( '/data/out' );
   run.setOutputName( 'tree' );
 

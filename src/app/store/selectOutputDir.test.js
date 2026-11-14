@@ -2,18 +2,18 @@
 import Run from './Run';
 
 it( 'the output-directory picker sets the chosen directory', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   const selectOutputDir = jest.fn( async () => '/data/results' );
   window.rendererBridge = { selectOutputDir };
 
   await run.selectOutputDir();
 
-  expect( selectOutputDir ).toHaveBeenCalledWith( 'run-7' );
+  expect( selectOutputDir ).toHaveBeenCalledWith( 7 );
   expect( run.outputDir ).toBe( '/data/results' );
 } );
 
 it( 'cancel leaves the output directory unchanged', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   run.setOutputDir( '/data/already' );
   window.rendererBridge = {
     selectOutputDir: jest.fn( async () => null ),
@@ -21,12 +21,12 @@ it( 'cancel leaves the output directory unchanged', async () => {
 
   await run.selectOutputDir();
 
-  expect( window.rendererBridge.selectOutputDir ).toHaveBeenCalledWith( 'run-7' );
+  expect( window.rendererBridge.selectOutputDir ).toHaveBeenCalledWith( 7 );
   expect( run.outputDir ).toBe( '/data/already' );
 } );
 
 it( 'a dialog failure fails the output-directory choice', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   run.setOutputDir( '/data/already' );
   window.rendererBridge = {
     selectOutputDir: async () => {

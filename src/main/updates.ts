@@ -1,6 +1,8 @@
 import log from 'electron-log';
+import type { Dialog } from 'electron';
+import type { AppUpdater } from 'electron-updater';
 
-export function listenForUpdates( updater, dialog ) {
+export function listenForUpdates( updater: AppUpdater, dialog: Dialog ): void {
   updater.on( 'checking-for-update', () => {
     log.info( 'Checking for update...' );
   } );

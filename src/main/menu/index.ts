@@ -1,9 +1,11 @@
 import { app, Menu } from 'electron';
+import type { BrowserWindow, MenuItemConstructorOptions } from 'electron';
 import subMenuFile from './subMenuFile';
 import subMenuAnalysis from './subMenuAnalysis';
 import subMenuDeveloper from './subMenuDeveloper';
 import saveScreenshot from '../utils/saveScreenshot';
-const windowMenuSection = {
+
+const windowMenuSection: MenuItemConstructorOptions = {
   role: 'window',
   submenu: [
     { role: 'minimize' },
@@ -11,18 +13,20 @@ const windowMenuSection = {
     {
       label: 'Save screenshot',
       accelerator: 'CmdOrCtrl+S',
-      click() {
+      click(): void {
         saveScreenshot();
       },
     },
   ],
 };
-const baseMenuTemplate = [
+
+const baseMenuTemplate: MenuItemConstructorOptions[] = [
   subMenuFile,
   subMenuAnalysis,
   windowMenuSection,
 ];
-const darwinAppMenu = {
+
+const darwinAppMenu: MenuItemConstructorOptions = {
   label: app.name,
   submenu: [
     { role: 'about' },
@@ -36,12 +40,16 @@ const darwinAppMenu = {
     { role: 'quit' },
   ],
 };
+
 export default class MenuBuilder {
-  constructor( mainWindow ) {
+  mainWindow: BrowserWindow;
+
+  constructor( mainWindow: BrowserWindow ) {
     this.mainWindow = mainWindow;
   }
-  buildMenu() {
-    const menuTemplate = [...baseMenuTemplate];
+
+  buildMenu(): Menu {
+    const menuTemplate: MenuItemConstructorOptions[] = [...baseMenuTemplate];
     if ( process.env.NODE_ENV === 'development' ||
             process.env.DEBUG_PROD === 'true' ) {
       menuTemplate.push( subMenuDeveloper );
@@ -54,7 +62,8 @@ export default class MenuBuilder {
     Menu.setApplicationMenu( menu );
     return menu;
   }
-  setupDevelopmentEnvironment() {
+
+  setupDevelopmentEnvironment(): void {
     this.mainWindow.webContents.openDevTools();
     this.mainWindow.webContents.on( 'context-menu', ( _e, props ) => {
       const { x, y } = props;

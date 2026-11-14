@@ -3,7 +3,7 @@
   "method": "startAstral",
   "args": [
     {
-      "id": "run-7",
+      "id": 7,
       "binaryName": "astral.5.7.8.jar",
       "args": [["-i", "/data/trees.tre", "-o", "/out/ASTRAL_run-7.tre"]]
     }

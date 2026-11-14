@@ -1,6 +1,13 @@
+import type { OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 import * as ipc from '../constants/ipc';
 
-export async function selectPartitionFile( showOpenDialog ) {
+type ShowOpenDialog = (
+  options: OpenDialogOptions,
+) => Promise<OpenDialogReturnValue>;
+
+export async function selectPartitionFile(
+  showOpenDialog: ShowOpenDialog,
+): Promise<string | null> {
   try {
     const result = await showOpenDialog( {
       title: 'Select a partition file',
@@ -11,7 +18,7 @@ export async function selectPartitionFile( showOpenDialog ) {
       return null;
     }
     return result.filePaths[0];
-  } catch ( err ) {
+  } catch ( err: unknown ) {
     console.debug( ipc.PARTITION_FILE_SELECT, err );
     throw err;
   }

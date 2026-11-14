@@ -2,7 +2,7 @@
 import Run from './Run';
 
 it( 'opens a result file through the renderer bridge', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   const openPath = jest.fn( async () => '' );
   window.rendererBridge = { openPath };
 
@@ -12,7 +12,7 @@ it( 'opens a result file through the renderer bridge', async () => {
 } );
 
 it( 'opens the output directory through the renderer bridge', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   run.setOutputDir( '/data/results' );
   const openPath = jest.fn( async () => '' );
   window.rendererBridge = { openPath };

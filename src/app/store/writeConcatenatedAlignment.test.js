@@ -2,7 +2,7 @@
 import Run from './Run';
 
 it( 'writes one concatenated FASTA', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
   run.addAlignments( [
     { path: '/data/a.fasta' },

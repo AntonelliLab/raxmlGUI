@@ -28,7 +28,7 @@ it( 'joins, names, and quotes a path', () => {
 } );
 
 it( 'an input file reports the plain name, base, and directory', () => {
-  const file = new InputFile( { id: 'run-7' }, '/data/primates.fasta' );
+  const file = new InputFile( { id: 7 }, '/data/primates.fasta' );
   expect( file.name ).toBe( 'primates' );
   expect( file.base ).toBe( 'primates.fasta' );
   expect( file.filename ).toBe( 'primates.fasta' );

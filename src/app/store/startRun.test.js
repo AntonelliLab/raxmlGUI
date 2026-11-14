@@ -42,7 +42,7 @@ it( 'startRun starts the run', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-run-' ) );
   const startRun = jest.fn( async () => {} );
   bridge( { startRun } );
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   run.alignments[0].sequences = [
     { taxon: 'A' },
@@ -56,12 +56,12 @@ it( 'startRun starts the run', async () => {
     await run.start();
 
     expect( startRun ).toHaveBeenCalledWith( {
-      id: 'run-7',
+      id: 7,
       args: run.args,
       binaryName: run.binary.value,
       outputDir,
-      outputFilename: 'run-7.tre',
-      outputName: 'run-7',
+      outputFilename: '7.tre',
+      outputName: '7',
       combinedOutput: false,
       usesRaxmlNg: run.usesRaxmlNg,
       usesModeltestNg: run.usesModeltestNg,
@@ -74,17 +74,17 @@ it( 'startRun starts the run', async () => {
 
 it( 'stdout, stderr, finish, and failure update the run', () => {
   const { listeners, stops } = bridge();
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.running = true;
 
-  emit( listeners.stdout, { id: 'run-7', content: 'tree\n' } );
+  emit( listeners.stdout, { id: 7, content: 'tree\n' } );
   emit( listeners.stdout, { id: 'other', content: 'nope' } );
-  emit( listeners.stderr, { id: 'run-7', content: 'warn\n' } );
+  emit( listeners.stderr, { id: 7, content: 'warn\n' } );
   expect( run.stdout ).toBe( 'tree\n' );
   expect( run.stderr ).toBe( 'warn\n' );
 
   emit( listeners.finished, {
-    id: 'run-7',
+    id: 7,
     resultDir: '/out',
     resultFilenames: ['primates.tre'],
     exitCode: 0,
@@ -95,7 +95,7 @@ it( 'stdout, stderr, finish, and failure update the run', () => {
   expect( run.running ).toBe( false );
 
   run.running = true;
-  emit( listeners.error, { id: 'run-7', error: 'missing binary' } );
+  emit( listeners.error, { id: 7, error: 'missing binary' } );
   expect( run.error ).toBe( 'missing binary' );
   expect( run.running ).toBe( false );
   emit( listeners.error, { id: 'other', error: 'ignore' } );
@@ -107,7 +107,7 @@ it( 'stdout, stderr, finish, and failure update the run', () => {
 
 it( 'alignment output is appended for that alignment', () => {
   const { listeners } = bridge();
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];
 

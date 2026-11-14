@@ -28,14 +28,14 @@ function emit( list, payload ) {
 it( 'startAstral starts ASTRAL', async () => {
   const startAstral = jest.fn( async () => {} );
   bridge( { startAstral } );
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.setOutputDir( '/out' );
 
   await run.startAstral();
 
   expect( run.running ).toBe( true );
   expect( startAstral ).toHaveBeenCalledWith( {
-    id: 'run-7',
+    id: 7,
     binaryName: run.binary.value,
     args: run.args,
   } );
@@ -43,7 +43,7 @@ it( 'startAstral starts ASTRAL', async () => {
 
 it( 'an ASTRAL exit code is recorded for that run', () => {
   const { listeners, stops } = bridge();
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.running = true;
   run.setOutputDir( '/out' );
 
@@ -52,7 +52,7 @@ it( 'an ASTRAL exit code is recorded for that run', () => {
   expect( run.finished ).toBe( false );
   expect( run.running ).toBe( true );
 
-  emit( listeners.success, { id: 'run-7', exitCode: 3 } );
+  emit( listeners.success, { id: 7, exitCode: 3 } );
   expect( run.exitCode ).toBe( 3 );
   expect( run.resultDir ).toBe( '/out' );
   expect( run.finished ).toBe( true );

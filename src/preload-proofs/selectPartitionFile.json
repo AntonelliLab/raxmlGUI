@@ -1,7 +1,7 @@
 {
   "key": "partition",
   "method": "selectPartitionFile",
-  "args": ["run-7"],
+  "args": [7],
   "channel": "PARTITION_FILE_SELECT",
   "result": "/data/genes.part"
 }

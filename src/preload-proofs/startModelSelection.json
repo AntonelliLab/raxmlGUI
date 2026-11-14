@@ -3,7 +3,7 @@
   "method": "startModelSelection",
   "args": [
     {
-      "id": "run-7_/data/primates.fasta",
+      "id": "7_/data/primates.fasta",
       "filePath": "/data/primates.fasta",
       "outputDir": "/out",
       "dataType": "nucleotide",

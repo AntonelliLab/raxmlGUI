@@ -3,7 +3,7 @@
   "method": "startRun",
   "args": [
     {
-      "id": "run-7",
+      "id": 7,
       "args": [["--all"]],
       "binaryName": "raxml-ng",
       "outputDir": "/out",

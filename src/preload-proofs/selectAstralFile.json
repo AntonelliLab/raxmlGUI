@@ -1,7 +1,7 @@
 {
   "key": "astral",
   "method": "selectAstralFile",
-  "args": ["run-7"],
+  "args": [7],
   "channel": "ASTRAL_FILE_SELECT",
   "result": { "path": "/data/trees.tre", "name": "trees.tre" }
 }

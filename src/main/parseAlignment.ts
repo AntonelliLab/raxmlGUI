@@ -1,27 +1,59 @@
 import path from 'path';
 
-export async function parseAlignment( _id, filePath, tools ) {
+interface AlignmentSequence {
+  taxon: string;
+}
+
+interface Alignment {
+  sequences: AlignmentSequence[];
+}
+
+interface AlignmentParseTools {
+  readFormat: ( filePath: string ) => Promise<string>;
+  convert: ( filePath: string ) => Promise<string>;
+  parse: ( filePath: string ) => Promise<Alignment>;
+  write: ( filePath: string, alignment: Alignment ) => Promise<void>;
+}
+
+interface AlignmentChange {
+  newFilePath: string;
+  format: string | undefined;
+  converted: boolean | undefined;
+  modified: boolean | undefined;
+  modificationMessages: string[];
+}
+
+interface AlignmentParseResult {
+  alignment: Alignment;
+  change: AlignmentChange | null;
+}
+
+export async function parseAlignment(
+  _id: string,
+  filePath: string,
+  tools: AlignmentParseTools,
+): Promise<AlignmentParseResult> {
   console.log( 'Parse alignment', filePath );
   const { readFormat, convert, parse, write } = tools;
-  let format;
-  let newFilePath;
-  let converted;
-  let modified;
-  const modificationMessages = [];
+  let format: string | undefined;
+  let newFilePath: string | undefined;
+  let converted: boolean | undefined;
+  let modified: boolean | undefined;
+  const modificationMessages: string[] = [];
   try {
     format = await readFormat( filePath );
     if ( format !== 'fasta' && format !== 'phylip' ) {
       newFilePath = await convert( filePath );
       converted = true;
     }
-  } catch ( error ) {
+  } catch ( error: unknown ) {
     console.log( 'error', error );
   }
   const actualPath = newFilePath
     ? newFilePath
     : filePath;
   const alignment = await parse( actualPath );
-  const taxons = new Map();
+  const taxons = new Map<string, number>();
   let identicalCounter = 0;
   alignment.sequences.forEach( ( sequence, index ) => {
     if ( sequence.taxon.length > 256 ) {

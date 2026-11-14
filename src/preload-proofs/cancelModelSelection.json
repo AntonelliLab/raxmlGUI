@@ -1,7 +1,7 @@
 {
   "key": "modelCancelled",
   "method": "cancelModelSelection",
-  "args": ["run-7_/data/primates.fasta"],
+  "args": ["7_/data/primates.fasta"],
   "channel": "ALIGNMENT_MODEL_SELECTION_CANCEL",
   "result": null
 }

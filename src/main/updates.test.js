@@ -100,8 +100,8 @@ it( 'a failed update uses the error dialog', () => {
 
 it( 'the shell opens no update progress window', () => {
   const pkg = JSON.parse( fs.readFileSync( path.join( __dirname, '../../package.json' ), 'utf8' ) );
-  const main = fs.readFileSync( path.join( __dirname, 'index.js' ), 'utf8' );
-  const updates = fs.readFileSync( path.join( __dirname, 'updates.js' ), 'utf8' );
+  const main = fs.readFileSync( path.join( __dirname, 'index.ts' ), 'utf8' );
+  const updates = fs.readFileSync( path.join( __dirname, 'updates.ts' ), 'utf8' );
   expect( pkg.dependencies['electron-progressbar'] ).toBeUndefined();
   expect( main ).toContain( 'listenForUpdates( autoUpdater, dialog )' );
   expect( main + updates ).not.toContain( 'electron-progressbar' );

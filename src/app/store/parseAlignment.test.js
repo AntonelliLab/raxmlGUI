@@ -15,7 +15,7 @@ const alignment = {
 };
 
 function add( parseAlignment ) {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   let pending;
   window.rendererBridge = {
     parseAlignment: ( ...args ) => {
@@ -33,7 +33,7 @@ it( 'the alignment load keeps the path when parsing changes nothing', async () =
   await pending;
 
   expect( parseAlignment ).toHaveBeenCalledWith(
-    'run-7_/data/primates.fasta',
+    '7_/data/primates.fasta',
     '/data/primates.fasta',
   );
   const loaded = run.alignments[0];

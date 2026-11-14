@@ -3,5 +3,5 @@
   "method": "onRunError",
   "channel": "RUN_ERROR",
   "subscribe": true,
-  "result": { "id": "run-7", "error": "missing binary" }
+  "result": { "id": 7, "error": "missing binary" }
 }

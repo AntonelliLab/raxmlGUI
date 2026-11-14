@@ -3,7 +3,7 @@ import InputFile from './InputFile';
 import Run from './Run';
 
 it( 'shows a tree file in its folder', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   run.tree.setFilePath( '/data/start.nwk' );
   const showItemInFolder = jest.fn( async () => {} );
   window.rendererBridge = { showItemInFolder };
@@ -14,7 +14,7 @@ it( 'shows a tree file in its folder', async () => {
 } );
 
 it( 'shows an input file in its folder', async () => {
-  const file = new InputFile( { id: 'run-7' }, '/data/primates.fasta' );
+  const file = new InputFile( { id: 7 }, '/data/primates.fasta' );
   const showItemInFolder = jest.fn( async () => {} );
   window.rendererBridge = { showItemInFolder };
 
@@ -24,7 +24,7 @@ it( 'shows an input file in its folder', async () => {
 } );
 
 it( 'shows the concatenated alignment in its folder', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
   run.addAlignments( [ { path: '/data/a.fasta' } ] );
   run.alignments[0].sequences = [

@@ -1,7 +1,7 @@
 {
   "key": "outputDir",
   "method": "selectOutputDir",
-  "args": ["run-7"],
+  "args": [7],
   "channel": "OUTPUT_DIR_SELECT",
   "result": "/data/results"
 }

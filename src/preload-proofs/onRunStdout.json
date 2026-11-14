@@ -3,5 +3,5 @@
   "method": "onRunStdout",
   "channel": "RUN_STDOUT",
   "subscribe": true,
-  "result": { "id": "run-7", "content": "tree\n" }
+  "result": { "id": 7, "content": "tree\n" }
 }

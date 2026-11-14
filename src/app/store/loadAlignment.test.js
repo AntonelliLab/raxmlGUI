@@ -16,7 +16,7 @@ const stayParsed = async () => ( {
 
 
 it( 'the alignment picker adds the chosen alignments', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   const selectAlignment = jest.fn( async () => [
     { path: '/data/primates.fasta', name: 'primates.fasta' },
     { path: '/data/cats.phy', name: 'cats.phy' },
@@ -25,7 +25,7 @@ it( 'the alignment picker adds the chosen alignments', async () => {
 
   await run.loadAlignmentFiles();
 
-  expect( selectAlignment ).toHaveBeenCalledWith( 'run-7' );
+  expect( selectAlignment ).toHaveBeenCalledWith( 7 );
   expect( run.alignments.map( ( alignment ) => alignment.path ) ).toEqual( [
     '/data/primates.fasta',
     '/data/cats.phy',
@@ -33,7 +33,7 @@ it( 'the alignment picker adds the chosen alignments', async () => {
 } );
 
 it( 'cancel leaves the alignments unchanged', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   window.rendererBridge = { parseAlignment: stayParsed };
   run.addAlignments( [{ path: '/data/already.fasta', name: 'already.fasta' }] );
   window.rendererBridge = {
@@ -43,14 +43,14 @@ it( 'cancel leaves the alignments unchanged', async () => {
 
   await run.loadAlignmentFiles();
 
-  expect( window.rendererBridge.selectAlignment ).toHaveBeenCalledWith( 'run-7' );
+  expect( window.rendererBridge.selectAlignment ).toHaveBeenCalledWith( 7 );
   expect( run.alignments.map( ( alignment ) => alignment.path ) ).toEqual( [
     '/data/already.fasta',
   ] );
 } );
 
 it( 'a dialog failure fails the alignment choice', async () => {
-  const run = new Run( {}, 'run-7' );
+  const run = new Run( {}, 7 );
   window.rendererBridge = { parseAlignment: stayParsed };
   run.addAlignments( [{ path: '/data/already.fasta', name: 'already.fasta' }] );
   window.rendererBridge = {

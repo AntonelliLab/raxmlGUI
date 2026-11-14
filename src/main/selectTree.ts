@@ -1,6 +1,19 @@
+import type { OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 import * as ipc from '../constants/ipc';
 
-export async function selectTree( showOpenDialog, type ) {
+type ShowOpenDialog = (
+  options: OpenDialogOptions,
+) => Promise<OpenDialogReturnValue>;
+
+interface SelectedTree {
+  type: string;
+  filePath: string;
+}
+
+export async function selectTree(
+  showOpenDialog: ShowOpenDialog,
+  type: string,
+): Promise<SelectedTree | null> {
   try {
     const result = await showOpenDialog( {
       title: 'Select a tree file',
@@ -11,7 +24,7 @@ export async function selectTree( showOpenDialog, type ) {
       return null;
     }
     return { type, filePath: result.filePaths[0] };
-  } catch ( err ) {
+  } catch ( err: unknown ) {
     console.debug( ipc.TREE_SELECT, err );
     throw err;
   }

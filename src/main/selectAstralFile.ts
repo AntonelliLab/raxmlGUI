@@ -1,6 +1,18 @@
 import path from 'path';
+import type { OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 
-export async function selectAstralFile( showOpenDialog ) {
+type ShowOpenDialog = (
+  options: OpenDialogOptions,
+) => Promise<OpenDialogReturnValue>;
+
+interface SelectedAstralFile {
+  path: string;
+  name: string;
+}
+
+export async function selectAstralFile(
+  showOpenDialog: ShowOpenDialog,
+): Promise<SelectedAstralFile | null> {
   try {
     const result = await showOpenDialog( {
       title: 'Select an input trees file',
@@ -15,7 +27,7 @@ export async function selectAstralFile( showOpenDialog ) {
       path: filePath,
       name: path.basename( filePath ),
     };
-  } catch ( err ) {
+  } catch ( err: unknown ) {
     console.debug( 'ASTRAL_FILE_SELECTED', err );
     throw err;
   }

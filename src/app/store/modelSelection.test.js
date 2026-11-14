@@ -30,7 +30,7 @@ function emit( list, payload ) {
 it( 'startModelSelection starts model selection', async () => {
   const startModelSelection = jest.fn( async () => {} );
   bridge( { startModelSelection } );
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.setOutputDir( '/out' );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];
@@ -41,7 +41,7 @@ it( 'startModelSelection starts model selection', async () => {
 
   expect( alignment.modeltestLoading ).toBe( true );
   expect( startModelSelection ).toHaveBeenCalledWith( {
-    id: 'run-7_/data/primates.fasta',
+    id: '7_/data/primates.fasta',
     filePath: '/data/primates.fasta',
     outputDir: '/out',
     dataType: 'nucleotide',
@@ -52,7 +52,7 @@ it( 'startModelSelection starts model selection', async () => {
 
 it( 'a model selection result sets the model', () => {
   const { listeners, stops } = bridge();
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.running = true;
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];
@@ -76,20 +76,20 @@ it( 'a model selection result sets the model', () => {
 it( 'the model-selection cancel control uses cancelModelSelection', () => {
   const cancelModelSelection = jest.fn();
   bridge( { cancelModelSelection } );
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];
   alignment.modeltestLoading = true;
 
   alignment.cancelModelTest();
 
-  expect( cancelModelSelection ).toHaveBeenCalledWith( 'run-7_/data/primates.fasta' );
+  expect( cancelModelSelection ).toHaveBeenCalledWith( '7_/data/primates.fasta' );
   expect( alignment.modeltestLoading ).toBe( false );
 } );
 
 it( 'a model selection failure shows the error', () => {
   const { listeners } = bridge();
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.running = true;
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];

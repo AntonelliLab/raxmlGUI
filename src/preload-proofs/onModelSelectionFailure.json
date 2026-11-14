@@ -4,7 +4,7 @@
   "channel": "ALIGNMENT_MODEL_SELECTION_FAILURE",
   "subscribe": true,
   "result": {
-    "id": "run-7_/data/primates.fasta",
+    "id": "7_/data/primates.fasta",
     "error": "missing binary"
   }
 }

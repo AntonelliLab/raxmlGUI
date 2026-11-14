@@ -8,12 +8,12 @@ import Run from './Run';
 it( 'the cancel control uses cancelRun', () => {
   const cancelRun = jest.fn();
   window.rendererBridge = { cancelRun };
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.running = true;
 
   run.cancel();
 
-  expect( cancelRun ).toHaveBeenCalledWith( 'run-7' );
+  expect( cancelRun ).toHaveBeenCalledWith( 7 );
   expect( run.running ).toBe( false );
 } );
 
@@ -37,7 +37,7 @@ it( 'cancel before the run is tracked does not start it', async () => {
     cancelRun,
     parseAlignment: () => new Promise( () => {} ),
   };
-  const run = new Run( { onError() {} }, 'run-7' );
+  const run = new Run( { onError() {} }, 7 );
   run.setOutputDir( outputDir );
   run.addAlignments( [
     { path: '/data/a.fasta' },
@@ -59,7 +59,7 @@ it( 'cancel before the run is tracked does not start it', async () => {
     waiters.forEach( ( release ) => release() );
     await pending;
     expect( startRun ).not.toHaveBeenCalled();
-    expect( cancelRun ).toHaveBeenCalledWith( 'run-7' );
+    expect( cancelRun ).toHaveBeenCalledWith( 7 );
   } finally {
     fs.rmSync( outputDir, { recursive: true, force: true } );
   }
