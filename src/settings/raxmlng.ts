@@ -5,7 +5,7 @@
 export const binarySubstitutionModelOptions = {
   default: 'BIN',
   options: ['BIN'],
-};
+} as const;
 // --model
 export const nucleotideSubstitutionModelOptions = {
   default: 'GTR',
@@ -33,12 +33,12 @@ export const nucleotideSubstitutionModelOptions = {
     'SYM',
     'GTR',
   ],
-};
+} as const;
 // --model
 export const multistateSubstitutionModelOptions = {
   default: 'MULTIx_GTR',
   options: ['MULTIx_MK', 'MULTIx_GTR'],
-};
+} as const;
 // --model
 export const aminoAcidSubstitutionModelOptions = {
   default: 'Blosum62',
@@ -67,7 +67,7 @@ export const aminoAcidSubstitutionModelOptions = {
     'LG4X',
     'PROTGTR',
   ],
-};
+} as const;
 // --model
 export const stationaryFrequenciesOptions = {
   options: [
@@ -87,7 +87,7 @@ export const stationaryFrequenciesOptions = {
     // +FU{f1/f2/../fn} (user-defined: f1 f2 ... fn)
     // +FU{freqs.txt} (user-defined from file)
   ],
-};
+} as const;
 // --model
 export const proportionOfInvariantSitesOptions = {
   options: [
@@ -102,7 +102,7 @@ export const proportionOfInvariantSitesOptions = {
     // Also posibble are user defined values
     // +IU{p} (user-defined: p)
   ],
-};
+} as const;
 // --model
 export const amongsiteRateHeterogeneityModelOptions = {
   options: [
@@ -120,7 +120,7 @@ export const amongsiteRateHeterogeneityModelOptions = {
     // +Rn (FreeRate with n categories', 'ML estimate of rates and weights)
     // +Rn{r1/r2/../rn}{w1/w2/../wn} (FreeRate with n categories', 'user-defined rates r1 r2 ... rn and weights w1 w2 ... wn)
   ],
-};
+} as const;
 // --model
 export const ascertainmentBiasCorrectionOptions = {
   options: [
@@ -132,7 +132,7 @@ export const ascertainmentBiasCorrectionOptions = {
     // +ASC_FELS{w} (Felsenstein's method with total number of invariable sites w)
     // +ASC_STAM{w1/w2/../wn} (Stamatakis' method with per-state invariable site numbers w1 w2 ... wn)
   ],
-};
+} as const;
 export const modelOptions = {
   protein: aminoAcidSubstitutionModelOptions,
   binary: binarySubstitutionModelOptions,
@@ -140,4 +140,4 @@ export const modelOptions = {
   dna: nucleotideSubstitutionModelOptions,
   rna: nucleotideSubstitutionModelOptions,
   nucleotide: nucleotideSubstitutionModelOptions,
-};
+} as const;
