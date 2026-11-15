@@ -304,14 +304,14 @@ class Alignment extends InputFile {
           .map( ( { dataType } ) => dataType )
           .concat( alignment.dataType ),
       );
-      if ( this.run.dataType !== newDataType ) {
-        this.run.substitutionMatrix.value =
-          raxmlMatrixOptions[newDataType].default;
-      }
-      // When the alignment has finished processing take the default substitution model for this datatype
-      this.substitutionModel.value =
-        raxmlNgModelOptions[alignment.dataType]?.default;
       runInAction( () => {
+        if ( this.run.dataType !== newDataType ) {
+          this.run.substitutionMatrix.value =
+            raxmlMatrixOptions[newDataType].default;
+        }
+        // When the alignment has finished processing take the default substitution model for this datatype
+        this.substitutionModel.value =
+          raxmlNgModelOptions[alignment.dataType]?.default;
         this.sequences = alignment.sequences;
         this.fileFormat = alignment.fileFormat;
         this.numSequences = alignment.numSequences;

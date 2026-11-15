@@ -1,3 +1,5 @@
+import { runInAction } from 'mobx';
+
 export const runEvents = {
   onRunStdout: 'onRunStdout',
   onRunStderr: 'onRunStderr',
@@ -40,7 +42,9 @@ export default class StoreBase {
   _init = () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     rendererBridge.getVersion().then( ( version ) => {
-      this.version = version;
+      runInAction( () => {
+        this.version = version;
+      } );
     } );
   };
 }
