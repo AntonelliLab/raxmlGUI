@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { parseAlignment } from './parseAlignment';
 
 function tools( parse, extra = {} ) {

@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import {
   base, basename, dir, join, name, quote,
 } from './paths';

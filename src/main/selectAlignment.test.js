@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { selectAlignment } from './selectAlignment';
 
 it( 'selectAlignment resolves the chosen alignment paths and names', async () => {

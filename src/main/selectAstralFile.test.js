@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { selectAstralFile } from './selectAstralFile';
 
 it( 'selectAstralFile resolves the chosen ASTRAL path and name', async () => {

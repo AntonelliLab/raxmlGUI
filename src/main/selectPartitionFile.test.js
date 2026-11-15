@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import * as ipc from '../constants/ipc';
 import { selectPartitionFile } from './selectPartitionFile';
 

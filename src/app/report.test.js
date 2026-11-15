@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { cleanStack, serializeAndCleanError } from './report';
 
 it( 'drops node and electron frames from a stack', () => {

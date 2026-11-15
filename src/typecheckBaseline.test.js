@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 const { freshLines, unusedLines } = require( '../scripts/typecheck-baseline' );
 
 it( 'reports a diagnostic line that the baseline does not list', () => {
