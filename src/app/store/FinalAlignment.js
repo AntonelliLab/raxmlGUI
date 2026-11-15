@@ -2,7 +2,7 @@ import { observable, computed, action } from 'mobx';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 
-import { FinalPartition } from './Partition';
+import FinalPartition from './FinalPartition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import { join } from '../paths';
 
