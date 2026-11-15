@@ -155,7 +155,7 @@ class Partition {
   }
   @observable parts = [];
   // Add current part values
-  addPart = () => {
+  @action addPart = () => {
     this.parts.push( this.partToAdd.clone() );
     // Reset or update in partToAdd
     this.partToAdd.codon.value = CODON_NONE;

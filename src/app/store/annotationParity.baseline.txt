@@ -138,6 +138,7 @@ PartStart.notAvailable
 PartType.finalValue
 PartType.notAvailable
 PartType.options
+Partition.addPart
 Partition.addPartDisabled
 Partition.currentEndValue
 Partition.errorMessage
