@@ -256,6 +256,7 @@ Run.showModifiedSnack
 Run.showPartition
 Run.showPartitionFor
 Run.start
+Run.startAstral
 Run.startDisabled
 Run.stderr
 Run.stdout

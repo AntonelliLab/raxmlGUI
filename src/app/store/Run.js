@@ -1,4 +1,4 @@
-import { observable, computed, action, createAtom } from 'mobx';
+import { observable, computed, action, runInAction, createAtom } from 'mobx';
 import { promisedComputed } from 'computed-async-mobx';
 import filenamify from 'filenamify';
 
@@ -1216,17 +1216,18 @@ Results saved to: ${this.outputDir}
       }
     };
 
-  startAstral = async () => {
-    const { id, binary, args } = this;
-    console.log( `Start astral run ${id}` );
-    this.running = true;
-    const { rendererBridge } = /** @type {any} */ ( window );
-    await rendererBridge.startAstral( {
-      id,
-      binaryName: binary.value,
-      args,
-    } );
-  };
+  @action
+    startAstral = async () => {
+      const { id, binary, args } = this;
+      console.log( `Start astral run ${id}` );
+      this.running = true;
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.startAstral( {
+        id,
+        binaryName: binary.value,
+        args,
+      } );
+    };
 
   @action
     start = async () => {
@@ -1447,8 +1448,10 @@ Results saved to: ${this.outputDir}
       const { path } = files[0];
       const { rendererBridge } = /** @type {any} */ ( window );
       const content = await rendererBridge.readFile( path );
-      this.partitionFile = path;
-      this.partitionFileContent = content;
+      runInAction( () => {
+        this.partitionFile = path;
+        this.partitionFileContent = content;
+      } );
     };
 
   @action
