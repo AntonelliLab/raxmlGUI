@@ -8,47 +8,70 @@ import { join } from '../paths';
 
 class FinalAlignment {
   constructor( run ) {
-    makeObservable( this );
+    makeObservable( this, {
+      filename: computed,
+      dir: computed,
+      path: computed,
+      parsingComplete: observable,
+      numAlignments: computed,
+      fillTaxonGapsWithEmptySeqeunces: observable,
+      setFillTaxonGapsWithEmptySeqeunces: action,
+      taxons: computed,
+      numSequences: computed,
+      length: computed,
+      hasInvariantSites: computed,
+      dataType: computed,
+      modelFlagName: computed,
+      partitionFilePath: computed,
+      partitionFileContent: computed,
+      openFile: action,
+      openPartition: action,
+      showFileInFolder: action,
+      openFolder: action,
+      writeConcatenatedAlignmentAndPartition: action,
+      writeConcatenatedAlignment: action,
+      writePartition: action,
+    } );
     this.run = run;
     this.partition = new FinalPartition( run );
   }
 
-  @computed get filename() {
+  get filename() {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].filename;
     }
     return `RAxML_${this.run.outputNameSafe}_concat.txt`;
   }
 
-  @computed get dir() {
+  get dir() {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].dir;
     }
     return this.run.outputDir;
   }
 
-  @computed get path() {
+  get path() {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].path;
     }
     return join( `${this.dir}`, `${this.filename}` );
   }
 
-  @observable parsingComplete = true;
+  parsingComplete = true;
 
-  @computed get numAlignments() {
+  get numAlignments() {
     return this.run.alignments.length;
   }
 
   // By default add empty sequences to fill gaps up to the union of taxons
   // else drop taxons that doesn't exist in all alignments by taking the intersection
-  @observable fillTaxonGapsWithEmptySeqeunces = true;
+  fillTaxonGapsWithEmptySeqeunces = true;
 
-  @action setFillTaxonGapsWithEmptySeqeunces = ( checked ) => {
+  setFillTaxonGapsWithEmptySeqeunces = ( checked ) => {
     this.fillTaxonGapsWithEmptySeqeunces = checked;
   };
 
-  @computed get taxons() {
+  get taxons() {
     const setMethod = this.fillTaxonGapsWithEmptySeqeunces
       ? union
       : intersection;
@@ -58,18 +81,18 @@ class FinalAlignment {
     );
   }
 
-  @computed get numSequences() {
+  get numSequences() {
     return this.taxons.length;
   }
 
-  @computed get length() {
+  get length() {
     return this.run.alignments.reduce(
       ( sumLength, alignment ) => sumLength + alignment.length,
       0,
     );
   }
 
-  @computed get hasInvariantSites() {
+  get hasInvariantSites() {
     // If any one of the alignments has invariant sites return true
     for ( const alignment of this.run.alignments ) {
       if ( alignment.hasInvariantSites ) {
@@ -79,7 +102,7 @@ class FinalAlignment {
     return false;
   }
 
-  // @computed get dataType() {
+  // get dataType() {
   //   const numAlignments = this.numAlignments;
   //   if (numAlignments === 0) {
   //     return 'none';
@@ -96,13 +119,13 @@ class FinalAlignment {
   //   return firstType;
   // }
 
-  @computed get dataType() {
+  get dataType() {
     const { alignments } = this.run;
     const dataTypes = alignments.map( ( { dataType } ) => dataType );
     return getFinalDataType( dataTypes );
   }
 
-  @computed get modelFlagName() {
+  get modelFlagName() {
     const {numAlignments} = this;
     if ( numAlignments === 0 ) {
       return 'none';
@@ -114,7 +137,7 @@ class FinalAlignment {
     return first;
   }
 
-  @computed get partitionFilePath() {
+  get partitionFilePath() {
     if ( this.partition.isDefault ) {
       return '';
     }
@@ -127,82 +150,75 @@ class FinalAlignment {
     );
   }
 
-  @computed get partitionFileContent() {
+  get partitionFileContent() {
     return this.partition.text;
   }
 
-  @action
-    openFile = async () => {
-      await this.writeConcatenatedAlignment();
-      const { rendererBridge } = /** @type {any} */ ( window );
-      await rendererBridge.openPath( this.path );
-    };
+  openFile = async () => {
+    await this.writeConcatenatedAlignment();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.openPath( this.path );
+  };
 
-  @action
-    openPartition = async () => {
-      await this.writeConcatenatedAlignmentAndPartition();
-      const { rendererBridge } = /** @type {any} */ ( window );
-      await rendererBridge.openPath( this.partitionFilePath );
-    };
+  openPartition = async () => {
+    await this.writeConcatenatedAlignmentAndPartition();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.openPath( this.partitionFilePath );
+  };
 
-  @action
-    showFileInFolder = async () => {
-      await this.writeConcatenatedAlignment();
-      const { rendererBridge } = /** @type {any} */ ( window );
-      await rendererBridge.showItemInFolder( this.path );
-    };
+  showFileInFolder = async () => {
+    await this.writeConcatenatedAlignment();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.showItemInFolder( this.path );
+  };
 
-  @action
-    openFolder = async () => {
-      await this.writeConcatenatedAlignmentAndPartition();
-      const { rendererBridge } = /** @type {any} */ ( window );
-      await rendererBridge.showItemInFolder( this.dir );
-    };
+  openFolder = async () => {
+    await this.writeConcatenatedAlignmentAndPartition();
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.showItemInFolder( this.dir );
+  };
 
-  @action
-    writeConcatenatedAlignmentAndPartition = async () => {
-      await this.writeConcatenatedAlignment();
-      await this.writePartition();
-    };
+  writeConcatenatedAlignmentAndPartition = async () => {
+    await this.writeConcatenatedAlignment();
+    await this.writePartition();
+  };
 
-  @action
-    writeConcatenatedAlignment = async () => {
-      const { taxons, numSequences } = this;
-      try {
-        console.log(
-          `Write concatenated alignment in FASTA format to ${this.path}..`,
-        );
-        let text = '';
-        for ( let i = 0; i < numSequences; ++i ) {
-          for ( let j = 0; j < this.numAlignments; ++j ) {
-            if ( j === 0 ) {
-              const prefix = i === 0
-                ? '>'
-                : '\n>';
-              text += `${prefix}${taxons[i]}\n`;
-            }
-            text += this.run.alignments[j].getSequenceCode( taxons[i] );
+  writeConcatenatedAlignment = async () => {
+    const { taxons, numSequences } = this;
+    try {
+      console.log(
+        `Write concatenated alignment in FASTA format to ${this.path}..`,
+      );
+      let text = '';
+      for ( let i = 0; i < numSequences; ++i ) {
+        for ( let j = 0; j < this.numAlignments; ++j ) {
+          if ( j === 0 ) {
+            const prefix = i === 0
+              ? '>'
+              : '\n>';
+            text += `${prefix}${taxons[i]}\n`;
           }
+          text += this.run.alignments[j].getSequenceCode( taxons[i] );
         }
-        const { rendererBridge } = /** @type {any} */ ( window );
-        await rendererBridge.writeFile( this.path, text );
-      } catch ( err ) {
-        console.error( 'Error writing concatenated alignment:', err );
-        throw err;
       }
-    };
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.writeFile( this.path, text );
+    } catch ( err ) {
+      console.error( 'Error writing concatenated alignment:', err );
+      throw err;
+    }
+  };
 
-  @action
-    writePartition = async () => {
-      try {
-        console.log( `Writing partition to ${this.partitionFilePath}...` );
-        const { rendererBridge } = /** @type {any} */ ( window );
-        await rendererBridge.writeFile( this.partitionFilePath, this.partitionFileContent );
-      } catch ( err ) {
-        console.error( 'Error writing partition:', err );
-        throw err;
-      }
-    };
+  writePartition = async () => {
+    try {
+      console.log( `Writing partition to ${this.partitionFilePath}...` );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.writeFile( this.partitionFilePath, this.partitionFileContent );
+    } catch ( err ) {
+      console.error( 'Error writing partition:', err );
+      throw err;
+    }
+  };
 }
 
 export default FinalAlignment;
