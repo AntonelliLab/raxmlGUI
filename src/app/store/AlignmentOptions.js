@@ -8,10 +8,14 @@ const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 class RaxmlNgAlignmentSubstitutionModel extends Option {
   constructor( alignment ) {
     super( alignment.run, '', 'Substitution model' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+    } );
     this.alignment = alignment;
   }
-  @computed get options() {
+  get options() {
     if ( !this.alignment.run.haveAlignments ) {
       return [];
     }
@@ -21,10 +25,10 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.alignment.run.haveAlignments;
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     let model = this.value;
     if ( this.alignment.dataType === 'multistate' ) {
       model = model.replace( 'x', this.alignment.multistateNumber.value );
@@ -38,23 +42,27 @@ class RaxmlNgModelExtraParam extends Option {
     super( alignment.run, addNone
       ? '<none>'
       : options[0].value, label );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+    } );
     this.alignment = alignment;
     this.optionsSource = addNone
       ? [{ value: '<none>', title: 'none' }, ...options]
       : options;
     this.addNone = addNone;
   }
-  @computed get options() {
+  get options() {
     if ( !this.run.haveAlignments ) {
       return [];
     }
     return this.optionsSource;
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.haveAlignments || !this.run.usesRaxmlNg;
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     return this.value === '<none>'
       ? ''
       : this.value;
@@ -108,9 +116,11 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
       ].map( ( { value, label: title } ) => ( { value, title } ) ),
       { addNone: false },
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: override,
+    } );
   }
-  @override get notAvailable() {
+  get notAvailable() {
     return (
       !this.run.haveAlignments ||
       !this.run.usesRaxmlNg ||
@@ -122,17 +132,20 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
 class MultistateNumber extends Option {
   constructor( alignment ) {
     super( alignment.run, '', 'Number of states' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+      error: override,
+    } );
     this.alignment = alignment;
     this.placeholder = 'Integer';
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       this.alignment.dataType !== 'multistate' ||
       !this.alignment.run.usesRaxmlNg
     );
   }
-  @override get error() {
+  get error() {
     return !this.value || !Number.isInteger( Number( this.value ) );
   }
 }

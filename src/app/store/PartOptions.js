@@ -29,10 +29,12 @@ class PartBase extends Option {
         helperText,
       },
     );
-    makeObservable( this );
+    makeObservable( this, {
+      alignment: computed,
+    } );
     this.part = part;
   }
-  @computed get alignment() {
+  get alignment() {
     return this.part.partition.alignment;
   }
 }
@@ -43,9 +45,13 @@ class PartType extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
-    makeObservable( this );
+    makeObservable( this, {
+      finalValue: computed,
+      options: computed,
+      notAvailable: computed,
+    } );
   }
-  @computed get finalValue() {
+  get finalValue() {
     const { dataType, partitionType } = this.alignment;
     if ( dataType === 'protein' || this.value === 'protein' ) {
       return this.part.aaType.value;
@@ -55,7 +61,7 @@ class PartType extends PartBase {
     }
     return partitionType;
   }
-  @computed get options() {
+  get options() {
     const { dataType } = this.alignment;
     let opts = [dataType];
     if ( dataType === '' || dataType === 'mixed' ) {
@@ -63,7 +69,7 @@ class PartType extends PartBase {
     }
     return opts.map( ( value ) => ( { value, title: value } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.alignment.dataType !== 'mixed';
   }
 }
@@ -73,12 +79,14 @@ class PartAAType extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.alignment.dataType !== 'protein';
   }
 }
@@ -88,9 +96,11 @@ class PartName extends PartBase {
       schema: yup.string(), // TODO: Check that it is unique within partition
       allowOnlyValidChange: true,
     } );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return false;
   }
 }
@@ -100,10 +110,12 @@ class PartStart extends PartBase {
       schema: yup.number(),
       allowOnlyValidChange: false,
     } );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
     this.disabled = true;
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return false;
   }
 }
@@ -127,19 +139,23 @@ class PartEnd extends PartBase {
         allowOnlyValidChange: false,
       },
     );
-    makeObservable( this );
+    makeObservable( this, {
+      min: computed,
+      max: computed,
+      notAvailable: computed,
+    } );
   }
-  @computed get min() {
+  get min() {
     return (
       this.part.start.value + ( this.part.codon.value === CODON_NONE
         ? 0
         : 2 )
     );
   }
-  @computed get max() {
+  get max() {
     return this.alignment.length;
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return false;
   }
 }
@@ -150,10 +166,12 @@ class PartCodon extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = CodonModels.map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.alignment.partition.partToAdd.type.value !== 'DNA';
   }
 }

@@ -263,13 +263,16 @@ export const raxmlNgAnalysisOptions = [
 export class Binary extends Option {
   constructor( run ) {
     super( run, initialBinaryName, 'Binary', 'Name of binary' );
-    makeObservable( this );
+    makeObservable( this, {
+      version: computed,
+      type: computed,
+    } );
   }
   options = binaries.map( ( { name } ) => ( { value: name, title: name } ) );
-  @computed get version() {
+  get version() {
     return binaries.filter( ( b ) => b.name === this.value )[0].version;
   }
-  @computed get type() {
+  get type() {
     return binaries.filter( ( b ) => b.name === this.value )[0].type;
   }
 }
@@ -277,13 +280,15 @@ export class Binary extends Option {
 export class NumThreads extends Option {
   constructor( run ) {
     super( run, 2, 'Threads', 'Number of cpu threads' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = range( 1, MAX_NUM_CPUS + 1 ).map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return !(
       /PTHREADS/.test( this.run.binary.value ) || this.run.usesModeltestNg
     );
@@ -310,10 +315,12 @@ export class RaxmlNgAnalysis extends Option {
 export class NumRuns extends Option {
   constructor( run ) {
     super( run, 1, 'Runs', 'Number of runs' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = [1, 10, 20, 50, 100, 500].map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.runs );
   }
 }
@@ -321,7 +328,9 @@ export class NumRuns extends Option {
 export class NumRepetitions extends Option {
   constructor( run ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = [
     100,
@@ -334,7 +343,7 @@ export class NumRepetitions extends Option {
     'autoMRE_IGN',
     'autoFC',
   ].map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.reps );
   }
 }
@@ -342,13 +351,15 @@ export class NumRepetitions extends Option {
 export class NumRepetitionsNg extends Option {
   constructor( run ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = [100, 200, 500, 1000, 10000, 'autoMRE'].map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.repsNg );
   }
 }
@@ -363,9 +374,11 @@ export class BranchLength extends Option {
       'Compute branch lengths',
       'Optimize model parameters and branch lengths for the given input tree',
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.brL );
   }
 }
@@ -379,9 +392,11 @@ export class SHlike extends Option {
       'Compute log-likelihood test',
       'Shimodaira-Hasegawa-like procedure',
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.SHlike );
   }
 }
@@ -389,12 +404,15 @@ export class SHlike extends Option {
 export class CombinedOutput extends Option {
   constructor( run ) {
     super( run, false, 'Combined output', 'Concatenate output trees' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+      isUsed: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.combinedOutput );
   }
-  @computed get isUsed() {
+  get isUsed() {
     return this.value && !this.notAvailable;
   }
 }
@@ -402,13 +420,15 @@ export class CombinedOutput extends Option {
 export class StartingTree extends Option {
   constructor( run ) {
     super( run, 'Maximum parsimony', 'Starting tree', '' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = ['Maximum parsimony', 'User defined'].map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.analysisOption.params.includes( params.startingTree );
   }
 }
@@ -416,17 +436,22 @@ export class StartingTree extends Option {
 export class OutGroup extends Option {
   constructor( run ) {
     super( run, ['<none>'], 'Outgroup', '' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      setValue: override,
+      notAvailable: computed,
+      cmdValue: computed,
+    } );
     this.multiple = true;
   }
-  @computed get options() {
+  get options() {
     return ['<none>', ...this.run.taxons].map( ( value ) => ( {
       value,
       title: value,
     } ) );
   }
 
-  @override setValue( value ) {
+  setValue( value ) {
     if ( this.value.includes( '<none>' ) ) {
       this.value = value.filter( ( v ) => v !== '<none>' );
       return;
@@ -438,13 +463,13 @@ export class OutGroup extends Option {
     this.value = value;
   }
 
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       !this.run.haveAlignments ||
       !this.run.analysisOption.params.includes( params.outGroup )
     );
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     return this.value.includes( '<none>' )
       ? ''
       : this.value.join( ',' );
@@ -454,9 +479,15 @@ export class OutGroup extends Option {
 export class SubstitutionMatrix extends Option {
   constructor( run ) {
     super( run, 'GTR', 'Substitution matrix' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+      extraCmdValue: computed,
+      notGTR: computed,
+    } );
   }
-  @computed get options() {
+  get options() {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -471,7 +502,7 @@ export class SubstitutionMatrix extends Option {
         : `${value} + GAMMA`,
     } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       !this.run.haveAlignments ||
       this.run.dataType === 'binary' ||
@@ -480,7 +511,7 @@ export class SubstitutionMatrix extends Option {
       this.run.usesRaxmlNg
     );
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     if ( this.run.dataType === 'binary' ) {
       return 'BIN';
     }
@@ -495,7 +526,7 @@ export class SubstitutionMatrix extends Option {
     }
     return this.value;
   }
-  @computed get extraCmdValue() {
+  get extraCmdValue() {
     switch ( this.value ) {
       case 'JC':
         return '--JC69';
@@ -507,7 +538,7 @@ export class SubstitutionMatrix extends Option {
         return '';
     }
   }
-  @computed get notGTR() {
+  get notGTR() {
     return this.value !== 'GTR';
   }
 }
@@ -515,9 +546,14 @@ export class SubstitutionMatrix extends Option {
 export class SubstitutionRate extends Option {
   constructor( run ) {
     super( run, 'GAMMA', 'Substitution rates' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+      isCAT: computed,
+    } );
   }
-  @computed get options() {
+  get options() {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -527,7 +563,7 @@ export class SubstitutionRate extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       !this.run.haveAlignments ||
       ( ( this.run.dataType === 'dna' ||
@@ -537,13 +573,13 @@ export class SubstitutionRate extends Option {
       this.run.usesRaxmlNg
     );
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     if ( this.run.substitutionMatrix.notGTR ) {
       return 'GAMMA';
     }
     return this.value;
   }
-  @computed get isCAT() {
+  get isCAT() {
     return this.value === 'CAT';
   }
 }
@@ -551,9 +587,14 @@ export class SubstitutionRate extends Option {
 export class SubstitutionI extends Option {
   constructor( run ) {
     super( run, 'none', 'Proportion of invariant sites' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+      isSet: computed,
+    } );
   }
-  @computed get options() {
+  get options() {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -563,19 +604,19 @@ export class SubstitutionI extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       this.run.substitutionAscertainment.isSet ||
       !this.run.haveAlignments ||
       this.run.usesRaxmlNg
     );
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     return this.value === 'none'
       ? ''
       : 'I';
   }
-  @computed get isSet() {
+  get isSet() {
     return this.value !== 'none';
   }
 }
@@ -583,9 +624,15 @@ export class SubstitutionI extends Option {
 export class SubstitutionAscertainment extends Option {
   constructor( run ) {
     super( run, 'none', 'Ascertainment bias correction' );
-    makeObservable( this );
+    makeObservable( this, {
+      options: computed,
+      notAvailable: computed,
+      cmdValue: computed,
+      extraCmdValue: computed,
+      isSet: computed,
+    } );
   }
-  @computed get options() {
+  get options() {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -595,7 +642,7 @@ export class SubstitutionAscertainment extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return (
       !this.run.haveAlignments ||
       this.run.usesRaxmlNg ||
@@ -604,12 +651,12 @@ export class SubstitutionAscertainment extends Option {
       this.run.substitutionI.isSet
     );
   }
-  @computed get cmdValue() {
+  get cmdValue() {
     return this.value === 'none'
       ? ''
       : 'ASC_';
   }
-  @computed get extraCmdValue() {
+  get extraCmdValue() {
     switch ( this.value ) {
       case "Lewis' method":
         return '--asc-corr=lewis';
@@ -621,7 +668,7 @@ export class SubstitutionAscertainment extends Option {
         return '';
     }
   }
-  @computed get isSet() {
+  get isSet() {
     return this.value !== 'none';
   }
 }
@@ -634,12 +681,14 @@ export class AAMatrixName extends Option {
       'Matrix name',
       'Amino Acid Substitution Matrix name',
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.run.dataType !== 'protein';
   }
 }
@@ -653,9 +702,11 @@ export class EstimatedFrequencies extends Option {
       'Estimated base frequencies',
       'Use estimated base frequencies instead of empirical.',
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.run.dataType === 'protein' || this.run.usesRaxmlNg;
   }
 }
@@ -668,14 +719,16 @@ export class BaseFrequencies extends Option {
       'Base frequencies',
       'Empirical, ML estimated or model based base frequencies',
     );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = [
     { title: 'From model', value: 'default' },
     { title: 'Empirical', value: 'F' },
     { title: 'Estimated (ML)', value: 'X' },
   ];
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.run.dataType !== 'protein' || this.run.usesRaxmlNg;
   }
 }
@@ -683,12 +736,14 @@ export class BaseFrequencies extends Option {
 export class MultistateModel extends Option {
   constructor( run ) {
     super( run, 'GTR', 'Multistate model' );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  @computed get notAvailable() {
+  get notAvailable() {
     return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg;
   }
 }
@@ -696,33 +751,43 @@ export class MultistateModel extends Option {
 class TreeFile extends Option {
   constructor( run ) {
     super( run, '', 'Tree', '' );
-    makeObservable( this );
+    makeObservable( this, {
+      filePath: observable,
+      haveFile: computed,
+      filename: computed,
+      name: computed,
+      dir: computed,
+      setFilePath: action,
+      openFolder: action,
+      openFile: action,
+      remove: action,
+    } );
   }
-  @observable filePath = '';
-  @computed get haveFile() {
+  filePath = '';
+  get haveFile() {
     return !!this.filePath;
   }
-  @computed get filename() {
+  get filename() {
     return basename( this.filePath );
   }
-  @computed get name() {
+  get name() {
     return name( this.filePath );
   }
-  @computed get dir() {
+  get dir() {
     return dir( this.filePath );
   }
-  @action setFilePath = ( filePath ) => {
+  setFilePath = ( filePath ) => {
     this.filePath = filePath;
   };
-  @action openFolder = async () => {
+  openFolder = async () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     await rendererBridge.showItemInFolder( this.filePath );
   };
-  @action openFile = async () => {
+  openFile = async () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     await rendererBridge.openPath( this.filePath );
   };
-  @action remove = () => {
+  remove = () => {
     this.setFilePath( '' );
   };
 }
@@ -730,9 +795,11 @@ class TreeFile extends Option {
 export class Tree extends TreeFile {
   constructor( ...args ) {
     super( ...args );
-    makeObservable( this );
+    makeObservable( this, {
+      notAvailable: computed,
+    } );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !(
       this.run.analysisOption.params.includes( params.tree ) ||
       ( !this.run.startingTree.notAvailable &&
@@ -744,12 +811,16 @@ export class Tree extends TreeFile {
 export class BackboneConstraintTree extends TreeFile {
   constructor( ...args ) {
     super( ...args );
-    makeObservable( this );
+    makeObservable( this, {
+      isSet: computed,
+      canConstraint: computed,
+      notAvailable: computed,
+    } );
   }
-  @computed get isSet() {
+  get isSet() {
     return this.run.useBackboneConstraint && this.haveFile;
   }
-  @computed get canConstraint() {
+  get canConstraint() {
     const analysisWithConstraint = [
       'ML',
       'ML+rBS',
@@ -764,7 +835,7 @@ export class BackboneConstraintTree extends TreeFile {
     ];
     return analysisWithConstraint.includes( this.run.analysis.value );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.useBackboneConstraint || !this.canConstraint;
   }
 }
@@ -772,12 +843,16 @@ export class BackboneConstraintTree extends TreeFile {
 export class MultifurcatingConstraintTree extends TreeFile {
   constructor( ...args ) {
     super( ...args );
-    makeObservable( this );
+    makeObservable( this, {
+      isSet: computed,
+      canConstraint: computed,
+      notAvailable: computed,
+    } );
   }
-  @computed get isSet() {
+  get isSet() {
     return this.run.useMultifurcatingConstraint && this.haveFile;
   }
-  @computed get canConstraint() {
+  get canConstraint() {
     const analysisWithConstraint = [
       'ML',
       'ML+rBS',
@@ -792,7 +867,7 @@ export class MultifurcatingConstraintTree extends TreeFile {
     ];
     return analysisWithConstraint.includes( this.run.analysis.value );
   }
-  @computed get notAvailable() {
+  get notAvailable() {
     return !this.run.useMultifurcatingConstraint || !this.canConstraint;
   }
 }
