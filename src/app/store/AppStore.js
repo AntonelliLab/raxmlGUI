@@ -6,20 +6,25 @@ import Config from './Config';
 class AppStore extends StoreBase {
   constructor() {
     super();
-    makeObservable( this );
+    makeObservable( this, {
+      version: observable,
+      showAppSnack: observable,
+      setAppSnack: action,
+      clearAppSnack: action,
+    } );
   }
   citation = new Citation();
   config = new Config();
 
-  @observable version = undefined;
+  version = undefined;
 
-  @observable showAppSnack = false;
+  showAppSnack = false;
 
-  @action setAppSnack = () => {
+  setAppSnack = () => {
     this.showAppSnack = true;
   };
 
-  @action clearAppSnack = () => {
+  clearAppSnack = () => {
     this.showAppSnack = false;
   };
 }
