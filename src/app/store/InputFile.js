@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 
 import { base, dir, name } from '../paths';
 import StoreBase from './StoreBase';
@@ -8,6 +8,7 @@ class InputFile extends StoreBase {
 
   constructor( run, path ) {
     super();
+    makeObservable( this );
     this.run = run;
     this.path = path;
   }

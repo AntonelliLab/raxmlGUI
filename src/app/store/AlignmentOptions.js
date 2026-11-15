@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, makeObservable, override } from 'mobx';
 
 import Option from './Option';
 import * as raxmlNgSettings from '../../settings/raxmlng';
@@ -8,6 +8,7 @@ const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 class RaxmlNgAlignmentSubstitutionModel extends Option {
   constructor( alignment ) {
     super( alignment.run, '', 'Substitution model' );
+    makeObservable( this );
     this.alignment = alignment;
   }
   @computed get options() {
@@ -37,6 +38,7 @@ class RaxmlNgModelExtraParam extends Option {
     super( alignment.run, addNone
       ? '<none>'
       : options[0].value, label );
+    makeObservable( this );
     this.alignment = alignment;
     this.optionsSource = addNone
       ? [{ value: '<none>', title: 'none' }, ...options]
@@ -106,8 +108,9 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
       ].map( ( { value, label: title } ) => ( { value, title } ) ),
       { addNone: false },
     );
+    makeObservable( this );
   }
-  @computed get notAvailable() {
+  @override get notAvailable() {
     return (
       !this.run.haveAlignments ||
       !this.run.usesRaxmlNg ||
@@ -119,6 +122,7 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
 class MultistateNumber extends Option {
   constructor( alignment ) {
     super( alignment.run, '', 'Number of states' );
+    makeObservable( this );
     this.alignment = alignment;
     this.placeholder = 'Integer';
   }
@@ -128,7 +132,7 @@ class MultistateNumber extends Option {
       !this.alignment.run.usesRaxmlNg
     );
   }
-  @computed get error() {
+  @override get error() {
     return !this.value || !Number.isInteger( Number( this.value ) );
   }
 }

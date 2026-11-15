@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction } from 'mobx';
+import { observable, computed, action, runInAction, makeObservable } from 'mobx';
 
 import * as raxmlSettings from '../../settings/raxml';
 import * as raxmlNgSettings from '../../settings/raxmlng';
@@ -23,6 +23,7 @@ const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 class Alignment extends InputFile {
   constructor( run, path ) {
     super( run, path );
+    makeObservable( this );
     this.substitutionModel = new RaxmlNgAlignmentSubstitutionModel( this );
     this.multistateNumber = new MultistateNumber( this );
     this.ngStationaryFrequencies = new RaxmlNgModelF( this );
@@ -379,12 +380,12 @@ class Alignment extends InputFile {
   };
 
   @action
-    dispose = () => {
-      this.unlisten();
-      if ( this.modeltestLoading ) {
-        this.cancelModelTest();
-      }
-    };
+  dispose() {
+    this.unlisten();
+    if ( this.modeltestLoading ) {
+      this.cancelModelTest();
+    }
+  }
 
   @action
     remove = () => {

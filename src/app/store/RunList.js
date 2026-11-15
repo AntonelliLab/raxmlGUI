@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import Run from './Run';
 import AppStore from './AppStore';
 import { runEvents } from './StoreBase';
@@ -9,6 +9,7 @@ class RunList extends AppStore {
 
   constructor() {
     super();
+    makeObservable( this );
     this.addRun();
     this.listen();
   }

@@ -35,9 +35,10 @@ export default class StoreBase {
     }
   };
 
-  dispose = () => {
+  // A method: a field here would clash with a subclass's decorated dispose.
+  dispose() {
     this.unlisten();
-  };
+  }
 
   _init = () => {
     const { rendererBridge } = /** @type {any} */ ( window );

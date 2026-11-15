@@ -1,5 +1,5 @@
-import { observable, computed, action, runInAction, createAtom } from 'mobx';
-import { promisedComputed } from 'computed-async-mobx';
+import { observable, computed, action, runInAction, createAtom, makeObservable } from 'mobx';
+import { promisedComputed } from '../promisedComputed';
 import filenamify from 'filenamify';
 
 import Alignment from './Alignment';
@@ -44,6 +44,7 @@ const { windows } = host;
 class Run extends StoreBase {
   constructor( parent, id ) {
     super();
+    makeObservable( this );
     this.parent = parent;
     this.id = id;
     this.finalAlignment = new FinalAlignment( this );

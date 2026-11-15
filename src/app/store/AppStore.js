@@ -1,9 +1,13 @@
-import { observable, action } from 'mobx';
+import { observable, action, makeObservable } from 'mobx';
 import StoreBase from './StoreBase';
 import Citation from './Citation';
 import Config from './Config';
 
 class AppStore extends StoreBase {
+  constructor() {
+    super();
+    makeObservable( this );
+  }
   citation = new Citation();
   config = new Config();
 

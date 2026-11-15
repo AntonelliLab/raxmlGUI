@@ -1,7 +1,8 @@
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 class FinalPartition {
   constructor( run ) {
+    makeObservable( this );
     this.run = run;
   }
   /*
