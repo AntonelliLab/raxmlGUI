@@ -2,9 +2,16 @@ import { observable, action, computed, makeObservable } from 'mobx';
 
 export default class Citation {
   constructor() {
-    makeObservable( this );
+    makeObservable( this, {
+      visible: observable,
+      format: observable,
+      setFormat: action,
+      allText: computed,
+      show: action,
+      hide: action,
+    } );
   }
-  @observable visible = false;
+  visible = false;
 
   formats = [
     { value: 'txt', name: 'Plain text' },
@@ -12,8 +19,8 @@ export default class Citation {
     { value: 'bib', name: 'BibTeX' },
   ];
 
-  @observable format = 'txt';
-  @action setFormat = ( format ) => {
+  format = 'txt';
+  setFormat = ( format ) => {
     this.format = format;
   };
 
@@ -193,19 +200,16 @@ ER  - `,
     },
   ];
 
-  @computed
   get allText() {
     return this.content.map( ( ref ) => ref[this.format] ).join( '\n' );
   }
 
-  @action
-    show = () => {
-      this.visible = true;
-    };
-  @action
-    hide = () => {
-      this.visible = false;
-    };
+  show = () => {
+    this.visible = true;
+  };
+  hide = () => {
+    this.visible = false;
+  };
 
   copyToClipboard = async () => {
     const { rendererBridge } = /** @type {any} */ ( window );
