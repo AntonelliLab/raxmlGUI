@@ -1,3 +1,4 @@
+// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import { observable, runInAction, autorun } from 'mobx';
 
 import { actionWarnings } from '../jest/mobxActionWarning';

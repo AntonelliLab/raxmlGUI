@@ -1,3 +1,4 @@
+// @ts-nocheck — Jest globals. checkJs has no test runner types.
 // Fails a test when MobX warns that observable state was changed outside an action.
 const collected = [];
 let warn;
