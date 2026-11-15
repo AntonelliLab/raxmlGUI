@@ -1,3 +1,4 @@
+// @ts-nocheck — Jest helper. checkJs has no jsdom bridge type.
 import { autorun } from 'mobx';
 
 import { runEvents } from '../src/app/store/StoreBase';
