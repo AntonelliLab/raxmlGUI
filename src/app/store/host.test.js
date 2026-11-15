@@ -1,4 +1,4 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — test doubles and window.rendererBridge are untyped.
 
 function install( host ) {
   let reads = 0;

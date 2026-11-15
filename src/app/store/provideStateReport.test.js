@@ -1,4 +1,4 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — test doubles and window.rendererBridge are untyped.
 
 it( 'provideStateReport registers the store report once', () => {
   const provideStateReport = jest.fn();

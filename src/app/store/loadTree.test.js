@@ -1,4 +1,4 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — test doubles and window.rendererBridge are untyped.
 import Run from './Run';
 
 it( 'each tree picker keeps the chosen file', async () => {

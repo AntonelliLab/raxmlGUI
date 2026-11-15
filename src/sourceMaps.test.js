@@ -1,4 +1,3 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
 const { spawnSync } = require( 'child_process' );
 const path = require( 'path' );
 const { version } = require( '../package.json' );
