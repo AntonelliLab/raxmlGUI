@@ -4,7 +4,10 @@ import StoreBase, { runEvents } from './StoreBase';
 export default class Config extends StoreBase {
   constructor() {
     super();
-    makeObservable( this );
+    makeObservable( this, {
+      isDarkMode: observable,
+      setDarkMode: action,
+    } );
     this.listen();
     const { rendererBridge } = /** @type {any} */ ( window );
     rendererBridge.getDarkMode().then( ( value ) => {
@@ -14,15 +17,14 @@ export default class Config extends StoreBase {
     } );
   }
 
-  @observable isDarkMode = false;
+  isDarkMode = false;
 
-  @action
-    setDarkMode = ( value ) => {
-      value = !!value;
-      this.isDarkMode = value;
-      const { rendererBridge } = /** @type {any} */ ( window );
-      void rendererBridge.setDarkMode( value );
-    };
+  setDarkMode = ( value ) => {
+    value = !!value;
+    this.isDarkMode = value;
+    const { rendererBridge } = /** @type {any} */ ( window );
+    void rendererBridge.setDarkMode( value );
+  };
 
   onLightMode = () => {
     this.setDarkMode( false );
