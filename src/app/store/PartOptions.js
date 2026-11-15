@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 import Option from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as yup from 'yup';
@@ -29,6 +29,7 @@ class PartBase extends Option {
         helperText,
       },
     );
+    makeObservable( this );
     this.part = part;
   }
   @computed get alignment() {
@@ -42,6 +43,7 @@ class PartType extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
+    makeObservable( this );
   }
   @computed get finalValue() {
     const { dataType, partitionType } = this.alignment;
@@ -71,6 +73,7 @@ class PartAAType extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
+    makeObservable( this );
   }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
@@ -85,6 +88,7 @@ class PartName extends PartBase {
       schema: yup.string(), // TODO: Check that it is unique within partition
       allowOnlyValidChange: true,
     } );
+    makeObservable( this );
   }
   @computed get notAvailable() {
     return false;
@@ -96,6 +100,7 @@ class PartStart extends PartBase {
       schema: yup.number(),
       allowOnlyValidChange: false,
     } );
+    makeObservable( this );
     this.disabled = true;
   }
   @computed get notAvailable() {
@@ -122,6 +127,7 @@ class PartEnd extends PartBase {
         allowOnlyValidChange: false,
       },
     );
+    makeObservable( this );
   }
   @computed get min() {
     return (
@@ -144,6 +150,7 @@ class PartCodon extends PartBase {
       schema: yup.string(),
       allowOnlyValidChange: true,
     } );
+    makeObservable( this );
   }
   options = CodonModels.map( ( value ) => ( { value, title: value } ) );
   @computed get notAvailable() {

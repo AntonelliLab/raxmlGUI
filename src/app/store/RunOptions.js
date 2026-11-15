@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable, override } from 'mobx';
 import { range } from 'd3-array';
 
 import Option from './Option';
@@ -263,6 +263,7 @@ export const raxmlNgAnalysisOptions = [
 export class Binary extends Option {
   constructor( run ) {
     super( run, initialBinaryName, 'Binary', 'Name of binary' );
+    makeObservable( this );
   }
   options = binaries.map( ( { name } ) => ( { value: name, title: name } ) );
   @computed get version() {
@@ -276,6 +277,7 @@ export class Binary extends Option {
 export class NumThreads extends Option {
   constructor( run ) {
     super( run, 2, 'Threads', 'Number of cpu threads' );
+    makeObservable( this );
   }
   options = range( 1, MAX_NUM_CPUS + 1 ).map( ( value ) => ( {
     value,
@@ -308,6 +310,7 @@ export class RaxmlNgAnalysis extends Option {
 export class NumRuns extends Option {
   constructor( run ) {
     super( run, 1, 'Runs', 'Number of runs' );
+    makeObservable( this );
   }
   options = [1, 10, 20, 50, 100, 500].map( ( value ) => ( { value, title: value } ) );
   @computed get notAvailable() {
@@ -318,6 +321,7 @@ export class NumRuns extends Option {
 export class NumRepetitions extends Option {
   constructor( run ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
+    makeObservable( this );
   }
   options = [
     100,
@@ -338,6 +342,7 @@ export class NumRepetitions extends Option {
 export class NumRepetitionsNg extends Option {
   constructor( run ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
+    makeObservable( this );
   }
   options = [100, 200, 500, 1000, 10000, 'autoMRE'].map( ( value ) => ( {
     value,
@@ -358,6 +363,7 @@ export class BranchLength extends Option {
       'Compute branch lengths',
       'Optimize model parameters and branch lengths for the given input tree',
     );
+    makeObservable( this );
   }
   @computed get notAvailable() {
     return !this.run.analysisOption.params.includes( params.brL );
@@ -373,6 +379,7 @@ export class SHlike extends Option {
       'Compute log-likelihood test',
       'Shimodaira-Hasegawa-like procedure',
     );
+    makeObservable( this );
   }
   @computed get notAvailable() {
     return !this.run.analysisOption.params.includes( params.SHlike );
@@ -382,6 +389,7 @@ export class SHlike extends Option {
 export class CombinedOutput extends Option {
   constructor( run ) {
     super( run, false, 'Combined output', 'Concatenate output trees' );
+    makeObservable( this );
   }
   @computed get notAvailable() {
     return !this.run.analysisOption.params.includes( params.combinedOutput );
@@ -394,6 +402,7 @@ export class CombinedOutput extends Option {
 export class StartingTree extends Option {
   constructor( run ) {
     super( run, 'Maximum parsimony', 'Starting tree', '' );
+    makeObservable( this );
   }
   options = ['Maximum parsimony', 'User defined'].map( ( value ) => ( {
     value,
@@ -407,6 +416,7 @@ export class StartingTree extends Option {
 export class OutGroup extends Option {
   constructor( run ) {
     super( run, ['<none>'], 'Outgroup', '' );
+    makeObservable( this );
     this.multiple = true;
   }
   @computed get options() {
@@ -416,7 +426,7 @@ export class OutGroup extends Option {
     } ) );
   }
 
-  @action setValue( value ) {
+  @override setValue( value ) {
     if ( this.value.includes( '<none>' ) ) {
       this.value = value.filter( ( v ) => v !== '<none>' );
       return;
@@ -444,6 +454,7 @@ export class OutGroup extends Option {
 export class SubstitutionMatrix extends Option {
   constructor( run ) {
     super( run, 'GTR', 'Substitution matrix' );
+    makeObservable( this );
   }
   @computed get options() {
     if ( !this.run.haveAlignments ) {
@@ -504,6 +515,7 @@ export class SubstitutionMatrix extends Option {
 export class SubstitutionRate extends Option {
   constructor( run ) {
     super( run, 'GAMMA', 'Substitution rates' );
+    makeObservable( this );
   }
   @computed get options() {
     if ( !this.run.haveAlignments ) {
@@ -539,6 +551,7 @@ export class SubstitutionRate extends Option {
 export class SubstitutionI extends Option {
   constructor( run ) {
     super( run, 'none', 'Proportion of invariant sites' );
+    makeObservable( this );
   }
   @computed get options() {
     if ( !this.run.haveAlignments ) {
@@ -570,6 +583,7 @@ export class SubstitutionI extends Option {
 export class SubstitutionAscertainment extends Option {
   constructor( run ) {
     super( run, 'none', 'Ascertainment bias correction' );
+    makeObservable( this );
   }
   @computed get options() {
     if ( !this.run.haveAlignments ) {
@@ -620,6 +634,7 @@ export class AAMatrixName extends Option {
       'Matrix name',
       'Amino Acid Substitution Matrix name',
     );
+    makeObservable( this );
   }
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
@@ -638,6 +653,7 @@ export class EstimatedFrequencies extends Option {
       'Estimated base frequencies',
       'Use estimated base frequencies instead of empirical.',
     );
+    makeObservable( this );
   }
   @computed get notAvailable() {
     return this.run.dataType === 'protein' || this.run.usesRaxmlNg;
@@ -652,6 +668,7 @@ export class BaseFrequencies extends Option {
       'Base frequencies',
       'Empirical, ML estimated or model based base frequencies',
     );
+    makeObservable( this );
   }
   options = [
     { title: 'From model', value: 'default' },
@@ -666,6 +683,7 @@ export class BaseFrequencies extends Option {
 export class MultistateModel extends Option {
   constructor( run ) {
     super( run, 'GTR', 'Multistate model' );
+    makeObservable( this );
   }
   options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
     ( value ) => ( { value, title: value } ),
@@ -678,6 +696,7 @@ export class MultistateModel extends Option {
 class TreeFile extends Option {
   constructor( run ) {
     super( run, '', 'Tree', '' );
+    makeObservable( this );
   }
   @observable filePath = '';
   @computed get haveFile() {
@@ -709,6 +728,10 @@ class TreeFile extends Option {
 }
 
 export class Tree extends TreeFile {
+  constructor( ...args ) {
+    super( ...args );
+    makeObservable( this );
+  }
   @computed get notAvailable() {
     return !(
       this.run.analysisOption.params.includes( params.tree ) ||
@@ -719,6 +742,10 @@ export class Tree extends TreeFile {
 }
 
 export class BackboneConstraintTree extends TreeFile {
+  constructor( ...args ) {
+    super( ...args );
+    makeObservable( this );
+  }
   @computed get isSet() {
     return this.run.useBackboneConstraint && this.haveFile;
   }
@@ -743,6 +770,10 @@ export class BackboneConstraintTree extends TreeFile {
 }
 
 export class MultifurcatingConstraintTree extends TreeFile {
+  constructor( ...args ) {
+    super( ...args );
+    makeObservable( this );
+  }
   @computed get isSet() {
     return this.run.useMultifurcatingConstraint && this.haveFile;
   }

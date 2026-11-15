@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import { mixed } from 'yup';
 
 class Option {
@@ -19,6 +19,7 @@ class Option {
     hoverInfo,
     { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
   ) {
+    makeObservable( this );
     this.run = run;
     this.defaultValue = defaultValue;
     this.title = title;

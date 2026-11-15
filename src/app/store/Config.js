@@ -1,9 +1,10 @@
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, makeObservable } from 'mobx';
 import StoreBase, { runEvents } from './StoreBase';
 
 export default class Config extends StoreBase {
   constructor() {
     super();
+    makeObservable( this );
     this.listen();
     const { rendererBridge } = /** @type {any} */ ( window );
     rendererBridge.getDarkMode().then( ( value ) => {

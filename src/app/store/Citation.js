@@ -1,6 +1,9 @@
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, makeObservable } from 'mobx';
 
 export default class Citation {
+  constructor() {
+    makeObservable( this );
+  }
   @observable visible = false;
 
   formats = [

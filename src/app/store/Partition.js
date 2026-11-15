@@ -1,4 +1,4 @@
-import { observable, computed, action, reaction } from 'mobx';
+import { observable, computed, action, reaction, makeObservable } from 'mobx';
 import {
   CODON_NONE,
   CODON_SPECIFIC,
@@ -30,6 +30,7 @@ const getPartitionType = ( dataType, aaMatrixName = 'BLOSUM62' ) => {
 
 class Part {
   constructor( partition, { type, aaType, name, start, end, codon } ) {
+    makeObservable( this );
     this.partition = partition;
     this.type = new PartType( this, type );
     this.aaType = new PartAAType( this, aaType );
@@ -108,6 +109,7 @@ class Part {
 }
 class Partition {
   constructor( alignment ) {
+    makeObservable( this );
     this.alignment = alignment;
     this.defaultPartition = new Part( this, {
       type: alignment.partitionType,
@@ -127,7 +129,7 @@ class Partition {
     } );
     reaction(
       () => alignment.length,
-      ( length, reaction ) => {
+      ( length, _previous, reaction ) => {
         reaction.dispose();
         // Make default alignment complete except for mixed type
         if ( this.alignment.dataType !== 'mixed' ) {

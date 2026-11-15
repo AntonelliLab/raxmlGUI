@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import union from 'lodash/union';
 import intersection from 'lodash/intersection';
 
@@ -8,6 +8,7 @@ import { join } from '../paths';
 
 class FinalAlignment {
   constructor( run ) {
+    makeObservable( this );
     this.run = run;
     this.partition = new FinalPartition( run );
   }
