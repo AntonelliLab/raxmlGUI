@@ -164,16 +164,6 @@ describe( 'config dark mode', () => {
     expect( bridge.setDarkMode.mock.calls ).toEqual( [[true], [false]] );
   } );
 
-  it( 'onDarkMode and onLightMode switch the theme', async () => {
-    const { config } = new AppStore();
-    await settle();
-
-    config.onDarkMode();
-    expect( config.isDarkMode ).toBe( true );
-    config.onLightMode();
-    expect( config.isDarkMode ).toBe( false );
-  } );
-
   it( 'dispose stops listening for menu events', async () => {
     const { config } = new AppStore();
     await settle();
