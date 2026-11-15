@@ -5,12 +5,11 @@ import InputFile from './InputFile';
 class AstralTree extends InputFile {
   constructor( ...args ) {
     super( ...args );
-    makeObservable( this );
+    makeObservable( this, { remove: action } );
   }
-  @action
-    remove = () => {
-      this.run.removeAstralTree();
-    };
+  remove = () => {
+    this.run.removeAstralTree();
+  };
 }
 
 export default AstralTree;
