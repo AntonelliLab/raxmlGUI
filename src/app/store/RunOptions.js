@@ -416,7 +416,7 @@ export class OutGroup extends Option {
     } ) );
   }
 
-  @action setValue = ( value ) => {
+  @action setValue( value ) {
     if ( this.value.includes( '<none>' ) ) {
       this.value = value.filter( ( v ) => v !== '<none>' );
       return;
@@ -426,7 +426,7 @@ export class OutGroup extends Option {
       return;
     }
     this.value = value;
-  };
+  }
 
   @computed get notAvailable() {
     return (

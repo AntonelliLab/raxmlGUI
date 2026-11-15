@@ -32,14 +32,14 @@ class Option {
     this.value = defaultValue;
   }
   @observable value;
-  @action setValue = ( value ) => {
+  @action setValue( value ) {
     const isValid = this.schema.isValidSync( value );
     if ( !this.allowOnlyValidChange || isValid ) {
       this.value = isValid
         ? this.schema.cast( value )
         : value;
     }
-  };
+  }
   @action reset() {
     this.value = this.defaultValue;
   }
