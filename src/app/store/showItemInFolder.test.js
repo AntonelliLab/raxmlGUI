@@ -1,4 +1,5 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
+import { runInAction } from 'mobx';
 import Run from './Run';
 
 it( 'shows a tree file in its folder', async () => {
@@ -16,11 +17,13 @@ it( 'shows the concatenated alignment in its folder', async () => {
   const run = new Run( {}, 7 );
   window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
   run.addAlignments( [ { path: '/data/a.fasta' } ] );
-  run.alignments[0].sequences = [
-    { taxon: 'Homo', code: 'AT' },
-    { taxon: 'Mus', code: 'GC' },
-  ];
-  run.alignments[0].length = 2;
+  runInAction( () => {
+    run.alignments[0].sequences = [
+      { taxon: 'Homo', code: 'AT' },
+      { taxon: 'Mus', code: 'GC' },
+    ];
+    run.alignments[0].length = 2;
+  } );
   const showItemInFolder = jest.fn( async () => {} );
   window.rendererBridge = {
     writeFile: jest.fn( async () => {} ),
