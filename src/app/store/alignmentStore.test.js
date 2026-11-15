@@ -1,42 +1,23 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
+
+import { stubBridge as sharedStubBridge, track } from '../../../jest/storeBridge';
 
 import Run from './Run';
 import { runEvents } from './StoreBase';
 
-let listeners;
 let bridge;
+let listeners;
+let fire;
 
-// Alignment construction subscribes to bridge events and parses; this stub is local to this file.
+// Alignment construction subscribes to bridge events and parses.
 function stubBridge( extra = {} ) {
-  const byName = {};
-  listeners = byName;
-  bridge = {
+  ( { bridge, listeners, fire } = sharedStubBridge( {
     parseAlignment: () => new Promise( () => {} ),
     startModelSelection: jest.fn( async () => {} ),
     cancelModelSelection: jest.fn(),
     ...extra,
-  };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = ( listener ) => {
-      ( byName[name] ||= [] ).push( listener );
-      return () => {
-        byName[name] = byName[name].filter( ( l ) => l !== listener );
-      };
-    };
-  }
-  window.rendererBridge = bridge;
-}
-
-function fire( name, payload ) {
-  ( listeners[name] || [] ).forEach( ( listener ) => listener( payload ) );
-}
-
-// Records every value a reaction sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
+  } ) );
 }
 
 function setup( { onError = () => {}, path = '/data/primates.fasta' } = {} ) {
