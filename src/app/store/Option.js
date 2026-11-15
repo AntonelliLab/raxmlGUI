@@ -29,8 +29,9 @@ class Option {
       : mixed();
     this.allowOnlyValidChange = allowOnlyValidChange;
     this.helperText = helperText;
+    this.value = defaultValue;
   }
-  @observable value = this.defaultValue;
+  @observable value;
   @action setValue = ( value ) => {
     const isValid = this.schema.isValidSync( value );
     if ( !this.allowOnlyValidChange || isValid ) {
