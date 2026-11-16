@@ -3,7 +3,6 @@ import * as ipc from '../../constants/ipc';
 import { appStore } from '../appStore';
 import { activeWindow } from '../utils/utils';
 
-// The page's store class is decorated. This build does not compile decorators.
 const sendToFocusedWindow = ( channel: string ): void => {
   const win = activeWindow();
   if ( !win ) {
