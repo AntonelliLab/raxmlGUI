@@ -29,7 +29,10 @@ const settings = {
   analysis: 'modeltest',
   criterion: 'AICc',
   binary,
-  binaryVersions: { 'modeltest-ng': '0.1.7' },
+  // The Linux binary prints the placeholder x.y.z instead of its version
+  binaryVersions: {
+    'modeltest-ng': process.platform === 'linux' ? 'x.y.z' : '0.1.7',
+  },
 };
 
 const alignmentFile = path.join(
@@ -44,7 +47,10 @@ const raxmlNgSettings = {
   runs: 1,
   analysis: 'TI',
   binary: 'raxml-ng',
-  binaryVersions: { 'raxml-ng': '1.2.2' },
+  // The Linux binary reports a master build
+  binaryVersions: {
+    'raxml-ng': process.platform === 'linux' ? '1.2.2-master' : '1.2.2',
+  },
 };
 const raxmlNgSuffixes = [
   'raxml.bestTree.tre',
