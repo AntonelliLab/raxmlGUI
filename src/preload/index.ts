@@ -42,31 +42,36 @@ import {
   UNHANDLED_ERROR,
   WRITE_FILE,
 } from '../constants/ipc';
+import type { RendererBridge, HostInfo } from '../common/rendererBridge';
+import type { CheckOutputArgs } from '../main/checkOutput';
+import type { StartRunPayload } from '../main/startRun';
+import type { AstralPayload } from '../main/astral';
+import type { ModelSelectionPayload } from '../main/modelSelection';
 
-function onEvent( channel, listener ) {
-  const wrapped = ( _event, payload ) => listener( payload );
+function onEvent( channel: string, listener: ( payload: unknown ) => void ): () => void {
+  const wrapped = ( _event: unknown, payload: unknown ): void => listener( payload );
   ipcRenderer.on( channel, wrapped );
   return () => ipcRenderer.removeListener( channel, wrapped );
 }
 
 // Sandboxed preload cannot load Node's os. Main answers once; later reads stay local.
-const host = ipcRenderer.sendSync( HOST );
+const host: HostInfo = ipcRenderer.sendSync( HOST );
 
-let stateReport = null;
+let stateReport: ( () => unknown ) | null = null;
 
-ipcRenderer.on( STATE_REPORT, ( _event, id ) => {
+ipcRenderer.on( STATE_REPORT, ( _event: unknown, id: string ): void => {
   const report = stateReport
     ? stateReport()
     : undefined;
   ipcRenderer.send( STATE_REPORT_RESULT, { id, report } );
 } );
 
-contextBridge.exposeInMainWorld( 'rendererBridge', {
+const rendererBridge = {
   host,
-  provideStateReport( fn ) {
+  provideStateReport( fn: () => unknown ): void {
     stateReport = fn;
   },
-  copyText( text ) {
+  copyText( text: string ) {
     return ipcRenderer.invoke( COPY_TEXT, text );
   },
   getExampleFiles() {
@@ -78,28 +83,28 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   getDarkMode() {
     return ipcRenderer.invoke( GET_DARK_MODE );
   },
-  setDarkMode( value ) {
+  setDarkMode( value: boolean ) {
     return ipcRenderer.invoke( SET_DARK_MODE, value );
   },
-  selectAlignment( runId ) {
+  selectAlignment( runId: number ) {
     return ipcRenderer.invoke( ALIGNMENT_SELECT, runId );
   },
-  parseAlignment( id, filePath ) {
+  parseAlignment( id: string, filePath: string ) {
     return ipcRenderer.invoke( ALIGNMENT_PARSE, id, filePath );
   },
-  selectAstralFile( runId ) {
+  selectAstralFile( runId: number ) {
     return ipcRenderer.invoke( ASTRAL_FILE_SELECT, runId );
   },
-  selectOutputDir( runId ) {
+  selectOutputDir( runId: number ) {
     return ipcRenderer.invoke( OUTPUT_DIR_SELECT, runId );
   },
-  checkOutput( { outputDir, outputName } ) {
+  checkOutput( { outputDir, outputName }: CheckOutputArgs ) {
     return ipcRenderer.invoke( OUTPUT_CHECK, { outputDir, outputName } );
   },
-  readFile( filePath ) {
+  readFile( filePath: string ) {
     return ipcRenderer.invoke( READ_FILE, filePath );
   },
-  writeFile( filePath, text ) {
+  writeFile( filePath: string, text: string ) {
     return ipcRenderer.invoke( WRITE_FILE, filePath, text );
   },
   reload() {
@@ -108,79 +113,81 @@ contextBridge.exposeInMainWorld( 'rendererBridge', {
   debugInfo() {
     return ipcRenderer.invoke( DEBUG_INFO );
   },
-  openExternal( url ) {
+  openExternal( url: string ) {
     return ipcRenderer.invoke( OPEN_EXTERNAL, url );
   },
-  openPath( fullPath ) {
+  openPath( fullPath: string ) {
     return ipcRenderer.invoke( OPEN_PATH, fullPath );
   },
-  selectPartitionFile( runId ) {
+  selectPartitionFile( runId: number ) {
     return ipcRenderer.invoke( PARTITION_FILE_SELECT, runId );
   },
-  selectTree( runId, type ) {
+  selectTree( runId: number, type: string ) {
     return ipcRenderer.invoke( TREE_SELECT, runId, type );
   },
-  showItemInFolder( fullPath ) {
+  showItemInFolder( fullPath: string ) {
     return ipcRenderer.invoke( FILE_SHOW_IN_FOLDER, fullPath );
   },
-  startRun( payload ) {
+  startRun( payload: StartRunPayload ) {
     return ipcRenderer.invoke( RUN_START, payload );
   },
-  cancelRun( id ) {
+  cancelRun( id: number ) {
     return ipcRenderer.invoke( RUN_CANCEL, id );
   },
-  onRunStdout( listener ) {
+  onRunStdout( listener: ( payload: unknown ) => void ) {
     return onEvent( RUN_STDOUT, listener );
   },
-  onRunStderr( listener ) {
+  onRunStderr( listener: ( payload: unknown ) => void ) {
     return onEvent( RUN_STDERR, listener );
   },
-  onRunFinished( listener ) {
+  onRunFinished( listener: ( payload: unknown ) => void ) {
     return onEvent( RUN_FINISHED, listener );
   },
-  onRunError( listener ) {
+  onRunError( listener: ( payload: unknown ) => void ) {
     return onEvent( RUN_ERROR, listener );
   },
-  startAstral( payload ) {
+  startAstral( payload: AstralPayload ) {
     return ipcRenderer.invoke( ASTRAL_REQUEST, payload );
   },
-  onAstralSuccess( listener ) {
+  onAstralSuccess( listener: ( payload: unknown ) => void ) {
     return onEvent( ASTRAL_SUCCESS, listener );
   },
-  startModelSelection( payload ) {
+  startModelSelection( payload: ModelSelectionPayload ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_REQUEST, payload );
   },
-  cancelModelSelection( id ) {
+  cancelModelSelection( id: string ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_CANCEL, id );
   },
-  onModelSelectionSuccess( listener ) {
+  onModelSelectionSuccess( listener: ( payload: unknown ) => void ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_SUCCESS, listener );
   },
-  onModelSelectionFailure( listener ) {
+  onModelSelectionFailure( listener: ( payload: unknown ) => void ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_FAILURE, listener );
   },
-  onAddRun( listener ) {
+  onAddRun( listener: ( payload: unknown ) => void ) {
     return onEvent( ADD_RUN, listener );
   },
-  onRemoveRun( listener ) {
+  onRemoveRun( listener: ( payload: unknown ) => void ) {
     return onEvent( REMOVE_RUN, listener );
   },
-  onLightMode( listener ) {
+  onLightMode( listener: ( payload: unknown ) => void ) {
     return onEvent( LIGHT_MODE, listener );
   },
-  onDarkMode( listener ) {
+  onDarkMode( listener: ( payload: unknown ) => void ) {
     return onEvent( DARK_MODE, listener );
   },
-  onToggleBackboneConstraint( listener ) {
+  onToggleBackboneConstraint( listener: ( payload: unknown ) => void ) {
     return onEvent( TOGGLE_BACKBONE_CONSTRAINT, listener );
   },
-  onToggleMultifurcatingConstraint( listener ) {
+  onToggleMultifurcatingConstraint( listener: ( payload: unknown ) => void ) {
     return onEvent( TOGGLE_MULTIFURCATING_CONSTRAINT, listener );
   },
-  onUnhandledError( listener ) {
+  onUnhandledError( listener: ( payload: unknown ) => void ) {
     return onEvent( UNHANDLED_ERROR, listener );
   },
-  getPathForFile( file ) {
+  getPathForFile( file: File ): string {
     return webUtils.getPathForFile( file );
   },
-} );
+} satisfies RendererBridge;
+
+contextBridge.exposeInMainWorld( 'rendererBridge', rendererBridge );

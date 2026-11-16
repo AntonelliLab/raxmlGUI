@@ -1,0 +1,71 @@
+// Declared, not derived from the preload: ipc invoke types every result as any.
+import type { ExampleFilesPayload } from '../main/api';
+import type { CheckOutputArgs, CheckOutputResult } from '../main/checkOutput';
+import type { ModelSelectionPayload } from '../main/modelSelection';
+import type { SelectedAlignment } from '../main/selectAlignment';
+import type { SelectedTree } from '../main/selectTree';
+import type { SelectedAstralFile } from '../main/selectAstralFile';
+import type { AstralPayload } from '../main/astral';
+import type { StartRunPayload } from '../main/startRun';
+import type { AlignmentParseResult } from '../main/parseAlignment';
+
+export interface HostInfo {
+  windows: boolean;
+  release: string;
+  arch: string;
+  cpuModel: string;
+}
+
+// An event payload the page does not read yet; the leaf that reads it tightens it.
+type Listener = ( payload: unknown ) => void;
+type Unsubscribe = () => void;
+
+export interface RendererBridge {
+  host: HostInfo;
+  provideStateReport: ( fn: () => unknown ) => void;
+  copyText: ( text: string ) => Promise<void>;
+  getExampleFiles: () => Promise<ExampleFilesPayload>;
+  getVersion: () => Promise<string>;
+  getDarkMode: () => Promise<boolean>;
+  setDarkMode: ( value: boolean ) => Promise<void>;
+  selectAlignment: ( runId: number ) => Promise<SelectedAlignment[] | null>;
+  parseAlignment: ( id: string, filePath: string ) => Promise<AlignmentParseResult>;
+  selectAstralFile: ( runId: number ) => Promise<SelectedAstralFile | null>;
+  selectOutputDir: ( runId: number ) => Promise<string | null>;
+  checkOutput: ( args: CheckOutputArgs ) => Promise<CheckOutputResult>;
+  readFile: ( filePath: string ) => Promise<string>;
+  writeFile: ( filePath: string, text: string ) => Promise<void>;
+  reload: () => Promise<void>;
+  debugInfo: () => Promise<string>;
+  openExternal: ( url: string ) => Promise<void>;
+  openPath: ( fullPath: string ) => Promise<string>;
+  selectPartitionFile: ( runId: number ) => Promise<string | null>;
+  selectTree: ( runId: number, type: string ) => Promise<SelectedTree | null>;
+  showItemInFolder: ( fullPath: string ) => Promise<void>;
+  startRun: ( payload: StartRunPayload ) => Promise<void>;
+  cancelRun: ( id: number ) => Promise<void>;
+  onRunStdout: ( listener: Listener ) => Unsubscribe;
+  onRunStderr: ( listener: Listener ) => Unsubscribe;
+  onRunFinished: ( listener: Listener ) => Unsubscribe;
+  onRunError: ( listener: Listener ) => Unsubscribe;
+  startAstral: ( payload: AstralPayload ) => Promise<void>;
+  onAstralSuccess: ( listener: Listener ) => Unsubscribe;
+  startModelSelection: ( payload: ModelSelectionPayload ) => Promise<void>;
+  cancelModelSelection: ( id: string ) => Promise<void>;
+  onModelSelectionSuccess: ( listener: Listener ) => Unsubscribe;
+  onModelSelectionFailure: ( listener: Listener ) => Unsubscribe;
+  onAddRun: ( listener: Listener ) => Unsubscribe;
+  onRemoveRun: ( listener: Listener ) => Unsubscribe;
+  onLightMode: ( listener: Listener ) => Unsubscribe;
+  onDarkMode: ( listener: Listener ) => Unsubscribe;
+  onToggleBackboneConstraint: ( listener: Listener ) => Unsubscribe;
+  onToggleMultifurcatingConstraint: ( listener: Listener ) => Unsubscribe;
+  onUnhandledError: ( listener: Listener ) => Unsubscribe;
+  getPathForFile: ( file: File ) => string;
+}
+
+declare global {
+  interface Window {
+    rendererBridge: RendererBridge;
+  }
+}

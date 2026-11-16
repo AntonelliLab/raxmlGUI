@@ -16,7 +16,7 @@ type ProcessExit =
   | NodeJS.Signals
   | null;
 
-interface AstralPayload {
+export interface AstralPayload {
   id: RunId;
   binaryName: string;
   args: string[][];

@@ -5,7 +5,7 @@ type ShowOpenDialog = (
   options: OpenDialogOptions,
 ) => Promise<OpenDialogReturnValue>;
 
-interface SelectedTree {
+export interface SelectedTree {
   type: string;
   filePath: string;
 }

@@ -22,7 +22,7 @@ type ProcessExit =
   | NodeJS.Signals
   | null;
 
-interface ModelSelectionPayload {
+export interface ModelSelectionPayload {
   id: string;
   filePath: string;
   outputDir: string;

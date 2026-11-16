@@ -33,7 +33,7 @@ type ProcessExit =
   | NodeJS.Signals
   | null;
 
-interface StartRunPayload {
+export interface StartRunPayload {
   id: RunId;
   args: string[][];
   binaryName: string;
