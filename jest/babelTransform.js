@@ -1,6 +1,6 @@
 const babelJest = require( 'babel-jest' );
 
-// Decorator plugins match the page build. preset-env and preset-typescript
+// Plugins match the page build. preset-env and preset-typescript
 // are what Jest needs to load the page's ESM and .tsx imports.
 module.exports = babelJest.default.createTransformer( {
   babelrc: false,
@@ -10,8 +10,7 @@ module.exports = babelJest.default.createTransformer( {
     '@babel/preset-typescript',
   ],
   plugins: [
-    [ '@babel/plugin-proposal-decorators', { legacy: true } ],
-    [ '@babel/plugin-proposal-class-properties', { loose: true } ],
+    [ '@babel/plugin-proposal-class-properties', { loose: false } ],
     [ '@babel/plugin-transform-react-jsx', { runtime: 'automatic' } ],
   ],
 } );

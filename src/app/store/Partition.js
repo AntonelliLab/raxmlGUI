@@ -1,12 +1,15 @@
-import { observable, computed, action, reaction } from 'mobx';
-import Option from './Option';
-import * as raxmlSettings from '../../settings/raxml';
-import * as yup from 'yup';
-
-const CODON_NONE = 'None';
-const CODON_SPECIFIC = 'Codon specific';
-const CODON_THIRD = 'Third codon';
-export const CodonModels = [CODON_NONE, CODON_SPECIFIC, CODON_THIRD];
+import { observable, computed, action, reaction, makeObservable } from 'mobx';
+import {
+  CODON_NONE,
+  CODON_SPECIFIC,
+  CODON_THIRD,
+  PartType,
+  PartAAType,
+  PartName,
+  PartStart,
+  PartEnd,
+  PartCodon,
+} from './PartOptions';
 
 const getPartitionType = ( dataType, aaMatrixName = 'BLOSUM62' ) => {
   // for old raxml
@@ -25,151 +28,13 @@ const getPartitionType = ( dataType, aaMatrixName = 'BLOSUM62' ) => {
   }
 };
 
-class PartBase extends Option {
-  constructor(
-    part,
-    defaultValue,
-    title,
-    description,
-    hoverInfo,
-    { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
-  ) {
-    super(
-      part.partition.alignment.run,
-      defaultValue,
-      title,
-      description,
-      hoverInfo,
-      {
-        schema,
-        allowOnlyValidChange,
-        helperText,
-      },
-    );
-    this.part = part;
-  }
-  @computed get alignment() {
-    return this.part.partition.alignment;
-  }
-}
-
-class PartType extends PartBase {
-  constructor( part, value = 'DNA' ) {
-    super( part, value, 'Data type', 'Data type of the part', '', {
-      schema: yup.string(),
-      allowOnlyValidChange: true,
-    } );
-  }
-  @computed get finalValue() {
-    const { dataType, partitionType } = this.alignment;
-    if ( dataType === 'protein' || this.value === 'protein' ) {
-      return this.part.aaType.value;
-    }
-    if ( dataType === 'mixed' ) {
-      return this.value;
-    }
-    return partitionType;
-  }
-  @computed get options() {
-    const { dataType } = this.alignment;
-    let opts = [dataType];
-    if ( dataType === '' || dataType === 'mixed' ) {
-      opts = ['DNA', 'BIN', 'MULTI', 'protein'];
-    }
-    return opts.map( ( value ) => ( { value, title: value } ) );
-  }
-  @computed get notAvailable() {
-    return this.alignment.dataType !== 'mixed';
-  }
-}
-class PartAAType extends PartBase {
-  constructor( part, value = 'BLOSUM62' ) {
-    super( part, value, 'Model', 'Substitution model for the part', '', {
-      schema: yup.string(),
-      allowOnlyValidChange: true,
-    } );
-  }
-  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
-    ( value ) => ( { value, title: value } ),
-  );
-  @computed get notAvailable() {
-    return this.alignment.dataType !== 'protein';
-  }
-}
-class PartName extends PartBase {
-  constructor( part, value = 'part1' ) {
-    super( part, value, 'Name', 'Name of part', '', {
-      schema: yup.string(), // TODO: Check that it is unique within partition
-      allowOnlyValidChange: true,
-    } );
-  }
-  @computed get notAvailable() {
-    return false;
-  }
-}
-class PartStart extends PartBase {
-  constructor( part, value = 1 ) {
-    super( part, value, 'from', 'Start position for this part', '', {
-      schema: yup.number(),
-      allowOnlyValidChange: false,
-    } );
-    this.disabled = true;
-  }
-  @computed get notAvailable() {
-    return false;
-  }
-}
-
-class PartEnd extends PartBase {
-  constructor( part, value = 1 ) {
-    super(
-      part,
-      value,
-      'to',
-      'Ending position (inclusive) for this part',
-      'Ending position (inclusive) for this part',
-      {
-        schema: yup.number().test( {
-          name: 'part-end',
-          message: () => `Must be in interval [${this.min}, ${this.max}]`,
-          test: ( value ) => {
-            return value >= this.min && value <= this.max;
-          },
-        } ),
-        allowOnlyValidChange: false,
-      },
-    );
-  }
-  @computed get min() {
-    return (
-      this.part.start.value + ( this.part.codon.value === CODON_NONE
-        ? 0
-        : 2 )
-    );
-  }
-  @computed get max() {
-    return this.alignment.length;
-  }
-  @computed get notAvailable() {
-    return false;
-  }
-}
-
-class PartCodon extends PartBase {
-  constructor( part, value = 'None' ) {
-    super( part, value, 'Codon model', '', '', {
-      schema: yup.string(),
-      allowOnlyValidChange: true,
-    } );
-  }
-  options = CodonModels.map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
-    return this.alignment.partition.partToAdd.type.value !== 'DNA';
-  }
-}
-
 class Part {
   constructor( partition, { type, aaType, name, start, end, codon } ) {
+    makeObservable( this, {
+      typePadded: computed,
+      text: computed,
+      values: computed,
+    } );
     this.partition = partition;
     this.type = new PartType( this, type );
     this.aaType = new PartAAType( this, aaType );
@@ -179,7 +44,7 @@ class Part {
     this.codon = new PartCodon( this, codon );
   }
 
-  @computed get typePadded() {
+  get typePadded() {
     return `${this.type.finalValue},`.padEnd( 12 );
   }
 
@@ -224,14 +89,14 @@ class Part {
     }
   };
 
-  @computed get text() {
+  get text() {
     // return `${this.typePadded}${this.name.value} = ${this.start.value}-${this.end.value}`;
     return this.transform();
   }
 
   parse = ( row ) => {};
 
-  @computed get values() {
+  get values() {
     return {
       type: this.type.value,
       aaType: this.aaType.value,
@@ -248,6 +113,22 @@ class Part {
 }
 class Partition {
   constructor( alignment ) {
+    makeObservable( this, {
+      parts: observable,
+      addPart: action,
+      isMixed: computed,
+      isDefault: computed,
+      maxEndValue: computed,
+      currentEndValue: computed,
+      isComplete: computed,
+      nonDefaultPartitionComplete: computed,
+      progress: computed,
+      haveError: computed,
+      errorMessage: computed,
+      addPartDisabled: computed,
+      text: computed,
+      reset: action,
+    } );
     this.alignment = alignment;
     this.defaultPartition = new Part( this, {
       type: alignment.partitionType,
@@ -267,7 +148,7 @@ class Partition {
     } );
     reaction(
       () => alignment.length,
-      ( length, reaction ) => {
+      ( length, _previous, reaction ) => {
         reaction.dispose();
         // Make default alignment complete except for mixed type
         if ( this.alignment.dataType !== 'mixed' ) {
@@ -293,7 +174,7 @@ class Partition {
       { name: 'React to default partition type change' },
     );
   }
-  @observable parts = [];
+  parts = [];
   // Add current part values
   addPart = () => {
     this.parts.push( this.partToAdd.clone() );
@@ -315,44 +196,44 @@ class Partition {
       this.partToAdd.name.value = newName;
     }
   };
-  @computed get isMixed() {
+  get isMixed() {
     return this.alignment.dataType === 'mixed';
   }
-  @computed get isDefault() {
+  get isDefault() {
     return this.parts.length === 0;
   }
-  @computed get maxEndValue() {
+  get maxEndValue() {
     return this.alignment.length;
   }
 
-  @computed get currentEndValue() {
+  get currentEndValue() {
     return this.isDefault
       ? this.defaultPartition.end.value
       : this.parts[this.parts.length - 1].end.value;
   }
-  @computed get isComplete() {
+  get isComplete() {
     return this.currentEndValue === this.maxEndValue;
   }
-  @computed get nonDefaultPartitionComplete() {
+  get nonDefaultPartitionComplete() {
     return !this.isDefault && this.isComplete;
   }
-  @computed get progress() {
+  get progress() {
     return this.isDefault
       ? 100
       : ( this.currentEndValue * 100.0 ) / this.alignment.length;
   }
-  @computed get haveError() {
+  get haveError() {
     return this.partToAdd.end.haveError;
   }
-  @computed get errorMessage() {
+  get errorMessage() {
     return this.haveError
       ? `End position error: ${this.partToAdd.end.errorMessage}`
       : '';
   }
-  @computed get addPartDisabled() {
+  get addPartDisabled() {
     return this.nonDefaultPartitionComplete || this.haveError;
   }
-  @computed get text() {
+  get text() {
     if ( this.isDefault ) {
       // return this.alignment.partitionFileContent;
       return this.defaultPartition.text;
@@ -366,7 +247,7 @@ class Partition {
     return this.parts.map( ( part ) => part.transform( offset, prefix ) ).join( '\n' );
   };
 
-  @action reset = () => {
+  reset = () => {
     if ( this.parts.length > 0 ) {
       this.parts.splice( 0 );
       this.partToAdd.name.value = 'part_1';
@@ -376,39 +257,4 @@ class Partition {
   };
 }
 
-class FinalPartition {
-  constructor( run ) {
-    this.run = run;
-  }
-  /*
-    Example:
-    DNA, gene1 = 1-3676
-    BIN, morph = 3677-3851
-  */
-  @computed get text() {
-    if ( !this.run.haveAlignments ) {
-      return '';
-    }
-    const partitionTexts = [];
-    let total = 0;
-    this.run.alignments.forEach( ( alignment, index ) => {
-      partitionTexts.push( alignment.partition.transform( total, `${index}_` ) );
-      total += alignment.length;
-    } );
-    return partitionTexts.join( '\n' );
-  }
-  @computed get isDefault() {
-    return (
-      this.run.alignments.length === 0 ||
-      ( this.run.alignments.length === 1 &&
-        this.run.alignments[0].partition.isDefault )
-    );
-  }
-  @computed get isComplete() {
-    return this.run.alignments.every(
-      ( alignment ) => alignment.partition.isComplete,
-    );
-  }
-}
-
-export { Partition as default, FinalPartition };
+export default Partition;

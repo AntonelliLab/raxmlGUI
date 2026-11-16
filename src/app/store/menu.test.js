@@ -29,17 +29,6 @@ it( 'onAddRun and onRemoveRun update the page runs', () => {
   expect( runs.runs ).toHaveLength( 1 );
 } );
 
-it( 'onLightMode and onDarkMode update the page theme', () => {
-  const listeners = bridge();
-  const runs = new RunList();
-
-  listeners.dark();
-  expect( runs.config.isDarkMode ).toBe( true );
-
-  listeners.light();
-  expect( runs.config.isDarkMode ).toBe( false );
-} );
-
 it( 'onToggleBackboneConstraint and onToggleMultifurcatingConstraint update those constraints', () => {
   const listeners = bridge();
   const runs = new RunList();

@@ -42,6 +42,10 @@ function withBridgeEvents( next ) {
   if ( typeof next.getVersion !== 'function' ) {
     next.getVersion = () => Promise.resolve();
   }
+  // The output panel checks the output name; MobX 6 re-renders it inside the render test when this rejects.
+  if ( typeof next.checkOutput !== 'function' ) {
+    next.checkOutput = () => Promise.resolve( { ok: true, resultFilenames: [] } );
+  }
   // Config construction reads and may write dark mode.
   if ( typeof next.getDarkMode !== 'function' ) {
     next.getDarkMode = () => Promise.resolve( false );

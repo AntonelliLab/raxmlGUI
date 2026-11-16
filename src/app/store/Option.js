@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import { mixed } from 'yup';
 
 class Option {
@@ -19,6 +19,15 @@ class Option {
     hoverInfo,
     { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
   ) {
+    makeObservable( this, {
+      value: observable,
+      setValue: action,
+      reset: action,
+      isDefault: computed,
+      error: computed,
+      haveError: computed,
+      errorMessage: computed,
+    } );
     this.run = run;
     this.defaultValue = defaultValue;
     this.title = title;
@@ -29,23 +38,24 @@ class Option {
       : mixed();
     this.allowOnlyValidChange = allowOnlyValidChange;
     this.helperText = helperText;
+    this.value = defaultValue;
   }
-  @observable value = this.defaultValue;
-  @action setValue = ( value ) => {
+  value;
+  setValue( value ) {
     const isValid = this.schema.isValidSync( value );
     if ( !this.allowOnlyValidChange || isValid ) {
       this.value = isValid
         ? this.schema.cast( value )
         : value;
     }
-  };
-  @action reset() {
+  }
+  reset() {
     this.value = this.defaultValue;
   }
-  @computed get isDefault() {
+  get isDefault() {
     return this.value === this.defaultValue;
   }
-  @computed get error() {
+  get error() {
     try {
       this.schema.validateSync( this.value );
       return null;
@@ -53,10 +63,10 @@ class Option {
       return err;
     }
   }
-  @computed get haveError() {
+  get haveError() {
     return this.error !== null;
   }
-  @computed get errorMessage() {
+  get errorMessage() {
     return this.haveError
       ? this.error.message
       : '';

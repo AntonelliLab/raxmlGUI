@@ -1,783 +1,161 @@
-import { observable, computed, action, createAtom } from 'mobx';
-import { range } from 'd3-array';
-import { promisedComputed } from 'computed-async-mobx';
+import { observable, observableRef, computed, action, runInAction, createAtom, makeObservable } from 'mobx';
+import { promisedComputed } from '../promisedComputed';
 import filenamify from 'filenamify';
 
-import Alignment, { FinalAlignment } from './Alignment';
+import Alignment from './Alignment';
+import FinalAlignment from './FinalAlignment';
 import AstralTree from './AstralTree';
-import Option from './Option';
 import StoreBase, { runEvents } from './StoreBase';
 import { host } from './host';
-import { basename, dir, join, name, quote } from '../paths';
-import * as raxmlSettings from '../../settings/raxml';
+import {
+  binaries,
+  analysisOptions,
+  raxmlNgAnalysisOptions,
+  Binary,
+  NumThreads,
+  Analysis,
+  RaxmlNgAnalysis,
+  NumRuns,
+  NumRepetitions,
+  NumRepetitionsNg,
+  BranchLength,
+  SHlike,
+  CombinedOutput,
+  StartingTree,
+  OutGroup,
+  SubstitutionMatrix,
+  SubstitutionRate,
+  SubstitutionI,
+  SubstitutionAscertainment,
+  AAMatrixName,
+  EstimatedFrequencies,
+  BaseFrequencies,
+  MultistateModel,
+  Tree,
+  BackboneConstraintTree,
+  MultifurcatingConstraintTree,
+} from './RunOptions';
+import { basename, join, quote } from '../paths';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
 
-const raxmlMatrixOptions = raxmlSettings.matrixOptions;
-const raxmlRateOptions = raxmlSettings.rateOptions;
-const raxmlIOptions = raxmlSettings.iOptions;
-const raxmlAscertainmentOptions = raxmlSettings.ascertainmentOptions;
-
 const { windows } = host;
-
-export const MAX_NUM_CPUS = navigator.hardwareConcurrency || 1;
-
-// On Windows 7 (= 6.1) use older versions of RAxML
-const [majorVersion, minorVersion] = host.release.split( '.' );
-const winBinaries =
-  majorVersion === '6' && minorVersion === '1'
-    ? [
-      // TODO: add raxml ng windows exe
-      // TODO: Crashes on Win7, disabled for now
-      // { name: 'modeltest-ng.exe', version: '0.1.7' },
-      {
-        name: 'raxmlHPC_Win7.exe',
-        multithreaded: false,
-        version: '8.2.10',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-SSE3_Win7.exe',
-        multithreaded: false,
-        version: '8.2.10',
-        type: 'raxml',
-      },
-      // TODO: Crashes on Win7, disabled for now
-      // {
-      //   name: 'raxmlHPC-PTHREADS-AVX_Win7.exe',
-      //   multithreaded: true,
-      //   version: '8.2.10',
-      // },
-      {
-        name: 'raxmlHPC-PTHREADS-SSE3_Win7.exe',
-        multithreaded: true,
-        version: '8.2.10',
-        initial: true,
-        type: 'raxml',
-      },
-      // TODO: put back in Astral
-      // {
-      //   name: 'astral.5.7.8.jar',
-      //   multithreaded: false,
-      //   version: '5.7.8',
-      //   type: 'astral',
-      // },
-    ]
-    : [
-      // TODO: add raxml ng windows exe
-      { name: 'modeltest-ng.exe', version: '0.1.7', type: 'modeltest' },
-      {
-        name: 'raxmlHPC.exe',
-        multithreaded: false,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-SSE3.exe',
-        multithreaded: false,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-PTHREADS-AVX.exe',
-        multithreaded: true,
-        version: '8.2.12',
-        type: 'raxml',
-      },
-      {
-        name: 'raxmlHPC-PTHREADS-SSE3.exe',
-        multithreaded: true,
-        version: '8.2.12',
-        initial: true,
-        type: 'raxml',
-      },
-      // TODO: put back in Astral
-      // {
-      //   name: 'astral.5.7.8.jar',
-      //   multithreaded: false,
-      //   version: '5.7.8',
-      //   type: 'astral',
-      // },
-    ];
-
-const likelyARM =
-  host.arch.includes( 'arm64' ) || host.cpuModel.includes( 'Apple' );
-const armBinaries = [
-  {
-    name: 'modeltest-ng-ARM64',
-    multithreaded: true,
-    version: '0.1.7',
-    type: 'modeltest',
-  },
-];
-const x64Binaries = [
-  {
-    name: 'modeltest-ng',
-    multithreaded: true,
-    version: '0.1.7',
-    type: 'modeltest',
-  },
-];
-
-const allBinaries = host.windows
-  ? winBinaries
-  : [
-    ...( !likelyARM
-      ? x64Binaries
-      : armBinaries ),
-    {
-      name: 'raxml-ng',
-      multithreaded: true,
-      version: '1.2.2',
-      initial: true,
-      type: 'raxml',
-    },
-    {
-      name: 'raxmlHPC',
-      multithreaded: false,
-      version: '8.2.12',
-      type: 'raxml',
-    },
-    {
-      name: 'raxmlHPC-SSE3',
-      multithreaded: false,
-      version: '8.2.12',
-      type: 'raxml',
-    },
-    {
-      name: 'raxmlHPC-PTHREADS-AVX',
-      multithreaded: true,
-      version: '8.2.12',
-      type: 'raxml',
-    },
-    {
-      name: 'raxmlHPC-PTHREADS-SSE3',
-      multithreaded: true,
-      version: '8.2.12',
-      type: 'raxml',
-    },
-    // TODO: put back in Astral
-    // {
-    //   name: 'astral.5.7.8.jar',
-    //   multithreaded: false,
-    //   version: '5.7.8',
-    //   type: 'astral',
-    // },
-  ];
-
-const binaries = allBinaries.filter( ( { multithreaded } ) =>
-  MAX_NUM_CPUS === 1
-    ? !multithreaded
-    : true,
-);
-
-const initialBinaryName = binaries.filter( ( { initial } ) => initial )[0].name;
-
-// Available parameters for different analysis
-const params = {
-  brL: 'brL',
-  SHlike: 'SHlike',
-  combinedOutput: 'combinedOutput',
-  reps: 'reps',
-  repsNg: 'repsNg',
-  runs: 'runs',
-  tree: 'tree',
-  startingTree: 'startingTree',
-  outGroup: 'outGroup',
-};
-
-const analysisOptions = [
-  {
-    title: 'Fast tree search',
-    value: 'FT',
-    params: [params.brL, params.SHlike, params.outGroup],
-  },
-  {
-    title: 'ML search',
-    value: 'ML',
-    params: [
-      params.runs,
-      params.SHlike,
-      params.combinedOutput,
-      params.outGroup,
-    ],
-  },
-  {
-    title: 'ML + rapid bootstrap',
-    value: 'ML+rBS',
-    params: [params.reps, params.brL, params.outGroup],
-  }, // default
-  {
-    title: 'ML + thorough bootstrap',
-    value: 'ML+tBS',
-    params: [params.runs, params.reps, params.brL, params.outGroup],
-  },
-  {
-    title: 'Bootstrap + consensus',
-    value: 'BS+con',
-    params: [params.reps, params.brL, params.outGroup],
-  },
-  {
-    title: 'Ancestral states',
-    value: 'AS',
-    needTree: true,
-    params: [params.tree],
-  },
-  {
-    title: 'Pairwise distances',
-    value: 'PD',
-    params: [params.startingTree],
-  },
-  {
-    title: 'RELL bootstraps',
-    value: 'RBS',
-    params: [],
-  },
-];
-
-const raxmlNgAnalysisOptions = [
-  {
-    title: 'Sanity check',
-    value: 'SC',
-    params: [],
-  },
-  {
-    title: 'Compression and conversion to binary format',
-    value: 'CC',
-    params: [],
-  },
-  {
-    title: 'ML tree inference',
-    value: 'TI',
-    params: [params.runs, params.outGroup],
-  },
-  {
-    title: 'ML + thorough bootstrap + consensus',
-    value: 'ML+tBS+con',
-    params: [params.runs, params.repsNg, params.outGroup],
-  },
-  {
-    title: 'ML + transfer bootstrap expectation + consensus',
-    value: 'ML+TBE+con',
-    params: [params.runs, params.repsNg, params.outGroup],
-  },
-  {
-    title: 'Ancestral state reconstruction',
-    value: 'AS',
-    needTree: true,
-    params: [params.tree],
-  },
-];
-
-class Binary extends Option {
-  constructor( run ) {
-    super( run, initialBinaryName, 'Binary', 'Name of binary' );
-  }
-  options = binaries.map( ( { name } ) => ( { value: name, title: name } ) );
-  @computed get version() {
-    return binaries.filter( ( b ) => b.name === this.value )[0].version;
-  }
-  @computed get type() {
-    return binaries.filter( ( b ) => b.name === this.value )[0].type;
-  }
-}
-
-class NumThreads extends Option {
-  constructor( run ) {
-    super( run, 2, 'Threads', 'Number of cpu threads' );
-  }
-  options = range( 1, MAX_NUM_CPUS + 1 ).map( ( value ) => ( {
-    value,
-    title: value,
-  } ) );
-  @computed get notAvailable() {
-    return !(
-      /PTHREADS/.test( this.run.binary.value ) || this.run.usesModeltestNg
-    );
-  }
-}
-
-class Analysis extends Option {
-  constructor( run ) {
-    super( run, 'ML+rBS', 'Analysis', 'Type of analysis' );
-  }
-  options = analysisOptions.map( ( { value, title } ) => ( { value, title } ) );
-}
-
-class RaxmlNgAnalysis extends Option {
-  constructor( run ) {
-    super( run, 'ML+TBE+con', 'Analysis', 'Type of analysis' );
-  }
-  options = raxmlNgAnalysisOptions.map( ( { value, title } ) => ( {
-    value,
-    title,
-  } ) );
-}
-
-class NumRuns extends Option {
-  constructor( run ) {
-    super( run, 1, 'Runs', 'Number of runs' );
-  }
-  options = [1, 10, 20, 50, 100, 500].map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.runs );
-  }
-}
-
-class NumRepetitions extends Option {
-  constructor( run ) {
-    super( run, 100, 'Reps.', 'Number of repetitions' );
-  }
-  options = [
-    100,
-    200,
-    500,
-    1000,
-    10000,
-    'autoMR',
-    'autoMRE',
-    'autoMRE_IGN',
-    'autoFC',
-  ].map( ( value ) => ( { value, title: value } ) );
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.reps );
-  }
-}
-
-class NumRepetitionsNg extends Option {
-  constructor( run ) {
-    super( run, 100, 'Reps.', 'Number of repetitions' );
-  }
-  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map( ( value ) => ( {
-    value,
-    title: value,
-  } ) );
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.repsNg );
-  }
-}
-
-//TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
-class BranchLength extends Option {
-  constructor( run ) {
-    super(
-      run,
-      false,
-      'BS brL',
-      'Compute branch lengths',
-      'Optimize model parameters and branch lengths for the given input tree',
-    );
-  }
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.brL );
-  }
-}
-
-class SHlike extends Option {
-  constructor( run ) {
-    super(
-      run,
-      false,
-      'SH-like',
-      'Compute log-likelihood test',
-      'Shimodaira-Hasegawa-like procedure',
-    );
-  }
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.SHlike );
-  }
-}
-
-class CombinedOutput extends Option {
-  constructor( run ) {
-    super( run, false, 'Combined output', 'Concatenate output trees' );
-  }
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.combinedOutput );
-  }
-  @computed get isUsed() {
-    return this.value && !this.notAvailable;
-  }
-}
-
-class StartingTree extends Option {
-  constructor( run ) {
-    super( run, 'Maximum parsimony', 'Starting tree', '' );
-  }
-  options = ['Maximum parsimony', 'User defined'].map( ( value ) => ( {
-    value,
-    title: value,
-  } ) );
-  @computed get notAvailable() {
-    return !this.run.analysisOption.params.includes( params.startingTree );
-  }
-}
-
-class OutGroup extends Option {
-  constructor( run ) {
-    super( run, ['<none>'], 'Outgroup', '' );
-    this.multiple = true;
-  }
-  @computed get options() {
-    return ['<none>', ...this.run.taxons].map( ( value ) => ( {
-      value,
-      title: value,
-    } ) );
-  }
-
-  @action setValue = ( value ) => {
-    if ( this.value.includes( '<none>' ) ) {
-      this.value = value.filter( ( v ) => v !== '<none>' );
-      return;
-    }
-    if ( !this.value.includes( '<none>' ) && value.includes( '<none>' ) ) {
-      this.value = value.filter( ( v ) => v === '<none>' );
-      return;
-    }
-    this.value = value;
-  };
-
-  @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      !this.run.analysisOption.params.includes( params.outGroup )
-    );
-  }
-  @computed get cmdValue() {
-    return this.value.includes( '<none>' )
-      ? ''
-      : this.value.join( ',' );
-  }
-}
-
-class SubstitutionMatrix extends Option {
-  constructor( run ) {
-    super( run, 'GTR', 'Substitution matrix' );
-  }
-  @computed get options() {
-    if ( !this.run.haveAlignments ) {
-      return [];
-    }
-    const modelSettings = raxmlMatrixOptions[this.run.dataType];
-    if ( !modelSettings ) {
-      return [];
-    }
-    return modelSettings.options.map( ( value ) => ( {
-      value,
-      title: value === 'GTR'
-        ? value
-        : `${value} + GAMMA`,
-    } ) );
-  }
-  @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      this.run.dataType === 'binary' ||
-      this.run.dataType === 'protein' ||
-      this.run.dataType === 'multistate' ||
-      this.run.usesRaxmlNg
-    );
-  }
-  @computed get cmdValue() {
-    if ( this.run.dataType === 'binary' ) {
-      return 'BIN';
-    }
-    if ( this.run.dataType === 'protein' ) {
-      return 'PROT';
-    }
-    if ( this.run.dataType === 'multistate' ) {
-      return 'MULTI';
-    }
-    if ( this.value === 'JC' || this.value === 'K80' || this.value === 'HKY' ) {
-      return 'GTR';
-    }
-    return this.value;
-  }
-  @computed get extraCmdValue() {
-    switch ( this.value ) {
-      case 'JC':
-        return '--JC69';
-      case 'K80':
-        return '--K80';
-      case 'HKY':
-        return '--HKY85';
-      default:
-        return '';
-    }
-  }
-  @computed get notGTR() {
-    return this.value !== 'GTR';
-  }
-}
-
-class SubstitutionRate extends Option {
-  constructor( run ) {
-    super( run, 'GAMMA', 'Substitution rates' );
-  }
-  @computed get options() {
-    if ( !this.run.haveAlignments ) {
-      return [];
-    }
-    const modelSettings = raxmlRateOptions;
-    if ( !modelSettings ) {
-      return [];
-    }
-    return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
-  }
-  @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      ( ( this.run.dataType === 'dna' ||
-        this.run.dataType === 'rna' ||
-        this.run.dataType === 'nucleotide' ) &&
-        this.run.substitutionMatrix.notGTR ) ||
-      this.run.usesRaxmlNg
-    );
-  }
-  @computed get cmdValue() {
-    if ( this.run.substitutionMatrix.notGTR ) {
-      return 'GAMMA';
-    }
-    return this.value;
-  }
-  @computed get isCAT() {
-    return this.value === 'CAT';
-  }
-}
-
-class SubstitutionI extends Option {
-  constructor( run ) {
-    super( run, 'none', 'Proportion of invariant sites' );
-  }
-  @computed get options() {
-    if ( !this.run.haveAlignments ) {
-      return [];
-    }
-    const modelSettings = raxmlIOptions;
-    if ( !modelSettings ) {
-      return [];
-    }
-    return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
-  }
-  @computed get notAvailable() {
-    return (
-      this.run.substitutionAscertainment.isSet ||
-      !this.run.haveAlignments ||
-      this.run.usesRaxmlNg
-    );
-  }
-  @computed get cmdValue() {
-    return this.value === 'none'
-      ? ''
-      : 'I';
-  }
-  @computed get isSet() {
-    return this.value !== 'none';
-  }
-}
-
-class SubstitutionAscertainment extends Option {
-  constructor( run ) {
-    super( run, 'none', 'Ascertainment bias correction' );
-  }
-  @computed get options() {
-    if ( !this.run.haveAlignments ) {
-      return [];
-    }
-    const modelSettings = raxmlAscertainmentOptions;
-    if ( !modelSettings ) {
-      return [];
-    }
-    return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
-  }
-  @computed get notAvailable() {
-    return (
-      !this.run.haveAlignments ||
-      this.run.usesRaxmlNg ||
-      this.run.dataType === 'mixed' ||
-      this.run.finalAlignment.hasInvariantSites ||
-      this.run.substitutionI.isSet
-    );
-  }
-  @computed get cmdValue() {
-    return this.value === 'none'
-      ? ''
-      : 'ASC_';
-  }
-  @computed get extraCmdValue() {
-    switch ( this.value ) {
-      case "Lewis' method":
-        return '--asc-corr=lewis';
-      case "Felsenstein's method":
-        return '--asc-corr=felsenstein';
-      case "Stamatakis' method":
-        return '--asc-corr=stamatakis';
-      default:
-        return '';
-    }
-  }
-  @computed get isSet() {
-    return this.value !== 'none';
-  }
-}
-
-class AAMatrixName extends Option {
-  constructor( run ) {
-    super(
-      run,
-      'BLOSUM62',
-      'Matrix name',
-      'Amino Acid Substitution Matrix name',
-    );
-  }
-  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
-    ( value ) => ( { value, title: value } ),
-  );
-  @computed get notAvailable() {
-    return this.run.dataType !== 'protein';
-  }
-}
-
-class EstimatedFrequencies extends Option {
-  constructor( run ) {
-    super(
-      run,
-      false,
-      'ML Freq.',
-      'Estimated base frequencies',
-      'Use estimated base frequencies instead of empirical.',
-    );
-  }
-  @computed get notAvailable() {
-    return this.run.dataType === 'protein' || this.run.usesRaxmlNg;
-  }
-}
-
-class BaseFrequencies extends Option {
-  constructor( run ) {
-    super(
-      run,
-      'default',
-      'Base frequencies',
-      'Empirical, ML estimated or model based base frequencies',
-    );
-  }
-  options = [
-    { title: 'From model', value: 'default' },
-    { title: 'Empirical', value: 'F' },
-    { title: 'Estimated (ML)', value: 'X' },
-  ];
-  @computed get notAvailable() {
-    return this.run.dataType !== 'protein' || this.run.usesRaxmlNg;
-  }
-}
-
-class MultistateModel extends Option {
-  constructor( run ) {
-    super( run, 'GTR', 'Multistate model' );
-  }
-  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
-    ( value ) => ( { value, title: value } ),
-  );
-  @computed get notAvailable() {
-    return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg;
-  }
-}
-
-class TreeFile extends Option {
-  constructor( run ) {
-    super( run, '', 'Tree', '' );
-  }
-  @observable filePath = '';
-  @computed get haveFile() {
-    return !!this.filePath;
-  }
-  @computed get filename() {
-    return basename( this.filePath );
-  }
-  @computed get name() {
-    return name( this.filePath );
-  }
-  @computed get dir() {
-    return dir( this.filePath );
-  }
-  @action setFilePath = ( filePath ) => {
-    this.filePath = filePath;
-  };
-  @action openFolder = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
-    await rendererBridge.showItemInFolder( this.filePath );
-  };
-  @action openFile = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
-    await rendererBridge.openPath( this.filePath );
-  };
-  @action remove = () => {
-    this.setFilePath( '' );
-  };
-}
-
-class Tree extends TreeFile {
-  @computed get notAvailable() {
-    return !(
-      this.run.analysisOption.params.includes( params.tree ) ||
-      ( !this.run.startingTree.notAvailable &&
-        this.run.startingTree.value === 'User defined' )
-    );
-  }
-}
-
-class BackboneConstraintTree extends TreeFile {
-  @computed get isSet() {
-    return this.run.useBackboneConstraint && this.haveFile;
-  }
-  @computed get canConstraint() {
-    const analysisWithConstraint = [
-      'ML',
-      'ML+rBS',
-      'ML+tBS',
-      'BS+con',
-      'RBS',
-      'SC',
-      'CC',
-      'TI',
-      'ML+tBS+con',
-      'ML+TBE+con',
-    ];
-    return analysisWithConstraint.includes( this.run.analysis.value );
-  }
-  @computed get notAvailable() {
-    return !this.run.useBackboneConstraint || !this.canConstraint;
-  }
-}
-
-class MultifurcatingConstraintTree extends TreeFile {
-  @computed get isSet() {
-    return this.run.useMultifurcatingConstraint && this.haveFile;
-  }
-  @computed get canConstraint() {
-    const analysisWithConstraint = [
-      'ML',
-      'ML+rBS',
-      'ML+tBS',
-      'BS+con',
-      'RBS',
-      'SC',
-      'CC',
-      'TI',
-      'ML+tBS+con',
-      'ML+TBE+con',
-    ];
-    return analysisWithConstraint.includes( this.run.analysis.value );
-  }
-  @computed get notAvailable() {
-    return !this.run.useMultifurcatingConstraint || !this.canConstraint;
-  }
-}
 
 class Run extends StoreBase {
   constructor( parent, id ) {
     super();
+    makeObservable( this, {
+      analysis: computed,
+      analysisOption: computed,
+      loadTreeFile: action,
+      loadBackboneConstraintFile: action,
+      loadMultifurcatingConstraintFile: action,
+      disableCheckUndeterminedSequence: observable,
+      outputName: observable,
+      setOutputName: action,
+      outputNameOk: computed,
+      outputNameSafe: computed,
+      outputNameNotice: computed,
+      outputFilenameSafe: computed,
+      outputDir: observable,
+      setOutputDir: action,
+      selectOutputDir: action,
+      openOutputDir: action,
+      showPartitionFor: observableRef,
+      showPartition: action,
+      hidePartition: action,
+      resultDir: observable,
+      resultFilenames: computed,
+      haveResult: computed,
+      openFile: action,
+      haveAlignments: computed,
+      hasAstralTree: computed,
+      taxons: computed,
+      dataType: computed,
+      error: observable,
+      missing: computed,
+      running: observable,
+      finished: observable,
+      exitCode: observable,
+      clearFinished: action,
+      ok: computed,
+      startDisabled: computed,
+      randomSeed: observable,
+      seedParsimony: computed,
+      seedRapidBootstrap: computed,
+      seedBootstrap: computed,
+      setRandomSeed: action,
+      haveRandomSeed: computed,
+      usesRaxmlNg: computed,
+      usesModeltestNg: computed,
+      inputIsAlignment: computed,
+      inputIsTree: computed,
+      usesModeltest: computed,
+      usesRaxml: computed,
+      usesAstral: computed,
+      modelTestCanRun: computed,
+      modelTestIsRunningOnAlignment: computed,
+      cancelModeltestOnAlignment: action,
+      args: computed,
+      ngSubstitutionModelCmd: computed,
+      showModifiedSnack: computed,
+      showModifiedDialog: computed,
+      modificationMessages: computed,
+      converted: computed,
+      modified: computed,
+      convertedAlignmentFrom: computed,
+      clearShowModified: action,
+      raxmlSubstitutionModelCmd: computed,
+      command: computed,
+      settingsFileContent: computed,
+      settingsFilePath: computed,
+      writeSettings: action,
+      startAstral: action,
+      start: action,
+      cancel: action,
+      afterRun: action,
+      alignments: observable,
+      astralTree: observable,
+      code: observable,
+      data: observable,
+      path: observable,
+      stdout: observable,
+      stderr: observable,
+      useBackboneConstraint: observable,
+      useMultifurcatingConstraint: observable,
+      numSites: computed,
+      needAlignment: computed,
+      removeRun: action,
+      loadAlignmentFiles: action,
+      loadAstralTree: action,
+      addAlignments: action,
+      addAstralFiles: action,
+      removeAlignment: action,
+      removeAstralTree: action,
+      canLoadAlignment: computed,
+      canLoadAstralTree: computed,
+      partitionFile: observable,
+      partitionFileContent: observable,
+      partitionFileName: computed,
+      havePartitionFile: computed,
+      canLoadPartitionFile: computed,
+      loadPartitionFile: action,
+      addPartitionFiles: action,
+      addTreeFiles: action,
+      removePartitionFile: action,
+      clearStdout: action,
+      clearStderr: action,
+      clearConsole: action,
+      clearError: action,
+      reset: action,
+      onRunStdout: action,
+      onRunStderr: action,
+      onAstralSuccess: action,
+      onRunFinished: action,
+      onRunError: action,
+      onBackboneConstraint: action,
+      onMultifurcatingConstraint: action,
+    } );
     this.parent = parent;
     this.id = id;
     this.finalAlignment = new FinalAlignment( this );
@@ -802,12 +180,10 @@ class Run extends StoreBase {
     return raxmlParam;
   };
 
-  @computed
   get analysis() {
     return this.raxmlNgSwitch( new RaxmlNgAnalysis( this ), new Analysis( this ) );
   }
 
-  @computed
   get analysisOption() {
     return this.raxmlNgSwitch(
       raxmlNgAnalysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
@@ -846,19 +222,16 @@ class Run extends StoreBase {
     this.addTreeFiles( chosen.type, [{ path: chosen.filePath }] );
   };
 
-  @action
-    loadTreeFile = () => this.chooseTree( 'tree' );
+  loadTreeFile = () => this.chooseTree( 'tree' );
 
-  @action
-    loadBackboneConstraintFile = () => this.chooseTree( 'backboneConstraint' );
+  loadBackboneConstraintFile = () => this.chooseTree( 'backboneConstraint' );
 
-  @action
-    loadMultifurcatingConstraintFile = () => this.chooseTree( 'multifurcatingConstraint' );
+  loadMultifurcatingConstraintFile = () => this.chooseTree( 'multifurcatingConstraint' );
 
-  @observable disableCheckUndeterminedSequence = true;
+  disableCheckUndeterminedSequence = true;
 
-  @observable outputName = 'output';
-  @action setOutputName = ( value ) => {
+  outputName = 'output';
+  setOutputName = ( value ) => {
     this.outputName = filenamify( value.replace( /\s+/g, '_' ).trim() );
   };
 
@@ -891,113 +264,109 @@ class Run extends StoreBase {
     },
   );
 
-  @computed get outputNameOk() {
+  get outputNameOk() {
     return this.outputNameAvailable.get().ok;
   }
 
-  @computed get outputNameSafe() {
+  get outputNameSafe() {
     return (
       this.outputNameAvailable.get().outputNameUnused ||
       this.outputNamePlaceholder
     );
   }
 
-  @computed get outputNameNotice() {
+  get outputNameNotice() {
     return this.outputNameOk
       ? ''
       : `Output with that id already exists. New run will use output id '${this.outputNameSafe}'`;
   }
 
-  @computed get outputFilenameSafe() {
+  get outputFilenameSafe() {
     return `${this.outputNameSafe}.tre`;
   }
 
-  @observable outputDir = '';
-  @action
-    setOutputDir = ( dir ) => {
-      this.outputDir = dir;
-    };
-  @action
-    selectOutputDir = async () => {
-      const { rendererBridge } = /** @type {any} */ ( window );
-      const outputDir = await rendererBridge.selectOutputDir( this.id );
-      if ( !outputDir ) {
-        return;
-      }
-      this.setOutputDir( outputDir );
-    };
+  outputDir = '';
+  setOutputDir = ( dir ) => {
+    this.outputDir = dir;
+  };
+  selectOutputDir = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const outputDir = await rendererBridge.selectOutputDir( this.id );
+    if ( !outputDir ) {
+      return;
+    }
+    this.setOutputDir( outputDir );
+  };
 
-  @action openOutputDir = async () => {
+  openOutputDir = async () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     await rendererBridge.openPath( this.outputDir );
   };
 
-  @observable.ref showPartitionFor = null;
-  @action
-    showPartition = ( alignment ) => {
-      this.showPartitionFor = alignment;
-    };
-  @action
-    hidePartition = () => {
-      this.showPartition( null );
-    };
+  showPartitionFor = null;
+  showPartition = ( alignment ) => {
+    this.showPartitionFor = alignment;
+  };
+  hidePartition = () => {
+    this.showPartition( null );
+  };
 
   // Result
-  @observable resultDir = '';
-  @computed get resultFilenames() {
+  resultDir = '';
+  get resultFilenames() {
     return this.outputNameAvailable.get().resultFilenames || [];
   }
 
-  @computed get haveResult() {
+  get haveResult() {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  @action openFile = async ( filePath ) => {
+  openFile = async ( filePath ) => {
     const { rendererBridge } = /** @type {any} */ ( window );
     await rendererBridge.openPath( filePath );
   };
 
-  @computed get haveAlignments() {
+  get haveAlignments() {
     return this.alignments.length > 0;
   }
 
-  @computed get hasAstralTree() {
+  get hasAstralTree() {
     return !!this.astralTree;
   }
 
-  @computed get taxons() {
+  get taxons() {
     return this.haveAlignments
       ? this.alignments[0].taxons
       : [];
   }
 
-  @computed get dataType() {
+  get dataType() {
     return this.finalAlignment.dataType;
   }
 
-  @observable error = null;
+  error = null;
 
-  @computed get missing() {
+  get missing() {
     if ( !this.tree.notAvailable && !this.tree.filePath ) {
       return 'Missing tree, please load one.';
     }
     return '';
   }
 
-  @observable running = false;
-  @observable finished = false;
-  @observable exitCode = 0;
-  @action clearFinished = () => {
+  running = false;
+  finished = false;
+  exitCode = 0;
+  clearFinished = () => {
     this.finished = false;
     this.exitCode = 0;
   };
   atomFinished;
 
-  @computed get ok() {
+  get ok() {
     return !this.error && !this.missing;
   }
 
-  @computed get startDisabled() {
+  get startDisabled() {
     return (
       ( this.alignments.length === 0 && !this.hasAstralTree ) ||
       !this.ok ||
@@ -1009,25 +378,25 @@ class Run extends StoreBase {
     );
   }
 
-  @observable randomSeed = Math.floor( 1000000 * Math.random() );
-  @computed get seedParsimony() {
+  randomSeed = Math.floor( 1000000 * Math.random() );
+  get seedParsimony() {
     return this.randomSeed;
   }
-  @computed get seedRapidBootstrap() {
+  get seedRapidBootstrap() {
     return this.randomSeed;
   }
-  @computed get seedBootstrap() {
+  get seedBootstrap() {
     return this.randomSeed;
   }
 
-  @action setRandomSeed = ( value ) => {
+  setRandomSeed = ( value ) => {
     const v = Number( value );
     if ( !Number.isNaN( v ) && v !== 0 && v < 1e6 ) {
       this.randomSeed = v;
     }
   };
 
-  @computed get haveRandomSeed() {
+  get haveRandomSeed() {
     const analysisWithSeed = [
       'FT',
       'ML',
@@ -1043,50 +412,50 @@ class Run extends StoreBase {
     return analysisWithSeed.includes( this.analysis.value );
   }
 
-  @computed get usesRaxmlNg() {
+  get usesRaxmlNg() {
     return this.binary.value.includes( 'raxml-ng' );
   }
 
-  @computed get usesModeltestNg() {
+  get usesModeltestNg() {
     return this.binary.value.includes( 'modeltest-ng' );
   }
 
-  @computed get inputIsAlignment() {
+  get inputIsAlignment() {
     return this.usesModeltest || this.usesRaxml;
   }
 
-  @computed get inputIsTree() {
+  get inputIsTree() {
     return this.usesAstral;
   }
 
-  @computed get usesModeltest() {
+  get usesModeltest() {
     return this.binary.type === 'modeltest';
   }
 
-  @computed get usesRaxml() {
+  get usesRaxml() {
     return this.binary.type === 'raxml';
   }
 
-  @computed get usesAstral() {
+  get usesAstral() {
     return this.binary.type === 'astral';
   }
 
-  @computed get modelTestCanRun() {
+  get modelTestCanRun() {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
   }
 
-  @computed get modelTestIsRunningOnAlignment() {
+  get modelTestIsRunningOnAlignment() {
     const running = this.alignments.some(
       ( alignment ) => alignment.modeltestLoading,
     );
     return running;
   }
 
-  @action cancelModeltestOnAlignment = () => {
+  cancelModeltestOnAlignment = () => {
     this.alignments.forEach( ( alignment ) => alignment.cancelModelTest() );
   };
 
-  @computed get args() {
+  get args() {
     if ( this.usesAstral ) {
       return this.astralArgs();
     }
@@ -1099,27 +468,27 @@ class Run extends StoreBase {
     return this.raxmlArgs();
   }
 
-  @computed get ngSubstitutionModelCmd() {
+  get ngSubstitutionModelCmd() {
     return this.haveAlignments
       ? this.alignments[0].ngSubstitutionModelCmd
       : '';
   }
 
-  @computed get showModifiedSnack() {
+  get showModifiedSnack() {
     const shouldShow = this.alignments
       .map( ( a ) => a.showModifiedSnack )
       .some( ( e ) => e );
     return this.haveAlignments && shouldShow;
   }
 
-  @computed get showModifiedDialog() {
+  get showModifiedDialog() {
     const shouldShow = this.alignments
       .map( ( a ) => a.showModifiedDialog )
       .some( ( e ) => e );
     return this.haveAlignments && shouldShow;
   }
 
-  @computed get modificationMessages() {
+  get modificationMessages() {
     const messages = [];
     this.alignments.forEach( ( a ) => {
       messages.push( `${a.name}:\n` );
@@ -1130,17 +499,17 @@ class Run extends StoreBase {
     return messages;
   }
 
-  @computed get converted() {
+  get converted() {
     const converted = this.alignments.map( ( a ) => a.converted ).some( ( e ) => e );
     return this.haveAlignments && converted;
   }
 
-  @computed get modified() {
+  get modified() {
     const modified = this.alignments.map( ( a ) => a.modified ).some( ( e ) => e );
     return this.haveAlignments && modified;
   }
 
-  @computed get convertedAlignmentFrom() {
+  get convertedAlignmentFrom() {
     if ( !this.haveAlignments ) {
       return null;
     }
@@ -1148,13 +517,13 @@ class Run extends StoreBase {
     return convertedAlignments[0].convertedFrom;
   }
 
-  @action clearShowModified = () => {
+  clearShowModified = () => {
     for ( let i = 0; i < this.alignments.length; i++ ) {
       this.alignments[i].clearModified();
     }
   };
 
-  @computed get raxmlSubstitutionModelCmd() {
+  get raxmlSubstitutionModelCmd() {
     let model =
       this.substitutionAscertainment.cmdValue +
       this.substitutionMatrix.cmdValue +
@@ -1902,7 +1271,7 @@ class Run extends StoreBase {
     return cmdArgs.filter( ( args ) => args.length > 0 );
   };
 
-  @computed get command() {
+  get command() {
     if ( this.usesAstral ) {
       return this.args
         .map( ( cmdArgs ) => `java -jar ${this.binary.value} ${cmdArgs.join( ' ' )}` )
@@ -1913,7 +1282,7 @@ class Run extends StoreBase {
       .join( ' &&\\\n' );
   }
 
-  @computed get settingsFileContent() {
+  get settingsFileContent() {
     let text = `The analysis was run using raxmlGUI 2.0 (version ${this.version}) as follows:
 Analysis: ${this.analysisOption.title}
 Binary: ${this.binary.value} version ${this.binary.version}
@@ -1931,24 +1300,23 @@ Results saved to: ${this.outputDir}
     return text;
   }
 
-  @computed get settingsFilePath() {
+  get settingsFilePath() {
     return join(
       `${this.outputDir}`,
       `RAxML_GUI_Settings_${this.outputNameSafe}.txt`,
     );
   }
 
-  @action
-    writeSettings = async () => {
-      try {
-        console.log( `Writing settings to ${this.settingsFilePath}...` );
-        const { rendererBridge } = /** @type {any} */ ( window );
-        await rendererBridge.writeFile( this.settingsFilePath, this.settingsFileContent );
-      } catch ( err ) {
-        console.error( 'Error writing settings:', err );
-        throw err;
-      }
-    };
+  writeSettings = async () => {
+    try {
+      console.log( `Writing settings to ${this.settingsFilePath}...` );
+      const { rendererBridge } = /** @type {any} */ ( window );
+      await rendererBridge.writeFile( this.settingsFilePath, this.settingsFileContent );
+    } catch ( err ) {
+      console.error( 'Error writing settings:', err );
+      throw err;
+    }
+  };
 
   startAstral = async () => {
     const { id, binary, args } = this;
@@ -1962,209 +1330,197 @@ Results saved to: ${this.outputDir}
     } );
   };
 
-  @action
-    start = async () => {
-      const {
-        id,
-        args,
-        binary,
-        outputDir,
-        outputFilenameSafe: outputFilename,
-        outputNameSafe: outputName,
-        combinedOutput,
-        usesRaxmlNg,
-        usesModeltestNg,
-        finalAlignment,
-      } = this;
+  start = async () => {
+    const {
+      id,
+      args,
+      binary,
+      outputDir,
+      outputFilenameSafe: outputFilename,
+      outputNameSafe: outputName,
+      combinedOutput,
+      usesRaxmlNg,
+      usesModeltestNg,
+      finalAlignment,
+    } = this;
 
-      // If binary is astral use start in seperate function
-      if ( this.usesAstral ) {
-        return this.startAstral();
-      }
+    // If binary is astral use start in seperate function
+    if ( this.usesAstral ) {
+      return this.startAstral();
+    }
 
-      // Less than 4 sequences and RAxML would error out
-      if ( this.finalAlignment.numSequences <= 3 ) {
-        this.parent.onError(
-          new UserFixError(
-            'To start a run with RAxML the final alignment needs to have at least four sequences.',
-          ),
-        );
-        return;
-      }
+    // Less than 4 sequences and RAxML would error out
+    if ( this.finalAlignment.numSequences <= 3 ) {
+      this.parent.onError(
+        new UserFixError(
+          'To start a run with RAxML the final alignment needs to have at least four sequences.',
+        ),
+      );
+      return;
+    }
 
-      this.running = true;
-      const startToken = {};
-      this.startToken = startToken;
-      if ( this.outputName !== this.outputNameSafe ) {
-        this.outputName = this.outputNameSafe;
-      }
+    this.running = true;
+    const startToken = {};
+    this.startToken = startToken;
+    if ( this.outputName !== this.outputNameSafe ) {
+      this.outputName = this.outputNameSafe;
+    }
 
-      if ( this.finalAlignment.numAlignments > 1 ) {
-        await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
-      } else if ( !this.finalAlignment.partition.isDefault ) {
-        await this.finalAlignment.writePartition();
-      }
-      await this.writeSettings();
-      if ( this.startToken !== startToken ) {
-        return;
-      }
-      console.log( `Start run ${id} with args ${args}` );
-      const { rendererBridge } = /** @type {any} */ ( window );
-      await rendererBridge.startRun( {
-        id,
-        args,
-        binaryName: binary.value,
-        outputDir,
-        outputFilename,
-        outputName,
-        combinedOutput: combinedOutput.isUsed,
-        usesRaxmlNg,
-        usesModeltestNg,
-        inputPath: finalAlignment.path,
-      } );
-    };
+    if ( this.finalAlignment.numAlignments > 1 ) {
+      await this.finalAlignment.writeConcatenatedAlignmentAndPartition();
+    } else if ( !this.finalAlignment.partition.isDefault ) {
+      await this.finalAlignment.writePartition();
+    }
+    await this.writeSettings();
+    if ( this.startToken !== startToken ) {
+      return;
+    }
+    console.log( `Start run ${id} with args ${args}` );
+    const { rendererBridge } = /** @type {any} */ ( window );
+    await rendererBridge.startRun( {
+      id,
+      args,
+      binaryName: binary.value,
+      outputDir,
+      outputFilename,
+      outputName,
+      combinedOutput: combinedOutput.isUsed,
+      usesRaxmlNg,
+      usesModeltestNg,
+      inputPath: finalAlignment.path,
+    } );
+  };
 
-  @action
-    cancel = () => {
-      this.startToken = null;
-      const { rendererBridge } = /** @type {any} */ ( window );
-      rendererBridge.cancelRun( this.id );
-      this.afterRun();
-    };
+  cancel = () => {
+    this.startToken = null;
+    const { rendererBridge } = /** @type {any} */ ( window );
+    rendererBridge.cancelRun( this.id );
+    this.afterRun();
+  };
 
-  @action
-    afterRun = () => {
-      this.running = false;
-      this.atomAfterRun.reportChanged();
-    };
+  afterRun = () => {
+    this.running = false;
+    this.atomAfterRun.reportChanged();
+  };
 
-  @observable alignments = [];
-  @observable astralTree = undefined;
-  @observable code = undefined;
-  @observable data = '';
-  @observable path = undefined;
-  @observable stdout = '';
-  @observable stderr = '';
+  alignments = [];
+  astralTree = undefined;
+  code = undefined;
+  data = '';
+  path = undefined;
+  stdout = '';
+  stderr = '';
 
-  @observable useBackboneConstraint = false;
-  @observable useMultifurcatingConstraint = false;
+  useBackboneConstraint = false;
+  useMultifurcatingConstraint = false;
 
-  @computed
   get numSites() {
     return this.alignments.reduce( ( sum, n ) => sum + n, 0 );
   }
 
-  @computed
   get needAlignment() {
     return true;
   }
 
-  @action
-    removeRun = () => {
-      this.parent.deleteRun( this );
-    };
+  removeRun = () => {
+    this.parent.deleteRun( this );
+  };
 
-  @action
-    loadAlignmentFiles = async () => {
-      const { rendererBridge } = /** @type {any} */ ( window );
-      const alignments = await rendererBridge.selectAlignment( this.id );
-      if ( !alignments ) {
-        return;
-      }
-      this.addAlignments( alignments );
-    };
+  loadAlignmentFiles = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const alignments = await rendererBridge.selectAlignment( this.id );
+    if ( !alignments ) {
+      return;
+    }
+    this.addAlignments( alignments );
+  };
 
-  @action
-    loadAstralTree = async () => {
-      const { rendererBridge } = /** @type {any} */ ( window );
-      const file = await rendererBridge.selectAstralFile( this.id );
-      if ( !file ) {
-        return;
-      }
-      this.addAstralFiles( file );
-    };
+  loadAstralTree = async () => {
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const file = await rendererBridge.selectAstralFile( this.id );
+    if ( !file ) {
+      return;
+    }
+    this.addAstralFiles( file );
+  };
 
   haveAlignment = ( id ) => {
     // TODO: Input.js queries without id, doe it work as expected? Later queries with path instead of id
     return this.alignments.findIndex( ( alignment ) => alignment.id === id ) >= 0;
   };
 
-  @action
-    addAlignments = ( alignments ) => {
-      alignments.forEach( ( { path } ) => {
-        if ( !this.haveAlignment( path ) ) {
-          this.alignments.push( new Alignment( this, path ) );
-          if ( this.alignments.length === 1 ) {
-            this.setOutputName( this.alignments[0].name );
-            if ( !this.outputDir ) {
-              this.setOutputDir( this.alignments[0].dir );
-            }
+  addAlignments = ( alignments ) => {
+    alignments.forEach( ( { path } ) => {
+      if ( !this.haveAlignment( path ) ) {
+        this.alignments.push( new Alignment( this, path ) );
+        if ( this.alignments.length === 1 ) {
+          this.setOutputName( this.alignments[0].name );
+          if ( !this.outputDir ) {
+            this.setOutputDir( this.alignments[0].dir );
           }
         }
-      } );
-    };
-
-  @action
-    addAstralFiles = ( { path } ) => {
-      if ( !this.hasAstralTree ) {
-        this.astralTree = new AstralTree( this, path );
-        this.setOutputName( this.astralTree.name );
-        if ( !this.outputDir ) {
-          this.setOutputDir( this.astralTree.dir );
-        }
       }
-    };
+    } );
+  };
 
-  @action
-    removeAlignment = ( alignment ) => {
-      const oldDataType = this.dataType;
-      const index = this.alignments.indexOf( alignment );
-      if ( index >= 0 ) {
-        this.alignments.splice( index, 1 );
+  addAstralFiles = ( { path } ) => {
+    if ( !this.hasAstralTree ) {
+      this.astralTree = new AstralTree( this, path );
+      this.setOutputName( this.astralTree.name );
+      if ( !this.outputDir ) {
+        this.setOutputDir( this.astralTree.dir );
       }
-      if ( this.haveAlignments ) {
+    }
+  };
+
+  removeAlignment = ( alignment ) => {
+    const oldDataType = this.dataType;
+    const index = this.alignments.indexOf( alignment );
+    if ( index >= 0 ) {
+      this.alignments.splice( index, 1 );
+    }
+    if ( this.haveAlignments ) {
       // this.dataType is computed automatically with the reduced set, reset to default if changed (from mixed or multistate)
-        if ( this.dataType !== oldDataType ) {
+      if ( this.dataType !== oldDataType ) {
         // This parameter is deleted, but there seems to be no need for updating other params
         // this.substitutionModel.value = raxmlModelOptions[this.dataType].default;
-        }
-      } else {
-        this.reset();
       }
-    };
+    } else {
+      this.reset();
+    }
+  };
 
-  @action
-    removeAstralTree = () => {
-      this.astralTree = null;
-    };
+  removeAstralTree = () => {
+    this.astralTree = null;
+  };
 
-  @computed get canLoadAlignment() {
+  get canLoadAlignment() {
     return (
       ( this.binary.type === 'raxml' || this.binary.type === 'modeltest' ) &&
       !this.havePartitionFile
     );
   }
 
-  @computed get canLoadAstralTree() {
+  get canLoadAstralTree() {
     return this.usesAstral && !this.hasAstralTree;
   }
 
-  @observable partitionFile = '';
-  @observable partitionFileContent = '';
+  partitionFile = '';
+  partitionFileContent = '';
 
-  @computed get partitionFileName() {
+  get partitionFileName() {
     return basename( this.partitionFile );
   }
 
-  @computed get havePartitionFile() {
+  get havePartitionFile() {
     return this.partitionFile !== '';
   }
 
-  @computed get canLoadPartitionFile() {
+  get canLoadPartitionFile() {
     return this.alignments.length === 1 && !this.havePartitionFile;
   }
 
-  @action loadPartitionFile = async () => {
+  loadPartitionFile = async () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     const filePath = await rendererBridge.selectPartitionFile( this.id );
     if ( !filePath ) {
@@ -2173,70 +1529,65 @@ Results saved to: ${this.outputDir}
     await this.addPartitionFiles( [{ path: filePath }] );
   };
 
-  @action
-    addPartitionFiles = async ( files ) => {
-      if ( !files.length ) {
-        return;
-      }
-      const { path } = files[0];
-      const { rendererBridge } = /** @type {any} */ ( window );
-      const content = await rendererBridge.readFile( path );
+  addPartitionFiles = async ( files ) => {
+    if ( !files.length ) {
+      return;
+    }
+    const { path } = files[0];
+    const { rendererBridge } = /** @type {any} */ ( window );
+    const content = await rendererBridge.readFile( path );
+    runInAction( () => {
       this.partitionFile = path;
       this.partitionFileContent = content;
-    };
+    } );
+  };
 
-  @action
-    addTreeFiles = ( type, files ) => {
-      if ( !files.length ) {
-        return;
-      }
-      const { path } = files[0];
-      switch ( type ) {
-        case 'tree':
-          this.tree.setFilePath( path );
-          break;
-        case 'backboneConstraint':
-          this.backboneConstraint.setFilePath( path );
-          break;
-        case 'multifurcatingConstraint':
-          this.multifurcatingConstraint.setFilePath( path );
-          break;
-        default:
-          break;
-      }
-    };
+  addTreeFiles = ( type, files ) => {
+    if ( !files.length ) {
+      return;
+    }
+    const { path } = files[0];
+    switch ( type ) {
+      case 'tree':
+        this.tree.setFilePath( path );
+        break;
+      case 'backboneConstraint':
+        this.backboneConstraint.setFilePath( path );
+        break;
+      case 'multifurcatingConstraint':
+        this.multifurcatingConstraint.setFilePath( path );
+        break;
+      default:
+        break;
+    }
+  };
 
-  @action removePartitionFile = () => {
+  removePartitionFile = () => {
     this.partitionFile = '';
     this.partitionFileContent = '';
   };
 
-  @action
-    clearStdout = () => {
-      this.stdout = '';
-    };
+  clearStdout = () => {
+    this.stdout = '';
+  };
 
-  @action
-    clearStderr = () => {
-      this.stderr = '';
-    };
+  clearStderr = () => {
+    this.stderr = '';
+  };
 
-  @action
-    clearConsole = () => {
-      this.clearStdout();
-      this.clearStderr();
-    };
+  clearConsole = () => {
+    this.clearStdout();
+    this.clearStderr();
+  };
 
-  @action
-    clearError = () => {
-      this.error = null;
-    };
+  clearError = () => {
+    this.error = null;
+  };
 
-  @action
-    reset = () => {
-      this.outGroup.reset();
-      this.removePartitionFile();
-    };
+  reset = () => {
+    this.outGroup.reset();
+    this.removePartitionFile();
+  };
 
   dispose = () => {
     this.cancel();
@@ -2255,64 +1606,57 @@ Results saved to: ${this.outputDir}
   // Listeners
   // -----------------------------------------------------------
 
-  @action
-    onRunStdout = ( { id, content } ) => {
-      if ( id === this.id ) {
-        this.stdout += content;
-      }
-    };
+  onRunStdout = ( { id, content } ) => {
+    if ( id === this.id ) {
+      this.stdout += content;
+    }
+  };
 
-  @action
-    onRunStderr = ( { id, content } ) => {
-      if ( id === this.id ) {
-        this.stderr += content;
-      }
-    };
+  onRunStderr = ( { id, content } ) => {
+    if ( id === this.id ) {
+      this.stderr += content;
+    }
+  };
 
-  @action
-    onAstralSuccess = ( { id, exitCode } ) => {
-      if ( id === this.id ) {
-        console.log( `Process ${id} finished with exitCode '${exitCode}'` );
-        this.resultDir = this.outputDir;
-        this.atomFinished.reportChanged();
-        this.finished = true;
-        this.exitCode = exitCode;
-        this.afterRun();
-      }
-    };
+  onAstralSuccess = ( { id, exitCode } ) => {
+    if ( id === this.id ) {
+      console.log( `Process ${id} finished with exitCode '${exitCode}'` );
+      this.resultDir = this.outputDir;
+      this.atomFinished.reportChanged();
+      this.finished = true;
+      this.exitCode = exitCode;
+      this.afterRun();
+    }
+  };
 
-  @action
-    onRunFinished = ( { id, resultDir, resultFilenames, exitCode } ) => {
-      if ( id === this.id ) {
-        console.log(
-          `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
-        );
-        this.resultDir = resultDir;
-        this.atomFinished.reportChanged();
-        this.finished = true;
-        this.exitCode = exitCode;
-        this.afterRun();
-      }
-    };
+  onRunFinished = ( { id, resultDir, resultFilenames, exitCode } ) => {
+    if ( id === this.id ) {
+      console.log(
+        `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
+      );
+      this.resultDir = resultDir;
+      this.atomFinished.reportChanged();
+      this.finished = true;
+      this.exitCode = exitCode;
+      this.afterRun();
+    }
+  };
 
-  @action
-    onRunError = ( { id, error } ) => {
-      if ( id === this.id ) {
-        console.log( `Process ${id} finished with error:`, error );
-        this.error = error;
-        this.afterRun();
-      }
-    };
+  onRunError = ( { id, error } ) => {
+    if ( id === this.id ) {
+      console.log( `Process ${id} finished with error:`, error );
+      this.error = error;
+      this.afterRun();
+    }
+  };
 
-  @action
-    onBackboneConstraint = ( event, params ) => {
-      this.useBackboneConstraint = !this.useBackboneConstraint;
-    };
+  onBackboneConstraint = ( event, params ) => {
+    this.useBackboneConstraint = !this.useBackboneConstraint;
+  };
 
-  @action
-    onMultifurcatingConstraint = ( event, params ) => {
-      this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
-    };
+  onMultifurcatingConstraint = ( event, params ) => {
+    this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
+  };
 
   generateReport = ( { maxStdoutLength = 1000 } = {} ) => {
     const { command, stdout } = this;

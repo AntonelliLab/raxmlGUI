@@ -47,13 +47,12 @@ export default defineConfig( ( { command } ) => ( {
       },
     },
     plugins: [
-      // plugin-react 5: its babel option compiles legacy MobX decorators. 6 dropped babel.
-      // JSX in .js is compiled here too: Vite's oxc parser does not treat .js as JSX.
+      // plugin-react 5: its babel option compiles JSX in .js files. 6 dropped babel.
+      // Vite's oxc parser does not treat .js as JSX.
       react( {
         babel: {
           plugins: [
-            ['@babel/plugin-proposal-decorators', { legacy: true }],
-            ['@babel/plugin-proposal-class-properties', { loose: true }],
+            ['@babel/plugin-proposal-class-properties', { loose: false }],
             ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
           ],
         },

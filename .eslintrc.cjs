@@ -5,6 +5,7 @@ module.exports = {
   plugins: ['lodash'],
   rules: {
     'lodash/import-scope': 2,
+    'import/no-cycle': 'error',
     'comma-dangle': ['error', 'always-multiline'],
     'prefer-destructuring': [
       'error',

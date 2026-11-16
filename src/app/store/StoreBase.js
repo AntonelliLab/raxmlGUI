@@ -1,3 +1,5 @@
+import { runInAction } from 'mobx';
+
 export const runEvents = {
   onRunStdout: 'onRunStdout',
   onRunStderr: 'onRunStderr',
@@ -33,14 +35,17 @@ export default class StoreBase {
     }
   };
 
-  dispose = () => {
+  // A method: a field here would clash with a subclass's dispose field.
+  dispose() {
     this.unlisten();
-  };
+  }
 
   _init = () => {
     const { rendererBridge } = /** @type {any} */ ( window );
     rendererBridge.getVersion().then( ( version ) => {
-      this.version = version;
+      runInAction( () => {
+        this.version = version;
+      } );
     } );
   };
 }

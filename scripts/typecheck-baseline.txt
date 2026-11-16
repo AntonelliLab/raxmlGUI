@@ -8,26 +8,26 @@ src/app/App.js(466,12): error TS2739: Type '{ error: any; onClose: any; }' is mi
 src/app/App.js(512,10): error TS2741: Property 'needReload' is missing in type '{ error: any; title: any; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
 src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
 src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
-src/app/store/Alignment.js(27,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Alignment.js(54,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Alignment.js(138,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/AlignmentOptions.js(10,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/AlignmentOptions.js(37,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/AlignmentOptions.js(121,5): error TS2554: Expected 5-6 arguments, but got 3.
 src/app/store/index.js(5,8): error TS2551: Property 'store' does not exist on type 'Window & typeof globalThis'. Did you mean 'Storage'?
 src/app/store/Option.js(12,14): error TS2304: Cannot find name 'yup'.
-src/app/store/Run.js(278,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(291,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(306,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(313,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(323,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(333,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(353,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(397,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(409,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(422,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(459,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Run.js(519,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Run.js(554,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Run.js(585,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Run.js(630,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(662,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/Run.js(681,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Run.js(693,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(265,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(278,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(293,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(300,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(310,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(320,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(340,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(384,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(396,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(409,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(446,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/RunOptions.js(506,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/RunOptions.js(541,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/RunOptions.js(572,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/RunOptions.js(617,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(649,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/RunOptions.js(668,5): error TS2554: Expected 5-6 arguments, but got 3.
+src/app/store/RunOptions.js(680,5): error TS2554: Expected 5-6 arguments, but got 4.
