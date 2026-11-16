@@ -163,4 +163,10 @@ function compareBranchLengths(a, b, { rtol = 0.01, atol = 1e-6 } = {}) {
   return { ok: mismatches.length === 0, mismatches };
 }
 
-module.exports = { parseNewick, getTaxa, compareTopologies, compareBranchLengths };
+module.exports = {
+  parseNewick,
+  getTaxa,
+  edges,
+  compareTopologies,
+  compareBranchLengths,
+};

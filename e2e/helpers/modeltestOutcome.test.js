@@ -88,3 +88,35 @@ describe('failure report', () => {
     );
   });
 });
+
+describe('tree comparison', () => {
+  const tree = '((A:0.1,B:0.2):0.05,C:0.3,D:0.4);';
+  const expected = { bestTree: tree };
+
+  it('accepts branch lengths inside 1e-3 relative', () => {
+    const actual = { bestTree: '((A:0.1,B:0.2):0.05,C:0.3,D:0.4001);' };
+    expect(compareOutcome(expected, actual)).toEqual([]);
+  });
+
+  it('reports the RF distance and the unique splits for a changed topology', () => {
+    const actual = { bestTree: '((A:0.1,C:0.3):0.05,B:0.2,D:0.4);' };
+    const [diff] = compareOutcome(expected, actual);
+    expect(diff.field).toBe('bestTree topology');
+    expect(diff.delta).toBe(2);
+    expect(diff.actual).toContain('splits unique to fixture: C,D');
+    expect(diff.actual).toContain('splits unique to actual:  B,D');
+  });
+
+  it('reports expected, actual, delta and tolerance for a branch length', () => {
+    const actual = { bestTree: '((A:0.1,B:0.2):0.05,C:0.3,D:0.5);' };
+    expect(compareOutcome(expected, actual)).toEqual([
+      {
+        field: 'bestTree branch D',
+        expected: 0.4,
+        actual: 0.5,
+        delta: 0.1,
+        tolerance: '0.001 relative',
+      },
+    ]);
+  });
+});
