@@ -58,3 +58,20 @@ it( 'passes on an empty baseline when tsc reports nothing', () => {
   expect( freshLines( [], [] ) ).toEqual( [] );
   expect( unusedLines( [], [] ) ).toEqual( [] );
 } );
+
+it( 'exits non-zero when a .ts file has an implicit any, even if the first pass is clean', () => {
+  const fs = require( 'fs' );
+  const path = require( 'path' );
+  const { spawnSync } = require( 'child_process' );
+  const file = path.join( __dirname, 'implicitAnyProbe.ts' );
+  fs.writeFileSync( file, 'export function probe( x ) { return x; }\n' );
+  try {
+    const result = spawnSync( process.execPath, [
+      path.join( __dirname, '..', 'scripts', 'typecheck-baseline.js' ),
+    ], { encoding: 'utf8' } );
+    expect( result.status ).toBe( 1 );
+    expect( result.stderr ).toContain( 'src/implicitAnyProbe.ts' );
+  } finally {
+    fs.unlinkSync( file );
+  }
+}, 60000 );
