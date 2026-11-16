@@ -2,6 +2,14 @@ name: E2E tests
 
 on:
   pull_request:
+  # Manual only: writes this host's fixtures and uploads them. Nothing is committed.
+  workflow_dispatch:
+    inputs:
+      host:
+        description: Host to generate fixtures on
+        type: choice
+        options: [all, macos-15, ubuntu-24.04, windows-latest]
+        default: all
 
 jobs:
   e2e:
@@ -10,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15, ubuntu-24.04, windows-latest]
+        os: ${{ fromJSON(inputs.host && inputs.host != 'all' && format('["{0}"]', inputs.host) || '["macos-15","ubuntu-24.04","windows-latest"]') }}
 
     steps:
       - uses: actions/checkout@v6
@@ -32,10 +40,18 @@ jobs:
           sudo apt-get install -y xvfb
 
       - name: Run e2e tests
-        run: ${{ matrix.os == 'ubuntu-24.04' && 'xvfb-run -a yarn test:e2e' || 'yarn test:e2e' }}
+        run: ${{ matrix.os == 'ubuntu-24.04' && 'xvfb-run -a yarn' || 'yarn' }} ${{ github.event_name == 'workflow_dispatch' && 'test:e2e:update-fixtures' || 'test:e2e' }}
         env:
           CI: true
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Upload written fixtures
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixtures-${{ matrix.os }}
+          path: e2e/fixtures/
+          retention-days: 7
 
       - name: Upload Playwright report on failure
         if: failure()
