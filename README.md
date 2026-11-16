@@ -14,8 +14,7 @@ This is an [Electron](https://electronjs.org/) app. The shell is built with elec
 
 `yarn test:e2e` builds the shell, then [Playwright](https://playwright.dev/) launches `out/main/index.js`. There is no dev server. Specs in `e2e/` check the UI and output files:
 
-- `modeltest-then-raxml-ng.spec.js` — ModelTest, then a full raxml-ng analysis
-- `raxmlHPC.spec.js` — classic raxmlHPC (ML search), including copying the command and the citation
+- `modeltest-outcome.spec.js` — ModelTest, then a raxml-ng tree inference and a serial raxmlHPC ML search with the model it picked, each checked against a per-host fixture in `e2e/fixtures/`. The raxmlHPC test also copies the command and the citation
 
 Download binaries once, then run:
 

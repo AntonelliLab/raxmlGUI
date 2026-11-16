@@ -26,6 +26,7 @@
     "test": "jest --watchAll=false",
     "react-test": "jest --watchAll=false",
     "test:e2e": "yarn build && node node_modules/playwright/cli.js test --config e2e/playwright.config.js",
+    "test:e2e:update-fixtures": "yarn build && node e2e/updateFixtures.js",
     "test:docs": "node node_modules/playwright/cli.js test --config e2e/docs/playwright.config.js",
     "download-binaries": "node scripts/download-binaries.js",
     "electron-build": "electron-builder",
