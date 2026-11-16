@@ -1,4 +1,4 @@
-// Runs the ModelTest and raxml-ng spec against the real app in update mode. Never run by test:e2e.
+// Runs the ModelTest, raxml-ng and raxmlHPC spec against the real app in update mode. Never run by test:e2e.
 const { spawnSync } = require('child_process');
 const path = require('path');
 
