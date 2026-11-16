@@ -50,7 +50,7 @@ export async function runModelSelection(
     await fs.unlink( `${outputPath}.ckp` );
   }
   catch ( _err: unknown ) { }
-  const args = [];
+  const args: string[] = [];
   if ( dataType === 'nucleotide' ) {
     args.push( '-d', 'nt' );
   }
@@ -64,7 +64,7 @@ export async function runModelSelection(
   // modeltest throws errors if the output file already exists
   args.push( '--force' );
   // Number of processors
-  args.push( '-p', numThreads );
+  args.push( '-p', String( numThreads ) );
   console.log( `Alignment '${id}': Run modeltest with args ${args}...` );
   const stdOuts: string[] = [];
   const onStdOut = ( content: string ): void => {

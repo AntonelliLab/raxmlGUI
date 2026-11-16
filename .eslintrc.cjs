@@ -50,6 +50,7 @@ module.exports = {
             default: 'array',
           },
         ],
+        '@typescript-eslint/no-explicit-any': 'error',
         'import/consistent-type-specifier-style': [
           'error',
           'prefer-top-level',
@@ -70,8 +71,8 @@ module.exports = {
       },
     },
     {
-      // Main TypeScript (#67): full typing under non-strict — typed catch, typed exports.
-      files: ['src/main/**/*.{ts,tsx}', 'src/common/**/*.{ts,tsx}'],
+      // Full typing under non-strict for all TypeScript (#67 main process, #236 page): typed catch, typed exports.
+      files: ['src/**/*.{ts,tsx}'],
       rules: {
         '@typescript-eslint/explicit-module-boundary-types': 'error',
         'no-restricted-syntax': [

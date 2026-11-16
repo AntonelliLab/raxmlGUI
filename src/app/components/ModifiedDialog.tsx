@@ -21,7 +21,7 @@ export default function ModifiedDialog( {
   show,
   onClose,
   messages,
-}: ModifiedDialogProps ) {
+}: ModifiedDialogProps ): React.JSX.Element | null {
   if ( !show ) {
     return null;
   }

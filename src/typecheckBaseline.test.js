@@ -1,5 +1,5 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
-const { freshLines, unusedLines } = require( '../scripts/typecheck-baseline' );
+const { freshLines, unusedLines, typeScriptLines } = require( '../scripts/typecheck-baseline' );
 
 it( 'reports a diagnostic line that the baseline does not list', () => {
   const known = ['src/a.js(1,1): error TS1: known'];
@@ -37,4 +37,24 @@ it( 'does not let one file\'s continuation shelter another file\'s', () => {
     '  Overload 1 of 4, same text',
   ];
   expect( freshLines( actual, known ) ).toEqual( actual );
+} );
+
+it( 'keeps the noImplicitAny diagnostics of .ts and .tsx files and their continuations', () => {
+  expect( typeScriptLines( [
+    'src/a.js(1,1): error TS7006: Parameter implicitly has an any type.',
+    '  js continuation',
+    'src/b.ts(2,1): error TS7016: Could not find a declaration file.',
+    '  ts continuation',
+    'src/c.tsx(3,1): error TS7006: Parameter implicitly has an any type.',
+  ] ) ).toEqual( [
+    'src/b.ts(2,1): error TS7016: Could not find a declaration file.',
+    '  ts continuation',
+    'src/c.tsx(3,1): error TS7006: Parameter implicitly has an any type.',
+  ] );
+  expect( typeScriptLines( ['src/a.js(1,1): error TS7006: x'] ) ).toEqual( [] );
+} );
+
+it( 'passes on an empty baseline when tsc reports nothing', () => {
+  expect( freshLines( [], [] ) ).toEqual( [] );
+  expect( unusedLines( [], [] ) ).toEqual( [] );
 } );
