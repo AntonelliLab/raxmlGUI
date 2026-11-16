@@ -66,18 +66,21 @@ function renameLines(known, actual, from, to) {
   return { renamed, missing };
 }
 
-function main() {
-  if (!fs.existsSync(baselinePath)) {
-    console.error('typecheck baseline is missing: ' + baselinePath);
-    process.exit(1);
-  }
-  const baseline = diagnosticLines(fs.readFileSync(baselinePath, 'utf8'));
-  if (baseline.length === 0) {
-    console.error('typecheck baseline is empty: ' + baselinePath);
-    process.exit(1);
-  }
+/** Keep tsc diagnostics (and their continuation lines) reported in a .ts or .tsx file. */
+function typeScriptLines(lines) {
+  let inTypeScript = false;
+  return lines.filter((line) => {
+    const match = /^(src\/\S+?)\(/.exec(line);
+    if (match) {
+      inTypeScript = /\.tsx?$/.test(match[1]);
+    }
+    return inTypeScript;
+  });
+}
+
+function runTsc(args) {
   const tsc = path.join(root, 'node_modules', 'typescript', 'bin', 'tsc');
-  const result = spawnSync(process.execPath, [tsc, '--noEmit', '--pretty', 'false'], {
+  const result = spawnSync(process.execPath, [tsc, '--noEmit', '--pretty', 'false', ...args], {
     cwd: root,
     encoding: 'utf8',
   });
@@ -85,7 +88,16 @@ function main() {
     console.error(result.error || result.stderr || result.stdout);
     process.exit(result.status || 1);
   }
-  const actual = diagnosticLines(`${result.stdout || ''}\n${result.stderr || ''}`);
+  return diagnosticLines(`${result.stdout || ''}\n${result.stderr || ''}`);
+}
+
+function main() {
+  if (!fs.existsSync(baselinePath)) {
+    console.error('typecheck baseline is missing: ' + baselinePath);
+    process.exit(1);
+  }
+  const baseline = diagnosticLines(fs.readFileSync(baselinePath, 'utf8'));
+  const actual = runTsc([]);
   const renameAt = process.argv.indexOf('--rename');
   if (renameAt !== -1) {
     const [from, to] = process.argv.slice(renameAt + 1, renameAt + 3);
@@ -105,6 +117,12 @@ function main() {
     fs.writeFileSync(baselinePath, renamed.join('\n') + '\n');
     return;
   }
+  // Second pass: no allowlist. A .ts/.tsx file may not have any diagnostic under --noImplicitAny.
+  const implicitAny = typeScriptLines(runTsc(['--noImplicitAny']));
+  if (implicitAny.length) {
+    console.error('noImplicitAny:\n' + implicitAny.join('\n'));
+    process.exitCode = 1;
+  }
   const fresh = freshLines(actual, baseline);
   const unused = unusedLines(baseline, actual);
   if (fresh.length || unused.length) {
@@ -116,10 +134,13 @@ function main() {
     }
     process.exit(1);
   }
+  if (process.exitCode) {
+    process.exit(process.exitCode);
+  }
 }
 
 if (require.main === module) {
   main();
 }
 
-module.exports = { diagnosticLines, freshLines, unusedLines, ownedFingerprints, renameLines };
+module.exports = { typeScriptLines, diagnosticLines, freshLines, unusedLines, ownedFingerprints, renameLines };

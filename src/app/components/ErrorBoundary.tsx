@@ -35,11 +35,11 @@ class ErrorBoundary extends React.Component<
     console.log( 'Error catched at React boundary:', error, info );
   }
 
-  handleClose = () => {
+  handleClose = (): void => {
     this.setState( { error: null } );
   };
 
-  render() {
+  render(): React.ReactNode {
     const { error } = this.state;
     if ( !error ) {
       return this.props.children;

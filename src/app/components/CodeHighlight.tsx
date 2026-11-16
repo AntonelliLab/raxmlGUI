@@ -13,7 +13,7 @@ export interface CodeHighlightProps {
   sx?: SxProps<Theme>;
 }
 
-function CodeHighlight( { code, language, sx }: CodeHighlightProps ) {
+function CodeHighlight( { code, language, sx }: CodeHighlightProps ): React.JSX.Element {
   const codeNode = useRef<HTMLElement | null>( null );
 
   useEffect( () => {
