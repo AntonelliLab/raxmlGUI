@@ -157,7 +157,9 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
     }
     catch ( err: unknown ) {
       console.error( 'Run error:', err );
-      Sentry.captureException( err );
+      if ( !( err as UserFixError ).isUserFix ) {
+        Sentry.captureException( err );
+      }
       reportError( err );
       return;
     }
