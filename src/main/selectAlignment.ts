@@ -5,7 +5,7 @@ type ShowOpenDialog = (
   options: OpenDialogOptions,
 ) => Promise<OpenDialogReturnValue>;
 
-interface SelectedAlignment {
+export interface SelectedAlignment {
   path: string;
   name: string;
 }

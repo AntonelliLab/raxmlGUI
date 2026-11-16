@@ -5,7 +5,7 @@ type ShowOpenDialog = (
   options: OpenDialogOptions,
 ) => Promise<OpenDialogReturnValue>;
 
-interface SelectedAstralFile {
+export interface SelectedAstralFile {
   path: string;
   name: string;
 }

@@ -1,10 +1,10 @@
 import path from 'path';
 
-interface AlignmentSequence {
+export interface AlignmentSequence {
   taxon: string;
 }
 
-interface Alignment {
+export interface Alignment {
   sequences: AlignmentSequence[];
 }
 
@@ -15,7 +15,7 @@ interface AlignmentParseTools {
   write: ( filePath: string, alignment: Alignment ) => Promise<void>;
 }
 
-interface AlignmentChange {
+export interface AlignmentChange {
   newFilePath: string;
   format: string | undefined;
   converted: boolean | undefined;
@@ -23,7 +23,7 @@ interface AlignmentChange {
   modificationMessages: string[];
 }
 
-interface AlignmentParseResult {
+export interface AlignmentParseResult {
   alignment: Alignment;
   change: AlignmentChange | null;
 }

@@ -1,12 +1,6 @@
 import store from './store';
 import { join } from './paths';
-
-interface AlignmentExampleFilesPayload {
-  fasta: string[];
-  phylip: string[];
-  dir: string;
-  outdir: string;
-}
+import type { ExampleFilesPayload } from '../main/api';
 
 interface AlignmentPathRef { path: string }
 
@@ -15,15 +9,10 @@ const e2e = typeof window !== 'undefined'
 
 if ( process.env.NODE_ENV === 'development' || e2e ) {
   console.log( '\n========= Bootstrapping initial state... =========\n' );
-  const { rendererBridge } = window as unknown as {
-    rendererBridge: {
-      getExampleFiles: () => Promise<AlignmentExampleFilesPayload>;
-    };
-  };
-  void rendererBridge.getExampleFiles().then( initDev );
+  void window.rendererBridge.getExampleFiles().then( initDev );
 }
 
-function initDev( exampleFiles: AlignmentExampleFilesPayload ): void {
+function initDev( exampleFiles: ExampleFilesPayload ): void {
   // if (exampleFiles.length === 0) {
   //   return;
   // }
