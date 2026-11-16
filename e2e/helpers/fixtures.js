@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { parseNewick, edges, compareTopologies } = require('./newick');
 
 const RTOL = 1e-4;
+const TREE_RTOL = 1e-3;
 const REGENERATE = 'yarn test:e2e:update-fixtures';
 
 /** @param {unknown} value */
@@ -24,16 +26,85 @@ function flatten(obj, prefix = '') {
 }
 
 /**
+ * Differences between two Newick trees: topology exact (RF distance 0), then
+ * each branch length within TREE_RTOL relative to the larger length.
+ * @param {string} expected
+ * @param {string} actual
+ * @returns {{ field: string, expected: unknown, actual: unknown, delta: unknown, tolerance: string }[]}
+ */
+function compareTrees(expected, actual) {
+  const topology = compareTopologies(expected, actual);
+  if ('taxaMismatch' in topology) {
+    const { onlyInA, onlyInB } = topology.taxaMismatch;
+    return [
+      {
+        field: 'bestTree taxa',
+        expected: `unique to fixture: ${onlyInA.join(' ') || 'none'}`,
+        actual: `unique to actual: ${onlyInB.join(' ') || 'none'}`,
+        delta: 'n/a',
+        tolerance: 'exact',
+      },
+    ];
+  }
+  if (topology.rf) {
+    return [
+      {
+        field: 'bestTree topology',
+        expected: 'RF distance 0',
+        actual: `RF distance ${topology.rf}\n  splits unique to fixture: ${topology.uniqueA.join(' | ') || 'none'}\n  splits unique to actual:  ${topology.uniqueB.join(' | ') || 'none'}`,
+        delta: topology.rf,
+        tolerance: 'exact',
+      },
+    ];
+  }
+  const ea = edges(parseNewick(expected));
+  const eb = edges(parseNewick(actual));
+  /** @type {ReturnType<typeof compareTrees>} */
+  const diffs = [];
+  for (const [key, x] of ea) {
+    const y = eb.get(key);
+    if (typeof x !== 'number' || typeof y !== 'number') continue;
+    const delta = Number((y - x).toPrecision(6));
+    if (Math.abs(delta) > TREE_RTOL * Math.max(Math.abs(x), Math.abs(y))) {
+      diffs.push({
+        field: `bestTree branch ${key}`,
+        expected: x,
+        actual: y,
+        delta,
+        tolerance: `${TREE_RTOL} relative`,
+      });
+    }
+  }
+  return diffs;
+}
+
+/**
  * Differing fields, binary versions first. Numbers agree within RTOL
- * relative to the larger magnitude; everything else must be equal.
+ * relative to the larger magnitude; everything else must be equal. A
+ * `bestTree` field is compared as a tree.
  * @param {Record<string, any>} expected
  * @param {Record<string, any>} actual
  */
 function compareOutcome(expected, actual) {
-  const e = flatten(expected);
-  const a = flatten(actual);
+  const { bestTree: expectedTree, ...expectedRest } = expected;
+  const { bestTree: actualTree, ...actualRest } = actual;
+  const e = flatten(expectedRest);
+  const a = flatten(actualRest);
   /** @type {{ field: string, expected: unknown, actual: unknown, delta: unknown, tolerance: string }[]} */
   const diffs = [];
+  if (expectedTree !== undefined || actualTree !== undefined) {
+    if (typeof expectedTree === 'string' && typeof actualTree === 'string') {
+      diffs.push(...compareTrees(expectedTree, actualTree));
+    } else {
+      diffs.push({
+        field: 'bestTree',
+        expected: expectedTree,
+        actual: actualTree,
+        delta: 'n/a',
+        tolerance: 'exact',
+      });
+    }
+  }
   for (const field of new Set([...Object.keys(e), ...Object.keys(a)])) {
     const x = e[field];
     const y = a[field];
