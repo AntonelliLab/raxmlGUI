@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "seed": 12345,
+    "runs": 1,
+    "analysis": "modeltest",
+    "criterion": "AICc",
+    "binary": "modeltest-ng.exe",
+    "binaryVersions": {
+      "modeltest-ng": "0.1.7"
+    }
+  },
+  "outcome": {
+    "criteria": {
+      "BIC": {
+        "model": "TPM2uf+I",
+        "score": 2639.0324
+      },
+      "AIC": {
+        "model": "TVM+I",
+        "score": 2460.0698
+      },
+      "AICc": {
+        "model": "TVM+I",
+        "score": 2465.0698
+      }
+    }
+  }
+}
