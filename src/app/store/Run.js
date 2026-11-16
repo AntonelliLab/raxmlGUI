@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction, createAtom, makeObservable } from 'mobx';
+import { observable, observableRef, computed, action, runInAction, createAtom, makeObservable } from 'mobx';
 import { promisedComputed } from '../promisedComputed';
 import filenamify from 'filenamify';
 
@@ -61,7 +61,7 @@ class Run extends StoreBase {
       setOutputDir: action,
       selectOutputDir: action,
       openOutputDir: action,
-      showPartitionFor: observable.ref,
+      showPartitionFor: observableRef,
       showPartition: action,
       hidePartition: action,
       resultDir: observable,
