@@ -35,7 +35,7 @@ export default class StoreBase {
     }
   };
 
-  // A method: a field here would clash with a subclass's decorated dispose.
+  // A method: a field here would clash with a subclass's dispose field.
   dispose() {
     this.unlisten();
   }
