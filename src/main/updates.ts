@@ -2,6 +2,17 @@ import log from 'electron-log';
 import type { Dialog } from 'electron';
 import type { AppUpdater } from 'electron-updater';
 
+// checkForUpdates rejects as well as emitting 'error'; the listener already reports it,
+// so swallow the rejection to avoid an unhandled one (offline users, Sentry 3593287140).
+export async function checkForUpdates( updater: AppUpdater ): Promise<void> {
+  updater.autoDownload = false;
+  try {
+    await updater.checkForUpdates();
+  } catch {
+    // reported via the updater's 'error' event
+  }
+}
+
 export function listenForUpdates( updater: AppUpdater, dialog: Dialog ): void {
   updater.on( 'checking-for-update', () => {
     log.info( 'Checking for update...' );

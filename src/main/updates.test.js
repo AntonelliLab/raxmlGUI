@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { setImmediate } from 'timers';
-import { listenForUpdates } from './updates';
+import { checkForUpdates, listenForUpdates } from './updates';
 
 global.setImmediate = setImmediate;
 
@@ -107,4 +107,11 @@ it( 'the shell opens no update progress window', () => {
   expect( main + updates ).not.toContain( 'electron-progressbar' );
   expect( main + updates ).not.toContain( 'ProgressBar' );
   expect( main + updates ).not.toContain( 'download-progress' );
+} );
+
+it( 'an offline update check rejects nothing (the error event already reports it)', async () => {
+  const updates = { ...updater(), autoDownload: true };
+  updates.checkForUpdates = jest.fn( () => Promise.reject( new Error( 'net::ERR_INTERNET_DISCONNECTED' ) ) );
+  await expect( checkForUpdates( updates ) ).resolves.toBeUndefined();
+  expect( updates.autoDownload ).toBe( false );
 } );
