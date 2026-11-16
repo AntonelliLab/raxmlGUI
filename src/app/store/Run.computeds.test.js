@@ -58,7 +58,7 @@ function makeRun( { alignments = [nucleotide()], binary = 'raxmlHPC', outputDir 
   return run;
 }
 
-// outputNameAvailable only works inside a reaction, so reads that touch it go through here.
+// outputNameAvailable only settles inside a reaction, so reads that touch it go through here.
 function read( fn ) {
   let value;
   autorun( () => {

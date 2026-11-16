@@ -7,7 +7,7 @@ import Run from './Run';
 // sequences set directly, as writeConcatenatedAlignment.test.js does.
 function makeRun( alignments ) {
   const run = new Run( {}, 7 );
-  // outputNameAvailable is a promisedComputed that only reads inside a reaction; pin it.
+  // outputNameAvailable is a promisedComputed that only settles inside a reaction (outside one each read calls the bridge); pin it.
   run.outputNameAvailable = { get: () => ( { outputNameUnused: 'out' } ) };
   window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
   run.addAlignments( alignments.map( ( { path } ) => ( { path } ) ) );
