@@ -326,7 +326,7 @@ const App = () => {
                             color: '#999',
                           },
                         }}
-                        title="Clear console"
+                        titleAccess="Clear console"
                       />
                     )}
                 </VerticalHeading>
