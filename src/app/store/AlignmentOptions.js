@@ -146,7 +146,9 @@ class MultistateNumber extends Option {
     );
   }
   get error() {
-    return !this.value || !Number.isInteger( Number( this.value ) );
+    return !this.value || !Number.isInteger( Number( this.value ) )
+      ? new Error( 'Enter an integer number of states' )
+      : null;
   }
 }
 
