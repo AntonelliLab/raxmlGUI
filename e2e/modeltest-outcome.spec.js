@@ -47,7 +47,10 @@ const raxmlNgSettings = {
   runs: 1,
   analysis: 'TI',
   binary: 'raxml-ng',
-  binaryVersions: { 'raxml-ng': '1.2.2' },
+  // The Linux binary reports a master build
+  binaryVersions: {
+    'raxml-ng': process.platform === 'linux' ? '1.2.2-master' : '1.2.2',
+  },
 };
 const raxmlNgSuffixes = [
   'raxml.bestTree.tre',
