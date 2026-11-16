@@ -1,57 +1,36 @@
-import { computed, makeObservable, _getGlobalState } from 'mobx';
-import { fromPromise, isPromiseBasedObservable } from 'mobx-utils';
-
-const ok = ( value ) => ( { ok: true, value } );
-const failed = ( error ) => ( { ok: false, error } );
+import { computed, makeObservable } from 'mobx';
+import { fromPromise } from 'mobx-utils';
 
 // Replaces computed-async-mobx: its 7.0 build mixes decorators with annotations, which MobX 6 rejects.
 // Like a computed that unwraps a promise: `init` until the first resolve, then the latest resolved value.
-// `get` must run inside a reaction; `busy` is true while the promise is pending.
+// Read it inside a reaction: outside one, every read re-runs `fetch` and returns `init`.
 class PromisedComputed {
   constructor( init, fetch ) {
     this.fetch = fetch;
-    this.cached = ok( init );
+    this.cached = init;
     makeObservable( this, {
       currentState: computed,
-      busy: computed,
       value: computed,
     } );
   }
 
+  // fetch must return a promise (the only caller is async)
   get currentState() {
-    try {
-      const promiseOrValue = this.fetch();
-      return typeof promiseOrValue?.then === 'function'
-        ? fromPromise( promiseOrValue.then( ok, failed ) )
-        : ok( promiseOrValue );
-    } catch ( err ) {
-      return failed( err );
-    }
-  }
-
-  get busy() {
-    const state = this.currentState;
-    return isPromiseBasedObservable( state ) && state.state === 'pending';
+    return fromPromise( this.fetch() );
   }
 
   get value() {
     const state = this.currentState;
-    const result = !isPromiseBasedObservable( state )
-      ? state
-      : state.state === 'fulfilled'
-        ? state.value
-        : this.cached;
-    this.cached = result;
-    if ( result.ok ) {
-      return result.value;
+    if ( state.state === 'rejected' ) {
+      throw state.value;
     }
-    throw result.error;
+    if ( state.state === 'fulfilled' ) {
+      this.cached = state.value;
+    }
+    return this.cached;
   }
 
   get() {
-    if ( !_getGlobalState().trackingDerivation ) {
-      throw new Error( 'promisedComputed must be used inside reactions' );
-    }
     return this.value;
   }
 }

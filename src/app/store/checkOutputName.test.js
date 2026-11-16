@@ -19,7 +19,7 @@ it( 'the output-name check uses checkOutput', async () => {
   let seen;
   await when( () => {
     const value = run.outputNameAvailable.get();
-    if ( run.outputNameAvailable.busy || value.outputNameUnused !== 'tree_1' ) {
+    if ( value.outputNameUnused !== 'tree_1' ) {
       return false;
     }
     seen = {
