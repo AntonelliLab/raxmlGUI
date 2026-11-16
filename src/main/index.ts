@@ -8,7 +8,7 @@ import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
 import { pageWindowPreferences } from './pageWindowPreferences';
-import { listenForUpdates } from './updates';
+import { checkForUpdates, listenForUpdates } from './updates';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
@@ -114,8 +114,7 @@ function initialize(): void {
     // }
     createMainWindow();
     if ( !isE2eMode ) {
-      autoUpdater.autoDownload = false;
-      autoUpdater.checkForUpdates();
+      checkForUpdates( autoUpdater );
     }
   } );
   // Quit when all windows are closed.
