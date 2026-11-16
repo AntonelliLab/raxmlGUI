@@ -29,7 +29,10 @@ const settings = {
   analysis: 'modeltest',
   criterion: 'AICc',
   binary,
-  binaryVersions: { 'modeltest-ng': '0.1.7' },
+  // The Linux binary prints the placeholder x.y.z instead of its version
+  binaryVersions: {
+    'modeltest-ng': process.platform === 'linux' ? 'x.y.z' : '0.1.7',
+  },
 };
 
 const alignmentFile = path.join(
