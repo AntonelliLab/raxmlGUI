@@ -4,6 +4,7 @@ const path = require('path');
 /** @type {import('playwright/test').PlaywrightTestConfig} */
 const config = {
   testDir: path.join(__dirname),
+  testMatch: '**/*.spec.js', // Jest owns *.test.js
   testIgnore: ['docs/**'],
   // Locator checks use Playwright's 5s expect timeout. A long wait passes its own timeout.
   timeout: 15 * 60 * 1000,

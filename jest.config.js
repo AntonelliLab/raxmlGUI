@@ -2,7 +2,8 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFiles: [ '<rootDir>/jest/setup.js' ],
   setupFilesAfterEnv: [ '<rootDir>/jest/mobxActionWarning.js' ],
-  roots: [ '<rootDir>/src' ],
+  roots: [ '<rootDir>/src', '<rootDir>/e2e' ],
+  testMatch: [ '**/*.test.[jt]s?(x)' ],
   transform: {
     '^.+\\.(js|jsx|mjs|ts|tsx)$': '<rootDir>/jest/babelTransform.js',
   },
