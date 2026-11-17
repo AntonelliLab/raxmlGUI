@@ -1,5 +1,16 @@
 import UserFixError from './errors';
-export const getFinalDataType = ( dataTypes ) => {
+
+export type DataType = 'protein' | 'nucleotide' | 'multistate' | 'binary' | 'mixed' | 'unknown' | 'invalid';
+
+export interface TypecheckableAlignment {
+  sequences: { taxon: string; code: string; dataType?: DataType }[];
+  length: number;
+  hasInvariantSites?: boolean;
+  dataType?: DataType;
+  typecheckingComplete?: boolean;
+}
+
+export const getFinalDataType = ( dataTypes: ( DataType | undefined )[] ): DataType | undefined => {
   const notUndefinedTypes = dataTypes.filter( ( d ) => d !== undefined );
   if ( notUndefinedTypes.length === 0 ) {
     return undefined;
@@ -24,7 +35,7 @@ const reInvalidDNA = /[^ABCDGHKMRSTUVWYNOX?-]/gi;
 const reInvalidAA = /[^ARNDCQEGHILKMFPSTWYVBZX*?-]/gi;
 const reInvalidGeneric = /[^0123456789ABCDEFGHIJKLMNOPQRSTU?-]/gi;
 const reInvalidMixed = /[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*?-]/gi;
-export function findInvalidCharacter( code, dataType ) {
+export function findInvalidCharacter( code: string, dataType: DataType | undefined ): number {
   // Returns the index of the invalid character if found, else -1
   switch ( dataType ) {
     case 'protein':
@@ -51,9 +62,9 @@ export function findInvalidCharacter( code, dataType ) {
         : -1;
   }
 }
-function hasInvariantSites( length, sequences ) {
+function hasInvariantSites( length: number, sequences: TypecheckableAlignment['sequences'] ): boolean {
   for ( let i = 0; i < length; i++ ) {
-    const variantsAtPosition = [];
+    const variantsAtPosition: string[] = [];
     for ( const sequence of sequences ) {
       const site = sequence.code[i];
       if ( !variantsAtPosition.includes( site ) ) {
@@ -66,19 +77,19 @@ function hasInvariantSites( length, sequences ) {
   }
   return false;
 }
-export default function typecheckAlignment( alignment ) {
+export default function typecheckAlignment<T extends TypecheckableAlignment>( alignment: T ): T {
   const acgMatch = /[ACGN?]/i; // Include 'N' and '?' as symbols for missing characters in DNA
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
   const proteinMatch = /[EFJIJLOPQZX]/i;
   const binaryMatch = /[01]/;
   const multistateMatch = /2/;
   const unknownMatch = /^[N?]+$/i;
-  const sequenceDataTypes = [];
-  const dataTypes = new Set();
+  const sequenceDataTypes: ( DataType | undefined )[] = [];
+  const dataTypes = new Set<DataType | undefined>();
   let numSequencesTypechecked = 0;
-  alignment.sequences.forEach( ( sequence, index ) => {
+  alignment.sequences.forEach( ( sequence ) => {
     const { code } = sequence;
-    let dataType = undefined;
+    let dataType: DataType | undefined;
     if ( proteinMatch.test( code ) ) {
       dataType = 'protein';
     } else if ( acgMatch.test( code ) ) {

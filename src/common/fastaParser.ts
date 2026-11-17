@@ -1,5 +1,18 @@
 import UserFixError from './errors';
-export const isFasta = ( lines ) => {
+
+export interface FastaSequence {
+  taxon: string;
+  code: string;
+}
+
+export interface FastaAlignment {
+  sequences: FastaSequence[];
+  numSequences: number;
+  length: number;
+  fileFormat: 'FASTA';
+}
+
+export const isFasta = ( lines: string[] ): boolean => {
   for ( let i = 0; i < lines.length; ++i ) {
     const line = lines[0].trim();
     if ( line.length === 0 || line[0] === '#' ) {
@@ -11,12 +24,12 @@ export const isFasta = ( lines ) => {
   }
   return false;
 };
-export const parse = ( lines ) => {
+export const parse = ( lines: string[] ): FastaAlignment => {
   if ( !isFasta( lines ) ) {
     throw new Error( `Could not parse the file as a FASTA file` );
   }
   let lineIndex = 0;
-  const parseTaxon = ( line ) => {
+  const parseTaxon = ( line: string ): string => {
     if ( line[0] !== '>' ) {
       throw new Error( `Expected a '>' to start a taxon line` );
     }
@@ -26,16 +39,16 @@ export const parse = ( lines ) => {
     }
     return taxon;
   };
-  const parseCode = ( line ) => {
+  const parseCode = ( line: string ): string => {
     const code = line.replace( /\s+/g, '' );
     if ( !code ) {
       throw new Error( `Empty sequence at line ${lineIndex + 1}` );
     }
     return code;
   };
-  const sequences = [];
+  const sequences: FastaSequence[] = [];
   let taxon = '';
-  let codeLines = [];
+  let codeLines: string[] = [];
   const addSequence = () => {
     const code = codeLines.join( '' );
     sequences.push( { taxon, code } );
@@ -69,7 +82,7 @@ export const parse = ( lines ) => {
     }
   }
   // console.log('Sequences:', sequences);
-  const alignment = {
+  const alignment: FastaAlignment = {
     sequences,
     numSequences,
     length,
