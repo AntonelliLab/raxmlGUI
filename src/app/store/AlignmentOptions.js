@@ -1,4 +1,5 @@
 import { computed, makeObservable, override } from 'mobx';
+import { ValidationError } from 'yup';
 
 import Option from './Option';
 import * as raxmlNgSettings from '../../settings/raxmlng';
@@ -147,7 +148,7 @@ class MultistateNumber extends Option {
   }
   get error() {
     return !this.value || !Number.isInteger( Number( this.value ) )
-      ? new Error( 'Enter an integer number of states' )
+      ? new ValidationError( 'Enter an integer number of states' )
       : null;
   }
 }
