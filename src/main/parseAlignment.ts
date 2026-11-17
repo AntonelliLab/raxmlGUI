@@ -1,11 +1,21 @@
 import path from 'path';
 
+import type { DataType } from '../common/typecheckAlignment';
+
 export interface AlignmentSequence {
   taxon: string;
+  code: string;
 }
 
+// Optional fields: the parsers and typecheck add them, io.parseAlignment does not declare them.
 export interface Alignment {
   sequences: AlignmentSequence[];
+  length: number;
+  numSequences?: number;
+  fileFormat?: string;
+  dataType?: DataType;
+  hasInvariantSites?: boolean;
+  typecheckingComplete?: boolean;
 }
 
 interface AlignmentParseTools {

@@ -48,7 +48,11 @@ import type { StateReport } from '../main/getActiveState';
 import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
 import type { AstralPayload, AstralSuccessPayload } from '../main/astral';
 import type { RunOutputPayload } from '../main/processHelpers';
-import type { ModelSelectionPayload } from '../main/modelSelection';
+import type {
+  ModelSelectionPayload,
+  ModelSelectionSuccessPayload,
+  ModelSelectionFailurePayload,
+} from '../main/modelSelection';
 
 function onEvent<T = unknown>( channel: string, listener: ( payload: T ) => void ): () => void {
   const wrapped = ( _event: unknown, payload: T ): void => listener( payload );
@@ -160,10 +164,10 @@ const rendererBridge = {
   cancelModelSelection( id: string ) {
     return ipcRenderer.invoke( ALIGNMENT_MODEL_SELECTION_CANCEL, id );
   },
-  onModelSelectionSuccess( listener: ( payload: unknown ) => void ) {
+  onModelSelectionSuccess( listener: ( payload: ModelSelectionSuccessPayload ) => void ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_SUCCESS, listener );
   },
-  onModelSelectionFailure( listener: ( payload: unknown ) => void ) {
+  onModelSelectionFailure( listener: ( payload: ModelSelectionFailurePayload ) => void ) {
     return onEvent( ALIGNMENT_MODEL_SELECTION_FAILURE, listener );
   },
   onAddRun( listener: ( payload: unknown ) => void ) {

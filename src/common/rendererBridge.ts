@@ -3,7 +3,11 @@ import type { StateReport } from '../main/getActiveState';
 import type RunList from '../app/store/RunList';
 import type { ExampleFilesPayload } from '../main/api';
 import type { CheckOutputArgs, CheckOutputResult } from '../main/checkOutput';
-import type { ModelSelectionPayload } from '../main/modelSelection';
+import type {
+  ModelSelectionPayload,
+  ModelSelectionSuccessPayload,
+  ModelSelectionFailurePayload,
+} from '../main/modelSelection';
 import type { SelectedAlignment } from '../main/selectAlignment';
 import type { SelectedTree } from '../main/selectTree';
 import type { SelectedAstralFile } from '../main/selectAstralFile';
@@ -55,8 +59,8 @@ export interface RendererBridge {
   onAstralSuccess: ( listener: ( payload: AstralSuccessPayload ) => void ) => Unsubscribe;
   startModelSelection: ( payload: ModelSelectionPayload ) => Promise<void>;
   cancelModelSelection: ( id: string ) => Promise<void>;
-  onModelSelectionSuccess: ( listener: Listener ) => Unsubscribe;
-  onModelSelectionFailure: ( listener: Listener ) => Unsubscribe;
+  onModelSelectionSuccess: ( listener: ( payload: ModelSelectionSuccessPayload ) => void ) => Unsubscribe;
+  onModelSelectionFailure: ( listener: ( payload: ModelSelectionFailurePayload ) => void ) => Unsubscribe;
   onAddRun: ( listener: Listener ) => Unsubscribe;
   onRemoveRun: ( listener: Listener ) => Unsubscribe;
   onLightMode: ( listener: () => void ) => Unsubscribe;
