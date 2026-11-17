@@ -17,10 +17,18 @@ interface FinalAlignmentPart {
   dataType?: DataType;
   // Alignment defines no modelFlagName, so this reads undefined.
   modelFlagName?: string;
+  // Read by FinalPartition, which this file hands the run to.
+  partition: {
+    isDefault: boolean;
+    isComplete: boolean;
+    transform( offset: number, prefix: string ): string;
+  };
   getSequenceCode: ( taxon: string ) => string;
 }
 
 interface FinalAlignmentOwner {
+  // Read by FinalPartition, which this file hands the run to.
+  haveAlignments: boolean;
   alignments: FinalAlignmentPart[];
   outputNameSafe: string;
   outputDir: string;

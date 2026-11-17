@@ -11,7 +11,26 @@ import {
   PartCodon,
 } from './PartOptions';
 
-const getPartitionType = ( dataType, aaMatrixName = 'BLOSUM62' ) => {
+interface PartitionAlignment {
+  // Read by the part options, which this file hands each part to.
+  run: unknown;
+  partition: Partition;
+  dataType: string;
+  partitionType: string;
+  aaMatrixName: string;
+  length: number;
+}
+
+interface PartValues {
+  type: string;
+  aaType: string;
+  name: string;
+  start: number;
+  end: number;
+  codon: string;
+}
+
+const getPartitionType = ( dataType: string, aaMatrixName = 'BLOSUM62' ): string => {
   // for old raxml
   switch ( dataType ) {
     case 'dna':
@@ -29,7 +48,14 @@ const getPartitionType = ( dataType, aaMatrixName = 'BLOSUM62' ) => {
 };
 
 class Part {
-  constructor( partition, { type, aaType, name, start, end, codon } ) {
+  partition: Partition;
+  type: PartType;
+  aaType: PartAAType;
+  name: PartName;
+  start: PartStart;
+  end: PartEnd;
+  codon: PartCodon;
+  constructor( partition: Partition, { type, aaType, name, start, end, codon }: PartValues ) {
     makeObservable( this, {
       typePadded: computed,
       text: computed,
@@ -44,7 +70,7 @@ class Part {
     this.codon = new PartCodon( this, codon );
   }
 
-  get typePadded() {
+  get typePadded(): string {
     return `${this.type.finalValue},`.padEnd( 12 );
   }
 
@@ -53,7 +79,7 @@ class Part {
    * codon 1,2 or 3: Codon specific, add offset 0,1 and 2 respectively and append \3
    * codon 12: Third codon, add offset 1 on same row and append \3 on the two ranges
    */
-  _transform = ( offset = 0, namePrefix = '', codon = 0 ) => {
+  _transform = ( offset = 0, namePrefix = '', codon = 0 ): string => {
     const nameSuffix =
       codon === 0
         ? ''
@@ -72,7 +98,7 @@ class Part {
     return `${partWithoutRange}${range}`;
   };
 
-  transform = ( offset = 0, namePrefix = '' ) => {
+  transform = ( offset = 0, namePrefix = '' ): string => {
     switch ( this.codon.value ) {
       case CODON_NONE:
         return this._transform( offset, namePrefix );
@@ -89,14 +115,14 @@ class Part {
     }
   };
 
-  get text() {
+  get text(): string {
     // return `${this.typePadded}${this.name.value} = ${this.start.value}-${this.end.value}`;
     return this.transform();
   }
 
-  parse = ( row ) => {};
+  parse = ( _row: string ): void => {};
 
-  get values() {
+  get values(): PartValues {
     return {
       type: this.type.value,
       aaType: this.aaType.value,
@@ -107,12 +133,15 @@ class Part {
     };
   }
 
-  clone = () => {
+  clone = (): Part => {
     return new Part( this.partition, this.values );
   };
 }
 class Partition {
-  constructor( alignment ) {
+  alignment: PartitionAlignment;
+  defaultPartition: Part;
+  partToAdd: Part;
+  constructor( alignment: PartitionAlignment ) {
     makeObservable( this, {
       parts: observable,
       addPart: action,
@@ -174,9 +203,9 @@ class Partition {
       { name: 'React to default partition type change' },
     );
   }
-  parts = [];
+  parts: Part[] = [];
   // Add current part values
-  addPart = () => {
+  addPart = (): void => {
     this.parts.push( this.partToAdd.clone() );
     // Reset or update in partToAdd
     this.partToAdd.codon.value = CODON_NONE;
@@ -188,7 +217,7 @@ class Partition {
       const oldName = this.partToAdd.name.value;
       let newName = oldName.replace(
         /(\d+)$/,
-        ( _, digits ) => `${Number( digits ) + 1}`,
+        ( _: string, digits: string ) => `${Number( digits ) + 1}`,
       );
       if ( newName === oldName ) {
         newName = `${newName}_1`;
@@ -196,58 +225,58 @@ class Partition {
       this.partToAdd.name.value = newName;
     }
   };
-  get isMixed() {
+  get isMixed(): boolean {
     return this.alignment.dataType === 'mixed';
   }
-  get isDefault() {
+  get isDefault(): boolean {
     return this.parts.length === 0;
   }
-  get maxEndValue() {
+  get maxEndValue(): number {
     return this.alignment.length;
   }
 
-  get currentEndValue() {
+  get currentEndValue(): number {
     return this.isDefault
       ? this.defaultPartition.end.value
       : this.parts[this.parts.length - 1].end.value;
   }
-  get isComplete() {
+  get isComplete(): boolean {
     return this.currentEndValue === this.maxEndValue;
   }
-  get nonDefaultPartitionComplete() {
+  get nonDefaultPartitionComplete(): boolean {
     return !this.isDefault && this.isComplete;
   }
-  get progress() {
+  get progress(): number {
     return this.isDefault
       ? 100
       : ( this.currentEndValue * 100.0 ) / this.alignment.length;
   }
-  get haveError() {
+  get haveError(): boolean {
     return this.partToAdd.end.haveError;
   }
-  get errorMessage() {
+  get errorMessage(): string {
     return this.haveError
       ? `End position error: ${this.partToAdd.end.errorMessage}`
       : '';
   }
-  get addPartDisabled() {
+  get addPartDisabled(): boolean {
     return this.nonDefaultPartitionComplete || this.haveError;
   }
-  get text() {
+  get text(): string {
     if ( this.isDefault ) {
       // return this.alignment.partitionFileContent;
       return this.defaultPartition.text;
     }
     return this.parts.map( ( part ) => part.text ).join( '\n' );
   }
-  transform = ( offset = 0, prefix = '' ) => {
+  transform = ( offset = 0, prefix = '' ): string => {
     if ( this.isDefault ) {
       return this.defaultPartition.transform( offset, prefix );
     }
     return this.parts.map( ( part ) => part.transform( offset, prefix ) ).join( '\n' );
   };
 
-  reset = () => {
+  reset = (): void => {
     if ( this.parts.length > 0 ) {
       this.parts.splice( 0 );
       this.partToAdd.name.value = 'part_1';
