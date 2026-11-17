@@ -2,10 +2,14 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Button from '@mui/material/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
+import type { AlignmentCardProps, FinalAlignmentCardProps } from './AlignmentCard';
 import AstralTreeCard from './AstralTreeCard';
+import type { AstralTreeCardProps } from './AstralTreeCard';
 import PartitionFileCard from './PartitionFileCard';
+import type { PartitionFileCardProps } from './PartitionFileCard';
 import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
+import type { TreeCardProps } from './TreeCard';
 import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
 import type { SxProps, Theme } from '@mui/material/styles';
@@ -14,21 +18,22 @@ interface DroppedFile {
   path: string;
 }
 
-interface InputTree {
+// Each child card's props name what it reads of the same store object.
+type InputTree = TreeCardProps['tree'] & {
   notAvailable: boolean;
   haveFile: boolean;
-}
+};
 
-interface InputRun {
+type InputRun = PartitionFileCardProps['run'] & {
   hasAstralTree: boolean;
   addAlignments: ( files: DroppedFile[] ) => void;
   addPartitionFiles: ( files: DroppedFile[] ) => void;
   addTreeFiles: ( type: string, files: DroppedFile[] ) => void;
   addAstralFiles: ( file: DroppedFile ) => void;
   inputIsAlignment: boolean;
-  alignments: { path: string }[];
+  alignments: ( AlignmentCardProps['alignment'] & { path: string } )[];
   inputIsTree: boolean;
-  astralTree: unknown;
+  astralTree: AstralTreeCardProps['astralTree'];
   canLoadAlignment: boolean;
   haveAlignments: boolean;
   canLoadPartitionFile: boolean;
@@ -42,8 +47,8 @@ interface InputRun {
   loadBackboneConstraintFile: () => void;
   multifurcatingConstraint: InputTree;
   loadMultifurcatingConstraintFile: () => void;
-  finalAlignment: unknown;
-}
+  finalAlignment: FinalAlignmentCardProps['alignment'];
+};
 
 export interface InputProps {
   run: InputRun;

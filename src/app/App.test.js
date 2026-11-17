@@ -1,3 +1,4 @@
+// @ts-nocheck — Jest globals. checkJs has no test runner types.
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import Page from './index';

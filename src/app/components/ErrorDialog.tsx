@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -17,11 +16,27 @@ import { getMailtoLinkToReportError } from '../report';
 import { reportIssueToGitHub } from '../githubIssue';
 
 const handleReload = () => {
-  const { rendererBridge } = /** @type {any} */ ( window );
-  return rendererBridge.reload();
+  return window.rendererBridge.reload();
 };
 
-export default function ErrorDialog( { error, onClose, needReload, title } ) {
+type DialogError = Error & { isUserFix?: boolean };
+
+export interface ErrorDialogProps {
+  // Store errors are caught values (unknown) or serialized bridge errors.
+  error?: unknown;
+  onClose: () => void;
+  needReload?: boolean;
+  title?: string | null;
+}
+
+export default function ErrorDialog( {
+  error: caught,
+  onClose,
+  needReload,
+  title,
+}: ErrorDialogProps ): React.JSX.Element | null {
+  // The dialog reads name, message and isUserFix as the untyped component did.
+  const error = caught as DialogError | null | undefined;
   const [reported, setReported] = React.useState( false );
   const mailtoContent = React.useMemo(
     () => ( error
@@ -171,10 +186,3 @@ export default function ErrorDialog( { error, onClose, needReload, title } ) {
 
   return returnDialog;
 }
-
-ErrorDialog.propTypes = {
-  error: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
-  needReload: PropTypes.bool,
-  title: PropTypes.string,
-};
