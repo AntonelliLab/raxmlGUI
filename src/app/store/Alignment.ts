@@ -16,12 +16,68 @@ import { runEvents } from './StoreBase';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import UserFixError from '../../common/errors';
 import { host } from './host';
+import type { DataType } from '../../common/typecheckAlignment';
+import type { AlignmentSequence } from '../../main/parseAlignment';
+import type { ModelSelectionResult, ModelSelectionSuccessPayload, ModelSelectionFailurePayload } from '../../main/modelSelection';
+import type { RunOutputPayload } from '../../main/processHelpers';
 
-const raxmlMatrixOptions = raxmlSettings.matrixOptions;
-const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
+const raxmlMatrixOptions = raxmlSettings.matrixOptions as Record<string, { default: string }>;
+const raxmlNgModelOptions = raxmlNgSettings.modelOptions as Record<string, { default: string }>;
 
-class Alignment extends InputFile {
-  constructor( run, path ) {
+interface SettableOption<Value> {
+  value: Value;
+  setValue: ( value: Value ) => void;
+}
+
+interface AlignmentOwner {
+  id: number;
+  haveAlignments: boolean;
+  usesRaxmlNg: boolean;
+  showPartitionFor: Alignment | null;
+  showPartition: ( alignment: Alignment | null ) => void;
+  parent: { onError: ( error: UserFixError ) => void };
+  outputDir: string;
+  numThreads: { value: number };
+  modeltestName: string | undefined;
+  baseFrequencies: SettableOption<string>;
+  estimatedFrequencies: SettableOption<boolean>;
+  substitutionAscertainment: SettableOption<string>;
+  substitutionI: SettableOption<string>;
+  substitutionRate: SettableOption<string>;
+  substitutionMatrix: SettableOption<string>;
+  alignments: Alignment[];
+  dataType: string;
+  error: unknown;
+  afterRun: () => void;
+  removeAlignment: ( alignment: Alignment ) => void;
+  stdout: string;
+  stderr: string;
+}
+
+interface ModelExtra {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onChange: ( value: string ) => void;
+}
+
+// Merged, not class fields: assigned later, so no own property at construction.
+interface Alignment {
+  numSequencesParsed: number;
+  model: string;
+}
+
+class Alignment extends InputFile<AlignmentOwner> {
+  substitutionModel: RaxmlNgAlignmentSubstitutionModel;
+  multistateNumber: MultistateNumber;
+  ngStationaryFrequencies: RaxmlNgModelF;
+  ngInvariantSites: RaxmlNgModelI;
+  ngRateHeterogeneity: RaxmlNgModelG;
+  ngAscertainmentBias: RaxmlNgModelASC;
+  partition: Partition;
+  modeltestDisabled: boolean;
+
+  constructor( run: AlignmentOwner, path: string ) {
     super( run, path );
     makeObservable( this, {
       error: observable,
@@ -87,27 +143,26 @@ class Alignment extends InputFile {
     this.listen();
   }
 
-  error = null;
+  error: unknown = null;
 
-  dataType = undefined;
-  /** @type {string} */
-  aaMatrixName =
+  dataType: DataType | undefined = undefined;
+  aaMatrixName: string =
     raxmlSettings.aminoAcidSubstitutionMatrixOptions.default;
 
   size = 0;
-  fileFormat = undefined;
-  convertedFrom = undefined;
+  fileFormat: string | undefined = undefined;
+  convertedFrom: string | undefined = undefined;
   converted = false;
   modified = false;
-  modificationMessages = [];
+  modificationMessages: string[] = [];
   showModifiedSnack = false;
   showModifiedDialog = false;
   length = 0;
   numSequences = 0;
-  sequences = [];
+  sequences: AlignmentSequence[] = [];
   hasInvariantSites = false;
 
-  get taxons() {
+  get taxons(): string[] {
     return this.sequences.map( ( seq ) => seq.taxon );
   }
 
@@ -120,31 +175,32 @@ class Alignment extends InputFile {
   checkRunSuccess = false;
 
   // Partition stuff
-  get showPartition() {
+  get showPartition(): boolean {
     return this.run.showPartitionFor === this;
   }
 
-  setShowPartition = ( value = true ) => {
+  setShowPartition = ( value = true ): void => {
     this.run.showPartition( value
       ? this
       : null );
   };
 
-  hidePartition = () => {
+  hidePartition = (): void => {
     this.setShowPartition( false );
   };
 
-  setPartitionText = ( value ) => {
+  setPartitionText = ( value: string ): void => {
     this.partitionText = value;
   };
 
   partitionText = '';
 
-  get partitionType() {
+  get partitionType(): string {
     if ( this.run.usesRaxmlNg ) {
       return this.ngSubstitutionModelCmd;
     }
     switch ( this.dataType ) {
+      // @ts-expect-error The parser never sets 'dna'; dead case kept, see #269.
       case 'dna':
       case 'nucleotide':
         return 'DNA';
@@ -159,7 +215,7 @@ class Alignment extends InputFile {
     }
   }
 
-  get partitionFileContent() {
+  get partitionFileContent(): string {
     /*
       DNA, gene1 = 1-3676
       BIN, morph = 3677-3851
@@ -175,15 +231,15 @@ class Alignment extends InputFile {
     return partitionFileText;
   }
 
-  get ngSubstitutionModelCmd() {
+  get ngSubstitutionModelCmd(): string {
     return `${this.substitutionModel.cmdValue}${this.ngStationaryFrequencies.cmdValue}${this.ngInvariantSites.cmdValue}${this.ngRateHeterogeneity.cmdValue}${this.ngAscertainmentBias.cmdValue}`;
   }
 
-  get numSites() {
+  get numSites(): number {
     return this.length;
   }
 
-  get status() {
+  get status(): string {
     if ( this.error ) {
       return `Error: ${this.error}`;
     }
@@ -199,7 +255,7 @@ class Alignment extends InputFile {
     return 'ok';
   }
 
-  get modelExtra() {
+  get modelExtra(): ModelExtra | null {
     switch ( this.dataType ) {
       case 'protein':
         // Raxml-ng does not have the aa substitution matrix parameter
@@ -217,13 +273,13 @@ class Alignment extends InputFile {
     }
   }
 
-  get modelTestCanRun() {
+  get modelTestCanRun(): boolean {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
   }
 
   modeltestLoading = false;
 
-  runModelTest = async () => {
+  runModelTest = async (): Promise<void> => {
     // Show an error if there are not enough sequences and dont start the run
     if ( this.numSequences < 3 ) {
       this.run.parent.onError(
@@ -234,7 +290,7 @@ class Alignment extends InputFile {
       return;
     }
     this.modeltestLoading = true;
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.startModelSelection( {
       id: this.id,
       filePath: this.path,
@@ -245,15 +301,15 @@ class Alignment extends InputFile {
     } );
   };
 
-  cancelModelTest = () => {
+  cancelModelTest = (): void => {
     if ( this.modeltestLoading ) {
       this.modeltestLoading = false;
-      const { rendererBridge } = /** @type {any} */ ( window );
+      const { rendererBridge } = window;
       rendererBridge.cancelModelSelection( this.id );
     }
   };
 
-  setModelFromString = ( { raxml, extraFlag, raxmlNG } ) => {
+  setModelFromString = ( { raxml, extraFlag, raxmlNG }: ModelSelectionResult ): void => {
     this.modeltestLoading = false;
     // For raxml-ng
     let model = raxmlNG.split( '+' )[0];
@@ -333,8 +389,8 @@ class Alignment extends InputFile {
     }
   };
 
-  loadParsedAlignment = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  loadParsedAlignment = async (): Promise<void> => {
+    const { rendererBridge } = window;
     try {
       const parsed = await rendererBridge.parseAlignment( this.id, this.path );
       const { alignment, change } = parsed;
@@ -374,7 +430,7 @@ class Alignment extends InputFile {
           }
         }
       } );
-    } catch ( error ) {
+    } catch ( error: unknown ) {
       runInAction( () => {
         console.error( `Error loading file '${this.path}':`, error );
         this.error = error;
@@ -385,7 +441,7 @@ class Alignment extends InputFile {
     }
   };
 
-  onModelSelectionSuccess = ( { id, result } ) => {
+  onModelSelectionSuccess = ( { id, result }: ModelSelectionSuccessPayload ): void => {
     if ( id === this.id ) {
       console.log( id, 'Modeltest result:', result );
       this.setModelFromString( result );
@@ -393,7 +449,7 @@ class Alignment extends InputFile {
     }
   };
 
-  onModelSelectionFailure = ( { id, error } ) => {
+  onModelSelectionFailure = ( { id, error }: ModelSelectionFailurePayload ): void => {
     if ( id === this.id ) {
       this.modeltestLoading = false;
       console.log( id, 'Modeltest error:', error );
@@ -402,7 +458,7 @@ class Alignment extends InputFile {
     }
   };
 
-  listen = () => {
+  listen = (): void => {
     this.loadParsedAlignment();
     this.subscribe( runEvents.onModelSelectionSuccess, this.onModelSelectionSuccess );
     this.subscribe( runEvents.onModelSelectionFailure, this.onModelSelectionFailure );
@@ -410,47 +466,47 @@ class Alignment extends InputFile {
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
   };
 
-  clearModified = () => {
+  clearModified = (): void => {
     this.showModifiedSnack = false;
     this.showModifiedDialog = false;
   };
 
-  dispose() {
+  dispose(): void {
     this.unlisten();
     if ( this.modeltestLoading ) {
       this.cancelModelTest();
     }
   }
 
-  remove = () => {
+  remove = (): void => {
     this.dispose();
     this.run.removeAlignment( this );
   };
 
-  onChangeModel = ( event ) => {
+  onChangeModel = ( event: { target: { value: string } } ): void => {
     console.log( 'onChangeModel' );
     this.model = event.target.value;
   };
 
-  onChangeAAMatrixName = ( value ) => {
+  onChangeAAMatrixName = ( value: string ): void => {
     console.log( 'onChangeAAMatrixName' );
     this.aaMatrixName = value;
   };
 
-  onRunStdout = ( { id, content } ) => {
+  onRunStdout = ( { id, content }: RunOutputPayload ): void => {
     if ( id === this.id ) {
       // TODO: Keep local log?
       this.run.stdout += content;
     }
   };
 
-  onRunStderr = ( { id, content } ) => {
+  onRunStderr = ( { id, content }: RunOutputPayload ): void => {
     if ( id === this.id ) {
       this.run.stderr += content;
     }
   };
 
-  getSequenceCode = ( taxon ) => {
+  getSequenceCode = ( taxon: string ): string => {
     // TODO: Sort sequences on taxon for quicker search, intersection and union
     const seq = this.sequences.find( ( seq ) => seq.taxon === taxon );
     if ( seq !== undefined ) {
