@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -11,19 +10,33 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
+import type { SxProps, Theme } from '@mui/material/styles';
 
-function TreeCard( { sx, tree } ) {
-  const [anchorEl, setAnchorEl] = React.useState( null );
+interface CardTree {
+  name: string;
+  loading: boolean;
+  openFile: () => void;
+  openFolder: () => void;
+  remove: () => void;
+}
 
-  function handleMenuClick( event ) {
+export interface TreeCardProps {
+  tree: CardTree;
+  sx?: SxProps<Theme>;
+}
+
+function TreeCard( { sx, tree }: TreeCardProps ): React.JSX.Element {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>( null );
+
+  function handleMenuClick( event: React.MouseEvent<HTMLElement> ): void {
     setAnchorEl( event.currentTarget );
   }
 
-  function handleMenuClose() {
+  function handleMenuClose(): void {
     setAnchorEl( null );
   }
 
-  function closeMenuAndRun( callback ) {
+  function closeMenuAndRun( callback: () => void ): () => void {
     return () => {
       callback();
       setAnchorEl( null );
@@ -98,10 +111,5 @@ function TreeCard( { sx, tree } ) {
   );
 }
 // <Box display="flex" alignItems="center" justifyContent="center">{tree.name}</Box>
-
-TreeCard.propTypes = {
-  tree: PropTypes.object.isRequired,
-  sx: PropTypes.object,
-};
 
 export default observer( TreeCard );

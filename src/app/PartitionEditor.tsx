@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
@@ -12,9 +11,68 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
+import type { OptionTextFieldOptionLike } from './components/OptionTextField';
 
-function PartitionEditor( { alignment } ) {
-  function handleAdd( event ) {
+// Part start and end are numeric options that OptionTextField hands a string.
+interface PartPositionOption extends Omit<OptionTextFieldOptionLike, 'setValue'> {
+  setValue: ( value: string | number ) => void;
+}
+
+interface EditorPartition {
+  partToAdd: {
+    type: OptionSelectOptionLike;
+    aaType: OptionSelectOptionLike;
+    name: OptionTextFieldOptionLike;
+    start: PartPositionOption;
+    end: PartPositionOption;
+    codon: OptionSelectOptionLike;
+  };
+  progress: number;
+  currentEndValue: number;
+  maxEndValue: number;
+  addPartDisabled: boolean;
+  errorMessage: string;
+  isDefault: boolean;
+  text: string;
+  addPart: () => void;
+  reset: () => void;
+}
+
+interface EditorAlignment {
+  showPartition: boolean;
+  partition: EditorPartition;
+  filename: string;
+  numSequences: number;
+  length: number;
+  // Alignment defines no partitionHelperText, so this reads undefined.
+  partitionHelperText?: string;
+  hidePartition: () => void;
+}
+
+interface OnCardAlignment {
+  partitionFileContent: string;
+  partitionText: string;
+  // Alignment defines no partitionHelperText, so this reads undefined.
+  partitionHelperText?: string;
+  setPartitionText: ( value: string ) => void;
+  setShowPartition: ( value: boolean ) => void;
+}
+
+export interface PartitionEditorProps {
+  alignment: EditorAlignment;
+  className?: string;
+}
+
+export interface PartitionOnCardProps {
+  alignment: OnCardAlignment;
+  className?: string;
+}
+
+function PartitionEditor( {
+  alignment,
+}: PartitionEditorProps ): React.JSX.Element | null {
+  function handleAdd( _event: React.MouseEvent<HTMLButtonElement> ): void {
     alignment.partition.addPart();
   }
 
@@ -144,28 +202,27 @@ function PartitionEditor( { alignment } ) {
   );
 }
 
-PartitionEditor.propTypes = {
-  alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
-};
-
 const PartitionEditorObserver = observer( PartitionEditor );
 
-function PartitionOnCard( { alignment } ) {
+function PartitionOnCard( {
+  alignment,
+}: PartitionOnCardProps ): React.JSX.Element {
   // const [partitionText, setPartitionText] = React.useState(alignment.partitionText);
   const [partitionText, setPartitionText] = React.useState(
     alignment.partitionFileContent,
   );
 
-  function handleChange( event ) {
+  function handleChange(
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ): void {
     setPartitionText( event.target.value );
   }
 
-  function onClickCancel( event ) {
+  function onClickCancel( _event: React.MouseEvent<HTMLButtonElement> ): void {
     alignment.setShowPartition( false );
   }
 
-  function onClickSave( event ) {
+  function onClickSave( _event: React.MouseEvent<HTMLButtonElement> ): void {
     alignment.setPartitionText( partitionText );
     alignment.setShowPartition( false );
   }
@@ -220,11 +277,6 @@ function PartitionOnCard( { alignment } ) {
     </Card>
   );
 }
-
-PartitionOnCard.propTypes = {
-  alignment: PropTypes.object.isRequired,
-  className: PropTypes.string,
-};
 
 const PartitionOnCardObserver = observer( PartitionOnCard );
 
