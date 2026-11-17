@@ -5,9 +5,32 @@ import intersection from 'lodash/intersection';
 import FinalPartition from './FinalPartition';
 import { getFinalDataType } from '../../common/typecheckAlignment';
 import { join } from '../paths';
+import type { DataType } from '../../common/typecheckAlignment';
+
+interface FinalAlignmentPart {
+  filename: string;
+  dir: string;
+  path: string;
+  taxons: string[];
+  length: number;
+  hasInvariantSites: boolean;
+  dataType?: DataType;
+  // Alignment defines no modelFlagName, so this reads undefined.
+  modelFlagName?: string;
+  getSequenceCode: ( taxon: string ) => string;
+}
+
+interface FinalAlignmentOwner {
+  alignments: FinalAlignmentPart[];
+  outputNameSafe: string;
+  outputDir: string;
+}
 
 class FinalAlignment {
-  constructor( run ) {
+  run: FinalAlignmentOwner;
+  partition: FinalPartition;
+
+  constructor( run: FinalAlignmentOwner ) {
     makeObservable( this, {
       filename: computed,
       dir: computed,
@@ -36,21 +59,21 @@ class FinalAlignment {
     this.partition = new FinalPartition( run );
   }
 
-  get filename() {
+  get filename(): string {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].filename;
     }
     return `RAxML_${this.run.outputNameSafe}_concat.txt`;
   }
 
-  get dir() {
+  get dir(): string {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].dir;
     }
     return this.run.outputDir;
   }
 
-  get path() {
+  get path(): string {
     if ( this.numAlignments === 1 ) {
       return this.run.alignments[0].path;
     }
@@ -59,7 +82,7 @@ class FinalAlignment {
 
   parsingComplete = true;
 
-  get numAlignments() {
+  get numAlignments(): number {
     return this.run.alignments.length;
   }
 
@@ -67,11 +90,11 @@ class FinalAlignment {
   // else drop taxons that doesn't exist in all alignments by taking the intersection
   fillTaxonGapsWithEmptySeqeunces = true;
 
-  setFillTaxonGapsWithEmptySeqeunces = ( checked ) => {
+  setFillTaxonGapsWithEmptySeqeunces = ( checked: boolean ): void => {
     this.fillTaxonGapsWithEmptySeqeunces = checked;
   };
 
-  get taxons() {
+  get taxons(): string[] {
     const setMethod = this.fillTaxonGapsWithEmptySeqeunces
       ? union
       : intersection;
@@ -81,18 +104,18 @@ class FinalAlignment {
     );
   }
 
-  get numSequences() {
+  get numSequences(): number {
     return this.taxons.length;
   }
 
-  get length() {
+  get length(): number {
     return this.run.alignments.reduce(
       ( sumLength, alignment ) => sumLength + alignment.length,
       0,
     );
   }
 
-  get hasInvariantSites() {
+  get hasInvariantSites(): boolean {
     // If any one of the alignments has invariant sites return true
     for ( const alignment of this.run.alignments ) {
       if ( alignment.hasInvariantSites ) {
@@ -119,13 +142,13 @@ class FinalAlignment {
   //   return firstType;
   // }
 
-  get dataType() {
+  get dataType(): DataType | undefined {
     const { alignments } = this.run;
     const dataTypes = alignments.map( ( { dataType } ) => dataType );
     return getFinalDataType( dataTypes );
   }
 
-  get modelFlagName() {
+  get modelFlagName(): string | undefined {
     const {numAlignments} = this;
     if ( numAlignments === 0 ) {
       return 'none';
@@ -137,7 +160,7 @@ class FinalAlignment {
     return first;
   }
 
-  get partitionFilePath() {
+  get partitionFilePath(): string {
     if ( this.partition.isDefault ) {
       return '';
     }
@@ -150,40 +173,40 @@ class FinalAlignment {
     );
   }
 
-  get partitionFileContent() {
+  get partitionFileContent(): string {
     return this.partition.text;
   }
 
-  openFile = async () => {
+  openFile = async (): Promise<void> => {
     await this.writeConcatenatedAlignment();
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.openPath( this.path );
   };
 
-  openPartition = async () => {
+  openPartition = async (): Promise<void> => {
     await this.writeConcatenatedAlignmentAndPartition();
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.openPath( this.partitionFilePath );
   };
 
-  showFileInFolder = async () => {
+  showFileInFolder = async (): Promise<void> => {
     await this.writeConcatenatedAlignment();
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.showItemInFolder( this.path );
   };
 
-  openFolder = async () => {
+  openFolder = async (): Promise<void> => {
     await this.writeConcatenatedAlignmentAndPartition();
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.showItemInFolder( this.dir );
   };
 
-  writeConcatenatedAlignmentAndPartition = async () => {
+  writeConcatenatedAlignmentAndPartition = async (): Promise<void> => {
     await this.writeConcatenatedAlignment();
     await this.writePartition();
   };
 
-  writeConcatenatedAlignment = async () => {
+  writeConcatenatedAlignment = async (): Promise<void> => {
     const { taxons, numSequences } = this;
     try {
       console.log(
@@ -201,20 +224,20 @@ class FinalAlignment {
           text += this.run.alignments[j].getSequenceCode( taxons[i] );
         }
       }
-      const { rendererBridge } = /** @type {any} */ ( window );
+      const { rendererBridge } = window;
       await rendererBridge.writeFile( this.path, text );
-    } catch ( err ) {
+    } catch ( err: unknown ) {
       console.error( 'Error writing concatenated alignment:', err );
       throw err;
     }
   };
 
-  writePartition = async () => {
+  writePartition = async (): Promise<void> => {
     try {
       console.log( `Writing partition to ${this.partitionFilePath}...` );
-      const { rendererBridge } = /** @type {any} */ ( window );
+      const { rendererBridge } = window;
       await rendererBridge.writeFile( this.partitionFilePath, this.partitionFileContent );
-    } catch ( err ) {
+    } catch ( err: unknown ) {
       console.error( 'Error writing partition:', err );
       throw err;
     }

@@ -2,6 +2,30 @@ src/app/App.js(466,12): error TS2739: Type '{ error: ErrorObject; onClose: () =>
 src/app/App.js(512,10): error TS2741: Property 'needReload' is missing in type '{ error: unknown; title: string; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
 src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
 src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
+src/app/store/Alignment.js(75,69): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
+src/app/store/Alignment.js(76,51): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
+src/app/store/Alignment.js(77,55): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
+src/app/store/Alignment.js(78,48): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
+src/app/store/Alignment.js(79,51): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
+src/app/store/Alignment.js(80,53): error TS2345: Argument of type 'this' is not assignable to parameter of type 'AlignmentLike'.
+  Type 'Alignment' is not assignable to type 'AlignmentLike'.
+    Types of property 'run' are incompatible.
+      Type 'InputFileOwner' is missing the following properties from type 'RunLike': haveAlignments, usesRaxmlNg
 src/app/store/Alignment.js(124,21): error TS2339: Property 'showPartitionFor' does not exist on type 'InputFileOwner'.
 src/app/store/Alignment.js(128,14): error TS2339: Property 'showPartition' does not exist on type 'InputFileOwner'.
 src/app/store/Alignment.js(144,19): error TS2339: Property 'usesRaxmlNg' does not exist on type 'InputFileOwner'.
