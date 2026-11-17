@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import OptionSelect from './components/OptionSelect';
 import Box from '@mui/material/Box';
@@ -9,10 +8,33 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
 
-const Raxml = ( { run, store } ) => {
+// The run's select options miss OptionSelect's notAvailable or string titles: cast where passed.
+interface RaxmlRun {
+  command: string;
+  binary: object;
+  numThreads: object;
+  modelTestIsRunningOnAlignment: boolean;
+  cancelModeltestOnAlignment: () => void;
+  running: boolean;
+  cancel: () => void;
+  startDisabled: boolean;
+  start: () => void;
+}
+
+interface RaxmlStore {
+  setAppSnack: () => void;
+}
+
+export interface RaxmlProps {
+  run: RaxmlRun;
+  store: RaxmlStore;
+}
+
+const Raxml = ( { run, store }: RaxmlProps ): React.JSX.Element => {
   const copyCommand = useCallback( async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.copyText( run.command );
     store.setAppSnack();
   }, [run.command, store] );
@@ -37,8 +59,8 @@ const Raxml = ( { run, store } ) => {
           gap: '20px',
         }}
       >
-        <OptionSelect option={run.binary} />
-        <OptionSelect option={run.numThreads} />
+        <OptionSelect option={run.binary as OptionSelectOptionLike} />
+        <OptionSelect option={run.numThreads as OptionSelectOptionLike} />
         {run.modelTestIsRunningOnAlignment
           ? (
             <Button
@@ -87,11 +109,6 @@ const Raxml = ( { run, store } ) => {
       </Box>
     </Box>
   );
-};
-
-Raxml.propTypes = {
-  run: PropTypes.object.isRequired,
-  store: PropTypes.object.isRequired,
 };
 
 export default observer( Raxml );
