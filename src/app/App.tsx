@@ -34,7 +34,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
 
-const VerticalHeading = styled( Typography )( ( { theme } ) => ( {
+const VerticalHeading = styled( Typography )( () => ( {
   writingMode: 'vertical-rl',
   textOrientation: 'upright',
   padding: '10px 5px',
@@ -43,7 +43,20 @@ const VerticalHeading = styled( Typography )( ( { theme } ) => ( {
   borderRight: '1px solid #ccc',
 } ) );
 
-const App = () => {
+interface SnackRun {
+  converted: boolean;
+  convertedAlignmentFrom: string | null;
+  modified: boolean;
+  showModifiedSnack: boolean;
+  clearShowModified: () => void;
+}
+
+interface SnackStore {
+  showAppSnack: boolean;
+  clearAppSnack: () => void;
+}
+
+const App = (): React.JSX.Element => {
   const TabItems = store.runs.map( ( run ) => (
     <Tab
       key={run.id}
@@ -79,7 +92,7 @@ const App = () => {
     />
   ) );
 
-  function fileModifiedSnack( run ) {
+  function fileModifiedSnack( run: SnackRun ): React.JSX.Element {
     let message = 'Something happened';
     if ( run.converted ) {
       message = `Converted your ${run.convertedAlignmentFrom} alignment into fasta!`;
@@ -107,7 +120,7 @@ const App = () => {
     );
   }
 
-  function appSnack( store ) {
+  function appSnack( store: SnackStore ): React.JSX.Element {
     const message = 'Command copied';
     return (
       <Snackbar

@@ -62,7 +62,8 @@ interface CardAlignment {
 interface CardFinalAlignment {
   dataType?: string;
   numSequences: number;
-  numSequencesParsed: number;
+  // Absent on the store FinalAlignment; its parsingComplete is always true.
+  numSequencesParsed?: number;
   length: number;
   numAlignments: number;
   filename: string;

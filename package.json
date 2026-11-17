@@ -77,7 +77,6 @@
     "postinstall-postinstall": "^2.1.0",
     "prismjs": "^1.30.0",
     "prismjs-bibtex": "^2.1.0",
-    "prop-types": "^15.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-dropzone": "^20.2.0",

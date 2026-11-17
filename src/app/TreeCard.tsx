@@ -14,7 +14,8 @@ import type { SxProps, Theme } from '@mui/material/styles';
 
 interface CardTree {
   name: string;
-  loading: boolean;
+  // The store Tree has no loading flag, so this always reads undefined.
+  loading?: boolean;
   openFile: () => void;
   openFolder: () => void;
   remove: () => void;

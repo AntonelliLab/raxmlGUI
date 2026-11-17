@@ -44,6 +44,6 @@ it( 'the page can still import the user-fix error type and the alignment typeche
   expect( alignment ).toMatch( /from ['"]\.\.\/\.\.\/common\/typecheckAlignment['"]/ );
   expect( alignment ).toMatch( /from ['"]\.\.\/\.\.\/common\/errors['"]/ );
   expect( run ).toMatch( /from ['"]\.\.\/\.\.\/common\/errors['"]/ );
-  expect( fs.readFileSync( path.join( __dirname, 'app', 'index.js' ), 'utf8' ) )
+  expect( fs.readFileSync( path.join( __dirname, 'app', 'index.tsx' ), 'utf8' ) )
     .not.toMatch( /from ['"]\.\.\/common\/utils['"]/ );
 } );

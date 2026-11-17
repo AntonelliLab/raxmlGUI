@@ -16,7 +16,7 @@ if ( process.env.NODE_ENV !== 'development' ) {
   } );
 }
 
-const Index = () => {
+const Index = (): React.JSX.Element => {
   const { light, dark } = theme;
   const muiTheme = store.config.isDarkMode
     ? dark
