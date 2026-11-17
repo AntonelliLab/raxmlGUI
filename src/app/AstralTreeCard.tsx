@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -14,18 +13,31 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 
-function AstralTreeCard( { astralTree } ) {
-  const [anchorEl, setAnchorEl] = React.useState( null );
+interface CardAstralTree {
+  filename: string;
+  openFile: () => void;
+  showFileInFolder: () => void;
+  remove: () => void;
+}
 
-  function handleMenuClick( event ) {
+export interface AstralTreeCardProps {
+  astralTree: CardAstralTree;
+}
+
+function AstralTreeCard( {
+  astralTree,
+}: AstralTreeCardProps ): React.JSX.Element {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>( null );
+
+  function handleMenuClick( event: React.MouseEvent<HTMLElement> ): void {
     setAnchorEl( event.currentTarget );
   }
 
-  function handleMenuClose() {
+  function handleMenuClose(): void {
     setAnchorEl( null );
   }
 
-  function closeMenuAndRun( callback ) {
+  function closeMenuAndRun( callback: () => void ): () => void {
     return () => {
       callback();
       setAnchorEl( null );
@@ -120,10 +132,6 @@ function AstralTreeCard( { astralTree } ) {
     </Card>
   );
 }
-
-AstralTreeCard.propTypes = {
-  astralTree: PropTypes.object.isRequired,
-};
 
 const AstralTreeCardObserver = observer( AstralTreeCard );
 

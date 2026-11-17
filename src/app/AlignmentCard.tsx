@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -20,8 +19,78 @@ import OptionTextField from './components/OptionTextField';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import type { SxProps, Theme } from '@mui/material/styles';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
+import type { OptionTextFieldOptionLike } from './components/OptionTextField';
 
-function _ModelTestButton( { alignment } ) {
+interface CardModelExtra {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onChange: ( value: string ) => void;
+}
+
+interface CardAlignment {
+  run: { usesRaxmlNg: boolean };
+  dataType?: string;
+  numSequences: number;
+  numSequencesParsed: number;
+  length: number;
+  filename: string;
+  parsingComplete: boolean;
+  loading: boolean;
+  showPartition: boolean;
+  partition: { isComplete: boolean };
+  substitutionModel: OptionSelectOptionLike;
+  multistateNumber: OptionTextFieldOptionLike;
+  ngStationaryFrequencies: OptionSelectOptionLike;
+  ngInvariantSites: OptionSelectOptionLike;
+  ngRateHeterogeneity: OptionSelectOptionLike;
+  ngAscertainmentBias: OptionSelectOptionLike;
+  modelExtra: CardModelExtra | null;
+  modelTestCanRun: boolean;
+  modeltestLoading: boolean;
+  modeltestDisabled: boolean;
+  runModelTest: () => void;
+  cancelModelTest: () => void;
+  openFile: () => void;
+  showFileInFolder: () => void;
+  remove: () => void;
+  setShowPartition: () => void;
+}
+
+interface CardFinalAlignment {
+  dataType?: string;
+  numSequences: number;
+  numSequencesParsed: number;
+  length: number;
+  numAlignments: number;
+  filename: string;
+  parsingComplete: boolean;
+  fillTaxonGapsWithEmptySeqeunces: boolean;
+  setFillTaxonGapsWithEmptySeqeunces: ( checked: boolean ) => void;
+  partition: { text: string };
+  openFile: () => void;
+  openPartition: () => void;
+  openFolder: () => void;
+}
+
+export interface ModelTestButtonProps {
+  alignment: CardAlignment;
+}
+
+export interface AlignmentCardProps {
+  alignment: CardAlignment;
+}
+
+export interface FinalAlignmentCardProps {
+  alignment: CardFinalAlignment;
+  sx?: SxProps<Theme>;
+}
+
+function _ModelTestButton( {
+  alignment,
+}: ModelTestButtonProps ): React.JSX.Element | null {
   if ( !alignment.modelTestCanRun ) {
     return null;
   }
@@ -47,26 +116,22 @@ function _ModelTestButton( { alignment } ) {
     </Button>
   );
 }
-_ModelTestButton.propTypes = {
-  alignment: PropTypes.object.isRequired,
-};
-
 const ModelTestButton = observer( _ModelTestButton );
 
-function AlignmentCard( { alignment } ) {
+function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
   const { dataType, numSequences, length } = alignment;
 
-  const [anchorEl, setAnchorEl] = React.useState( null );
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>( null );
 
-  function handleMenuClick( event ) {
+  function handleMenuClick( event: React.MouseEvent<HTMLElement> ): void {
     setAnchorEl( event.currentTarget );
   }
 
-  function handleMenuClose() {
+  function handleMenuClose(): void {
     setAnchorEl( null );
   }
 
-  function closeMenuAndRun( callback ) {
+  function closeMenuAndRun( callback: () => void ): () => void {
     return () => {
       callback();
       setAnchorEl( null );
@@ -175,6 +240,7 @@ function AlignmentCard( { alignment } ) {
                       marginLeft: '10px',
                       minWidth: '150px',
                     }}
+                    // @ts-expect-error modelExtra has no notAvailable, hoverInfo or error; OptionSelect reads them as undefined.
                     option={{
                       ...alignment.modelExtra,
                       setValue: alignment.modelExtra.onChange,
@@ -291,18 +357,21 @@ function AlignmentCard( { alignment } ) {
   );
 }
 
-function FinalAlignmentCard( { sx, alignment } ) {
-  const [anchorEl, setAnchorEl] = React.useState( null );
+function FinalAlignmentCard( {
+  sx,
+  alignment,
+}: FinalAlignmentCardProps ): React.JSX.Element {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>( null );
 
-  function handleMenuClick( event ) {
+  function handleMenuClick( event: React.MouseEvent<HTMLElement> ): void {
     setAnchorEl( event.currentTarget );
   }
 
-  function handleMenuClose() {
+  function handleMenuClose(): void {
     setAnchorEl( null );
   }
 
-  function closeMenuAndRun( callback ) {
+  function closeMenuAndRun( callback: () => void ): () => void {
     return () => {
       callback();
       setAnchorEl( null );
@@ -441,15 +510,6 @@ function FinalAlignmentCard( { sx, alignment } ) {
   );
 }
 // <Box display="flex" alignItems="center" justifyContent="center">{tree.name}</Box>
-
-AlignmentCard.propTypes = {
-  alignment: PropTypes.object.isRequired,
-};
-
-FinalAlignmentCard.propTypes = {
-  alignment: PropTypes.object.isRequired,
-  sx: PropTypes.object,
-};
 
 const AlignmentCardObserver = observer( AlignmentCard );
 const FinalAlignmentCardObserver = observer( FinalAlignmentCard );
