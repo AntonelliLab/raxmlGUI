@@ -35,6 +35,7 @@ import {
   BackboneConstraintTree,
   MultifurcatingConstraintTree,
 } from './RunOptions';
+import type { AnalysisChoice } from './RunOptions';
 import { basename, join, quote } from '../paths';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
@@ -191,7 +192,7 @@ class Run extends StoreBase {
 
   id: number = 0;
 
-  binary = new Binary( this );
+  binary: Binary = new Binary( this );
   numThreads = new NumThreads( this );
 
   raxmlNgSwitch = <A, B>( raxmlNgParam: A, raxmlParam: B ): A | B => {
@@ -205,7 +206,7 @@ class Run extends StoreBase {
     return this.raxmlNgSwitch( new RaxmlNgAnalysis( this ), new Analysis( this ) );
   }
 
-  get analysisOption(): { title: string; value: string; params: string[]; needTree?: undefined; } | { title: string; value: string; needTree: boolean; params: string[]; } | { title: string; value: string; params: string[]; needTree?: undefined; } | { title: string; value: string; needTree: boolean; params: string[]; } {
+  get analysisOption(): AnalysisChoice {
     return this.raxmlNgSwitch(
       raxmlNgAnalysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
       analysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
@@ -213,10 +214,10 @@ class Run extends StoreBase {
   }
 
   // Analysis params
-  substitutionMatrix = new SubstitutionMatrix( this );
-  substitutionI = new SubstitutionI( this );
+  substitutionMatrix: SubstitutionMatrix = new SubstitutionMatrix( this );
+  substitutionI: SubstitutionI = new SubstitutionI( this );
   substitutionRate = new SubstitutionRate( this );
-  substitutionAscertainment = new SubstitutionAscertainment( this );
+  substitutionAscertainment: SubstitutionAscertainment = new SubstitutionAscertainment( this );
   numRuns = new NumRuns( this );
   numRepetitions = new NumRepetitions( this );
   numRepetitionsNg = new NumRepetitionsNg( this );
@@ -228,7 +229,7 @@ class Run extends StoreBase {
   estimatedFrequencies = new EstimatedFrequencies( this );
   baseFrequencies = new BaseFrequencies( this );
   multistateModel = new MultistateModel( this );
-  startingTree = new StartingTree( this );
+  startingTree: StartingTree = new StartingTree( this );
 
   tree = new Tree( this );
   backboneConstraint = new BackboneConstraintTree( this );

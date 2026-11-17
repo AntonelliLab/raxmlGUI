@@ -6,6 +6,45 @@ import { host } from './host';
 import { basename, dir, name } from '../paths';
 import * as raxmlSettings from '../../settings/raxml';
 
+/** What the option classes read from the run that owns them */
+interface RunOwner {
+  binary: { value: string };
+  analysis: { value: string };
+  analysisOption: { params: string[] };
+  startingTree: { notAvailable: boolean; value: string };
+  substitutionMatrix: { notGTR: boolean };
+  substitutionI: { isSet: boolean };
+  substitutionAscertainment: { isSet: boolean };
+  finalAlignment: { hasInvariantSites: boolean };
+  taxons: string[];
+  haveAlignments: boolean;
+  dataType: string;
+  usesRaxmlNg: boolean;
+  usesModeltestNg: boolean;
+  useBackboneConstraint: boolean;
+  useMultifurcatingConstraint: boolean;
+}
+
+interface BinaryInfo {
+  name: string;
+  multithreaded?: boolean;
+  version: string;
+  type: string;
+  initial?: boolean;
+}
+
+export interface AnalysisChoice {
+  title: string;
+  value: string;
+  params: string[];
+  needTree?: boolean;
+}
+
+interface Choice<Value> {
+  value: Value;
+  title: string | number;
+}
+
 const raxmlMatrixOptions = raxmlSettings.matrixOptions;
 const raxmlRateOptions = raxmlSettings.rateOptions;
 const raxmlIOptions = raxmlSettings.iOptions;
@@ -15,7 +54,7 @@ export const MAX_NUM_CPUS = navigator.hardwareConcurrency || 1;
 
 // On Windows 7 (= 6.1) use older versions of RAxML
 const [majorVersion, minorVersion] = host.release.split( '.' );
-const winBinaries =
+const winBinaries: BinaryInfo[] =
   majorVersion === '6' && minorVersion === '1'
     ? [
       // TODO: add raxml ng windows exe
@@ -93,7 +132,7 @@ const winBinaries =
 
 const likelyARM =
   host.arch.includes( 'arm64' ) || host.cpuModel.includes( 'Apple' );
-const armBinaries = [
+const armBinaries: BinaryInfo[] = [
   {
     name: 'modeltest-ng-ARM64',
     multithreaded: true,
@@ -101,7 +140,7 @@ const armBinaries = [
     type: 'modeltest',
   },
 ];
-const x64Binaries = [
+const x64Binaries: BinaryInfo[] = [
   {
     name: 'modeltest-ng',
     multithreaded: true,
@@ -110,7 +149,7 @@ const x64Binaries = [
   },
 ];
 
-const allBinaries = host.windows
+const allBinaries: BinaryInfo[] = host.windows
   ? winBinaries
   : [
     ...( !likelyARM
@@ -156,7 +195,7 @@ const allBinaries = host.windows
     // },
   ];
 
-export const binaries = allBinaries.filter( ( { multithreaded } ) =>
+export const binaries: BinaryInfo[] = allBinaries.filter( ( { multithreaded } ) =>
   MAX_NUM_CPUS === 1
     ? !multithreaded
     : true,
@@ -165,7 +204,7 @@ export const binaries = allBinaries.filter( ( { multithreaded } ) =>
 const initialBinaryName = binaries.filter( ( { initial } ) => initial )[0].name;
 
 // Available parameters for different analysis
-const params = {
+const params: Record<string, string> = {
   brL: 'brL',
   SHlike: 'SHlike',
   combinedOutput: 'combinedOutput',
@@ -177,7 +216,7 @@ const params = {
   outGroup: 'outGroup',
 };
 
-export const analysisOptions = [
+export const analysisOptions: AnalysisChoice[] = [
   {
     title: 'Fast tree search',
     value: 'FT',
@@ -226,7 +265,7 @@ export const analysisOptions = [
   },
 ];
 
-export const raxmlNgAnalysisOptions = [
+export const raxmlNgAnalysisOptions: AnalysisChoice[] = [
   {
     title: 'Sanity check',
     value: 'SC',
@@ -260,79 +299,79 @@ export const raxmlNgAnalysisOptions = [
   },
 ];
 
-export class Binary extends Option {
-  constructor( run ) {
+export class Binary extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, initialBinaryName, 'Binary', 'Name of binary' );
     makeObservable( this, {
       version: computed,
       type: computed,
     } );
   }
-  options = binaries.map( ( { name } ) => ( { value: name, title: name } ) );
-  get version() {
+  options: Choice<string>[] = binaries.map( ( { name } ) => ( { value: name, title: name } ) );
+  get version(): string {
     return binaries.filter( ( b ) => b.name === this.value )[0].version;
   }
-  get type() {
+  get type(): string {
     return binaries.filter( ( b ) => b.name === this.value )[0].type;
   }
 }
 
-export class NumThreads extends Option {
-  constructor( run ) {
+export class NumThreads extends Option<number, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 2, 'Threads', 'Number of cpu threads' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = range( 1, MAX_NUM_CPUS + 1 ).map( ( value ) => ( {
+  options: Choice<number>[] = range( 1, MAX_NUM_CPUS + 1 ).map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !(
       /PTHREADS/.test( this.run.binary.value ) || this.run.usesModeltestNg
     );
   }
 }
 
-export class Analysis extends Option {
-  constructor( run ) {
+export class Analysis extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'ML+rBS', 'Analysis', 'Type of analysis' );
   }
-  options = analysisOptions.map( ( { value, title } ) => ( { value, title } ) );
+  options: Choice<string>[] = analysisOptions.map( ( { value, title } ) => ( { value, title } ) );
 }
 
-export class RaxmlNgAnalysis extends Option {
-  constructor( run ) {
+export class RaxmlNgAnalysis extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'ML+TBE+con', 'Analysis', 'Type of analysis' );
   }
-  options = raxmlNgAnalysisOptions.map( ( { value, title } ) => ( {
+  options: Choice<string>[] = raxmlNgAnalysisOptions.map( ( { value, title } ) => ( {
     value,
     title,
   } ) );
 }
 
-export class NumRuns extends Option {
-  constructor( run ) {
+export class NumRuns extends Option<number, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 1, 'Runs', 'Number of runs' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = [1, 10, 20, 50, 100, 500].map( ( value ) => ( { value, title: value } ) );
-  get notAvailable() {
+  options: Choice<number>[] = [1, 10, 20, 50, 100, 500].map( ( value ) => ( { value, title: value } ) );
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.runs );
   }
 }
 
-export class NumRepetitions extends Option {
-  constructor( run ) {
+export class NumRepetitions extends Option<number | string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = [
+  options: Choice<number | string>[] = [
     100,
     200,
     500,
@@ -343,30 +382,30 @@ export class NumRepetitions extends Option {
     'autoMRE_IGN',
     'autoFC',
   ].map( ( value ) => ( { value, title: value } ) );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.reps );
   }
 }
 
-export class NumRepetitionsNg extends Option {
-  constructor( run ) {
+export class NumRepetitionsNg extends Option<number | string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 100, 'Reps.', 'Number of repetitions' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = [100, 200, 500, 1000, 10000, 'autoMRE'].map( ( value ) => ( {
+  options: Choice<number | string>[] = [100, 200, 500, 1000, 10000, 'autoMRE'].map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.repsNg );
   }
 }
 
 //TODO: Another branch lengths option for FT? ('compute brL' vs 'BS brL' for the rest)
-export class BranchLength extends Option {
-  constructor( run ) {
+export class BranchLength extends Option<boolean, RunOwner> {
+  constructor( run: RunOwner ) {
     super(
       run,
       false,
@@ -378,13 +417,13 @@ export class BranchLength extends Option {
       notAvailable: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.brL );
   }
 }
 
-export class SHlike extends Option {
-  constructor( run ) {
+export class SHlike extends Option<boolean, RunOwner> {
+  constructor( run: RunOwner ) {
     super(
       run,
       false,
@@ -396,45 +435,45 @@ export class SHlike extends Option {
       notAvailable: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.SHlike );
   }
 }
 
-export class CombinedOutput extends Option {
-  constructor( run ) {
+export class CombinedOutput extends Option<boolean, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, false, 'Combined output', 'Concatenate output trees' );
     makeObservable( this, {
       notAvailable: computed,
       isUsed: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.combinedOutput );
   }
-  get isUsed() {
+  get isUsed(): boolean {
     return this.value && !this.notAvailable;
   }
 }
 
-export class StartingTree extends Option {
-  constructor( run ) {
+export class StartingTree extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'Maximum parsimony', 'Starting tree', '' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = ['Maximum parsimony', 'User defined'].map( ( value ) => ( {
+  options: Choice<string>[] = ['Maximum parsimony', 'User defined'].map( ( value ) => ( {
     value,
     title: value,
   } ) );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.analysisOption.params.includes( params.startingTree );
   }
 }
 
-export class OutGroup extends Option {
-  constructor( run ) {
+export class OutGroup extends Option<string[], RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, ['<none>'], 'Outgroup', '' );
     makeObservable( this, {
       options: computed,
@@ -444,40 +483,41 @@ export class OutGroup extends Option {
     } );
     this.multiple = true;
   }
-  get options() {
+  multiple: boolean;
+  get options(): Choice<string>[] {
     return ['<none>', ...this.run.taxons].map( ( value ) => ( {
       value,
       title: value,
     } ) );
   }
 
-  setValue( value ) {
+  setValue( value: string[] ): void {
     if ( this.value.includes( '<none>' ) ) {
-      this.value = value.filter( ( v ) => v !== '<none>' );
+      this.value = value.filter( ( v: string ) => v !== '<none>' );
       return;
     }
     if ( !this.value.includes( '<none>' ) && value.includes( '<none>' ) ) {
-      this.value = value.filter( ( v ) => v === '<none>' );
+      this.value = value.filter( ( v: string ) => v === '<none>' );
       return;
     }
     this.value = value;
   }
 
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       !this.run.haveAlignments ||
       !this.run.analysisOption.params.includes( params.outGroup )
     );
   }
-  get cmdValue() {
+  get cmdValue(): string {
     return this.value.includes( '<none>' )
       ? ''
       : this.value.join( ',' );
   }
 }
 
-export class SubstitutionMatrix extends Option {
-  constructor( run ) {
+export class SubstitutionMatrix extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'GTR', 'Substitution matrix' );
     makeObservable( this, {
       options: computed,
@@ -487,11 +527,11 @@ export class SubstitutionMatrix extends Option {
       notGTR: computed,
     } );
   }
-  get options() {
+  get options(): Choice<string>[] {
     if ( !this.run.haveAlignments ) {
       return [];
     }
-    const modelSettings = raxmlMatrixOptions[this.run.dataType];
+    const modelSettings = ( raxmlMatrixOptions as Record<string, { options: readonly string[] }> )[this.run.dataType];
     if ( !modelSettings ) {
       return [];
     }
@@ -502,7 +542,7 @@ export class SubstitutionMatrix extends Option {
         : `${value} + GAMMA`,
     } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       !this.run.haveAlignments ||
       this.run.dataType === 'binary' ||
@@ -511,7 +551,7 @@ export class SubstitutionMatrix extends Option {
       this.run.usesRaxmlNg
     );
   }
-  get cmdValue() {
+  get cmdValue(): string {
     if ( this.run.dataType === 'binary' ) {
       return 'BIN';
     }
@@ -526,7 +566,7 @@ export class SubstitutionMatrix extends Option {
     }
     return this.value;
   }
-  get extraCmdValue() {
+  get extraCmdValue(): string {
     switch ( this.value ) {
       case 'JC':
         return '--JC69';
@@ -538,13 +578,13 @@ export class SubstitutionMatrix extends Option {
         return '';
     }
   }
-  get notGTR() {
+  get notGTR(): boolean {
     return this.value !== 'GTR';
   }
 }
 
-export class SubstitutionRate extends Option {
-  constructor( run ) {
+export class SubstitutionRate extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'GAMMA', 'Substitution rates' );
     makeObservable( this, {
       options: computed,
@@ -553,7 +593,7 @@ export class SubstitutionRate extends Option {
       isCAT: computed,
     } );
   }
-  get options() {
+  get options(): Choice<string>[] {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -563,7 +603,7 @@ export class SubstitutionRate extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       !this.run.haveAlignments ||
       ( ( this.run.dataType === 'dna' ||
@@ -573,19 +613,19 @@ export class SubstitutionRate extends Option {
       this.run.usesRaxmlNg
     );
   }
-  get cmdValue() {
+  get cmdValue(): string {
     if ( this.run.substitutionMatrix.notGTR ) {
       return 'GAMMA';
     }
     return this.value;
   }
-  get isCAT() {
+  get isCAT(): boolean {
     return this.value === 'CAT';
   }
 }
 
-export class SubstitutionI extends Option {
-  constructor( run ) {
+export class SubstitutionI extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'none', 'Proportion of invariant sites' );
     makeObservable( this, {
       options: computed,
@@ -594,7 +634,7 @@ export class SubstitutionI extends Option {
       isSet: computed,
     } );
   }
-  get options() {
+  get options(): Choice<string>[] {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -604,25 +644,25 @@ export class SubstitutionI extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       this.run.substitutionAscertainment.isSet ||
       !this.run.haveAlignments ||
       this.run.usesRaxmlNg
     );
   }
-  get cmdValue() {
+  get cmdValue(): string {
     return this.value === 'none'
       ? ''
       : 'I';
   }
-  get isSet() {
+  get isSet(): boolean {
     return this.value !== 'none';
   }
 }
 
-export class SubstitutionAscertainment extends Option {
-  constructor( run ) {
+export class SubstitutionAscertainment extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'none', 'Ascertainment bias correction' );
     makeObservable( this, {
       options: computed,
@@ -632,7 +672,7 @@ export class SubstitutionAscertainment extends Option {
       isSet: computed,
     } );
   }
-  get options() {
+  get options(): Choice<string>[] {
     if ( !this.run.haveAlignments ) {
       return [];
     }
@@ -642,7 +682,7 @@ export class SubstitutionAscertainment extends Option {
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       !this.run.haveAlignments ||
       this.run.usesRaxmlNg ||
@@ -651,12 +691,12 @@ export class SubstitutionAscertainment extends Option {
       this.run.substitutionI.isSet
     );
   }
-  get cmdValue() {
+  get cmdValue(): string {
     return this.value === 'none'
       ? ''
       : 'ASC_';
   }
-  get extraCmdValue() {
+  get extraCmdValue(): string {
     switch ( this.value ) {
       case "Lewis' method":
         return '--asc-corr=lewis';
@@ -668,13 +708,13 @@ export class SubstitutionAscertainment extends Option {
         return '';
     }
   }
-  get isSet() {
+  get isSet(): boolean {
     return this.value !== 'none';
   }
 }
 
-export class AAMatrixName extends Option {
-  constructor( run ) {
+export class AAMatrixName extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super(
       run,
       'BLOSUM62',
@@ -685,16 +725,16 @@ export class AAMatrixName extends Option {
       notAvailable: computed,
     } );
   }
-  options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
+  options: Choice<string>[] = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.run.dataType !== 'protein';
   }
 }
 
-export class EstimatedFrequencies extends Option {
-  constructor( run ) {
+export class EstimatedFrequencies extends Option<boolean, RunOwner> {
+  constructor( run: RunOwner ) {
     super(
       run,
       false,
@@ -706,13 +746,13 @@ export class EstimatedFrequencies extends Option {
       notAvailable: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.run.dataType === 'protein' || this.run.usesRaxmlNg;
   }
 }
 
-export class BaseFrequencies extends Option {
-  constructor( run ) {
+export class BaseFrequencies extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super(
       run,
       'default',
@@ -723,33 +763,33 @@ export class BaseFrequencies extends Option {
       notAvailable: computed,
     } );
   }
-  options = [
+  options: Choice<string>[] = [
     { title: 'From model', value: 'default' },
     { title: 'Empirical', value: 'F' },
     { title: 'Estimated (ML)', value: 'X' },
   ];
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.run.dataType !== 'protein' || this.run.usesRaxmlNg;
   }
 }
 
-export class MultistateModel extends Option {
-  constructor( run ) {
+export class MultistateModel extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, 'GTR', 'Multistate model' );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  options = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
+  options: Choice<string>[] = raxmlSettings.kMultistateSubstitutionModelOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.run.dataType !== 'multistate' || this.run.usesRaxmlNg;
   }
 }
 
-class TreeFile extends Option {
-  constructor( run ) {
+class TreeFile extends Option<string, RunOwner> {
+  constructor( run: RunOwner ) {
     super( run, '', 'Tree', '' );
     makeObservable( this, {
       filePath: observable,
@@ -764,42 +804,42 @@ class TreeFile extends Option {
     } );
   }
   filePath = '';
-  get haveFile() {
+  get haveFile(): boolean {
     return !!this.filePath;
   }
-  get filename() {
+  get filename(): string {
     return basename( this.filePath );
   }
-  get name() {
+  get name(): string {
     return name( this.filePath );
   }
-  get dir() {
+  get dir(): string {
     return dir( this.filePath );
   }
-  setFilePath = ( filePath ) => {
+  setFilePath = ( filePath: string ): void => {
     this.filePath = filePath;
   };
-  openFolder = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  openFolder = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.showItemInFolder( this.filePath );
   };
-  openFile = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  openFile = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.openPath( this.filePath );
   };
-  remove = () => {
+  remove = (): void => {
     this.setFilePath( '' );
   };
 }
 
 export class Tree extends TreeFile {
-  constructor( ...args ) {
+  constructor( ...args: ConstructorParameters<typeof TreeFile> ) {
     super( ...args );
     makeObservable( this, {
       notAvailable: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !(
       this.run.analysisOption.params.includes( params.tree ) ||
       ( !this.run.startingTree.notAvailable &&
@@ -809,7 +849,7 @@ export class Tree extends TreeFile {
 }
 
 export class BackboneConstraintTree extends TreeFile {
-  constructor( ...args ) {
+  constructor( ...args: ConstructorParameters<typeof TreeFile> ) {
     super( ...args );
     makeObservable( this, {
       isSet: computed,
@@ -817,10 +857,10 @@ export class BackboneConstraintTree extends TreeFile {
       notAvailable: computed,
     } );
   }
-  get isSet() {
+  get isSet(): boolean {
     return this.run.useBackboneConstraint && this.haveFile;
   }
-  get canConstraint() {
+  get canConstraint(): boolean {
     const analysisWithConstraint = [
       'ML',
       'ML+rBS',
@@ -835,13 +875,13 @@ export class BackboneConstraintTree extends TreeFile {
     ];
     return analysisWithConstraint.includes( this.run.analysis.value );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.useBackboneConstraint || !this.canConstraint;
   }
 }
 
 export class MultifurcatingConstraintTree extends TreeFile {
-  constructor( ...args ) {
+  constructor( ...args: ConstructorParameters<typeof TreeFile> ) {
     super( ...args );
     makeObservable( this, {
       isSet: computed,
@@ -849,10 +889,10 @@ export class MultifurcatingConstraintTree extends TreeFile {
       notAvailable: computed,
     } );
   }
-  get isSet() {
+  get isSet(): boolean {
     return this.run.useMultifurcatingConstraint && this.haveFile;
   }
-  get canConstraint() {
+  get canConstraint(): boolean {
     const analysisWithConstraint = [
       'ML',
       'ML+rBS',
@@ -867,7 +907,7 @@ export class MultifurcatingConstraintTree extends TreeFile {
     ];
     return analysisWithConstraint.includes( this.run.analysis.value );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.useMultifurcatingConstraint || !this.canConstraint;
   }
 }
