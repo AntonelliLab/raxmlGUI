@@ -6,8 +6,26 @@ import * as raxmlNgSettings from '../../settings/raxmlng';
 
 const raxmlNgModelOptions = raxmlNgSettings.modelOptions;
 
-class RaxmlNgAlignmentSubstitutionModel extends Option {
-  constructor( alignment ) {
+interface Choice {
+  value: string;
+  title: string;
+}
+
+interface RunLike {
+  haveAlignments: boolean;
+  usesRaxmlNg: boolean;
+}
+
+interface AlignmentLike {
+  run: RunLike;
+  dataType: string;
+  hasInvariantSites: boolean;
+  multistateNumber: { value: string };
+}
+
+class RaxmlNgAlignmentSubstitutionModel extends Option<string, RunLike> {
+  alignment: AlignmentLike;
+  constructor( alignment: AlignmentLike ) {
     super( alignment.run, '', 'Substitution model' );
     makeObservable( this, {
       options: computed,
@@ -16,20 +34,20 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
     } );
     this.alignment = alignment;
   }
-  get options() {
+  get options(): Choice[] {
     if ( !this.alignment.run.haveAlignments ) {
       return [];
     }
-    const modelSettings = raxmlNgModelOptions[this.alignment.dataType];
+    const modelSettings = ( raxmlNgModelOptions as Record<string, { options: readonly string[] }> )[this.alignment.dataType];
     if ( !modelSettings ) {
       return [];
     }
     return modelSettings.options.map( ( value ) => ( { value, title: value } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.alignment.run.haveAlignments;
   }
-  get cmdValue() {
+  get cmdValue(): string {
     let model = this.value;
     if ( this.alignment.dataType === 'multistate' ) {
       model = model.replace( 'x', this.alignment.multistateNumber.value );
@@ -38,8 +56,16 @@ class RaxmlNgAlignmentSubstitutionModel extends Option {
   }
 }
 
-class RaxmlNgModelExtraParam extends Option {
-  constructor( alignment, label, options, { addNone = true } = {} ) {
+class RaxmlNgModelExtraParam extends Option<string, RunLike> {
+  alignment: AlignmentLike;
+  optionsSource: Choice[];
+  addNone: boolean;
+  constructor(
+    alignment: AlignmentLike,
+    label: string,
+    options: Choice[],
+    { addNone = true }: { addNone?: boolean } = {},
+  ) {
     super( alignment.run, addNone
       ? '<none>'
       : options[0].value, label );
@@ -54,16 +80,16 @@ class RaxmlNgModelExtraParam extends Option {
       : options;
     this.addNone = addNone;
   }
-  get options() {
+  get options(): Choice[] {
     if ( !this.run.haveAlignments ) {
       return [];
     }
     return this.optionsSource;
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return !this.run.haveAlignments || !this.run.usesRaxmlNg;
   }
-  get cmdValue() {
+  get cmdValue(): string {
     return this.value === '<none>'
       ? ''
       : this.value;
@@ -71,7 +97,7 @@ class RaxmlNgModelExtraParam extends Option {
 }
 
 class RaxmlNgModelF extends RaxmlNgModelExtraParam {
-  constructor( alignment ) {
+  constructor( alignment: AlignmentLike ) {
     super(
       alignment,
       'Stationary frequencies',
@@ -83,7 +109,7 @@ class RaxmlNgModelF extends RaxmlNgModelExtraParam {
 }
 
 class RaxmlNgModelI extends RaxmlNgModelExtraParam {
-  constructor( alignment ) {
+  constructor( alignment: AlignmentLike ) {
     super(
       alignment,
       'Proportion of invariant sites',
@@ -95,7 +121,7 @@ class RaxmlNgModelI extends RaxmlNgModelExtraParam {
 }
 
 class RaxmlNgModelG extends RaxmlNgModelExtraParam {
-  constructor( alignment ) {
+  constructor( alignment: AlignmentLike ) {
     super(
       alignment,
       'Rate heterogeneity',
@@ -107,7 +133,7 @@ class RaxmlNgModelG extends RaxmlNgModelExtraParam {
 }
 
 class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
-  constructor( alignment ) {
+  constructor( alignment: AlignmentLike ) {
     super(
       alignment,
       'Ascertainment bias',
@@ -121,7 +147,7 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
       notAvailable: override,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       !this.run.haveAlignments ||
       !this.run.usesRaxmlNg ||
@@ -130,8 +156,10 @@ class RaxmlNgModelASC extends RaxmlNgModelExtraParam {
   }
 }
 
-class MultistateNumber extends Option {
-  constructor( alignment ) {
+class MultistateNumber extends Option<string, RunLike> {
+  alignment: AlignmentLike;
+  placeholder: string;
+  constructor( alignment: AlignmentLike ) {
     super( alignment.run, '', 'Number of states' );
     makeObservable( this, {
       notAvailable: computed,
@@ -140,13 +168,13 @@ class MultistateNumber extends Option {
     this.alignment = alignment;
     this.placeholder = 'Integer';
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return (
       this.alignment.dataType !== 'multistate' ||
       !this.alignment.run.usesRaxmlNg
     );
   }
-  get error() {
+  get error(): ValidationError | null {
     return !this.value || !Number.isInteger( Number( this.value ) )
       ? new ValidationError( 'Enter an integer number of states' )
       : null;
