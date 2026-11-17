@@ -1,5 +1,6 @@
 import { computed, makeObservable } from 'mobx';
 import Option from './Option';
+import type { OptionSettings } from './Option';
 import * as raxmlSettings from '../../settings/raxml';
 import * as yup from 'yup';
 
@@ -8,14 +9,35 @@ export const CODON_SPECIFIC = 'Codon specific';
 export const CODON_THIRD = 'Third codon';
 export const CodonModels = [CODON_NONE, CODON_SPECIFIC, CODON_THIRD];
 
-class PartBase extends Option {
+interface Choice {
+  value: string;
+  title: string;
+}
+
+interface AlignmentLike {
+  run: unknown;
+  dataType: string;
+  partitionType: string;
+  length: number;
+  partition: { partToAdd: { type: { value: string } } };
+}
+
+interface PartLike {
+  partition: { alignment: AlignmentLike };
+  aaType: { value: string };
+  start: { value: number };
+  codon: { value: string };
+}
+
+class PartBase<Value> extends Option<Value> {
+  part: PartLike;
   constructor(
-    part,
-    defaultValue,
-    title,
-    description,
-    hoverInfo,
-    { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
+    part: PartLike,
+    defaultValue: Value,
+    title: string,
+    description: string,
+    hoverInfo: string,
+    { schema = undefined, allowOnlyValidChange = false, helperText = '' }: OptionSettings = {},
   ) {
     super(
       part.partition.alignment.run,
@@ -34,13 +56,13 @@ class PartBase extends Option {
     } );
     this.part = part;
   }
-  get alignment() {
+  get alignment(): AlignmentLike {
     return this.part.partition.alignment;
   }
 }
 
-class PartType extends PartBase {
-  constructor( part, value = 'DNA' ) {
+class PartType extends PartBase<string> {
+  constructor( part: PartLike, value = 'DNA' ) {
     super( part, value, 'Data type', 'Data type of the part', '', {
       schema: yup.string(),
       allowOnlyValidChange: true,
@@ -51,7 +73,7 @@ class PartType extends PartBase {
       notAvailable: computed,
     } );
   }
-  get finalValue() {
+  get finalValue(): string {
     const { dataType, partitionType } = this.alignment;
     if ( dataType === 'protein' || this.value === 'protein' ) {
       return this.part.aaType.value;
@@ -61,7 +83,7 @@ class PartType extends PartBase {
     }
     return partitionType;
   }
-  get options() {
+  get options(): Choice[] {
     const { dataType } = this.alignment;
     let opts = [dataType];
     if ( dataType === '' || dataType === 'mixed' ) {
@@ -69,12 +91,12 @@ class PartType extends PartBase {
     }
     return opts.map( ( value ) => ( { value, title: value } ) );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.alignment.dataType !== 'mixed';
   }
 }
-class PartAAType extends PartBase {
-  constructor( part, value = 'BLOSUM62' ) {
+class PartAAType extends PartBase<string> {
+  constructor( part: PartLike, value = 'BLOSUM62' ) {
     super( part, value, 'Model', 'Substitution model for the part', '', {
       schema: yup.string(),
       allowOnlyValidChange: true,
@@ -86,12 +108,12 @@ class PartAAType extends PartBase {
   options = raxmlSettings.aminoAcidSubstitutionMatrixOptions.options.map(
     ( value ) => ( { value, title: value } ),
   );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.alignment.dataType !== 'protein';
   }
 }
-class PartName extends PartBase {
-  constructor( part, value = 'part1' ) {
+class PartName extends PartBase<string> {
+  constructor( part: PartLike, value = 'part1' ) {
     super( part, value, 'Name', 'Name of part', '', {
       schema: yup.string(), // TODO: Check that it is unique within partition
       allowOnlyValidChange: true,
@@ -100,12 +122,13 @@ class PartName extends PartBase {
       notAvailable: computed,
     } );
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return false;
   }
 }
-class PartStart extends PartBase {
-  constructor( part, value = 1 ) {
+class PartStart extends PartBase<number> {
+  disabled: boolean;
+  constructor( part: PartLike, value = 1 ) {
     super( part, value, 'from', 'Start position for this part', '', {
       schema: yup.number(),
       allowOnlyValidChange: false,
@@ -115,13 +138,13 @@ class PartStart extends PartBase {
     } );
     this.disabled = true;
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return false;
   }
 }
 
-class PartEnd extends PartBase {
-  constructor( part, value = 1 ) {
+class PartEnd extends PartBase<number> {
+  constructor( part: PartLike, value = 1 ) {
     super(
       part,
       value,
@@ -145,23 +168,23 @@ class PartEnd extends PartBase {
       notAvailable: computed,
     } );
   }
-  get min() {
+  get min(): number {
     return (
       this.part.start.value + ( this.part.codon.value === CODON_NONE
         ? 0
         : 2 )
     );
   }
-  get max() {
+  get max(): number {
     return this.alignment.length;
   }
-  get notAvailable() {
+  get notAvailable(): boolean {
     return false;
   }
 }
 
-class PartCodon extends PartBase {
-  constructor( part, value = 'None' ) {
+class PartCodon extends PartBase<string> {
+  constructor( part: PartLike, value = 'None' ) {
     super( part, value, 'Codon model', '', '', {
       schema: yup.string(),
       allowOnlyValidChange: true,
@@ -171,7 +194,7 @@ class PartCodon extends PartBase {
     } );
   }
   options = CodonModels.map( ( value ) => ( { value, title: value } ) );
-  get notAvailable() {
+  get notAvailable(): boolean {
     return this.alignment.partition.partToAdd.type.value !== 'DNA';
   }
 }
