@@ -1,5 +1,5 @@
 const {
   rendererBridge: { host },
-} = /** @type {any} */ ( window );
+} = window;
 
 export { host };

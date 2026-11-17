@@ -1,15 +1,15 @@
-const sepOf = ( filePath ) => ( filePath.includes( '\\' )
+const sepOf = ( filePath: string ): string => ( filePath.includes( '\\' )
   ? '\\'
   : '/' );
 
-const stemOf = ( baseName ) => {
+const stemOf = ( baseName: string ): string => {
   const dot = baseName.lastIndexOf( '.' );
   return dot > 0
     ? baseName.slice( 0, dot )
     : baseName;
 };
 
-const parsed = ( filePath ) => {
+const parsed = ( filePath: string ): { base: string; name: string; dir: string } => {
   const sep = sepOf( filePath );
   const chunks = filePath.split( /[/\\]/ );
   const baseName = chunks.pop();
@@ -37,12 +37,12 @@ const parsed = ( filePath ) => {
   };
 };
 
-export const base = ( filePath ) => parsed( filePath ).base;
-export const basename = base;
-export const name = ( filePath ) => parsed( filePath ).name;
-export const dir = ( filePath ) => parsed( filePath ).dir;
+export const base = ( filePath: string ): string => parsed( filePath ).base;
+export const basename: typeof base = base;
+export const name = ( filePath: string ): string => parsed( filePath ).name;
+export const dir = ( filePath: string ): string => parsed( filePath ).dir;
 
-export const join = ( ...parts ) => {
+export const join = ( ...parts: string[] ): string => {
   const present = parts.filter( ( part ) => part !== '' );
   if ( present.length === 0 ) {
     return '.';
@@ -56,6 +56,6 @@ export const join = ( ...parts ) => {
     : joined;
 };
 
-export const quote = ( dir, { windows } ) => ( windows
+export const quote = ( dir: string, { windows }: { windows: boolean } ): string => ( windows
   ? `"${dir}"`
   : dir );
