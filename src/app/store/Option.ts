@@ -1,23 +1,32 @@
 import { observable, computed, action, makeObservable } from 'mobx';
 import { mixed } from 'yup';
+import type { Schema, ValidationError } from 'yup';
 
-class Option {
-  /**
-   * Reactive option with optional validation
-   * @param {Object} run
-   * @param {*} defaultValue
-   * @param {String} title
-   * @param {String} description
-   * @param {String} hoverInfo
-   * @param {yup|undefined} schema
-   */
+interface OptionSettings {
+  schema?: Schema;
+  allowOnlyValidChange?: boolean;
+  helperText?: string;
+}
+
+/** Reactive option with optional validation */
+class Option<Value = unknown, Owner = unknown> {
+  run: Owner;
+  defaultValue: Value;
+  title: string;
+  description: string;
+  hoverInfo: string;
+  schema: Schema;
+  allowOnlyValidChange: boolean;
+  helperText: string;
+  value: Value;
+
   constructor(
-    run,
-    defaultValue,
-    title,
-    description,
-    hoverInfo,
-    { schema = undefined, allowOnlyValidChange = false, helperText = '' } = {},
+    run: Owner,
+    defaultValue: Value,
+    title: string,
+    description?: string,
+    hoverInfo?: string,
+    { schema = undefined, allowOnlyValidChange = false, helperText = '' }: OptionSettings = {},
   ) {
     makeObservable( this, {
       value: observable,
@@ -40,8 +49,7 @@ class Option {
     this.helperText = helperText;
     this.value = defaultValue;
   }
-  value;
-  setValue( value ) {
+  setValue( value: Value ): void {
     const isValid = this.schema.isValidSync( value );
     if ( !this.allowOnlyValidChange || isValid ) {
       this.value = isValid
@@ -49,28 +57,29 @@ class Option {
         : value;
     }
   }
-  reset() {
+  reset(): void {
     this.value = this.defaultValue;
   }
-  get isDefault() {
+  get isDefault(): boolean {
     return this.value === this.defaultValue;
   }
-  get error() {
+  get error(): ValidationError | boolean | null {
     try {
       this.schema.validateSync( this.value );
       return null;
-    } catch ( err ) {
-      return err;
+    } catch ( err: unknown ) {
+      return err as ValidationError;
     }
   }
-  get haveError() {
+  get haveError(): boolean {
     return this.error !== null;
   }
-  get errorMessage() {
+  get errorMessage(): string {
     return this.haveError
-      ? this.error.message
+      ? ( this.error as ValidationError ).message
       : '';
   }
 }
 
+export type { OptionSettings };
 export { Option as default };

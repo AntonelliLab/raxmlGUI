@@ -2,25 +2,6 @@ src/app/App.js(466,12): error TS2739: Type '{ error: ErrorObject; onClose: () =>
 src/app/App.js(512,10): error TS2741: Property 'needReload' is missing in type '{ error: unknown; title: string; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
 src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
 src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
-src/app/store/AlignmentOptions.js(10,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/AlignmentOptions.js(37,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/AlignmentOptions.js(121,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/Option.js(12,14): error TS2304: Cannot find name 'yup'.
-src/app/store/RunOptions.js(265,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(278,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(293,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(300,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(310,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(320,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(340,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(384,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(396,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(409,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(446,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/RunOptions.js(506,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/RunOptions.js(541,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/RunOptions.js(572,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/RunOptions.js(617,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(649,5): error TS2554: Expected 5-6 arguments, but got 4.
-src/app/store/RunOptions.js(668,5): error TS2554: Expected 5-6 arguments, but got 3.
-src/app/store/RunOptions.js(680,5): error TS2554: Expected 5-6 arguments, but got 4.
+src/app/store/AlignmentOptions.js(148,7): error TS2416: Property 'error' in type 'MultistateNumber' is not assignable to the same property in base type 'Option<any, any>'.
+  Type 'Error' is not assignable to type 'boolean | ValidationError'.
+    Type 'Error' is missing the following properties from type 'ValidationError': value, errors, inner, [Symbol.toStringTag]
