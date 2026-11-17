@@ -117,6 +117,15 @@ function main() {
     fs.writeFileSync(baselinePath, renamed.join('\n') + '\n');
     return;
   }
+  if (process.argv.includes('--write')) {
+    const typed = typeScriptLines(actual);
+    if (typed.length) {
+      console.error('a .ts/.tsx file has diagnostics:\n' + typed.join('\n'));
+      process.exit(1);
+    }
+    fs.writeFileSync(baselinePath, actual.join('\n') + '\n');
+    return;
+  }
   // Second pass: no allowlist. A .ts/.tsx file may not have any diagnostic under --noImplicitAny.
   const implicitAny = typeScriptLines(runTsc(['--noImplicitAny']));
   if (implicitAny.length) {
