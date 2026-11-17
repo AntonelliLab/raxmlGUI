@@ -1,13 +1,43 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import OptionSelect from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
+import type { OptionCheckOptionLike } from './components/OptionCheck';
 
-const Model = ( { run } ) => {
+// The run's select options miss OptionSelect's notAvailable or string titles: cast where passed.
+interface ModelRun {
+  usesModeltestNg: boolean;
+  usesAstral: boolean;
+  analysis: object;
+  numRuns: object;
+  numRepetitions: object;
+  numRepetitionsNg: object;
+  branchLength: OptionCheckOptionLike;
+  sHlike: OptionCheckOptionLike;
+  combinedOutput: OptionCheckOptionLike;
+  startingTree: object;
+  outGroup: object;
+  haveRandomSeed: boolean;
+  randomSeed: number;
+  setRandomSeed: ( value: string ) => void;
+  substitutionMatrix: object;
+  substitutionRate: object;
+  substitutionI: object;
+  substitutionAscertainment: object;
+  multistateModel: object;
+  estimatedFrequencies: OptionCheckOptionLike;
+  baseFrequencies: object;
+}
+
+export interface ModelProps {
+  run: ModelRun;
+}
+
+const Model = ( { run }: ModelProps ): React.JSX.Element => {
   // TODO: Check marginTop: 2 hack, doesn't seem exactly aligned to top
   if ( run.usesModeltestNg ) {
     return (
@@ -60,14 +90,14 @@ const Model = ( { run } ) => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.analysis} />
-        <OptionSelect option={run.numRuns} />
-        <OptionSelect option={run.numRepetitions} />
-        <OptionSelect option={run.numRepetitionsNg} />
+        <OptionSelect option={run.analysis as OptionSelectOptionLike} />
+        <OptionSelect option={run.numRuns as OptionSelectOptionLike} />
+        <OptionSelect option={run.numRepetitions as OptionSelectOptionLike} />
+        <OptionSelect option={run.numRepetitionsNg as OptionSelectOptionLike} />
         <OptionCheck option={run.branchLength} />
         <OptionCheck option={run.sHlike} />
         <OptionCheck option={run.combinedOutput} />
-        <OptionSelect option={run.startingTree} />
+        <OptionSelect option={run.startingTree as OptionSelectOptionLike} />
       </Box>
       <Box
         component="form"
@@ -81,7 +111,7 @@ const Model = ( { run } ) => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.outGroup} />
+        <OptionSelect option={run.outGroup as OptionSelectOptionLike} />
         {run.haveRandomSeed
           ? (
             <TextField
@@ -107,8 +137,8 @@ const Model = ( { run } ) => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.substitutionMatrix} />
-        <OptionSelect option={run.substitutionRate} />
+        <OptionSelect option={run.substitutionMatrix as OptionSelectOptionLike} />
+        <OptionSelect option={run.substitutionRate as OptionSelectOptionLike} />
       </Box>
       <Box
         component="form"
@@ -122,18 +152,14 @@ const Model = ( { run } ) => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.substitutionI} />
-        <OptionSelect option={run.substitutionAscertainment} />
-        <OptionSelect option={run.multistateModel} />
+        <OptionSelect option={run.substitutionI as OptionSelectOptionLike} />
+        <OptionSelect option={run.substitutionAscertainment as OptionSelectOptionLike} />
+        <OptionSelect option={run.multistateModel as OptionSelectOptionLike} />
         <OptionCheck option={run.estimatedFrequencies} />
-        <OptionSelect option={run.baseFrequencies} />
+        <OptionSelect option={run.baseFrequencies as OptionSelectOptionLike} />
       </Box>
     </Box>
   );
-};
-
-Model.propTypes = {
-  run: PropTypes.object.isRequired,
 };
 
 export default observer( Model );

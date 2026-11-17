@@ -1,10 +1,18 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 
-const Console = ( { run } ) => {
-  const stdoutContainerRef = useRef( null );
+interface ConsoleRun {
+  stdout: string;
+  stderr: string;
+}
+
+export interface ConsoleProps {
+  run: ConsoleRun;
+}
+
+const Console = ( { run }: ConsoleProps ): React.JSX.Element => {
+  const stdoutContainerRef = useRef<HTMLDivElement | null>( null );
 
   const scrollConsoleToBottom = useCallback( () => {
     if ( !stdoutContainerRef.current ) return;
@@ -72,10 +80,6 @@ const Console = ( { run } ) => {
       </div>
     </Box>
   );
-};
-
-Console.propTypes = {
-  run: PropTypes.object.isRequired,
 };
 
 export default observer( Console );

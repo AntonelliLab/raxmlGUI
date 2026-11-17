@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import AlignmentCard, { FinalAlignmentCard } from './AlignmentCard';
 import AstralTreeCard from './AstralTreeCard';
@@ -9,13 +8,53 @@ import Box from '@mui/material/Box';
 import TreeCard from './TreeCard';
 import { Typography } from '@mui/material';
 import Dropzone from 'react-dropzone';
+import type { SxProps, Theme } from '@mui/material/styles';
 
-function droppedPath( file ) {
-  const { rendererBridge } = /** @type {any} */ ( window );
+interface DroppedFile {
+  path: string;
+}
+
+interface InputTree {
+  notAvailable: boolean;
+  haveFile: boolean;
+}
+
+interface InputRun {
+  hasAstralTree: boolean;
+  addAlignments: ( files: DroppedFile[] ) => void;
+  addPartitionFiles: ( files: DroppedFile[] ) => void;
+  addTreeFiles: ( type: string, files: DroppedFile[] ) => void;
+  addAstralFiles: ( file: DroppedFile ) => void;
+  inputIsAlignment: boolean;
+  alignments: { path: string }[];
+  inputIsTree: boolean;
+  astralTree: unknown;
+  canLoadAlignment: boolean;
+  haveAlignments: boolean;
+  canLoadPartitionFile: boolean;
+  loadAlignmentFiles: () => void;
+  canLoadAstralTree: boolean;
+  loadAstralTree: () => void;
+  loadPartitionFile: () => void;
+  tree: InputTree;
+  loadTreeFile: () => void;
+  backboneConstraint: InputTree;
+  loadBackboneConstraintFile: () => void;
+  multifurcatingConstraint: InputTree;
+  loadMultifurcatingConstraintFile: () => void;
+  finalAlignment: unknown;
+}
+
+export interface InputProps {
+  run: InputRun;
+}
+
+function droppedPath( file: File ): string {
+  const { rendererBridge } = window;
   return rendererBridge.getPathForFile( file );
 }
 
-const Input = ( { run } ) => {
+const Input = ( { run }: InputProps ): React.JSX.Element => {
   // run.hasAstralTree is the condition on which to show an astral tree card
   // For some reason when changed in the mobx store a rerender is not triggered with this boolean with the conditional below alone
   // With this if the component rerenders as should be
@@ -23,28 +62,28 @@ const Input = ( { run } ) => {
     console.log( 'run.hasAstralTree :>> ', run.hasAstralTree );
   }
 
-  const onAlignmentDrop = ( acceptedFiles ) => {
+  const onAlignmentDrop = ( acceptedFiles: File[] ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
       path: droppedPath( file ),
     } ) );
     run.addAlignments( droppedPathes );
   };
 
-  const onPartitionDrop = ( acceptedFiles ) => {
+  const onPartitionDrop = ( acceptedFiles: File[] ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
       path: droppedPath( file ),
     } ) );
     run.addPartitionFiles( droppedPathes );
   };
 
-  const onTreeDrop = ( type ) => ( acceptedFiles ) => {
+  const onTreeDrop = ( type: string ) => ( acceptedFiles: File[] ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
       path: droppedPath( file ),
     } ) );
     run.addTreeFiles( type, droppedPathes );
   };
 
-  const onAstralTreeDrop = ( acceptedFiles ) => {
+  const onAstralTreeDrop = ( acceptedFiles: File[] ) => {
     const droppedPathes = acceptedFiles.map( ( file ) => ( {
       path: droppedPath( file ),
     } ) );
@@ -53,15 +92,18 @@ const Input = ( { run } ) => {
     }
   };
 
-  const dropzoneRootSx = ( isDragActive, extra = {} ) => ( {
+  const dropzoneRootSx = (
+    isDragActive: boolean,
+    extra: Record<string, string | number> = {},
+  ): SxProps<Theme> => ( {
     width: 'fit-content',
     alignSelf: 'flex-start',
     borderRadius: 1,
-    border: ( theme ) =>
+    border: ( theme: Theme ) =>
       isDragActive
         ? `2px dashed ${theme.palette.input.darker}`
         : '2px dashed transparent',
-    bgcolor: ( theme ) =>
+    bgcolor: ( theme: Theme ) =>
       isDragActive
         ? theme.palette.input.lighter
         : 'transparent',
@@ -419,10 +461,6 @@ const Input = ( { run } ) => {
         )}
     </Box>
   );
-};
-
-Input.propTypes = {
-  run: PropTypes.object.isRequired,
 };
 
 export default observer( Input );

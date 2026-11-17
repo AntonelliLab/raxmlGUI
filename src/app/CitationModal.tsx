@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -12,7 +11,29 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import CodeHighlight from './components/CodeHighlight';
 
-function CitationModal( { citation } ) {
+type CitationFormat = 'txt' | 'ris' | 'bib';
+
+interface CitationArticle {
+  name: string;
+  bib: string;
+  ris: string;
+  txt: string;
+}
+
+interface CitationLike {
+  format: CitationFormat;
+  formats: { value: CitationFormat; name: string }[];
+  content: CitationArticle[];
+  setFormat: ( format: CitationFormat ) => void;
+  copyToClipboard: () => void;
+  hide: () => void;
+}
+
+export interface CitationModalProps {
+  citation: CitationLike;
+}
+
+function CitationModal( { citation }: CitationModalProps ): React.JSX.Element {
   return (
     <Card
       elevation={0}
@@ -87,9 +108,5 @@ function CitationModal( { citation } ) {
     </Card>
   );
 }
-
-CitationModal.propTypes = {
-  citation: PropTypes.object.isRequired,
-};
 
 export default observer( CitationModal );

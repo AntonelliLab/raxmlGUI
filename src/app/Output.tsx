@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,7 +7,25 @@ import { Link, Typography } from '@mui/material';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import { join } from './paths';
 
-const Output = ( { run } ) => {
+interface OutputRun {
+  resultFilenames: string[];
+  outputDir: string;
+  selectOutputDir: () => void;
+  outputNameNotice: string;
+  outputName: string;
+  outputNamePlaceholder: string;
+  setOutputName: ( value: string ) => void;
+  outputNameOk: boolean;
+  openFile: ( filePath: string ) => void;
+  haveAlignments: boolean;
+  openOutputDir: () => void;
+}
+
+export interface OutputProps {
+  run: OutputRun;
+}
+
+const Output = ( { run }: OutputProps ): React.JSX.Element => {
   const { resultFilenames } = run;
   const haveResult = resultFilenames.length > 0;
 
@@ -96,10 +113,6 @@ const Output = ( { run } ) => {
         : null}
     </Box>
   );
-};
-
-Output.propTypes = {
-  run: PropTypes.object.isRequired,
 };
 
 export default observer( Output );
