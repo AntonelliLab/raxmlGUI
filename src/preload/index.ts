@@ -44,6 +44,7 @@ import {
 } from '../constants/ipc';
 import type { RendererBridge, HostInfo } from '../common/rendererBridge';
 import type { CheckOutputArgs } from '../main/checkOutput';
+import type { StateReport } from '../main/getActiveState';
 import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
 import type { AstralPayload, AstralSuccessPayload } from '../main/astral';
 import type { RunOutputPayload } from '../main/processHelpers';
@@ -58,7 +59,7 @@ function onEvent<T = unknown>( channel: string, listener: ( payload: T ) => void
 // Sandboxed preload cannot load Node's os. Main answers once; later reads stay local.
 const host: HostInfo = ipcRenderer.sendSync( HOST );
 
-let stateReport: ( () => unknown ) | null = null;
+let stateReport: ( () => StateReport ) | null = null;
 
 ipcRenderer.on( STATE_REPORT, ( _event: unknown, id: string ): void => {
   const report = stateReport
@@ -69,7 +70,7 @@ ipcRenderer.on( STATE_REPORT, ( _event: unknown, id: string ): void => {
 
 const rendererBridge = {
   host,
-  provideStateReport( fn: () => unknown ): void {
+  provideStateReport( fn: () => StateReport ): void {
     stateReport = fn;
   },
   copyText( text: string ) {

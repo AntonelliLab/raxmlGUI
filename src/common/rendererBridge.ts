@@ -1,4 +1,6 @@
 // Declared, not derived from the preload: ipc invoke types every result as any.
+import type { StateReport } from '../main/getActiveState';
+import type RunList from '../app/store/RunList';
 import type { ExampleFilesPayload } from '../main/api';
 import type { CheckOutputArgs, CheckOutputResult } from '../main/checkOutput';
 import type { ModelSelectionPayload } from '../main/modelSelection';
@@ -23,7 +25,7 @@ type Unsubscribe = () => void;
 
 export interface RendererBridge {
   host: HostInfo;
-  provideStateReport: ( fn: () => unknown ) => void;
+  provideStateReport: ( fn: () => StateReport ) => void;
   copyText: ( text: string ) => Promise<void>;
   getExampleFiles: () => Promise<ExampleFilesPayload>;
   getVersion: () => Promise<string>;
@@ -68,5 +70,6 @@ export interface RendererBridge {
 declare global {
   interface Window {
     rendererBridge: RendererBridge;
+    store: RunList;
   }
 }

@@ -5,12 +5,17 @@ import { randomUUID } from 'node:crypto';
 import { STATE_REPORT, STATE_REPORT_RESULT } from '../constants/ipc';
 import { activeWindow } from './utils/utils';
 
-interface StateReportPayload {
-  id: string;
-  report: unknown;
+export interface StateReport {
+  command: string;
+  stdout: string;
 }
 
-export function getActiveState(): Promise<unknown> {
+interface StateReportPayload {
+  id: string;
+  report: StateReport | undefined;
+}
+
+export function getActiveState(): Promise<StateReport | undefined> {
   const win = activeWindow();
   if ( !win ) {
     return Promise.resolve( undefined );
