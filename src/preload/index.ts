@@ -45,12 +45,13 @@ import {
 import type { RendererBridge, HostInfo } from '../common/rendererBridge';
 import type { CheckOutputArgs } from '../main/checkOutput';
 import type { StateReport } from '../main/getActiveState';
-import type { StartRunPayload } from '../main/startRun';
-import type { AstralPayload } from '../main/astral';
+import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
+import type { AstralPayload, AstralSuccessPayload } from '../main/astral';
+import type { RunOutputPayload } from '../main/processHelpers';
 import type { ModelSelectionPayload } from '../main/modelSelection';
 
-function onEvent( channel: string, listener: ( payload: unknown ) => void ): () => void {
-  const wrapped = ( _event: unknown, payload: unknown ): void => listener( payload );
+function onEvent<T = unknown>( channel: string, listener: ( payload: T ) => void ): () => void {
+  const wrapped = ( _event: unknown, payload: T ): void => listener( payload );
   ipcRenderer.on( channel, wrapped );
   return () => ipcRenderer.removeListener( channel, wrapped );
 }
@@ -135,22 +136,22 @@ const rendererBridge = {
   cancelRun( id: number ) {
     return ipcRenderer.invoke( RUN_CANCEL, id );
   },
-  onRunStdout( listener: ( payload: unknown ) => void ) {
+  onRunStdout( listener: ( payload: RunOutputPayload ) => void ) {
     return onEvent( RUN_STDOUT, listener );
   },
-  onRunStderr( listener: ( payload: unknown ) => void ) {
+  onRunStderr( listener: ( payload: RunOutputPayload ) => void ) {
     return onEvent( RUN_STDERR, listener );
   },
-  onRunFinished( listener: ( payload: unknown ) => void ) {
+  onRunFinished( listener: ( payload: RunFinishedPayload ) => void ) {
     return onEvent( RUN_FINISHED, listener );
   },
-  onRunError( listener: ( payload: unknown ) => void ) {
+  onRunError( listener: ( payload: RunErrorPayload ) => void ) {
     return onEvent( RUN_ERROR, listener );
   },
   startAstral( payload: AstralPayload ) {
     return ipcRenderer.invoke( ASTRAL_REQUEST, payload );
   },
-  onAstralSuccess( listener: ( payload: unknown ) => void ) {
+  onAstralSuccess( listener: ( payload: AstralSuccessPayload ) => void ) {
     return onEvent( ASTRAL_SUCCESS, listener );
   },
   startModelSelection( payload: ModelSelectionPayload ) {
