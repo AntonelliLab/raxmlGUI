@@ -9,7 +9,7 @@ export default class Config extends StoreBase {
       setDarkMode: action,
     } );
     this.listen();
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     rendererBridge.getDarkMode().then( ( value ) => {
       runInAction( () => {
         this.isDarkMode = !!value;
@@ -19,22 +19,22 @@ export default class Config extends StoreBase {
 
   isDarkMode = false;
 
-  setDarkMode = ( value ) => {
+  setDarkMode = ( value: boolean ): void => {
     value = !!value;
     this.isDarkMode = value;
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     void rendererBridge.setDarkMode( value );
   };
 
-  onLightMode = () => {
+  onLightMode = (): void => {
     this.setDarkMode( false );
   };
 
-  onDarkMode = () => {
+  onDarkMode = (): void => {
     this.setDarkMode( true );
   };
 
-  listen = () => {
+  listen = (): void => {
     this.subscribe( runEvents.onLightMode, this.onLightMode );
     this.subscribe( runEvents.onDarkMode, this.onDarkMode );
   };

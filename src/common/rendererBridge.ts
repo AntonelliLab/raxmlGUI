@@ -59,8 +59,8 @@ export interface RendererBridge {
   onModelSelectionFailure: ( listener: Listener ) => Unsubscribe;
   onAddRun: ( listener: Listener ) => Unsubscribe;
   onRemoveRun: ( listener: Listener ) => Unsubscribe;
-  onLightMode: ( listener: Listener ) => Unsubscribe;
-  onDarkMode: ( listener: Listener ) => Unsubscribe;
+  onLightMode: ( listener: () => void ) => Unsubscribe;
+  onDarkMode: ( listener: () => void ) => Unsubscribe;
   onToggleBackboneConstraint: ( listener: Listener ) => Unsubscribe;
   onToggleMultifurcatingConstraint: ( listener: Listener ) => Unsubscribe;
   onUnhandledError: ( listener: Listener ) => Unsubscribe;

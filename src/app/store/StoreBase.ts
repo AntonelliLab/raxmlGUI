@@ -1,5 +1,7 @@
 import { runInAction } from 'mobx';
 
+import type { RendererBridge } from '../../common/rendererBridge';
+
 export const runEvents = {
   onRunStdout: 'onRunStdout',
   onRunStderr: 'onRunStderr',
@@ -15,33 +17,39 @@ export const runEvents = {
   onToggleBackboneConstraint: 'onToggleBackboneConstraint',
   onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
   onUnhandledError: 'onUnhandledError',
-};
+} as const;
 
 export default class StoreBase {
-  eventStops = [];
+  eventStops: ( () => void )[] = [];
+
+  version: string | undefined = undefined;
 
   constructor() {
     this._init();
   }
 
-  subscribe = ( name, listener ) => {
-    const { rendererBridge } = /** @type {any} */ ( window );
-    this.eventStops.push( rendererBridge[name]( listener ) );
+  subscribe = <K extends keyof typeof runEvents>(
+    name: K,
+    listener: Parameters<RendererBridge[K]>[0],
+  ): void => {
+    const { rendererBridge } = window;
+    const on = rendererBridge[name] as ( l: typeof listener ) => () => void;
+    this.eventStops.push( on( listener ) );
   };
 
-  unlisten = () => {
+  unlisten = (): void => {
     while ( this.eventStops.length ) {
       this.eventStops.pop()();
     }
   };
 
   // A method: a field here would clash with a subclass's dispose field.
-  dispose() {
+  dispose(): void {
     this.unlisten();
   }
 
-  _init = () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  _init = (): void => {
+    const { rendererBridge } = window;
     rendererBridge.getVersion().then( ( version ) => {
       runInAction( () => {
         this.version = version;

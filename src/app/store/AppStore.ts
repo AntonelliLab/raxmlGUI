@@ -16,15 +16,13 @@ class AppStore extends StoreBase {
   citation = new Citation();
   config = new Config();
 
-  version = undefined;
-
   showAppSnack = false;
 
-  setAppSnack = () => {
+  setAppSnack = (): void => {
     this.showAppSnack = true;
   };
 
-  clearAppSnack = () => {
+  clearAppSnack = (): void => {
     this.showAppSnack = false;
   };
 }
