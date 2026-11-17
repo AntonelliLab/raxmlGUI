@@ -3,10 +3,14 @@ import { observable, computed, action, makeObservable } from 'mobx';
 import { base, dir, name } from '../paths';
 import StoreBase from './StoreBase';
 
-class InputFile extends StoreBase {
-  run = null;
+interface InputFileOwner {
+  id: number;
+}
 
-  constructor( run, path ) {
+class InputFile<Owner extends InputFileOwner = InputFileOwner> extends StoreBase {
+  run: Owner = null;
+
+  constructor( run: Owner, path: string ) {
     super();
     makeObservable( this, {
       path: observable,
@@ -26,37 +30,37 @@ class InputFile extends StoreBase {
   // Observable because it may change on correcting errors or reformating of alignments
   path = '';
 
-  get id() {
+  get id(): string {
     return `${this.run.id}_${this.path}`;
   }
 
-  get name() {
+  get name(): string {
     return name( this.path );
   }
 
-  get dir() {
+  get dir(): string {
     return dir( this.path );
   }
 
-  get base() {
+  get base(): string {
     return base( this.path );
   }
 
-  get filename() {
+  get filename(): string {
     return base( this.path );
   }
 
-  get ok() {
+  get ok(): boolean {
     return this.path !== '';
   }
 
-  openFile = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  openFile = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.openPath( this.path );
   };
 
-  showFileInFolder = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  showFileInFolder = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.showItemInFolder( this.path );
   };
 }

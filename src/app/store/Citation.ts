@@ -1,5 +1,14 @@
 import { observable, action, computed, makeObservable } from 'mobx';
 
+type CitationFormat = 'txt' | 'ris' | 'bib';
+
+interface Reference {
+  name: string;
+  bib: string;
+  ris: string;
+  txt: string;
+}
+
 export default class Citation {
   constructor() {
     makeObservable( this, {
@@ -13,18 +22,18 @@ export default class Citation {
   }
   visible = false;
 
-  formats = [
+  formats: { value: CitationFormat; name: string }[] = [
     { value: 'txt', name: 'Plain text' },
     { value: 'ris', name: 'RIS/EndNote' },
     { value: 'bib', name: 'BibTeX' },
   ];
 
-  format = 'txt';
-  setFormat = ( format ) => {
+  format: CitationFormat = 'txt';
+  setFormat = ( format: CitationFormat ): void => {
     this.format = format;
   };
 
-  content = [
+  content: Reference[] = [
     {
       name: 'raxmlGUI',
       bib: `@article{https://doi.org/10.1111/2041-210X.13512,
@@ -200,19 +209,19 @@ ER  - `,
     },
   ];
 
-  get allText() {
+  get allText(): string {
     return this.content.map( ( ref ) => ref[this.format] ).join( '\n' );
   }
 
-  show = () => {
+  show = (): void => {
     this.visible = true;
   };
-  hide = () => {
+  hide = (): void => {
     this.visible = false;
   };
 
-  copyToClipboard = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  copyToClipboard = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.copyText( this.allText );
     console.log( 'Copied citation to clipboard' );
   };
