@@ -38,25 +38,8 @@ export default defineConfig( ( { command } ) => ( {
         filenamify: resolve( __dirname, 'node_modules/filenamify/filenamify.js' ),
       },
     },
-    optimizeDeps: {
-      // The page keeps JSX in .js files. The dep scanner parses those only when .js is jsx.
-      rolldownOptions: {
-        moduleTypes: {
-          '.js': 'jsx',
-        },
-      },
-    },
     plugins: [
-      // plugin-react 5: its babel option compiles JSX in .js files. 6 dropped babel.
-      // Vite's oxc parser does not treat .js as JSX.
-      react( {
-        babel: {
-          plugins: [
-            ['@babel/plugin-proposal-class-properties', { loose: false }],
-            ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-          ],
-        },
-      } ),
+      react(),
       ...sourceMapUpload( command ),
     ],
     build: {
