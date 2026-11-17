@@ -38,11 +38,32 @@ import {
 import { basename, join, quote } from '../paths';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
+import type { ErrorObject } from 'serialize-error';
+import type { AstralSuccessPayload } from '../../main/astral';
+import type { RunOutputPayload } from '../../main/processHelpers';
+import type { RunFinishedPayload, RunErrorPayload } from '../../main/startRun';
 
 const { windows } = host;
 
+interface RunParent {
+  onError: ( error: UserFixError ) => void;
+  deleteRun: ( run: Run ) => void;
+}
+
+interface FilePathEntry {
+  path: string;
+}
+// A CLI argument: seeds and thread counts are pushed as numbers.
+type CmdArg = string | number;
+
 class Run extends StoreBase {
-  constructor( parent, id ) {
+  parent: RunParent;
+  finalAlignment: FinalAlignment;
+  outputNamePlaceholder: string;
+  modeltestName: string | undefined;
+  startToken: object | null | undefined;
+
+  constructor( parent: RunParent, id: number ) {
     super();
     makeObservable( this, {
       analysis: computed,
@@ -168,23 +189,23 @@ class Run extends StoreBase {
     )[0]?.name;
   }
 
-  id = 0;
+  id: number = 0;
 
   binary = new Binary( this );
   numThreads = new NumThreads( this );
 
-  raxmlNgSwitch = ( raxmlNgParam, raxmlParam ) => {
+  raxmlNgSwitch = <A, B>( raxmlNgParam: A, raxmlParam: B ): A | B => {
     if ( this.usesRaxmlNg ) {
       return raxmlNgParam;
     }
     return raxmlParam;
   };
 
-  get analysis() {
+  get analysis(): RaxmlNgAnalysis | Analysis {
     return this.raxmlNgSwitch( new RaxmlNgAnalysis( this ), new Analysis( this ) );
   }
 
-  get analysisOption() {
+  get analysisOption(): { title: string; value: string; params: string[]; needTree?: undefined; } | { title: string; value: string; needTree: boolean; params: string[]; } | { title: string; value: string; params: string[]; needTree?: undefined; } | { title: string; value: string; needTree: boolean; params: string[]; } {
     return this.raxmlNgSwitch(
       raxmlNgAnalysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
       analysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
@@ -213,8 +234,8 @@ class Run extends StoreBase {
   backboneConstraint = new BackboneConstraintTree( this );
   multifurcatingConstraint = new MultifurcatingConstraintTree( this );
 
-  chooseTree = async ( type ) => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  chooseTree = async ( type: string ): Promise<void> => {
+    const { rendererBridge } = window;
     const chosen = await rendererBridge.selectTree( this.id, type );
     if ( !chosen ) {
       return;
@@ -222,20 +243,20 @@ class Run extends StoreBase {
     this.addTreeFiles( chosen.type, [{ path: chosen.filePath }] );
   };
 
-  loadTreeFile = () => this.chooseTree( 'tree' );
+  loadTreeFile = (): Promise<void> => this.chooseTree( 'tree' );
 
-  loadBackboneConstraintFile = () => this.chooseTree( 'backboneConstraint' );
+  loadBackboneConstraintFile = (): Promise<void> => this.chooseTree( 'backboneConstraint' );
 
-  loadMultifurcatingConstraintFile = () => this.chooseTree( 'multifurcatingConstraint' );
+  loadMultifurcatingConstraintFile = (): Promise<void> => this.chooseTree( 'multifurcatingConstraint' );
 
   disableCheckUndeterminedSequence = true;
 
   outputName = 'output';
-  setOutputName = ( value ) => {
+  setOutputName = ( value: string ): void => {
     this.outputName = filenamify( value.replace( /\s+/g, '_' ).trim() );
   };
 
-  atomAfterRun; // Trigger atom when run is finished to re-run outputNameAvailable
+  atomAfterRun: ReturnType<typeof createAtom>; // Trigger atom when run is finished to re-run outputNameAvailable
 
   outputNameAvailable = promisedComputed(
     { ok: false, resultFilenames: [] },
@@ -249,14 +270,14 @@ class Run extends StoreBase {
         ok: false,
         notice: 'Checking...',
         outputNameUnused: outputName,
-        resultFilenames: [],
+        resultFilenames: [] as string[],
       };
       const outputNameToCheck = outputName || outputNamePlaceholder;
       const check = atomAfterRun.reportObserved() || outputNameToCheck;
       if ( !check ) {
         return defaultValue;
       }
-      const { rendererBridge } = /** @type {any} */ ( window );
+      const { rendererBridge } = window;
       return rendererBridge.checkOutput( {
         outputDir,
         outputName: outputNameToCheck,
@@ -264,33 +285,33 @@ class Run extends StoreBase {
     },
   );
 
-  get outputNameOk() {
+  get outputNameOk(): boolean {
     return this.outputNameAvailable.get().ok;
   }
 
-  get outputNameSafe() {
+  get outputNameSafe(): string {
     return (
       this.outputNameAvailable.get().outputNameUnused ||
       this.outputNamePlaceholder
     );
   }
 
-  get outputNameNotice() {
+  get outputNameNotice(): string {
     return this.outputNameOk
       ? ''
       : `Output with that id already exists. New run will use output id '${this.outputNameSafe}'`;
   }
 
-  get outputFilenameSafe() {
+  get outputFilenameSafe(): string {
     return `${this.outputNameSafe}.tre`;
   }
 
   outputDir = '';
-  setOutputDir = ( dir ) => {
+  setOutputDir = ( dir: string ): void => {
     this.outputDir = dir;
   };
-  selectOutputDir = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  selectOutputDir = async (): Promise<void> => {
+    const { rendererBridge } = window;
     const outputDir = await rendererBridge.selectOutputDir( this.id );
     if ( !outputDir ) {
       return;
@@ -298,55 +319,55 @@ class Run extends StoreBase {
     this.setOutputDir( outputDir );
   };
 
-  openOutputDir = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  openOutputDir = async (): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.openPath( this.outputDir );
   };
 
-  showPartitionFor = null;
-  showPartition = ( alignment ) => {
+  showPartitionFor: Alignment | null = null;
+  showPartition = ( alignment: Alignment | null ): void => {
     this.showPartitionFor = alignment;
   };
-  hidePartition = () => {
+  hidePartition = (): void => {
     this.showPartition( null );
   };
 
   // Result
   resultDir = '';
-  get resultFilenames() {
+  get resultFilenames(): string[] {
     return this.outputNameAvailable.get().resultFilenames || [];
   }
 
-  get haveResult() {
+  get haveResult(): boolean {
     return this.resultFilenames.length > 0 && this.resultDir === this.outputDir;
   }
 
-  openFile = async ( filePath ) => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  openFile = async ( filePath: string ): Promise<void> => {
+    const { rendererBridge } = window;
     await rendererBridge.openPath( filePath );
   };
 
-  get haveAlignments() {
+  get haveAlignments(): boolean {
     return this.alignments.length > 0;
   }
 
-  get hasAstralTree() {
+  get hasAstralTree(): boolean {
     return !!this.astralTree;
   }
 
-  get taxons() {
+  get taxons(): string[] {
     return this.haveAlignments
       ? this.alignments[0].taxons
       : [];
   }
 
-  get dataType() {
+  get dataType(): string {
     return this.finalAlignment.dataType;
   }
 
-  error = null;
+  error: ErrorObject | null = null;
 
-  get missing() {
+  get missing(): "" | "Missing tree, please load one." {
     if ( !this.tree.notAvailable && !this.tree.filePath ) {
       return 'Missing tree, please load one.';
     }
@@ -355,18 +376,18 @@ class Run extends StoreBase {
 
   running = false;
   finished = false;
-  exitCode = 0;
-  clearFinished = () => {
+  exitCode: RunFinishedPayload['exitCode'] = 0;
+  clearFinished = (): void => {
     this.finished = false;
     this.exitCode = 0;
   };
-  atomFinished;
+  atomFinished: ReturnType<typeof createAtom>;
 
-  get ok() {
+  get ok(): boolean {
     return !this.error && !this.missing;
   }
 
-  get startDisabled() {
+  get startDisabled(): boolean {
     return (
       ( this.alignments.length === 0 && !this.hasAstralTree ) ||
       !this.ok ||
@@ -379,24 +400,24 @@ class Run extends StoreBase {
   }
 
   randomSeed = Math.floor( 1000000 * Math.random() );
-  get seedParsimony() {
+  get seedParsimony(): number {
     return this.randomSeed;
   }
-  get seedRapidBootstrap() {
+  get seedRapidBootstrap(): number {
     return this.randomSeed;
   }
-  get seedBootstrap() {
+  get seedBootstrap(): number {
     return this.randomSeed;
   }
 
-  setRandomSeed = ( value ) => {
+  setRandomSeed = ( value: string | number ): void => {
     const v = Number( value );
     if ( !Number.isNaN( v ) && v !== 0 && v < 1e6 ) {
       this.randomSeed = v;
     }
   };
 
-  get haveRandomSeed() {
+  get haveRandomSeed(): boolean {
     const analysisWithSeed = [
       'FT',
       'ML',
@@ -412,50 +433,50 @@ class Run extends StoreBase {
     return analysisWithSeed.includes( this.analysis.value );
   }
 
-  get usesRaxmlNg() {
+  get usesRaxmlNg(): boolean {
     return this.binary.value.includes( 'raxml-ng' );
   }
 
-  get usesModeltestNg() {
+  get usesModeltestNg(): boolean {
     return this.binary.value.includes( 'modeltest-ng' );
   }
 
-  get inputIsAlignment() {
+  get inputIsAlignment(): boolean {
     return this.usesModeltest || this.usesRaxml;
   }
 
-  get inputIsTree() {
+  get inputIsTree(): boolean {
     return this.usesAstral;
   }
 
-  get usesModeltest() {
+  get usesModeltest(): boolean {
     return this.binary.type === 'modeltest';
   }
 
-  get usesRaxml() {
+  get usesRaxml(): boolean {
     return this.binary.type === 'raxml';
   }
 
-  get usesAstral() {
+  get usesAstral(): boolean {
     return this.binary.type === 'astral';
   }
 
-  get modelTestCanRun() {
+  get modelTestCanRun(): boolean {
     return this.dataType === 'nucleotide' || this.dataType === 'protein';
   }
 
-  get modelTestIsRunningOnAlignment() {
+  get modelTestIsRunningOnAlignment(): boolean {
     const running = this.alignments.some(
       ( alignment ) => alignment.modeltestLoading,
     );
     return running;
   }
 
-  cancelModeltestOnAlignment = () => {
+  cancelModeltestOnAlignment = (): void => {
     this.alignments.forEach( ( alignment ) => alignment.cancelModelTest() );
   };
 
-  get args() {
+  get args(): CmdArg[][] {
     if ( this.usesAstral ) {
       return this.astralArgs();
     }
@@ -468,28 +489,28 @@ class Run extends StoreBase {
     return this.raxmlArgs();
   }
 
-  get ngSubstitutionModelCmd() {
+  get ngSubstitutionModelCmd(): string {
     return this.haveAlignments
       ? this.alignments[0].ngSubstitutionModelCmd
       : '';
   }
 
-  get showModifiedSnack() {
+  get showModifiedSnack(): boolean {
     const shouldShow = this.alignments
       .map( ( a ) => a.showModifiedSnack )
       .some( ( e ) => e );
     return this.haveAlignments && shouldShow;
   }
 
-  get showModifiedDialog() {
+  get showModifiedDialog(): boolean {
     const shouldShow = this.alignments
       .map( ( a ) => a.showModifiedDialog )
       .some( ( e ) => e );
     return this.haveAlignments && shouldShow;
   }
 
-  get modificationMessages() {
-    const messages = [];
+  get modificationMessages(): string[] {
+    const messages: string[] = [];
     this.alignments.forEach( ( a ) => {
       messages.push( `${a.name}:\n` );
       a.modificationMessages.forEach( ( b ) => {
@@ -499,17 +520,17 @@ class Run extends StoreBase {
     return messages;
   }
 
-  get converted() {
+  get converted(): boolean {
     const converted = this.alignments.map( ( a ) => a.converted ).some( ( e ) => e );
     return this.haveAlignments && converted;
   }
 
-  get modified() {
+  get modified(): boolean {
     const modified = this.alignments.map( ( a ) => a.modified ).some( ( e ) => e );
     return this.haveAlignments && modified;
   }
 
-  get convertedAlignmentFrom() {
+  get convertedAlignmentFrom(): string | null {
     if ( !this.haveAlignments ) {
       return null;
     }
@@ -517,13 +538,13 @@ class Run extends StoreBase {
     return convertedAlignments[0].convertedFrom;
   }
 
-  clearShowModified = () => {
+  clearShowModified = (): void => {
     for ( let i = 0; i < this.alignments.length; i++ ) {
       this.alignments[i].clearModified();
     }
   };
 
-  get raxmlSubstitutionModelCmd() {
+  get raxmlSubstitutionModelCmd(): string {
     let model =
       this.substitutionAscertainment.cmdValue +
       this.substitutionMatrix.cmdValue +
@@ -543,8 +564,8 @@ class Run extends StoreBase {
     return model;
   }
 
-  astralArgs = () => {
-    const first = [];
+  astralArgs = (): string[][] => {
+    const first: string[] = [];
     first.push( '-i', quote( this.astralTree?.path, { windows } ) );
     first.push(
       '-o',
@@ -553,8 +574,8 @@ class Run extends StoreBase {
     return [first];
   };
 
-  modeltestNgArgs = () => {
-    const first = [];
+  modeltestNgArgs = (): CmdArg[][] => {
+    const first: CmdArg[] = [];
     // data type
     if ( this.dataType === 'nucleotide' ) {
       first.push( '-d', 'nt' );
@@ -578,10 +599,10 @@ class Run extends StoreBase {
     return [first];
   };
 
-  raxmlNgArgs = () => {
-    const first = [];
-    const second = [];
-    const third = [];
+  raxmlNgArgs = (): CmdArg[][] => {
+    const first: CmdArg[] = [];
+    const second: CmdArg[] = [];
+    const third: CmdArg[] = [];
     const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
     switch ( this.analysis.value ) {
       case 'SC':
@@ -778,10 +799,10 @@ class Run extends StoreBase {
     return cmdArgs.filter( ( args ) => args.length > 0 );
   };
 
-  raxmlArgs = () => {
-    const first = [];
-    const second = [];
-    const third = [];
+  raxmlArgs = (): CmdArg[][] => {
+    const first: CmdArg[] = [];
+    const second: CmdArg[] = [];
+    const third: CmdArg[] = [];
     const cmdArgs = [first, second, third]; // Possibly empty ones removed in the end
 
     switch ( this.analysis.value ) {
@@ -820,7 +841,7 @@ class Run extends StoreBase {
             this.outputDir,
             `RAxML_fastTree.${this.outputFilenameSafe}`,
           );
-          const next = [];
+          const next: CmdArg[] = [];
           if ( !this.numThreads.notAvailable ) {
             next.push( '-T', this.numThreads.value );
           }
@@ -849,7 +870,7 @@ class Run extends StoreBase {
               `RAxML_result.brL.${this.outputFilenameSafe}`,
             )
             : join( this.outputDir, `RAxML_fastTree.${this.outputFilenameSafe}` );
-          const next = [];
+          const next: CmdArg[] = [];
           if ( !this.numThreads.notAvailable ) {
             next.push( '-T', this.numThreads.value );
           }
@@ -914,7 +935,7 @@ class Run extends StoreBase {
             this.outputDir,
             `RAxML_bestTree.${this.outputFilenameSafe}`,
           );
-          const next = [];
+          const next: CmdArg[] = [];
           if ( !this.numThreads.notAvailable ) {
             next.push( '-T', this.numThreads.value );
           }
@@ -1271,7 +1292,7 @@ class Run extends StoreBase {
     return cmdArgs.filter( ( args ) => args.length > 0 );
   };
 
-  get command() {
+  get command(): string {
     if ( this.usesAstral ) {
       return this.args
         .map( ( cmdArgs ) => `java -jar ${this.binary.value} ${cmdArgs.join( ' ' )}` )
@@ -1282,7 +1303,7 @@ class Run extends StoreBase {
       .join( ' &&\\\n' );
   }
 
-  get settingsFileContent() {
+  get settingsFileContent(): string {
     let text = `The analysis was run using raxmlGUI 2.0 (version ${this.version}) as follows:
 Analysis: ${this.analysisOption.title}
 Binary: ${this.binary.value} version ${this.binary.version}
@@ -1300,37 +1321,38 @@ Results saved to: ${this.outputDir}
     return text;
   }
 
-  get settingsFilePath() {
+  get settingsFilePath(): string {
     return join(
       `${this.outputDir}`,
       `RAxML_GUI_Settings_${this.outputNameSafe}.txt`,
     );
   }
 
-  writeSettings = async () => {
+  writeSettings = async (): Promise<void> => {
     try {
       console.log( `Writing settings to ${this.settingsFilePath}...` );
-      const { rendererBridge } = /** @type {any} */ ( window );
+      const { rendererBridge } = window;
       await rendererBridge.writeFile( this.settingsFilePath, this.settingsFileContent );
-    } catch ( err ) {
+    } catch ( err: unknown ) {
       console.error( 'Error writing settings:', err );
       throw err;
     }
   };
 
-  startAstral = async () => {
+  startAstral = async (): Promise<void> => {
     const { id, binary, args } = this;
     console.log( `Start astral run ${id}` );
     this.running = true;
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.startAstral( {
       id,
       binaryName: binary.value,
+      // @ts-expect-error the args getter is typed for every binary; ASTRAL args are all strings
       args,
     } );
   };
 
-  start = async () => {
+  start = async (): Promise<void> => {
     const {
       id,
       args,
@@ -1376,9 +1398,10 @@ Results saved to: ${this.outputDir}
       return;
     }
     console.log( `Start run ${id} with args ${args}` );
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     await rendererBridge.startRun( {
       id,
+      // @ts-expect-error args carry seed and thread numbers the payload type calls strings
       args,
       binaryName: binary.value,
       outputDir,
@@ -1391,43 +1414,44 @@ Results saved to: ${this.outputDir}
     } );
   };
 
-  cancel = () => {
+  cancel = (): void => {
     this.startToken = null;
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     rendererBridge.cancelRun( this.id );
     this.afterRun();
   };
 
-  afterRun = () => {
+  afterRun = (): void => {
     this.running = false;
     this.atomAfterRun.reportChanged();
   };
 
-  alignments = [];
-  astralTree = undefined;
-  code = undefined;
+  alignments: Alignment[] = [];
+  astralTree: AstralTree | null | undefined = undefined;
+  code: undefined = undefined;
   data = '';
-  path = undefined;
+  path: string | undefined = undefined;
   stdout = '';
   stderr = '';
 
   useBackboneConstraint = false;
   useMultifurcatingConstraint = false;
 
-  get numSites() {
+  get numSites(): number {
+    // @ts-expect-error sums Alignment objects, not site counts (separate issue)
     return this.alignments.reduce( ( sum, n ) => sum + n, 0 );
   }
 
-  get needAlignment() {
+  get needAlignment(): boolean {
     return true;
   }
 
-  removeRun = () => {
+  removeRun = (): void => {
     this.parent.deleteRun( this );
   };
 
-  loadAlignmentFiles = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  loadAlignmentFiles = async (): Promise<void> => {
+    const { rendererBridge } = window;
     const alignments = await rendererBridge.selectAlignment( this.id );
     if ( !alignments ) {
       return;
@@ -1435,8 +1459,8 @@ Results saved to: ${this.outputDir}
     this.addAlignments( alignments );
   };
 
-  loadAstralTree = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  loadAstralTree = async (): Promise<void> => {
+    const { rendererBridge } = window;
     const file = await rendererBridge.selectAstralFile( this.id );
     if ( !file ) {
       return;
@@ -1444,12 +1468,12 @@ Results saved to: ${this.outputDir}
     this.addAstralFiles( file );
   };
 
-  haveAlignment = ( id ) => {
+  haveAlignment = ( id: string ): boolean => {
     // TODO: Input.js queries without id, doe it work as expected? Later queries with path instead of id
     return this.alignments.findIndex( ( alignment ) => alignment.id === id ) >= 0;
   };
 
-  addAlignments = ( alignments ) => {
+  addAlignments = ( alignments: FilePathEntry[] ): void => {
     alignments.forEach( ( { path } ) => {
       if ( !this.haveAlignment( path ) ) {
         this.alignments.push( new Alignment( this, path ) );
@@ -1463,7 +1487,7 @@ Results saved to: ${this.outputDir}
     } );
   };
 
-  addAstralFiles = ( { path } ) => {
+  addAstralFiles = ( { path }: FilePathEntry ): void => {
     if ( !this.hasAstralTree ) {
       this.astralTree = new AstralTree( this, path );
       this.setOutputName( this.astralTree.name );
@@ -1473,7 +1497,7 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  removeAlignment = ( alignment ) => {
+  removeAlignment = ( alignment: Alignment ): void => {
     const oldDataType = this.dataType;
     const index = this.alignments.indexOf( alignment );
     if ( index >= 0 ) {
@@ -1490,38 +1514,38 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  removeAstralTree = () => {
+  removeAstralTree = (): void => {
     this.astralTree = null;
   };
 
-  get canLoadAlignment() {
+  get canLoadAlignment(): boolean {
     return (
       ( this.binary.type === 'raxml' || this.binary.type === 'modeltest' ) &&
       !this.havePartitionFile
     );
   }
 
-  get canLoadAstralTree() {
+  get canLoadAstralTree(): boolean {
     return this.usesAstral && !this.hasAstralTree;
   }
 
   partitionFile = '';
   partitionFileContent = '';
 
-  get partitionFileName() {
+  get partitionFileName(): string {
     return basename( this.partitionFile );
   }
 
-  get havePartitionFile() {
+  get havePartitionFile(): boolean {
     return this.partitionFile !== '';
   }
 
-  get canLoadPartitionFile() {
+  get canLoadPartitionFile(): boolean {
     return this.alignments.length === 1 && !this.havePartitionFile;
   }
 
-  loadPartitionFile = async () => {
-    const { rendererBridge } = /** @type {any} */ ( window );
+  loadPartitionFile = async (): Promise<void> => {
+    const { rendererBridge } = window;
     const filePath = await rendererBridge.selectPartitionFile( this.id );
     if ( !filePath ) {
       return;
@@ -1529,12 +1553,12 @@ Results saved to: ${this.outputDir}
     await this.addPartitionFiles( [{ path: filePath }] );
   };
 
-  addPartitionFiles = async ( files ) => {
+  addPartitionFiles = async ( files: FilePathEntry[] ): Promise<void> => {
     if ( !files.length ) {
       return;
     }
     const { path } = files[0];
-    const { rendererBridge } = /** @type {any} */ ( window );
+    const { rendererBridge } = window;
     const content = await rendererBridge.readFile( path );
     runInAction( () => {
       this.partitionFile = path;
@@ -1542,7 +1566,7 @@ Results saved to: ${this.outputDir}
     } );
   };
 
-  addTreeFiles = ( type, files ) => {
+  addTreeFiles = ( type: string, files: FilePathEntry[] ): void => {
     if ( !files.length ) {
       return;
     }
@@ -1562,39 +1586,39 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  removePartitionFile = () => {
+  removePartitionFile = (): void => {
     this.partitionFile = '';
     this.partitionFileContent = '';
   };
 
-  clearStdout = () => {
+  clearStdout = (): void => {
     this.stdout = '';
   };
 
-  clearStderr = () => {
+  clearStderr = (): void => {
     this.stderr = '';
   };
 
-  clearConsole = () => {
+  clearConsole = (): void => {
     this.clearStdout();
     this.clearStderr();
   };
 
-  clearError = () => {
+  clearError = (): void => {
     this.error = null;
   };
 
-  reset = () => {
+  reset = (): void => {
     this.outGroup.reset();
     this.removePartitionFile();
   };
 
-  dispose = () => {
+  dispose = (): void => {
     this.cancel();
     this.unlisten();
   };
 
-  listen = () => {
+  listen = (): void => {
     this.subscribe( runEvents.onRunStdout, this.onRunStdout );
     this.subscribe( runEvents.onRunStderr, this.onRunStderr );
     this.subscribe( runEvents.onRunFinished, this.onRunFinished );
@@ -1606,19 +1630,19 @@ Results saved to: ${this.outputDir}
   // Listeners
   // -----------------------------------------------------------
 
-  onRunStdout = ( { id, content } ) => {
+  onRunStdout = ( { id, content }: RunOutputPayload ): void => {
     if ( id === this.id ) {
       this.stdout += content;
     }
   };
 
-  onRunStderr = ( { id, content } ) => {
+  onRunStderr = ( { id, content }: RunOutputPayload ): void => {
     if ( id === this.id ) {
       this.stderr += content;
     }
   };
 
-  onAstralSuccess = ( { id, exitCode } ) => {
+  onAstralSuccess = ( { id, exitCode }: AstralSuccessPayload ): void => {
     if ( id === this.id ) {
       console.log( `Process ${id} finished with exitCode '${exitCode}'` );
       this.resultDir = this.outputDir;
@@ -1629,7 +1653,7 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  onRunFinished = ( { id, resultDir, resultFilenames, exitCode } ) => {
+  onRunFinished = ( { id, resultDir, resultFilenames, exitCode }: RunFinishedPayload ): void => {
     if ( id === this.id ) {
       console.log(
         `Process ${id} finished with exitCode '${exitCode}' and result filenames ${resultFilenames} in dir ${resultDir}.`,
@@ -1642,7 +1666,7 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  onRunError = ( { id, error } ) => {
+  onRunError = ( { id, error }: RunErrorPayload ): void => {
     if ( id === this.id ) {
       console.log( `Process ${id} finished with error:`, error );
       this.error = error;
@@ -1650,15 +1674,15 @@ Results saved to: ${this.outputDir}
     }
   };
 
-  onBackboneConstraint = ( event, params ) => {
+  onBackboneConstraint = ( _event: unknown, _params: unknown ): void => {
     this.useBackboneConstraint = !this.useBackboneConstraint;
   };
 
-  onMultifurcatingConstraint = ( event, params ) => {
+  onMultifurcatingConstraint = ( _event: unknown, _params: unknown ): void => {
     this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
-  generateReport = ( { maxStdoutLength = 1000 } = {} ) => {
+  generateReport = ( { maxStdoutLength = 1000 }: { maxStdoutLength?: number } = {} ): { command: string; stdout: string; } => {
     const { command, stdout } = this;
     return {
       command,
