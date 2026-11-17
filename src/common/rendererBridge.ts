@@ -5,8 +5,9 @@ import type { ModelSelectionPayload } from '../main/modelSelection';
 import type { SelectedAlignment } from '../main/selectAlignment';
 import type { SelectedTree } from '../main/selectTree';
 import type { SelectedAstralFile } from '../main/selectAstralFile';
-import type { AstralPayload } from '../main/astral';
-import type { StartRunPayload } from '../main/startRun';
+import type { AstralPayload, AstralSuccessPayload } from '../main/astral';
+import type { RunOutputPayload } from '../main/processHelpers';
+import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
 import type { AlignmentParseResult } from '../main/parseAlignment';
 
 export interface HostInfo {
@@ -44,12 +45,12 @@ export interface RendererBridge {
   showItemInFolder: ( fullPath: string ) => Promise<void>;
   startRun: ( payload: StartRunPayload ) => Promise<void>;
   cancelRun: ( id: number ) => Promise<void>;
-  onRunStdout: ( listener: Listener ) => Unsubscribe;
-  onRunStderr: ( listener: Listener ) => Unsubscribe;
-  onRunFinished: ( listener: Listener ) => Unsubscribe;
-  onRunError: ( listener: Listener ) => Unsubscribe;
+  onRunStdout: ( listener: ( payload: RunOutputPayload ) => void ) => Unsubscribe;
+  onRunStderr: ( listener: ( payload: RunOutputPayload ) => void ) => Unsubscribe;
+  onRunFinished: ( listener: ( payload: RunFinishedPayload ) => void ) => Unsubscribe;
+  onRunError: ( listener: ( payload: RunErrorPayload ) => void ) => Unsubscribe;
   startAstral: ( payload: AstralPayload ) => Promise<void>;
-  onAstralSuccess: ( listener: Listener ) => Unsubscribe;
+  onAstralSuccess: ( listener: ( payload: AstralSuccessPayload ) => void ) => Unsubscribe;
   startModelSelection: ( payload: ModelSelectionPayload ) => Promise<void>;
   cancelModelSelection: ( id: string ) => Promise<void>;
   onModelSelectionSuccess: ( listener: Listener ) => Unsubscribe;

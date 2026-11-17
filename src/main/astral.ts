@@ -22,6 +22,11 @@ export interface AstralPayload {
   args: string[][];
 }
 
+export interface AstralSuccessPayload {
+  id: RunId;
+  exitCode: ProcessExit;
+}
+
 export async function runAstral(
   event: IpcMainEvent,
   payload: AstralPayload,

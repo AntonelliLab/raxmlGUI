@@ -7,6 +7,7 @@ import type { IpcMainEvent } from 'electron';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import { is } from '../common/utils';
+import type { ErrorObject } from 'serialize-error';
 import UserFixError from '../common/errors';
 import {
   beginRun,
@@ -44,6 +45,19 @@ export interface StartRunPayload {
   usesRaxmlNg: boolean;
   usesModeltestNg: boolean;
   inputPath: string;
+}
+
+export interface RunFinishedPayload {
+  id: RunId;
+  resultDir: string;
+  resultFilenames: string[];
+  exitCode: ProcessExit;
+}
+
+// `error` is the serialized plain object `send` puts on the wire.
+export interface RunErrorPayload {
+  id: RunId;
+  error: ErrorObject;
 }
 
 async function combineOutput( outputDir: string, outputFilename: string ): Promise<void> {
