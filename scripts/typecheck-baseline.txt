@@ -1,4 +1,4 @@
-src/app/App.js(466,12): error TS2739: Type '{ error: ErrorObject; onClose: () => void; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
-src/app/App.js(512,10): error TS2741: Property 'needReload' is missing in type '{ error: unknown; title: string; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
+src/app/App.tsx(466,12): error TS2739: Type '{ error: ErrorObject; onClose: () => void; }' is missing the following properties from type '{ error: any; onClose: any; needReload: any; title: any; }': needReload, title
+src/app/App.tsx(512,10): error TS2741: Property 'needReload' is missing in type '{ error: unknown; title: string; onClose: () => void; }' but required in type '{ error: any; onClose: any; needReload: any; title: any; }'.
 src/app/App.test.js(5,1): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
 src/app/App.test.js(13,3): error TS2304: Cannot find name 'expect'.
