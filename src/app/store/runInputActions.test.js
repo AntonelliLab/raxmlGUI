@@ -1,5 +1,5 @@
 // @ts-nocheck — Jest globals. checkJs has no test runner types.
-import { autorun, runInAction } from 'mobx';
+import { autorun } from 'mobx';
 
 import Run from './Run';
 
@@ -305,17 +305,5 @@ describe( 'tree files', () => {
     expect( run.tree.filePath ).toBe( '' );
     expect( run.backboneConstraint.filePath ).toBe( '' );
     expect( run.multifurcatingConstraint.filePath ).toBe( '' );
-  } );
-} );
-
-describe( 'state set directly', () => {
-  it( 'setting the alignments inside runInAction moves numSites', () => {
-    const { seen, dispose } = watch( () => run.numSites );
-    runInAction( () => {
-      run.alignments = [ 3, 4 ];
-    } );
-    dispose();
-
-    expect( seen ).toEqual( [ 0, 7 ] );
   } );
 } );

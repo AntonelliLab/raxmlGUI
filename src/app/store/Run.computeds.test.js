@@ -119,7 +119,7 @@ describe( 'Run binary computeds', () => {
 } );
 
 describe( 'Run alignment computeds', () => {
-  it( 'haveAlignments, taxons and numSites follow the alignments', () => {
+  it( 'haveAlignments and taxons follow the alignments', () => {
     const run = makeRun( { alignments: [] } );
     expect( run.haveAlignments ).toBe( false );
     expect( run.taxons ).toEqual( [] );
@@ -207,10 +207,6 @@ describe( 'Run alignment computeds', () => {
 
   it( 'ngSubstitutionModelCmd comes from the first alignment', () => {
     expect( makeRun().ngSubstitutionModelCmd ).toBe( 'GTR+G' );
-  } );
-
-  it( 'numSites is 0 without alignments', () => {
-    expect( makeRun( { alignments: [] } ).numSites ).toBe( 0 );
   } );
 
   it( 'needAlignment is always true', () => {

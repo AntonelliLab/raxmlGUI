@@ -145,7 +145,6 @@ class Run extends StoreBase {
       stderr: observable,
       useBackboneConstraint: observable,
       useMultifurcatingConstraint: observable,
-      numSites: computed,
       needAlignment: computed,
       removeRun: action,
       loadAlignmentFiles: action,
@@ -1437,11 +1436,6 @@ Results saved to: ${this.outputDir}
 
   useBackboneConstraint = false;
   useMultifurcatingConstraint = false;
-
-  get numSites(): number {
-    // @ts-expect-error sums Alignment objects, not site counts (separate issue)
-    return this.alignments.reduce( ( sum, n ) => sum + n, 0 );
-  }
 
   get needAlignment(): boolean {
     return true;
