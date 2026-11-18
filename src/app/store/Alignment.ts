@@ -59,6 +59,9 @@ interface ModelExtra {
   options: readonly string[];
   value: string;
   onChange: ( value: string ) => void;
+  notAvailable: boolean;
+  hoverInfo: string;
+  error: unknown;
 }
 
 // Merged, not class fields: assigned later, so no own property at construction.
@@ -267,6 +270,9 @@ class Alignment extends InputFile<AlignmentOwner> {
           options: raxmlSettings.aminoAcidSubstitutionMatrixOptions.options,
           value: this.aaMatrixName,
           onChange: this.onChangeAAMatrixName,
+          notAvailable: false,
+          hoverInfo: 'Amino Acid Substitution Matrix name',
+          error: null,
         };
       default:
         return null;

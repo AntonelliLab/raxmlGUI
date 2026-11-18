@@ -28,6 +28,9 @@ interface CardModelExtra {
   options: readonly string[];
   value: string;
   onChange: ( value: string ) => void;
+  notAvailable: boolean;
+  hoverInfo: string;
+  error: unknown;
 }
 
 interface CardAlignment {
@@ -243,9 +246,6 @@ function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
                     }}
                     option={{
                       ...alignment.modelExtra,
-                      notAvailable: false,
-                      hoverInfo: '',
-                      error: null,
                       setValue: alignment.modelExtra.onChange,
                       title: alignment.modelExtra.label,
                       options: alignment.modelExtra.options.map( ( model ) => ( {
