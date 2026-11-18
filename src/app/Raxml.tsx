@@ -2,19 +2,18 @@ import React, { useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import Button from '@mui/material/Button';
 import OptionSelect from './components/OptionSelect';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FormHelperText } from '@mui/material';
-import type { OptionSelectOptionLike } from './components/OptionSelect';
 
-// The run's select options miss OptionSelect's notAvailable or string titles: cast where passed.
 interface RaxmlRun {
   command: string;
-  binary: object;
-  numThreads: object;
+  binary: OptionSelectOptionLike;
+  numThreads: OptionSelectOptionLike;
   modelTestIsRunningOnAlignment: boolean;
   cancelModeltestOnAlignment: () => void;
   running: boolean;
@@ -59,8 +58,8 @@ const Raxml = ( { run, store }: RaxmlProps ): React.JSX.Element => {
           gap: '20px',
         }}
       >
-        <OptionSelect option={run.binary as OptionSelectOptionLike} />
-        <OptionSelect option={run.numThreads as OptionSelectOptionLike} />
+        <OptionSelect option={run.binary} />
+        <OptionSelect option={run.numThreads} />
         {run.modelTestIsRunningOnAlignment
           ? (
             <Button

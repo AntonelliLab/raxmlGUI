@@ -2,35 +2,34 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Box from '@mui/material/Box';
 import OptionSelect from './components/OptionSelect';
+import type { OptionSelectOptionLike } from './components/OptionSelect';
 import OptionCheck from './components/OptionCheck';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import type { OptionSelectOptionLike } from './components/OptionSelect';
 import type { OptionCheckOptionLike } from './components/OptionCheck';
 
-// The run's select options miss OptionSelect's notAvailable or string titles: cast where passed.
 interface ModelRun {
   usesModeltestNg: boolean;
   usesAstral: boolean;
-  analysis: object;
-  numRuns: object;
-  numRepetitions: object;
-  numRepetitionsNg: object;
+  analysis: OptionSelectOptionLike;
+  numRuns: OptionSelectOptionLike;
+  numRepetitions: OptionSelectOptionLike;
+  numRepetitionsNg: OptionSelectOptionLike;
   branchLength: OptionCheckOptionLike;
   sHlike: OptionCheckOptionLike;
   combinedOutput: OptionCheckOptionLike;
-  startingTree: object;
-  outGroup: object;
+  startingTree: OptionSelectOptionLike;
+  outGroup: OptionSelectOptionLike;
   haveRandomSeed: boolean;
   randomSeed: number;
   setRandomSeed: ( value: string ) => void;
-  substitutionMatrix: object;
-  substitutionRate: object;
-  substitutionI: object;
-  substitutionAscertainment: object;
-  multistateModel: object;
+  substitutionMatrix: OptionSelectOptionLike;
+  substitutionRate: OptionSelectOptionLike;
+  substitutionI: OptionSelectOptionLike;
+  substitutionAscertainment: OptionSelectOptionLike;
+  multistateModel: OptionSelectOptionLike;
   estimatedFrequencies: OptionCheckOptionLike;
-  baseFrequencies: object;
+  baseFrequencies: OptionSelectOptionLike;
 }
 
 export interface ModelProps {
@@ -90,14 +89,14 @@ const Model = ( { run }: ModelProps ): React.JSX.Element => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.analysis as OptionSelectOptionLike} />
-        <OptionSelect option={run.numRuns as OptionSelectOptionLike} />
-        <OptionSelect option={run.numRepetitions as OptionSelectOptionLike} />
-        <OptionSelect option={run.numRepetitionsNg as OptionSelectOptionLike} />
+        <OptionSelect option={run.analysis} />
+        <OptionSelect option={run.numRuns} />
+        <OptionSelect option={run.numRepetitions} />
+        <OptionSelect option={run.numRepetitionsNg} />
         <OptionCheck option={run.branchLength} />
         <OptionCheck option={run.sHlike} />
         <OptionCheck option={run.combinedOutput} />
-        <OptionSelect option={run.startingTree as OptionSelectOptionLike} />
+        <OptionSelect option={run.startingTree} />
       </Box>
       <Box
         component="form"
@@ -111,7 +110,7 @@ const Model = ( { run }: ModelProps ): React.JSX.Element => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.outGroup as OptionSelectOptionLike} />
+        <OptionSelect option={run.outGroup} />
         {run.haveRandomSeed
           ? (
             <TextField
@@ -137,8 +136,8 @@ const Model = ( { run }: ModelProps ): React.JSX.Element => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.substitutionMatrix as OptionSelectOptionLike} />
-        <OptionSelect option={run.substitutionRate as OptionSelectOptionLike} />
+        <OptionSelect option={run.substitutionMatrix} />
+        <OptionSelect option={run.substitutionRate} />
       </Box>
       <Box
         component="form"
@@ -152,11 +151,11 @@ const Model = ( { run }: ModelProps ): React.JSX.Element => {
         noValidate
         autoComplete="off"
       >
-        <OptionSelect option={run.substitutionI as OptionSelectOptionLike} />
-        <OptionSelect option={run.substitutionAscertainment as OptionSelectOptionLike} />
-        <OptionSelect option={run.multistateModel as OptionSelectOptionLike} />
+        <OptionSelect option={run.substitutionI} />
+        <OptionSelect option={run.substitutionAscertainment} />
+        <OptionSelect option={run.multistateModel} />
         <OptionCheck option={run.estimatedFrequencies} />
-        <OptionSelect option={run.baseFrequencies as OptionSelectOptionLike} />
+        <OptionSelect option={run.baseFrequencies} />
       </Box>
     </Box>
   );
