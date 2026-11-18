@@ -111,7 +111,6 @@ class Alignment extends InputFile<AlignmentOwner> {
       partitionType: computed,
       partitionFileContent: computed,
       ngSubstitutionModelCmd: computed,
-      numSites: computed,
       status: computed,
       modelExtra: computed,
       modelTestCanRun: computed,
@@ -236,10 +235,6 @@ class Alignment extends InputFile<AlignmentOwner> {
 
   get ngSubstitutionModelCmd(): string {
     return `${this.substitutionModel.cmdValue}${this.ngStationaryFrequencies.cmdValue}${this.ngInvariantSites.cmdValue}${this.ngRateHeterogeneity.cmdValue}${this.ngAscertainmentBias.cmdValue}`;
-  }
-
-  get numSites(): number {
-    return this.length;
   }
 
   get status(): string {
