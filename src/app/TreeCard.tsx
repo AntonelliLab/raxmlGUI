@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,8 +13,6 @@ import type { SxProps, Theme } from '@mui/material/styles';
 
 interface CardTree {
   name: string;
-  // The store Tree has no loading flag, so this always reads undefined.
-  loading?: boolean;
   openFile: () => void;
   openFolder: () => void;
   remove: () => void;
@@ -98,15 +95,6 @@ function TreeCard( { sx, tree }: TreeCardProps ): React.JSX.Element {
         title={tree.name}
         subheader={''}
       />
-      <Box>
-        {tree.loading
-          ? (
-            <Box sx={{ marginLeft: '10px' }}>
-              <CircularProgress variant="indeterminate" />
-            </Box>
-          )
-          : null}
-      </Box>
       <CardContent></CardContent>
     </Card>
   );
