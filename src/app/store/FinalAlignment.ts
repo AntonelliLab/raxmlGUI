@@ -15,8 +15,6 @@ interface FinalAlignmentPart {
   length: number;
   hasInvariantSites: boolean;
   dataType?: DataType;
-  // Alignment defines no modelFlagName, so this reads undefined.
-  modelFlagName?: string;
   // Read by FinalPartition, which this file hands the run to.
   partition: {
     isDefault: boolean;
@@ -52,7 +50,6 @@ class FinalAlignment {
       length: computed,
       hasInvariantSites: computed,
       dataType: computed,
-      modelFlagName: computed,
       partitionFilePath: computed,
       partitionFileContent: computed,
       openFile: action,
@@ -154,18 +151,6 @@ class FinalAlignment {
     const { alignments } = this.run;
     const dataTypes = alignments.map( ( { dataType } ) => dataType );
     return getFinalDataType( dataTypes );
-  }
-
-  get modelFlagName(): string | undefined {
-    const {numAlignments} = this;
-    if ( numAlignments === 0 ) {
-      return 'none';
-    }
-    const first = this.run.alignments[0].modelFlagName;
-    if ( numAlignments === 1 ) {
-      return first;
-    }
-    return first;
   }
 
   get partitionFilePath(): string {
