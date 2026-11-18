@@ -241,9 +241,11 @@ function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
                       marginLeft: '10px',
                       minWidth: '150px',
                     }}
-                    // @ts-expect-error modelExtra has no notAvailable, hoverInfo or error; OptionSelect reads them as undefined.
                     option={{
                       ...alignment.modelExtra,
+                      notAvailable: false,
+                      hoverInfo: '',
+                      error: null,
                       setValue: alignment.modelExtra.onChange,
                       title: alignment.modelExtra.label,
                       options: alignment.modelExtra.options.map( ( model ) => ( {
