@@ -9,11 +9,11 @@ import TextField from '@mui/material/TextField';
 
 export interface OptionSelectChoice {
   value: string | number;
-  title: string;
+  title: string | number;
 }
 
 export interface OptionSelectOptionLike {
-  notAvailable: boolean;
+  notAvailable?: boolean;
   title: string;
   hoverInfo: string;
   options: readonly OptionSelectChoice[];

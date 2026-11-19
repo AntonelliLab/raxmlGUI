@@ -22,13 +22,29 @@ type ProcessExit =
   | NodeJS.Signals
   | null;
 
-interface ModelSelectionPayload {
+export interface ModelSelectionPayload {
   id: string;
   filePath: string;
   outputDir: string;
   dataType: string;
   numThreads: number;
   binaryName: string;
+}
+
+export interface ModelSelectionResult {
+  raxml: string;
+  extraFlag: string | undefined;
+  raxmlNG: string;
+}
+
+export interface ModelSelectionSuccessPayload {
+  id: string;
+  result: ModelSelectionResult;
+}
+
+export interface ModelSelectionFailurePayload {
+  id: string;
+  error: unknown;
 }
 
 export async function runModelSelection(
@@ -41,7 +57,7 @@ export async function runModelSelection(
     if ( !stillRunning( id, token ) ) {
       return;
     }
-    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } );
+    send( event, ipc.ALIGNMENT_MODEL_SELECTION_FAILURE, { id, error } satisfies ModelSelectionFailurePayload );
   };
   const { name } = parsePath( filePath );
   const outputPath = path.join( outputDir, `RAxML_GUI_ModelTest_${name}` );
@@ -50,7 +66,7 @@ export async function runModelSelection(
     await fs.unlink( `${outputPath}.ckp` );
   }
   catch ( _err: unknown ) { }
-  const args = [];
+  const args: string[] = [];
   if ( dataType === 'nucleotide' ) {
     args.push( '-d', 'nt' );
   }
@@ -64,7 +80,7 @@ export async function runModelSelection(
   // modeltest throws errors if the output file already exists
   args.push( '--force' );
   // Number of processors
-  args.push( '-p', numThreads );
+  args.push( '-p', String( numThreads ) );
   console.log( `Alignment '${id}': Run modeltest with args ${args}...` );
   const stdOuts: string[] = [];
   const onStdOut = ( content: string ): void => {
@@ -109,7 +125,7 @@ export async function runModelSelection(
         extraFlag,
         raxmlNG: modelRaxmlNG,
       },
-    } );
+    } satisfies ModelSelectionSuccessPayload );
   }
   catch ( err: unknown ) {
     console.error( `Couldn't parse best models from modeltest-ng output:`, err );

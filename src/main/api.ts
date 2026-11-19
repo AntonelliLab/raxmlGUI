@@ -54,6 +54,12 @@ process.on( 'uncaughtException', ( error: Error ) => {
 process.on( 'unhandledRejection', ( error: unknown ) => {
   handleError( 'Unhandled Promise Rejection', error );
 } );
+export interface ExampleFilesPayload {
+  fasta: string[];
+  phylip: string[];
+  dir: string;
+  outdir: string;
+}
 const exec = util.promisify( childProcess.exec );
 ipcMain.on( ipc.HOST, ( event: IpcMainEvent ) => {
   const cpu = os.cpus()[0];
@@ -165,12 +171,7 @@ ipcMain.handle( ipc.ALIGNMENT_SELECT, ( _event: IpcMainInvokeEvent, _runId: numb
 ipcMain.handle( ipc.ASTRAL_FILE_SELECT, ( _event: IpcMainInvokeEvent, _runId: number ) => {
   return selectAstralFile( ( options: OpenDialogOptions ) => dialog.showOpenDialog( options ) );
 } );
-ipcMain.handle( ipc.EXAMPLE_FILES, async (): Promise<{
-  fasta: string[];
-  phylip: string[];
-  dir: string;
-  outdir: string;
-}> => {
+ipcMain.handle( ipc.EXAMPLE_FILES, async (): Promise<ExampleFilesPayload> => {
   const staticDir = getStaticDir();
   const dir = path.join( staticDir, 'example-files' );
   const outdir = path.join( staticDir, 'test-results' );

@@ -14,7 +14,7 @@ const { checkFixture } = require('./helpers/fixtures');
 const outputDir = path.join(repoRoot, 'static', 'test-results');
 const modelTestOutput = path.join(outputDir, 'RAxML_GUI_ModelTest_nucleotide');
 
-// Same choice as src/app/store/Run.js
+// Same choice as src/app/store/Run.ts
 const binary =
   process.platform === 'win32'
     ? 'modeltest-ng.exe'
