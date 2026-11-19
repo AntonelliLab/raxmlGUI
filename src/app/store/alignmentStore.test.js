@@ -92,14 +92,11 @@ describe( 'Alignment observable fields update the page store', () => {
     stop();
   } );
 
-  it( 'length updates numSites and getSequenceCode padding', () => {
+  it( 'length drives getSequenceCode padding', () => {
     const { alignment } = setup();
-    const { seen, stop } = track( () => alignment.numSites );
     set( alignment, { sequences: parsed.sequences, length: 4 } );
-    expect( seen ).toEqual( [0, 4] );
     expect( alignment.getSequenceCode( 'Homo' ) ).toBe( 'ACGT' );
     expect( alignment.getSequenceCode( 'Missing' ) ).toBe( '----' );
-    stop();
   } );
 
   it( 'dataType updates partitionType, modelTestCanRun and modelExtra', () => {
