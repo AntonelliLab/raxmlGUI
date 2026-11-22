@@ -1,6 +1,6 @@
 const babelJest = require( 'babel-jest' );
 
-// Plugins match the page build. preset-env and preset-typescript
+// Define-semantics class fields and the automatic JSX runtime, as the page build emits. preset-env and preset-typescript
 // are what Jest needs to load the page's ESM and .tsx imports.
 module.exports = babelJest.default.createTransformer( {
   babelrc: false,

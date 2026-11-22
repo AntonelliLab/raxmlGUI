@@ -3,12 +3,12 @@ import { serializeError } from 'serialize-error';
 import type { ErrorObject } from 'serialize-error';
 import * as ipc from '../constants/ipc';
 
-interface CheckOutputArgs {
+export interface CheckOutputArgs {
   outputDir: string;
   outputName: string;
 }
 
-interface CheckOutputResult {
+export interface CheckOutputResult {
   outputDir: string;
   outputName: string;
   ok: boolean;

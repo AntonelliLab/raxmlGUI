@@ -1,11 +1,21 @@
 import path from 'path';
 
-interface AlignmentSequence {
+import type { DataType } from '../common/typecheckAlignment';
+
+export interface AlignmentSequence {
   taxon: string;
+  code: string;
 }
 
-interface Alignment {
+// Optional fields: the parsers and typecheck add them, io.parseAlignment does not declare them.
+export interface Alignment {
   sequences: AlignmentSequence[];
+  length: number;
+  numSequences?: number;
+  fileFormat?: string;
+  dataType?: DataType;
+  hasInvariantSites?: boolean;
+  typecheckingComplete?: boolean;
 }
 
 interface AlignmentParseTools {
@@ -15,7 +25,7 @@ interface AlignmentParseTools {
   write: ( filePath: string, alignment: Alignment ) => Promise<void>;
 }
 
-interface AlignmentChange {
+export interface AlignmentChange {
   newFilePath: string;
   format: string | undefined;
   converted: boolean | undefined;
@@ -23,7 +33,7 @@ interface AlignmentChange {
   modificationMessages: string[];
 }
 
-interface AlignmentParseResult {
+export interface AlignmentParseResult {
   alignment: Alignment;
   change: AlignmentChange | null;
 }

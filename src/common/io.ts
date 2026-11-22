@@ -13,6 +13,7 @@ interface AlignmentSequence {
 
 interface Alignment {
   sequences: AlignmentSequence[];
+  length: number;
 }
 
 export const parseAlignment = async ( filePath: string ): Promise<Alignment> => {

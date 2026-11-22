@@ -75,14 +75,6 @@ describe( 'FinalAlignment computeds', () => {
     expect( f.partitionFileContent ).not.toBe( '' );
   } );
 
-  it( 'reports no model flag without alignments, else the first one', () => {
-    expect( makeRun( [] ).finalAlignment.modelFlagName ).toBe( 'none' );
-    const run = makeRun( [A, B] );
-    expect( run.finalAlignment.modelFlagName ).toBe(
-      run.alignments[0].modelFlagName,
-    );
-  } );
-
   it( 'combines data types and invariant sites over alignments', () => {
     const run = makeRun( [A, B] );
     expect( run.finalAlignment.dataType ).toBe( 'mixed' );

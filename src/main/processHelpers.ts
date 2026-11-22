@@ -24,6 +24,11 @@ type ProcessExit =
   | NodeJS.Signals
   | null;
 
+export interface RunOutputPayload {
+  id: TrackedId;
+  content: string;
+}
+
 interface RunProcessHooks {
   onStdOut?: ( content: string ) => void;
   onStdErr?: ( content: string ) => void;

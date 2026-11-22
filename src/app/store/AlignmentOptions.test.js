@@ -185,20 +185,20 @@ describe( 'multistate number', () => {
 
   it( 'has an error for a missing value', () => {
     const { alignment } = setup();
-    expect( alignment.multistateNumber.error ).toBe( true );
+    expect( alignment.multistateNumber.haveError ).toBe( true );
   } );
 
   it( 'has an error for a non-integer value', () => {
     const { alignment } = setup();
     alignment.multistateNumber.setValue( '2.5' );
-    expect( alignment.multistateNumber.error ).toBe( true );
+    expect( alignment.multistateNumber.haveError ).toBe( true );
     alignment.multistateNumber.setValue( 'abc' );
-    expect( alignment.multistateNumber.error ).toBe( true );
+    expect( alignment.multistateNumber.haveError ).toBe( true );
   } );
 
   it( 'has no error for a valid value and follows value changes', () => {
     const { alignment } = setup();
-    const { seen, stop } = watch( () => alignment.multistateNumber.error );
+    const { seen, stop } = watch( () => alignment.multistateNumber.haveError );
     alignment.multistateNumber.setValue( '4' );
     stop();
     expect( seen ).toEqual( [true, false] );
