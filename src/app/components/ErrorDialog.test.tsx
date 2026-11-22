@@ -1,12 +1,14 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
+import type { RendererBridge } from '../../common/rendererBridge';
+import type RunList from '../store/RunList';
+import { installBridge } from '../../test/setup';
 import ErrorDialog from './ErrorDialog';
 
 it( 'the reload action reloads the window', () => {
   const reload = vi.fn();
-  window.rendererBridge = { reload };
+  installBridge( { reload } );
   const div = document.createElement( 'div' );
   document.body.appendChild( div );
   const root = createRoot( div );
@@ -21,7 +23,7 @@ it( 'the reload action reloads the window', () => {
     );
   } );
 
-  const button = [...document.body.querySelectorAll( 'button' )]
+  const button = Array.from( document.body.querySelectorAll( 'button' ) )
     .find( ( item ) => item.textContent === 'Ignore and reload' );
   act( () => {
     button.click();
@@ -35,7 +37,7 @@ it( 'the reload action reloads the window', () => {
   div.remove();
 } );
 
-function renderDialog( error ) {
+function renderDialog( error: Error ) {
   const div = document.createElement( 'div' );
   document.body.appendChild( div );
   const root = createRoot( div );
@@ -51,15 +53,15 @@ function renderDialog( error ) {
   return {
     root,
     div,
-    button( label ) {
-      return [...document.body.querySelectorAll( 'button, a' )]
+    button( label: string ) {
+      return Array.from( document.body.querySelectorAll<HTMLElement>( 'button, a' ) )
         .find( ( item ) => item.textContent === label );
     },
   };
 }
 
 it( 'builds the GitHub issue body, then opens it with debug info', async () => {
-  const order = [];
+  const order: string[] = [];
   const info = `raxmlGUI 2.0.18
 Electron 45.2.3
 darwin 25.6.0
@@ -69,15 +71,15 @@ Locale: en-US`;
       order.push( 'body' );
       return { command: 'raxml -s primates.fasta', stdout: '' };
     },
-  };
+  } as unknown as RunList;
   const debugInfo = vi.fn( async () => {
     order.push( 'debug' );
     return info;
   } );
-  const openExternal = vi.fn( async () => {
+  const openExternal = vi.fn<RendererBridge['openExternal']>( async () => {
     order.push( 'open' );
   } );
-  window.rendererBridge = { debugInfo, openExternal };
+  installBridge( { debugInfo, openExternal } );
   const error = new Error( 'boom' );
   const view = renderDialog( error );
   // Mailto builds its href while painting and also reads the store report.
@@ -106,7 +108,6 @@ Locale: en-US`;
 } );
 
 it( 'the mailto report stays an href', () => {
-  window.rendererBridge = {};
   const view = renderDialog( new Error( 'boom' ) );
   const link = view.button( 'Report issue on mail' );
 

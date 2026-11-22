@@ -1,4 +1,3 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';

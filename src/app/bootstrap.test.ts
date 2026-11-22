@@ -1,7 +1,7 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
+import { installBridge } from '../test/setup';
 
-async function loadBootstrap( nodeEnv ) {
+async function loadBootstrap( nodeEnv: string ) {
   const previousEnv = process.env.NODE_ENV;
   const previousE2E = process.env.RAXMLGUI_E2E;
   process.env.NODE_ENV = nodeEnv;
@@ -29,10 +29,10 @@ it( 'the dev bootstrap loads the example files', async () => {
     dir: '/examples',
     outdir: '/out',
   } ) );
-  window.rendererBridge = {
+  installBridge( {
     getExampleFiles,
     parseAlignment: () => new Promise( () => {} ),
-  };
+  } );
 
   const store = await loadBootstrap( 'development' );
 
@@ -46,7 +46,7 @@ it( 'the dev bootstrap loads the example files', async () => {
 
 it( 'a production load does not ask for the example files', async () => {
   const getExampleFiles = vi.fn();
-  window.rendererBridge = { getExampleFiles };
+  installBridge( { getExampleFiles } );
 
   await loadBootstrap( 'production' );
 
