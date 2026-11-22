@@ -1,12 +1,14 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import Run from './Run';
+import { installBridge } from '../../test/setup';
+
+type RunParent = ConstructorParameters<typeof Run>[0];
 
 it( 'the partition picker uses the chosen file', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( {} as RunParent, 7 );
   const selectPartitionFile = vi.fn( async () => '/data/genes.part' );
   const readFile = vi.fn( async () => 'DNA, gene = 1-100\n' );
-  window.rendererBridge = { selectPartitionFile, readFile };
+  installBridge( { selectPartitionFile, readFile } );
 
   await run.loadPartitionFile();
 
@@ -16,12 +18,12 @@ it( 'the partition picker uses the chosen file', async () => {
 } );
 
 it( 'cancel leaves the partition unchanged', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( {} as RunParent, 7 );
   run.partitionFile = '/data/already.part';
   run.partitionFileContent = 'kept';
-  window.rendererBridge = {
+  installBridge( {
     selectPartitionFile: vi.fn( async () => null ),
-  };
+  } );
 
   await run.loadPartitionFile();
 
@@ -31,14 +33,14 @@ it( 'cancel leaves the partition unchanged', async () => {
 } );
 
 it( 'a dialog failure fails the partition choice', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( {} as RunParent, 7 );
   run.partitionFile = '/data/already.part';
   run.partitionFileContent = 'kept';
-  window.rendererBridge = {
+  installBridge( {
     selectPartitionFile: async () => {
       throw new Error( 'dialog failed' );
     },
-  };
+  } );
 
   await expect( run.loadPartitionFile() ).rejects.toThrow( 'dialog failed' );
   expect( run.partitionFile ).toBe( '/data/already.part' );
