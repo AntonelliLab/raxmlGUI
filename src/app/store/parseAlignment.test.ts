@@ -1,8 +1,11 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
+import type { AlignmentParseResult } from '../../main/parseAlignment';
+import type { RendererBridge } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 
-const alignment = {
+const alignment: AlignmentParseResult['alignment'] = {
   sequences: [
     { taxon: 'Homo', code: 'ACGT' },
     { taxon: 'Mus', code: 'ACGA' },
@@ -10,20 +13,20 @@ const alignment = {
   fileFormat: 'fasta',
   numSequences: 2,
   length: 4,
-  dataType: 'dna',
+  dataType: 'nucleotide',
   hasInvariantSites: true,
   typecheckingComplete: true,
 };
 
-function add( parseAlignment ) {
-  const run = new Run( {}, 7 );
-  let pending;
-  window.rendererBridge = {
+function add( parseAlignment: RendererBridge['parseAlignment'] ) {
+  const run = new Run( {} as Run['parent'], 7 );
+  let pending!: Promise<AlignmentParseResult>;
+  installBridge( {
     parseAlignment: ( ...args ) => {
       pending = parseAlignment( ...args );
       return pending;
     },
-  };
+  } );
   run.addAlignments( [ { path: '/data/primates.fasta' } ] );
   return { run, pending };
 }
@@ -43,7 +46,7 @@ it( 'the alignment load keeps the path when parsing changes nothing', async () =
   expect( loaded.fileFormat ).toBe( 'fasta' );
   expect( loaded.numSequences ).toBe( 2 );
   expect( loaded.length ).toBe( 4 );
-  expect( loaded.dataType ).toBe( 'dna' );
+  expect( loaded.dataType ).toBe( 'nucleotide' );
   expect( loaded.hasInvariantSites ).toBe( true );
   expect( loaded.typecheckingComplete ).toBe( true );
   expect( loaded.parsingComplete ).toBe( true );

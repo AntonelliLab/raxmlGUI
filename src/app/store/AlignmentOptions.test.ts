@@ -1,16 +1,17 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
 import * as raxmlNgSettings from '../../settings/raxmlng';
+import { installBridge } from '../../test/setup';
 
 beforeEach( () => {
-  window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
+  installBridge( { parseAlignment: () => new Promise( () => {} ) } );
 } );
 
 function setup() {
-  const run = new Run( { onError() {} }, 1 );
+  const parent: Partial<Run['parent']> = { onError() {} };
+  const run = new Run( parent as Run['parent'], 1 );
   run.addAlignments( [{ path: '/data/a.fasta' }] );
   const alignment = run.alignments[0];
   runInAction( () => {
@@ -20,7 +21,7 @@ function setup() {
   return { run, alignment };
 }
 
-function useOtherBinary( run ) {
+function useOtherBinary( run: Run ) {
   runInAction( () => {
     run.binary.value = run.binary.options.find(
       ( o ) => !o.value.includes( 'raxml-ng' ),
@@ -29,8 +30,8 @@ function useOtherBinary( run ) {
 }
 
 // Records every value a computed takes while the store changes.
-function watch( read ) {
-  const seen = [];
+function watch<T>( read: () => T ) {
+  const seen: T[] = [];
   const stop = autorun( () => seen.push( read() ) );
   return { seen, stop };
 }
@@ -97,7 +98,8 @@ describe( 'substitution model', () => {
 } );
 
 describe( 'extra model parameters', () => {
-  const extras = [
+  type ExtraKey = 'ngStationaryFrequencies' | 'ngInvariantSites' | 'ngRateHeterogeneity';
+  const extras: [ExtraKey, string, string][] = [
     ['ngStationaryFrequencies', 'Stationary frequencies', '+F'],
     ['ngInvariantSites', 'Proportion of invariant sites', '+I'],
     ['ngRateHeterogeneity', 'Rate heterogeneity', '+G'],

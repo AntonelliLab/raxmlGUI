@@ -1,16 +1,28 @@
-// @ts-nocheck — the test is not typed yet.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
+import type { AlignmentSequence } from '../../main/parseAlignment';
+import type { DataType } from '../../common/typecheckAlignment';
+import type { RendererBridge } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 
+interface AlignmentSpec {
+  path: string;
+  length: number;
+  sequences: AlignmentSequence[];
+  dataType?: DataType;
+  hasInvariantSites?: boolean;
+}
+
 // The final alignment reads its run's alignments; build a real run with
-// sequences set directly, as writeConcatenatedAlignment.test.js does.
-function makeRun( alignments ) {
-  const run = new Run( {}, 7 );
+// sequences set directly, as writeConcatenatedAlignment.test.ts does.
+function makeRun( alignments: AlignmentSpec[] ): Run {
+  const run = new Run( {} as Run['parent'], 7 );
   // outputNameAvailable is a promisedComputed that only settles inside a reaction (outside one each read calls the bridge); pin it.
-  run.outputNameAvailable = { get: () => ( { outputNameUnused: 'out' } ) };
-  window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
+  run.outputNameAvailable = { get: () => ( { outputNameUnused: 'out' } ) } as Run['outputNameAvailable'];
+  installBridge( { parseAlignment: () => new Promise( () => {} ) } );
   run.addAlignments( alignments.map( ( { path } ) => ( { path } ) ) );
   runInAction( () => {
     run.outputDir = '/out';
@@ -25,7 +37,7 @@ function makeRun( alignments ) {
   return run;
 }
 
-const A = {
+const A: AlignmentSpec = {
   path: '/data/a.fasta',
   length: 2,
   sequences: [
@@ -33,7 +45,7 @@ const A = {
     { taxon: 'Mus', code: 'GC' },
   ],
 };
-const B = {
+const B: AlignmentSpec = {
   path: '/data/b.fasta',
   length: 3,
   dataType: 'protein',
@@ -43,8 +55,8 @@ const B = {
   ],
 };
 
-function track( fn ) {
-  const seen = [];
+function track<T>( fn: () => T ) {
+  const seen: T[] = [];
   const stop = autorun( () => seen.push( fn() ) );
   return { seen, stop };
 }
@@ -115,11 +127,11 @@ describe( 'FinalAlignment observables', () => {
 describe( 'FinalAlignment actions', () => {
   function stubBridge() {
     const bridge = {
-      writeFile: vi.fn( async () => {} ),
-      openPath: vi.fn( async () => {} ),
+      writeFile: vi.fn<RendererBridge['writeFile']>( async () => {} ),
+      openPath: vi.fn( async () => '' ),
       showItemInFolder: vi.fn( async () => {} ),
     };
-    window.rendererBridge = bridge;
+    installBridge( bridge );
     return bridge;
   }
 
