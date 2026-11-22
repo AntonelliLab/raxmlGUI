@@ -1,31 +1,24 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 
+import { installBridge } from '../../test/setup';
+import { track } from '../../test/storeBridge';
+
+import type Alignment from './Alignment';
+import type Run from './Run';
 import RunList from './RunList';
-import { runEvents } from './StoreBase';
 
-// A run subscribes to bridge events when it is created.
+// A run subscribes to bridge events when it is created; the test setup stubs them.
 beforeEach( () => {
-  const bridge = { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = () => () => {};
-  }
-  window.rendererBridge = bridge;
+  installBridge( { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) } );
 } );
 
 const newRun = () => new RunList().activeRun;
 
-const setAlignments = ( run, taxons ) => runInAction( () => {
-  run.alignments = [{ taxons }];
+const setAlignments = ( run: Run, taxons: string[] ) => runInAction( () => {
+  // The out-group reads only taxons from an alignment, so the stand-in is partial.
+  run.alignments = [{ taxons } as Partial<Alignment> as Alignment];
 } );
-
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
 
 describe( 'OutGroup', () => {
   it( 'starts at none', () => {

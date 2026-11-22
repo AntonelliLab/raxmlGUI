@@ -1,35 +1,43 @@
-// @ts-nocheck — the test is not typed yet.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
 import { autorun, runInAction } from 'mobx';
+
+import type { RendererBridge } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
 
 import Run from './Run';
 
-const files = [
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
+
+type TreeKey = 'tree' | 'backboneConstraint' | 'multifurcatingConstraint';
+
+const files: [TreeKey, string][] = [
   [ 'tree', '/data/start.nwk' ],
   [ 'backboneConstraint', '/data/backbone.tre' ],
   [ 'multifurcatingConstraint', '/data/multi.tre' ],
 ];
 
-let showItemInFolder;
-let openPath;
-let selectTree;
-let run;
-let disposers;
+let showItemInFolder: Mock<RendererBridge['showItemInFolder']>;
+let openPath: Mock<RendererBridge['openPath']>;
+let selectTree: Mock<RendererBridge['selectTree']>;
+let run: Run;
+let disposers: ( () => void )[];
 
 // Records every value an autorun sees, so a test can prove it re-ran.
 // Run.analysis is a computed that builds a new option; observing it keeps the set value.
-function observe( fn ) {
-  const seen = [];
+function observe( fn: () => unknown ) {
+  const seen: unknown[] = [];
   disposers.push( autorun( () => seen.push( fn() ) ) );
   return { seen };
 }
 
 beforeEach( () => {
   showItemInFolder = vi.fn( async () => {} );
-  openPath = vi.fn( async () => {} );
+  openPath = vi.fn( async () => '' );
   selectTree = vi.fn();
-  window.rendererBridge = { showItemInFolder, openPath, selectTree };
-  run = new Run( {}, 3 );
+  installBridge( { showItemInFolder, openPath, selectTree } );
+  run = new Run( {} as Partial<RunParent> as RunParent, 3 );
   disposers = [];
   // The default binary is raxml-ng; these tests use the classic RAxML analyses.
   run.binary.setValue( run.binary.options.find( ( { value } ) => value.includes( 'raxmlHPC' ) ).value );
@@ -128,13 +136,13 @@ describe( 'Tree notAvailable', () => {
 describe.each( [
   [ 'backboneConstraint', 'useBackboneConstraint', 'onBackboneConstraint' ],
   [ 'multifurcatingConstraint', 'useMultifurcatingConstraint', 'onMultifurcatingConstraint' ],
-] )( '%s toggle', ( key, flag, toggle ) => {
+] as [Exclude<TreeKey, 'tree'>, 'useBackboneConstraint' | 'useMultifurcatingConstraint', 'onBackboneConstraint' | 'onMultifurcatingConstraint'][] )( '%s toggle', ( key, flag, toggle ) => {
   const option = () => run[key];
 
   it( 'notAvailable follows the toggle', () => {
     const { seen } = observe( () => option().notAvailable );
-    run[toggle]();
-    run[toggle]();
+    run[toggle]( null, null );
+    run[toggle]( null, null );
     expect( seen ).toEqual( [ true, false, true ] );
   } );
 
@@ -149,11 +157,11 @@ describe.each( [
 
   it( 'isSet needs the toggle and a file', () => {
     const { seen } = observe( () => option().isSet );
-    run[toggle]();
+    run[toggle]( null, null );
     option().setFilePath( '/data/c.tre' );
-    run[toggle]();
+    run[toggle]( null, null );
     option().remove();
-    run[toggle]();
+    run[toggle]( null, null );
     // the computed only notifies when its value changes
     expect( seen ).toEqual( [ false, true, false ] );
   } );

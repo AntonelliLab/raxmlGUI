@@ -1,14 +1,19 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
+const parent = {} as Partial<RunParent> as RunParent;
+
 it( 'the ASTRAL file picker adds the chosen file', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( parent, 7 );
   const selectAstralFile = vi.fn( async () => ( {
     path: '/data/trees.tre',
     name: 'trees.tre',
   } ) );
-  window.rendererBridge = { selectAstralFile };
+  installBridge( { selectAstralFile } );
 
   await run.loadAstralTree();
 
@@ -17,26 +22,25 @@ it( 'the ASTRAL file picker adds the chosen file', async () => {
 } );
 
 it( 'cancel leaves the ASTRAL file unchanged', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( parent, 7 );
   run.addAstralFiles( { path: '/data/already.tre' } );
-  window.rendererBridge = {
-    selectAstralFile: vi.fn( async () => null ),
-  };
+  const selectAstralFile = vi.fn( async () => null );
+  installBridge( { selectAstralFile } );
 
   await run.loadAstralTree();
 
-  expect( window.rendererBridge.selectAstralFile ).toHaveBeenCalledWith( 7 );
+  expect( selectAstralFile ).toHaveBeenCalledWith( 7 );
   expect( run.astralTree.path ).toBe( '/data/already.tre' );
 } );
 
 it( 'a dialog failure fails the ASTRAL file choice', async () => {
-  const run = new Run( {}, 7 );
+  const run = new Run( parent, 7 );
   run.addAstralFiles( { path: '/data/already.tre' } );
-  window.rendererBridge = {
+  installBridge( {
     selectAstralFile: async () => {
       throw new Error( 'dialog failed' );
     },
-  };
+  } );
 
   await expect( run.loadAstralTree() ).rejects.toThrow( 'dialog failed' );
   expect( run.astralTree.path ).toBe( '/data/already.tre' );
