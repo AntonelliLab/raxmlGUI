@@ -1,18 +1,18 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import Page from './index';
 import store from './store';
+import { installBridge } from '../test/setup';
 
 it( 'the page shows an unhandled error title and error', () => {
-  let hear;
-  window.rendererBridge = {
+  let hear: ( payload: unknown ) => void;
+  installBridge( {
     onUnhandledError( listener ) {
       hear = listener;
       return () => {};
     },
-  };
+  } );
   store.listen();
 
   const div = document.createElement( 'div' );

@@ -1,30 +1,38 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 
 import Alignment from './Alignment';
 import Run from './Run';
+import type { DataType } from '../../common/typecheckAlignment';
 import {
   CODON_NONE,
   CODON_SPECIFIC,
   CODON_THIRD,
   CodonModels,
 } from './PartOptions';
+import { installBridge } from '../../test/setup';
+import { track } from '../../test/storeBridge';
 
 // The alignment subscribes to bridge events and parses its file on creation.
 beforeEach( () => {
-  window.rendererBridge = {
+  installBridge( {
     parseAlignment: () => new Promise( () => {} ),
     onModelSelectionSuccess: () => () => {},
     onModelSelectionFailure: () => () => {},
     onRunStdout: () => () => {},
     onRunStderr: () => () => {},
-  };
+  } );
 } );
 
+type RunParent = ConstructorParameters<typeof Run>[0];
+type Part = Alignment['partition']['partToAdd'];
+type PartValues = Part['values'];
+
 // The run defaults to raxml-ng, whose partition type is the model command; classic raxml uses the data type.
-function makeAlignment( { dataType = 'dna', length = 100, ng = false } = {} ) {
-  const run = new Run( {}, 1 );
+function makeAlignment(
+  { dataType = 'dna', length = 100, ng = false }: { dataType?: string; length?: number; ng?: boolean } = {},
+): Alignment {
+  const run = new Run( {} as RunParent, 1 );
   const alignment = new Alignment( run, '/data/a.fasta' );
   runInAction( () => {
     if ( !ng ) {
@@ -32,24 +40,18 @@ function makeAlignment( { dataType = 'dna', length = 100, ng = false } = {} ) {
         .map( ( o ) => o.value )
         .find( ( v ) => /raxml/i.test( v ) && !v.includes( 'raxml-ng' ) );
     }
-    alignment.dataType = dataType;
+    // 'dna' is the dead case of #269; the store still maps it to DNA.
+    alignment.dataType = dataType as DataType;
     alignment.length = length;
   } );
   return alignment;
 }
 
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
-
-const part = ( alignment, values ) => {
+const part = ( alignment: Alignment, values: Partial<PartValues> ): Part => {
   const { partition } = alignment;
   runInAction( () => {
     Object.entries( values ).forEach( ( [key, value] ) => {
-      partition.partToAdd[key].value = value;
+      ( partition.partToAdd[key as keyof PartValues] as { value: unknown } ).value = value;
     } );
   } );
   return partition.partToAdd;
@@ -90,7 +92,7 @@ describe( 'Part', () => {
     const alignment = makeAlignment( { ng: true } );
     const { seen, stop } = track( () => alignment.partition.partToAdd.typePadded );
     runInAction( () => {
-      alignment.ngInvariantSites.value = true;
+      alignment.ngInvariantSites.value = '+I';
     } );
     expect( seen[0] ).toBe( ',           ' );
     expect( seen ).toHaveLength( 2 );
@@ -245,7 +247,7 @@ describe( 'part options', () => {
     } );
     expect( seen.seen[1] ).toEqual( [['DNA', 'BIN', 'MULTI', 'protein'], false] );
     runInAction( () => {
-      alignment.dataType = '';
+      alignment.dataType = '' as DataType;
     } );
     expect( type.options.map( ( o ) => o.title ) ).toEqual( [
       'DNA',
@@ -259,8 +261,10 @@ describe( 'part options', () => {
 
   it( 'PartType accepts only strings', () => {
     const { type } = makeAlignment().partition.partToAdd;
+    // @ts-expect-error A number on purpose: the schema casts it to a string.
     type.setValue( 5 );
     expect( type.value ).toBe( '5' );
+    // @ts-expect-error An object on purpose: the schema rejects it.
     type.setValue( {} );
     expect( type.value ).toBe( '5' );
   } );
@@ -293,8 +297,10 @@ describe( 'part options', () => {
     const { start } = makeAlignment().partition.partToAdd;
     expect( start.notAvailable ).toBe( false );
     expect( start.disabled ).toBe( true );
+    // @ts-expect-error A numeric string on purpose: the schema casts it to a number.
     start.setValue( '7' );
     expect( start.value ).toBe( 7 );
+    // @ts-expect-error A non-numeric string on purpose: an invalid value is stored as given.
     start.setValue( 'abc' );
     expect( start.value ).toBe( 'abc' );
   } );
@@ -358,10 +364,10 @@ describe( 'part options', () => {
 } );
 
 describe( 'Partition', () => {
-  const add = ( partition, values ) => {
+  const add = ( partition: Alignment['partition'], values: Partial<PartValues> ): void => {
     runInAction( () => {
       Object.entries( values ).forEach( ( [key, value] ) => {
-        partition.partToAdd[key].value = value;
+        ( partition.partToAdd[key as keyof PartValues] as { value: unknown } ).value = value;
       } );
     } );
     partition.addPart();

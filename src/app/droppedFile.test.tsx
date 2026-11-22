@@ -1,20 +1,21 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import Input from './Input';
+import type { InputProps } from './Input';
+import { installBridge } from '../test/setup';
 
 const openTree = { notAvailable: false, haveFile: false };
 const closedTree = { notAvailable: true, haveFile: false };
 
-function baseRun( extra ) {
+function baseRun( extra: object ) {
   return {
     hasAstralTree: false,
     inputIsAlignment: false,
     inputIsTree: false,
-    alignments: [],
+    alignments: [] as object[],
     canLoadAlignment: false,
     haveAlignments: false,
     canLoadPartitionFile: false,
@@ -36,25 +37,25 @@ function baseRun( extra ) {
   };
 }
 
-function mountInput( run ) {
+function mountInput( run: object ) {
   const div = document.createElement( 'div' );
   const root = createRoot( div );
   // createRoot().render paints on a later tick. act flushes that paint.
   act( () => {
     root.render(
       <ThemeProvider theme={theme.light}>
-        <Input run={run} />
+        <Input run={run as InputProps['run']} />
       </ThemeProvider>,
     );
   } );
   return { div, root };
 }
 
-function button( div, text ) {
-  return [...div.querySelectorAll( 'button' )].find( ( node ) => node.textContent.trim() === text );
+function button( div: HTMLElement, text: string ) {
+  return Array.from( div.querySelectorAll( 'button' ) ).find( ( node ) => node.textContent.trim() === text );
 }
 
-async function drop( target, name ) {
+async function drop( target: Element, name: string ) {
   const input = target.closest( '[role="presentation"]' ).querySelector( 'input[type="file"]' );
   const file = new File( ['x'], name );
   Object.defineProperty( input, 'files', {
@@ -67,7 +68,7 @@ async function drop( target, name ) {
 }
 
 it( 'each drop target keeps the dropped file path', async () => {
-  window.rendererBridge = {
+  installBridge( {
     getPathForFile( file ) {
       return {
         'primates.fasta': '/tmp/drop-1',
@@ -80,7 +81,7 @@ it( 'each drop target keeps the dropped file path', async () => {
         'genes.part': '/tmp/drop-8',
       }[file.name];
     },
-  };
+  } );
 
   const first = baseRun( {
     canLoadAlignment: true,

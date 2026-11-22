@@ -1,4 +1,3 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 import { observable, runInAction, reaction, when } from 'mobx';
 import { promisedComputed } from './promisedComputed';
@@ -12,14 +11,14 @@ it( 'keeps the last value while pending and throws a rejection', async () => {
     }
     return n * 10;
   } );
-  const seen = [];
-  const errors = [];
+  const seen: ( number | string )[] = [];
+  const errors: string[] = [];
   const stop = reaction(
     () => {
       try {
         return pc.get();
-      } catch ( e ) {
-        errors.push( e.message );
+      } catch ( e: unknown ) {
+        errors.push( ( e as Error ).message );
         return 'error';
       }
     },

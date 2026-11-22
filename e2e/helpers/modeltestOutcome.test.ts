@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-const { parseModelTestLog } = require('./modeltestOutcome');
-const { compareOutcome, formatReport } = require('./fixtures');
+import { parseModelTestLog } from './modeltestOutcome';
+import { compareOutcome, formatReport } from './fixtures';
 
 const log = `--------------------------------------------------------------------------------
 ModelTest-NG v0.1.7

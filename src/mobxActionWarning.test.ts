@@ -1,4 +1,3 @@
-// @ts-nocheck — the test is not typed yet.
 import { describe, expect, test } from 'vitest';
 import { observable, runInAction, autorun } from 'mobx';
 
