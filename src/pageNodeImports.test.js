@@ -20,7 +20,7 @@ function walk( dir ) {
     const full = path.join( dir, entry.name );
     if ( entry.isDirectory() ) {
       out.push( ...walk( full ) );
-    } else if ( /\.(js|jsx|ts|tsx)$/.test( entry.name ) && !/\.test\.jsx?$/.test( entry.name ) ) {
+    } else if ( /\.(js|jsx|ts|tsx)$/.test( entry.name ) && !/\.test\.[jt]sx?$/.test( entry.name ) ) {
       out.push( full );
     }
   }
