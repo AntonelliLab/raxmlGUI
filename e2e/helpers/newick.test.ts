@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-const {
+import {
   parseNewick,
   getTaxa,
   compareTopologies,
   compareBranchLengths,
-} = require('./newick');
+} from './newick';
 
 describe('newick helpers', () => {
   it('parses branch lengths and lists taxa', () => {

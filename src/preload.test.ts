@@ -1,10 +1,9 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeAll, expect, it } from 'vitest';
 
-const { spawnSync } = require( 'child_process' );
-const fs = require( 'fs' );
-const os = require( 'os' );
-const path = require( 'path' );
+import { spawnSync } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 const root = path.join( __dirname, '..' );
 const configFile = path.join( root, 'electron.vite.config.js' );
