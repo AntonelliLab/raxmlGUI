@@ -1,11 +1,11 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 import * as yup from 'yup';
 
 import Option from './Option';
 
-const positive = () => new Option( null, 2, 'Count', 'desc', 'hover', {
+// Typed unknown so the tests can set strings and numbers on one option.
+const positive = () => new Option<unknown>( null, 2, 'Count', 'desc', 'hover', {
   schema: yup.number().positive(),
 } );
 
@@ -31,12 +31,12 @@ it( 'keeps an invalid value as given and reports its error', () => {
   expect( option.value ).toBe( -1 );
   expect( option.error ).toBeInstanceOf( yup.ValidationError );
   expect( option.haveError ).toBe( true );
-  expect( option.errorMessage ).toBe( option.error.message );
+  expect( option.errorMessage ).toBe( ( option.error as yup.ValidationError ).message );
   expect( option.errorMessage ).not.toBe( '' );
 } );
 
 it( 'ignores an invalid value when only valid changes are allowed', () => {
-  const option = new Option( null, 'a', 'Name', 'desc', 'hover', {
+  const option = new Option<unknown>( null, 'a', 'Name', 'desc', 'hover', {
     schema: yup.string().max( 3 ),
     allowOnlyValidChange: true,
   } );
@@ -47,7 +47,7 @@ it( 'ignores an invalid value when only valid changes are allowed', () => {
 } );
 
 it( 'accepts any value without a schema', () => {
-  const option = new Option( null, 'x', 'Title', 'desc', 'hover' );
+  const option = new Option<unknown>( null, 'x', 'Title', 'desc', 'hover' );
   option.setValue( 42 );
   expect( option.value ).toBe( 42 );
   expect( option.error ).toBeNull();
@@ -65,7 +65,7 @@ it( 'resets to the default value', () => {
 
 it( 'updates computeds and reactions when value changes', () => {
   const option = positive();
-  const seen = [];
+  const seen: boolean[][] = [];
   const dispose = autorun( () => {
     seen.push( [option.isDefault, option.errorMessage === ''] );
   } );

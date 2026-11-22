@@ -1,30 +1,25 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
+
+import type { RendererBridge } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
+import { track } from '../../test/storeBridge';
 
 import AstralTree from './AstralTree';
 import InputFile from './InputFile';
 import StoreBase from './StoreBase';
 
-let bridge;
+let bridge: RendererBridge;
 
 beforeEach( () => {
-  bridge = {
+  bridge = installBridge( {
     getVersion: vi.fn( () => Promise.resolve( '2.0.0' ) ),
-    openPath: vi.fn( () => Promise.resolve() ),
+    openPath: vi.fn( () => Promise.resolve( '' ) ),
     showItemInFolder: vi.fn( () => Promise.resolve() ),
-  };
-  window.rendererBridge = bridge;
+  } );
 } );
 
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
-
-const run = { id: 'run1', removeAstralTree: vi.fn() };
+const run = { id: 1, removeAstralTree: vi.fn() };
 
 describe( 'StoreBase', () => {
   it( 'initialises the version from the renderer bridge', async () => {
@@ -65,7 +60,7 @@ describe( 'StoreBase', () => {
 describe( 'InputFile', () => {
   it( 'derives its parts from the path', () => {
     const file = new InputFile( run, '/data/trees/astral.tre' );
-    expect( file.id ).toBe( 'run1_/data/trees/astral.tre' );
+    expect( file.id ).toBe( '1_/data/trees/astral.tre' );
     expect( file.name ).toBe( 'astral' );
     expect( file.dir ).toBe( '/data/trees' );
     expect( file.base ).toBe( 'astral.tre' );
@@ -79,7 +74,7 @@ describe( 'InputFile', () => {
 
   it( 'every computed updates when the path changes', () => {
     const file = new InputFile( run, '/a/one.tre' );
-    const keys = ['id', 'name', 'dir', 'base', 'filename', 'ok'];
+    const keys = ['id', 'name', 'dir', 'base', 'filename', 'ok'] as const;
     const tracked = Object.fromEntries( keys.map( ( key ) => [key, track( () => file[key] )] ) );
     runInAction( () => {
       file.path = '';
@@ -87,7 +82,7 @@ describe( 'InputFile', () => {
     runInAction( () => {
       file.path = '/b/two.nwk';
     } );
-    expect( tracked.id.seen ).toEqual( ['run1_/a/one.tre', 'run1_', 'run1_/b/two.nwk'] );
+    expect( tracked.id.seen ).toEqual( ['1_/a/one.tre', '1_', '1_/b/two.nwk'] );
     expect( tracked.name.seen ).toEqual( ['one', '', 'two'] );
     expect( tracked.dir.seen ).toEqual( ['/a', '', '/b'] );
     expect( tracked.base.seen ).toEqual( ['one.tre', '', 'two.nwk'] );

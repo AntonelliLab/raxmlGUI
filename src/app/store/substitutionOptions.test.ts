@@ -1,49 +1,42 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
+
+import type { DataType } from '../../common/typecheckAlignment';
+import { installBridge } from '../../test/setup';
+import { track } from '../../test/storeBridge';
 
 import Run from './Run';
 
-// Run's constructor subscribes to bridge events; a no-op stub is enough here.
 beforeEach( () => {
-  window.rendererBridge = new Proxy( {}, {
-    get: ( _, name ) => {
-      if ( name === 'getVersion' ) {
-        return () => Promise.resolve( '2.0.0' );
-      }
-      // A load that never settles keeps the test in control of dataType.
-      return name === 'parseAlignment'
-        ? () => new Promise( () => {} )
-        : () => () => {};
-    },
+  installBridge( {
+    getVersion: () => Promise.resolve( '2.0.0' ),
+    // A load that never settles keeps the test in control of dataType.
+    parseAlignment: () => new Promise( () => {} ),
   } );
 } );
 
-const binaryNamed = ( run, prefix ) => run.binary.options
-  .map( ( o ) => o.value ).find( ( v ) => v.startsWith( prefix ) );
-const ngName = () => binaryNamed( new Run( { onError() {} }, 1 ), 'raxml-ng' );
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
+const parent = { onError() {} } as Partial<RunParent> as RunParent;
+
+const binaryNamed = ( run: Run, prefix: string ) => run.binary.options
+  .map( ( o ) => o.value ).find( ( v: string ) => v.startsWith( prefix ) );
+const ngName = () => binaryNamed( new Run( parent, 1 ), 'raxml-ng' );
 
 // The default binary depends on the host platform, so pin a classic RAxML one.
 function newRun() {
-  const run = new Run( { onError() {} }, 1 );
+  const run = new Run( parent, 1 );
   run.binary.setValue( binaryNamed( run, 'raxmlHPC' ) );
   return run;
 }
 
-function makeRun( dataType = 'nucleotide' ) {
+function makeRun( dataType: DataType = 'nucleotide' ) {
   const run = newRun();
   run.addAlignments( [{ path: '/data/a.fasta' }] );
   runInAction( () => {
     run.alignments[0].dataType = dataType;
   } );
   return run;
-}
-
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
 }
 
 const noAlignmentRun = newRun;
@@ -81,7 +74,7 @@ describe( 'SubstitutionMatrix', () => {
       run.alignments[0].dataType = 'nucleotide';
     } );
     expect( run.substitutionMatrix.notAvailable ).toBe( false );
-    for ( const type of ['binary', 'protein', 'multistate'] ) {
+    for ( const type of ['binary', 'protein', 'multistate'] as DataType[] ) {
       runInAction( () => {
         run.alignments[0].dataType = type;
       } );
@@ -104,7 +97,7 @@ describe( 'SubstitutionMatrix', () => {
       run.substitutionMatrix.setValue( value );
       expect( run.substitutionMatrix.cmdValue ).toBe( cmd );
     }
-    for ( const [type, cmd] of [['binary', 'BIN'], ['protein', 'PROT'], ['multistate', 'MULTI']] ) {
+    for ( const [type, cmd] of [['binary', 'BIN'], ['protein', 'PROT'], ['multistate', 'MULTI']] as [DataType, string][] ) {
       runInAction( () => {
         run.alignments[0].dataType = type;
       } );
