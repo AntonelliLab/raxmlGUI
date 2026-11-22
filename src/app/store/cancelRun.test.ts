@@ -1,15 +1,19 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
+
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
 
 it( 'the cancel control uses cancelRun', () => {
   const cancelRun = vi.fn();
-  window.rendererBridge = { cancelRun };
-  const run = new Run( { onError() {} }, 7 );
+  installBridge( { cancelRun } );
+  const run = new Run( { onError() {} } as Partial<RunParent> as RunParent, 7 );
   run.running = true;
 
   run.cancel();
@@ -21,24 +25,24 @@ it( 'the cancel control uses cancelRun', () => {
 it( 'cancel before the run is tracked does not start it', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-cancel-' ) );
   let holdWrites = true;
-  const waiters = [];
+  const waiters: ( () => void )[] = [];
   const writeFile = vi.fn( () => {
     if ( !holdWrites ) {
       return Promise.resolve();
     }
-    return new Promise( ( resolve ) => {
+    return new Promise<void>( ( resolve ) => {
       waiters.push( resolve );
     } );
   } );
   const startRun = vi.fn( async () => {} );
   const cancelRun = vi.fn();
-  window.rendererBridge = {
+  installBridge( {
     writeFile,
     startRun,
     cancelRun,
     parseAlignment: () => new Promise( () => {} ),
-  };
-  const run = new Run( { onError() {} }, 7 );
+  } );
+  const run = new Run( { onError() {} } as Partial<RunParent> as RunParent, 7 );
   run.setOutputDir( outputDir );
   run.addAlignments( [
     { path: '/data/a.fasta' },

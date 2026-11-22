@@ -1,57 +1,39 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
+
+import type { RendererBridge } from '../../common/rendererBridge';
+import type { CheckOutputResult } from '../../main/checkOutput';
+import type { AlignmentSequence } from '../../main/parseAlignment';
+import { stubBridge, track } from '../../test/storeBridge';
 
 import Run from './Run';
 import { runEvents } from './StoreBase';
 
-let listeners;
-let bridge;
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
 
-function subscribeTo( byName, name ) {
-  return ( listener ) => {
-    ( byName[name] ||= [] ).push( listener );
-    return () => {
-      byName[name] = byName[name].filter( ( l ) => l !== listener );
-    };
-  };
-}
+let bridge: RendererBridge;
+let fire: ReturnType<typeof stubBridge>['fire'];
 
-// The run subscribes to bridge events at construction; keep each listener so a test can fire it.
+// The run subscribes to bridge events at construction; stubBridge keeps each listener so a test can fire it.
 beforeEach( () => {
-  listeners = {};
-  bridge = {
+  ( { bridge, fire } = stubBridge( {
     startRun: vi.fn( async () => {} ),
     startAstral: vi.fn( async () => {} ),
     cancelRun: vi.fn(),
     writeFile: vi.fn( async () => {} ),
-    checkOutput: vi.fn( async () => ( { ok: true, resultFilenames: ['out.tre'] } ) ),
+    checkOutput: vi.fn( async () => ( { ok: true, resultFilenames: ['out.tre'] } as CheckOutputResult ) ),
     parseAlignment: () => new Promise( () => {} ),
-  };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = subscribeTo( listeners, name );
-  }
-  window.rendererBridge = bridge;
+  } ) );
 } );
-
-function fire( name, payload ) {
-  ( listeners[name] || [] ).forEach( ( listener ) => listener( payload ) );
-}
-
-// Records every value a reaction sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
 
 function makeRun( { numSequences = 4 } = {} ) {
   const parent = { onError: vi.fn() };
-  const run = new Run( parent, 7 );
+  const run = new Run( parent as Partial<RunParent> as RunParent, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   run.alignments[0].sequences = Array.from( { length: numSequences }, ( _, i ) => ( {
     taxon: `T${i}`,
-  } ) );
+  } ) ) as AlignmentSequence[];
   run.setOutputDir( '/out' );
   return { run, parent };
 }
@@ -66,7 +48,7 @@ describe( 'start', () => {
 
     expect( run.running ).toBe( true );
     expect( bridge.startRun ).toHaveBeenCalledTimes( 1 );
-    expect( bridge.startRun.mock.calls[0][0] ).toMatchObject( {
+    expect( vi.mocked( bridge.startRun ).mock.calls[0][0] ).toMatchObject( {
       id: 7,
       binaryName: run.binary.value,
       outputDir: '/out',
@@ -102,7 +84,7 @@ describe( 'start', () => {
       ok: false,
       outputNameUnused: 'primates_2',
       resultFilenames: [],
-    } ) );
+    } as CheckOutputResult ) );
     const name = track( () => run.outputName );
     const safe = track( () => run.outputNameSafe );
     await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
@@ -217,7 +199,7 @@ describe( 'finish', () => {
     const { run } = makeRun();
     const files = track( () => run.resultFilenames );
     await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
-    const before = bridge.checkOutput.mock.calls.length;
+    const before = vi.mocked( bridge.checkOutput ).mock.calls.length;
 
     fire( runEvents.onRunFinished, {
       id: 7,
@@ -227,7 +209,7 @@ describe( 'finish', () => {
     } );
     await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 
-    expect( bridge.checkOutput.mock.calls.length ).toBeGreaterThan( before );
+    expect( vi.mocked( bridge.checkOutput ).mock.calls.length ).toBeGreaterThan( before );
     expect( files.seen.at( -1 ) ).toEqual( ['out.tre'] );
     files.stop();
   } );
@@ -291,9 +273,9 @@ describe( 'cancel', () => {
 
   it( 'stops a start that is still writing files from starting the run', async () => {
     const { run } = makeRun();
-    let release;
+    let release: () => void;
     bridge.writeFile = vi.fn(
-      () => new Promise( ( resolve ) => {
+      () => new Promise<void>( ( resolve ) => {
         release = resolve;
       } ),
     );

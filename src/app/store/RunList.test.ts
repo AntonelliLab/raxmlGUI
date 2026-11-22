@@ -1,43 +1,20 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
+
+import type { RendererBridge } from '../../common/rendererBridge';
+import { stubBridge, track } from '../../test/storeBridge';
 
 import AppStore from './AppStore';
 import RunList from './RunList';
 import { runEvents } from './StoreBase';
 
-let listeners;
-let cancelRun;
+let bridge: RendererBridge;
+let fire: ReturnType<typeof stubBridge>['fire'];
 
-// The run list subscribes to bridge events; keep each listener so a test can fire it.
-function stubBridge() {
-  const byName = {};
-  listeners = byName;
-  cancelRun = vi.fn();
-  const bridge = { cancelRun, getVersion: () => Promise.resolve( '2.0.0' ) };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = ( listener ) => {
-      ( byName[name] ||= [] ).push( listener );
-      return () => {
-        byName[name] = byName[name].filter( ( l ) => l !== listener );
-      };
-    };
-  }
-  window.rendererBridge = bridge;
-}
-
-function fire( name, ...args ) {
-  ( listeners[name] || [] ).forEach( ( listener ) => listener( ...args ) );
-}
-
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
-
-beforeEach( () => stubBridge() );
+// The run list subscribes to bridge events; stubBridge keeps each listener so a test can fire it.
+beforeEach( () => {
+  ( { bridge, fire } = stubBridge( { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) } ) );
+} );
 
 describe( 'AppStore', () => {
   it( 'loads the version from the renderer bridge', async () => {
@@ -138,7 +115,7 @@ describe( 'RunList', () => {
     list.addRun();
     const last = list.runs[2];
     list.deleteRun( last );
-    expect( cancelRun ).toHaveBeenCalledWith( 3 );
+    expect( bridge.cancelRun ).toHaveBeenCalledWith( 3 );
     expect( list.runs.map( ( r ) => r.id ) ).toEqual( [1, 2] );
     expect( list.activeIndex ).toBe( 1 );
     expect( list.activeRun.id ).toBe( 2 );
@@ -229,7 +206,7 @@ describe( 'RunList', () => {
     list.onUnhandledError( { title: 'Oops', error } );
     expect( list.errorTitle ).toBe( 'Oops' );
     expect( list.error ).toBe( error );
-    console.log.mockRestore();
+    vi.mocked( console.log ).mockRestore();
   } );
 
   it( 'the constraint toggles flip the active run only', () => {
@@ -263,7 +240,7 @@ describe( 'RunList', () => {
     fire( runEvents.onUnhandledError, { title: 'Main', error } );
     expect( list.errorTitle ).toBe( 'Main' );
     expect( list.error ).toBe( error );
-    console.log.mockRestore();
+    vi.mocked( console.log ).mockRestore();
   } );
 
   it( 'generateReport reports the active run with truncated stdout', () => {

@@ -1,56 +1,66 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import type { RendererBridge } from '../../common/rendererBridge';
+import type { CheckOutputResult } from '../../main/checkOutput';
+import type { AlignmentSequence } from '../../main/parseAlignment';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 import { runEvents } from './StoreBase';
 
-function bridge( extra ) {
-  const listeners = {
+// The run reads only onError from its parent here, so the stand-in is partial.
+type RunParent = ConstructorParameters<typeof Run>[0];
+type Stream = 'stdout' | 'stderr' | 'finished' | 'error';
+// Every bridge listener fits this, whatever payload its event carries.
+type Listener = ( payload: never ) => void;
+
+function bridge( extra: Partial<RendererBridge> = {} ) {
+  const listeners: Record<Stream, Listener[]> = {
     stdout: [],
     stderr: [],
     finished: [],
     error: [],
   };
-  const stops = [];
-  const subscribe = ( key ) => ( listener ) => {
+  const stops: Stream[] = [];
+  const subscribe = ( key: Stream ) => ( listener: Listener ) => {
     listeners[key].push( listener );
     return () => {
       stops.push( key );
     };
   };
-  window.rendererBridge = {
+  installBridge( {
     [runEvents.onRunStdout]: subscribe( 'stdout' ),
     [runEvents.onRunStderr]: subscribe( 'stderr' ),
     [runEvents.onRunFinished]: subscribe( 'finished' ),
     [runEvents.onRunError]: subscribe( 'error' ),
     parseAlignment: () => new Promise( () => {} ),
-    checkOutput: async () => ( { ok: true, resultFilenames: [] } ),
+    checkOutput: async () => ( { ok: true, resultFilenames: [] } as CheckOutputResult ),
     writeFile: async () => {},
-    cancelRun() {},
+    async cancelRun() {},
     ...extra,
-  };
+  } );
   return { listeners, stops };
 }
 
-function emit( list, payload ) {
-  list.forEach( ( listener ) => listener( payload ) );
+function emit( list: Listener[], payload: unknown ) {
+  list.forEach( ( listener ) => listener( payload as never ) );
 }
 
 it( 'startRun starts the run', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-run-' ) );
   const startRun = vi.fn( async () => {} );
   bridge( { startRun } );
-  const run = new Run( { onError() {} }, 7 );
+  const run = new Run( { onError() {} } as Partial<RunParent> as RunParent, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   run.alignments[0].sequences = [
     { taxon: 'A' },
     { taxon: 'B' },
     { taxon: 'C' },
     { taxon: 'D' },
-  ];
+  ] as AlignmentSequence[];
   run.setOutputDir( outputDir );
 
   try {
@@ -75,7 +85,7 @@ it( 'startRun starts the run', async () => {
 
 it( 'stdout, stderr, finish, and failure update the run', () => {
   const { listeners, stops } = bridge();
-  const run = new Run( { onError() {} }, 7 );
+  const run = new Run( { onError() {} } as Partial<RunParent> as RunParent, 7 );
   run.running = true;
 
   emit( listeners.stdout, { id: 7, content: 'tree\n' } );
@@ -108,7 +118,7 @@ it( 'stdout, stderr, finish, and failure update the run', () => {
 
 it( 'alignment output is appended for that alignment', () => {
   const { listeners } = bridge();
-  const run = new Run( { onError() {} }, 7 );
+  const run = new Run( { onError() {} } as Partial<RunParent> as RunParent, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   const alignment = run.alignments[0];
 
