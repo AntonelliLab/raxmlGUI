@@ -1,15 +1,22 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 
-const { spawnSync } = require( 'child_process' );
-const path = require( 'path' );
-const { version } = require( '../package.json' );
+import { spawnSync } from 'child_process';
+import path from 'path';
+import { version } from '../package.json';
 
 const root = path.join( __dirname, '..' );
 const configFile = path.join( root, 'electron.vite.config.js' );
 const release = `raxmlGUI@${version}`;
 
-function shellBuild( command, env ) {
+interface ShellPlugins {
+  main: string[];
+  preload: string[];
+  renderer: string[];
+  mainRelease: string | null;
+  rendererRelease: string | null;
+}
+
+function shellBuild( command: string, env: Record<string, string> ): ShellPlugins {
   const childEnv = { ...process.env };
   [ 'SENTRY_ORG', 'SENTRY_AUTH_TOKEN', 'SENTRY_PROJECT', 'SENTRY_RELEASE', 'SENTRY_URL' ].forEach( ( key ) => {
     delete childEnv[ key ];
@@ -47,7 +54,7 @@ function shellBuild( command, env ) {
 
 const credentials = { SENTRY_ORG: 'antonelli-lab', SENTRY_AUTH_TOKEN: 'token' };
 
-function expectNoSourceMapPlugin( plugins ) {
+function expectNoSourceMapPlugin( plugins: ShellPlugins ) {
   expect( plugins.main ).not.toContain( 'sentry-vite-plugin' );
   expect( plugins.renderer ).not.toContain( 'sentry-vite-plugin' );
   expect( plugins.preload ).not.toContain( 'sentry-vite-plugin' );

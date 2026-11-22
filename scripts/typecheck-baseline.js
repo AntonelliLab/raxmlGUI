@@ -16,11 +16,11 @@ function fingerprint(line) {
   return line.replace(/\(\d+,\d+\): /, ': ');
 }
 
-/** Pathless tsc continuations belong to the preceding src/ header. */
+/** Pathless tsc continuations belong to the preceding file header. */
 function ownedFingerprints(lines) {
   let owner = '';
   return lines.map((line) => {
-    const match = /^(src\/\S+?)\(/.exec(line);
+    const match = /^(\S+?)\(\d+,\d+\): /.exec(line);
     if (match) {
       owner = match[1];
       return fingerprint(line);
@@ -70,7 +70,7 @@ function renameLines(known, actual, from, to) {
 function typeScriptLines(lines) {
   let inTypeScript = false;
   return lines.filter((line) => {
-    const match = /^(src\/\S+?)\(/.exec(line);
+    const match = /^(\S+?)\(\d+,\d+\): /.exec(line);
     if (match) {
       inTypeScript = /\.tsx?$/.test(match[1]);
     }

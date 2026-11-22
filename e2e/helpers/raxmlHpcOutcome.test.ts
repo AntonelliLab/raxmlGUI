@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-const { parseRaxmlHpcOutput } = require('./raxmlHpcOutcome');
+import { parseRaxmlHpcOutput } from './raxmlHpcOutcome';
 
 const info = `
 

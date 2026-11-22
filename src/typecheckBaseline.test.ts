@@ -1,7 +1,9 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
+import { spawnSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
-const { freshLines, unusedLines, typeScriptLines } = require( '../scripts/typecheck-baseline' );
+import { freshLines, unusedLines, typeScriptLines } from '../scripts/typecheck-baseline';
 
 it( 'reports a diagnostic line that the baseline does not list', () => {
   const known = ['src/a.js(1,1): error TS1: known'];
@@ -48,10 +50,14 @@ it( 'keeps the noImplicitAny diagnostics of .ts and .tsx files and their continu
     'src/b.ts(2,1): error TS7016: Could not find a declaration file.',
     '  ts continuation',
     'src/c.tsx(3,1): error TS7006: Parameter implicitly has an any type.',
+    'e2e/helpers/d.js(4,1): error TS7006: Parameter implicitly has an any type.',
+    'e2e/helpers/d.test.ts(5,1): error TS7006: Parameter implicitly has an any type.',
+    'scripts/e.js(6,1): error TS7006: Parameter implicitly has an any type.',
   ] ) ).toEqual( [
     'src/b.ts(2,1): error TS7016: Could not find a declaration file.',
     '  ts continuation',
     'src/c.tsx(3,1): error TS7006: Parameter implicitly has an any type.',
+    'e2e/helpers/d.test.ts(5,1): error TS7006: Parameter implicitly has an any type.',
   ] );
   expect( typeScriptLines( ['src/a.js(1,1): error TS7006: x'] ) ).toEqual( [] );
 } );
@@ -62,9 +68,6 @@ it( 'passes on an empty baseline when tsc reports nothing', () => {
 } );
 
 it( 'exits non-zero when a .ts file has an implicit any, even if the first pass is clean', () => {
-  const fs = require( 'fs' );
-  const path = require( 'path' );
-  const { spawnSync } = require( 'child_process' );
   const file = path.join( __dirname, 'implicitAnyProbe.ts' );
   fs.writeFileSync( file, 'export function probe( x ) { return x; }\n' );
   try {

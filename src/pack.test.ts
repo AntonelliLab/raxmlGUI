@@ -1,23 +1,25 @@
-// @ts-nocheck — electron-builder's pack matcher has no types.
 import { expect, it } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 
-const { getConfig } = require( 'app-builder-lib/out/util/config' );
+import { getConfig } from 'app-builder-lib/out/util/config';
+import type { FileSet } from 'app-builder-lib';
+import { scripts } from '../package.json';
+
+// electron-builder does not declare its pack matchers, so they load untyped.
 const { getMainFileMatchers, getNodeModuleFileMatcher } = require( 'app-builder-lib/out/fileMatcher' );
-const { scripts } = require( '../package.json' );
 
 const root = path.join( __dirname, '..' );
 const fileStat = { isDirectory: () => false };
 
-function included( filter, relativePath ) {
+function included( filter: ( file: string, stat: typeof fileStat ) => boolean, relativePath: string ) {
   return filter( path.join( root, relativePath ), fileStat );
 }
 
 async function packFilters() {
   const config = await getConfig( root, null, null );
   const buildResourcesDir = config.directories.buildResources;
-  const macroExpander = ( pattern ) => pattern;
+  const macroExpander = ( pattern: string ) => pattern;
   const info = {
     isPrepackedAppAsar: false,
     config,
@@ -48,7 +50,7 @@ it( 'packs the built shell and the production dependencies', async () => {
   const {
     config, buildResourcesDir, main, modules,
   } = await packFilters();
-  const patterns = config.files.flatMap( ( set ) => set.filter );
+  const patterns = ( config.files as FileSet[] ).flatMap( ( set ) => set.filter );
   const icons = path.join( root, buildResourcesDir );
 
   expect( patterns.every( ( pattern ) => pattern.startsWith( '!' ) ) ).toBe( true );
@@ -111,7 +113,7 @@ it( 'pack scripts build the shell, then run electron-builder', () => {
     'dist-pack': 'electron-pack',
     'dist-pack-win': 'electron-pack-win',
   };
-  Object.keys( packScripts ).forEach( ( name ) => {
+  ( Object.keys( packScripts ) as ( keyof typeof packScripts )[] ).forEach( ( name ) => {
     expect( scripts[ name ] ).toBe( `run-s build ${ packScripts[ name ] }` );
   } );
 
