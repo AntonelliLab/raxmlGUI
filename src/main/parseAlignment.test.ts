@@ -1,8 +1,10 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
 import { parseAlignment } from './parseAlignment';
+import type { Alignment } from './parseAlignment';
 
-function tools( parse, extra = {} ) {
+type Tools = Parameters<typeof parseAlignment>[2];
+
+function tools( parse: Tools['parse'], extra: Partial<Tools> = {} ): Tools {
   return {
     readFormat: async () => 'fasta',
     convert: async () => {
@@ -27,7 +29,7 @@ it( 'parseAlignment resolves the alignment and no change when the file stays as 
   let parsedPath;
   const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async ( filePath ) => {
     parsedPath = filePath;
-    return alignment;
+    return alignment as Alignment;
   } ) );
 
   expect( parsedPath ).toBe( '/data/primates.fasta' );
@@ -45,7 +47,7 @@ it( 'parseAlignment reports the converted file when the format is not fasta or p
     convert: async () => '/data/primates.fas',
     parse: async ( filePath ) => {
       parsedPath = filePath;
-      return alignment;
+      return alignment as Alignment;
     },
     write: async () => {
       throw new Error( 'write should not run' );
@@ -71,7 +73,7 @@ it( 'parseAlignment reports the written file when it renames a taxon', async () 
     fileFormat: 'fasta',
   };
   let written;
-  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment, {
+  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment as Alignment, {
     write: async ( filePath, writtenAlignment ) => {
       written = { filePath, taxon: writtenAlignment.sequences[0].taxon };
     },
@@ -99,7 +101,7 @@ it( 'parseAlignment numbers a repeated taxon name', async () => {
       { taxon: 'Homo', code: 'CCCC' },
     ],
   };
-  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment, {
+  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment as Alignment, {
     write: async () => {},
   } ) );
 
@@ -117,7 +119,7 @@ it( 'parseAlignment shortens a taxon name past 256 characters', async () => {
   const alignment = {
     sequences: [ { taxon, code: 'AAAA' } ],
   };
-  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment, {
+  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment as Alignment, {
     write: async () => {},
   } ) );
 
@@ -135,7 +137,7 @@ it( 'parseAlignment rejects when the file cannot be parsed', async () => {
 
 it( 'parseAlignment still parses when the format check fails', async () => {
   const alignment = { sequences: [ { taxon: 'Homo', code: 'ACGT' } ] };
-  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment, {
+  const parsed = await parseAlignment( 'align-1', '/data/primates.fasta', tools( async () => alignment as Alignment, {
     readFormat: async () => {
       throw new Error( 'readal missing' );
     },

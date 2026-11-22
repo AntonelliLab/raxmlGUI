@@ -1,4 +1,3 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import * as ipc from '../constants/ipc';
 import { selectOutputDir } from './selectOutputDir';
