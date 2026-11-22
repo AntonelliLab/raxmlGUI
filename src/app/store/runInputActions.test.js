@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun } from 'mobx';
 
 import Run from './Run';
@@ -16,7 +17,7 @@ const stayParsed = async () => ( {
   change: null,
 } );
 
-const checkOutput = jest.fn( async ( { outputName } ) => ( {
+const checkOutput = vi.fn( async ( { outputName } ) => ( {
   ok: true,
   outputNameUnused: outputName,
   resultFilenames: [],
@@ -70,7 +71,7 @@ describe( 'output name and directory', () => {
   } );
 
   it( 'openOutputDir opens the output directory', async () => {
-    const openPath = jest.fn( async () => {} );
+    const openPath = vi.fn( async () => {} );
     window.rendererBridge = { checkOutput, openPath };
     run.setOutputDir( '/out' );
 
@@ -222,7 +223,7 @@ describe( 'ASTRAL tree', () => {
 describe( 'partition file', () => {
   it( 'loadPartitionFile shows the path and content after the read resolves', async () => {
     let finishRead;
-    const readFile = jest.fn(
+    const readFile = vi.fn(
       () => new Promise( ( resolve ) => { finishRead = resolve; } ),
     );
     window.rendererBridge = {
@@ -264,7 +265,7 @@ describe( 'partition file', () => {
   } );
 
   it( 'addPartitionFiles with no files changes nothing', async () => {
-    window.rendererBridge = { checkOutput, readFile: jest.fn() };
+    window.rendererBridge = { checkOutput, readFile: vi.fn() };
     await run.addPartitionFiles( [] );
     expect( run.partitionFile ).toBe( '' );
     expect( window.rendererBridge.readFile ).not.toHaveBeenCalled();

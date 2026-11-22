@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 
 it( 'the ASTRAL file picker adds the chosen file', async () => {
   const run = new Run( {}, 7 );
-  const selectAstralFile = jest.fn( async () => ( {
+  const selectAstralFile = vi.fn( async () => ( {
     path: '/data/trees.tre',
     name: 'trees.tre',
   } ) );
@@ -19,7 +20,7 @@ it( 'cancel leaves the ASTRAL file unchanged', async () => {
   const run = new Run( {}, 7 );
   run.addAstralFiles( { path: '/data/already.tre' } );
   window.rendererBridge = {
-    selectAstralFile: jest.fn( async () => null ),
+    selectAstralFile: vi.fn( async () => null ),
   };
 
   await run.loadAstralTree();

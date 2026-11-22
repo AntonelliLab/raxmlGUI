@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it } from 'vitest';
 import { pageWindowPreferences } from './pageWindowPreferences';
 
 it( 'every window runs with Node shut out, isolation on, and the sandbox on', () => {

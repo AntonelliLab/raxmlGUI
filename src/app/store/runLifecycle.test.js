@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
@@ -20,11 +21,11 @@ function subscribeTo( byName, name ) {
 beforeEach( () => {
   listeners = {};
   bridge = {
-    startRun: jest.fn( async () => {} ),
-    startAstral: jest.fn( async () => {} ),
-    cancelRun: jest.fn(),
-    writeFile: jest.fn( async () => {} ),
-    checkOutput: jest.fn( async () => ( { ok: true, resultFilenames: ['out.tre'] } ) ),
+    startRun: vi.fn( async () => {} ),
+    startAstral: vi.fn( async () => {} ),
+    cancelRun: vi.fn(),
+    writeFile: vi.fn( async () => {} ),
+    checkOutput: vi.fn( async () => ( { ok: true, resultFilenames: ['out.tre'] } ) ),
     parseAlignment: () => new Promise( () => {} ),
   };
   for ( const name of Object.values( runEvents ) ) {
@@ -45,7 +46,7 @@ function track( fn ) {
 }
 
 function makeRun( { numSequences = 4 } = {} ) {
-  const parent = { onError: jest.fn() };
+  const parent = { onError: vi.fn() };
   const run = new Run( parent, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
   run.alignments[0].sequences = Array.from( { length: numSequences }, ( _, i ) => ( {
@@ -97,7 +98,7 @@ describe( 'start', () => {
 
   it( 'adopts the safe output name, which a reaction on the name sees', async () => {
     const { run } = makeRun();
-    bridge.checkOutput = jest.fn( async () => ( {
+    bridge.checkOutput = vi.fn( async () => ( {
       ok: false,
       outputNameUnused: 'primates_2',
       resultFilenames: [],
@@ -291,7 +292,7 @@ describe( 'cancel', () => {
   it( 'stops a start that is still writing files from starting the run', async () => {
     const { run } = makeRun();
     let release;
-    bridge.writeFile = jest.fn(
+    bridge.writeFile = vi.fn(
       () => new Promise( ( resolve ) => {
         release = resolve;
       } ),

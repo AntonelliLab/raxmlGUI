@@ -1,4 +1,6 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeAll, expect, it } from 'vitest';
+
 const { spawnSync } = require( 'child_process' );
 const fs = require( 'fs' );
 const os = require( 'os' );

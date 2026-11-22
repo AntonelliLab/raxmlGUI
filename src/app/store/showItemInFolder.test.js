@@ -1,11 +1,12 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
 import Run from './Run';
 
 it( 'shows a tree file in its folder', async () => {
   const run = new Run( {}, 7 );
   run.tree.setFilePath( '/data/start.nwk' );
-  const showItemInFolder = jest.fn( async () => {} );
+  const showItemInFolder = vi.fn( async () => {} );
   window.rendererBridge = { showItemInFolder };
 
   await run.tree.openFolder();
@@ -24,9 +25,9 @@ it( 'shows the concatenated alignment in its folder', async () => {
     ];
     run.alignments[0].length = 2;
   } );
-  const showItemInFolder = jest.fn( async () => {} );
+  const showItemInFolder = vi.fn( async () => {} );
   window.rendererBridge = {
-    writeFile: jest.fn( async () => {} ),
+    writeFile: vi.fn( async () => {} ),
     showItemInFolder,
   };
 

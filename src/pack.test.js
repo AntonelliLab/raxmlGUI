@@ -1,4 +1,5 @@
 // @ts-nocheck — electron-builder's pack matcher has no types.
+import { expect, it } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 
@@ -60,9 +61,10 @@ it( 'packs the built shell and the production dependencies', async () => {
   expect( included( main, 'e2e/raxmlHPC.spec.js' ) ).toBe( false );
   expect( included( main, 'docs/_config.yml' ) ).toBe( false );
   expect( included( main, 'electron.vite.config.js' ) ).toBe( false );
+  expect( included( main, 'vitest.config.mjs' ) ).toBe( false );
   expect( included( main, 'static/bin/Mac/raxml-ng' ) ).toBe( false );
   expect( included( main, 'scripts/notarize.js' ) ).toBe( false );
-  expect( included( main, 'jest/setup.js' ) ).toBe( false );
+  expect( included( main, 'src/test/setup.js' ) ).toBe( false );
   expect( included( main, 'test-results/results.json' ) ).toBe( false );
   expect( included( main, 'playwright-report/index.html' ) ).toBe( false );
   expect( included( main, path.join( buildResourcesDir, 'favicon.ico' ) ) ).toBe( false );

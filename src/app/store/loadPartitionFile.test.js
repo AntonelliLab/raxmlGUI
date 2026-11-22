@@ -1,10 +1,11 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 
 it( 'the partition picker uses the chosen file', async () => {
   const run = new Run( {}, 7 );
-  const selectPartitionFile = jest.fn( async () => '/data/genes.part' );
-  const readFile = jest.fn( async () => 'DNA, gene = 1-100\n' );
+  const selectPartitionFile = vi.fn( async () => '/data/genes.part' );
+  const readFile = vi.fn( async () => 'DNA, gene = 1-100\n' );
   window.rendererBridge = { selectPartitionFile, readFile };
 
   await run.loadPartitionFile();
@@ -19,7 +20,7 @@ it( 'cancel leaves the partition unchanged', async () => {
   run.partitionFile = '/data/already.part';
   run.partitionFileContent = 'kept';
   window.rendererBridge = {
-    selectPartitionFile: jest.fn( async () => null ),
+    selectPartitionFile: vi.fn( async () => null ),
   };
 
   await run.loadPartitionFile();

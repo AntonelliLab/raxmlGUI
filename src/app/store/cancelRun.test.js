@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -6,7 +7,7 @@ import path from 'path';
 import Run from './Run';
 
 it( 'the cancel control uses cancelRun', () => {
-  const cancelRun = jest.fn();
+  const cancelRun = vi.fn();
   window.rendererBridge = { cancelRun };
   const run = new Run( { onError() {} }, 7 );
   run.running = true;
@@ -21,7 +22,7 @@ it( 'cancel before the run is tracked does not start it', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-cancel-' ) );
   let holdWrites = true;
   const waiters = [];
-  const writeFile = jest.fn( () => {
+  const writeFile = vi.fn( () => {
     if ( !holdWrites ) {
       return Promise.resolve();
     }
@@ -29,8 +30,8 @@ it( 'cancel before the run is tracked does not start it', async () => {
       waiters.push( resolve );
     } );
   } );
-  const startRun = jest.fn( async () => {} );
-  const cancelRun = jest.fn();
+  const startRun = vi.fn( async () => {} );
+  const cancelRun = vi.fn();
   window.rendererBridge = {
     writeFile,
     startRun,

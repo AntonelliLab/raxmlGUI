@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import AppStore from './AppStore';
@@ -12,7 +13,7 @@ let cancelRun;
 function stubBridge() {
   const byName = {};
   listeners = byName;
-  cancelRun = jest.fn();
+  cancelRun = vi.fn();
   const bridge = { cancelRun, getVersion: () => Promise.resolve( '2.0.0' ) };
   for ( const name of Object.values( runEvents ) ) {
     bridge[name] = ( listener ) => {
@@ -222,7 +223,7 @@ describe( 'RunList', () => {
   } );
 
   it( 'onUnhandledError sets the title and error', () => {
-    jest.spyOn( console, 'log' ).mockImplementation( () => {} );
+    vi.spyOn( console, 'log' ).mockImplementation( () => {} );
     const list = new RunList();
     const error = new Error( 'crash' );
     list.onUnhandledError( { title: 'Oops', error } );
@@ -248,7 +249,7 @@ describe( 'RunList', () => {
   } );
 
   it( 'routes bridge events to its actions', () => {
-    jest.spyOn( console, 'log' ).mockImplementation( () => {} );
+    vi.spyOn( console, 'log' ).mockImplementation( () => {} );
     const list = new RunList();
     fire( runEvents.onAddRun );
     expect( list.runs ).toHaveLength( 2 );

@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 import { runEvents } from './StoreBase';
 
@@ -26,7 +27,7 @@ function emit( list, payload ) {
 }
 
 it( 'startAstral starts ASTRAL', async () => {
-  const startAstral = jest.fn( async () => {} );
+  const startAstral = vi.fn( async () => {} );
   bridge( { startAstral } );
   const run = new Run( { onError() {} }, 7 );
   run.setOutputDir( '/out' );

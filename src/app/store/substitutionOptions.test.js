@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';

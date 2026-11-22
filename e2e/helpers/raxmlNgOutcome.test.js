@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 const { parseRaxmlNgOutput } = require('./raxmlNgOutcome');
 
 const log = `RAxML-NG v. 1.2.2 released on 30.04.2024 by The Exelixis Lab.

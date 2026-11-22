@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
 import Run from './Run';
 
@@ -21,7 +22,7 @@ it( 'writes one concatenated FASTA', async () => {
     ];
     run.alignments[1].length = 2;
   } );
-  const writeFile = jest.fn( async () => {} );
+  const writeFile = vi.fn( async () => {} );
   window.rendererBridge = { writeFile };
 
   await run.finalAlignment.writeConcatenatedAlignment();

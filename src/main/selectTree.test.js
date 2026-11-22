@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import * as ipc from '../constants/ipc';
 import { selectTree } from './selectTree';
 
 it( 'selectTree resolves the chosen tree or constraint', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const cases = [
     ['tree', '/data/start.nwk'],
     ['backboneConstraint', '/data/backbone.nwk'],
@@ -30,7 +31,7 @@ it( 'selectTree resolves the chosen tree or constraint', async () => {
 } );
 
 it( 'selectTree resolves null when the person cancels', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const chosen = await selectTree( async () => ( {
     canceled: true,
     filePaths: [],
@@ -40,7 +41,7 @@ it( 'selectTree resolves null when the person cancels', async () => {
 } );
 
 it( 'selectTree rejects when the dialog fails', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const err = new Error( 'dialog failed' );
   await expect( selectTree( async () => {
     throw err;

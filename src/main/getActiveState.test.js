@@ -1,24 +1,27 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 
-const mockSend = jest.fn();
-const mockOn = jest.fn();
-const mockRemoveListener = jest.fn();
+const { mockSend, mockOn, mockRemoveListener } = vi.hoisted( () => ( {
+  mockSend: vi.fn(),
+  mockOn: vi.fn(),
+  mockRemoveListener: vi.fn(),
+} ) );
 
-jest.mock( 'electron', () => ( {
+vi.mock( 'electron', () => ( {
   ipcMain: {
     on: ( ...args ) => mockOn( ...args ),
     removeListener: ( ...args ) => mockRemoveListener( ...args ),
   },
 } ) );
 
-jest.mock( './utils/utils', () => ( {
+vi.mock( './utils/utils', () => ( {
   activeWindow: () => ( {
     webContents: { send: mockSend },
   } ),
 } ) );
 
-const { getActiveState } = require( './getActiveState' );
-const { STATE_REPORT, STATE_REPORT_RESULT } = require( '../constants/ipc' );
+const { getActiveState } = await import( './getActiveState' );
+const { STATE_REPORT, STATE_REPORT_RESULT } = await import( '../constants/ipc' );
 
 it( 'asks the active window and resolves the matching report', async () => {
   let onResult;

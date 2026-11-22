@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import * as ipc from '../constants/ipc';
 import { selectOutputDir } from './selectOutputDir';
 
 it( 'selectOutputDir resolves the chosen output directory', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   let options;
   const dialogResult = {
     canceled: false,
@@ -23,7 +24,7 @@ it( 'selectOutputDir resolves the chosen output directory', async () => {
 } );
 
 it( 'selectOutputDir resolves null when the person cancels', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const chosen = await selectOutputDir( async () => ( {
     canceled: true,
     filePaths: [],
@@ -33,7 +34,7 @@ it( 'selectOutputDir resolves null when the person cancels', async () => {
 } );
 
 it( 'selectOutputDir rejects when the dialog fails', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const err = new Error( 'dialog failed' );
   await expect( selectOutputDir( async () => {
     throw err;

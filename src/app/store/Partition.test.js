@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Alignment from './Alignment';
@@ -7,7 +8,7 @@ import { runEvents } from './StoreBase';
 
 // The run and alignment subscribe to bridge events; a no-op bridge is enough here.
 function stubBridge() {
-  const bridge = { cancelRun: jest.fn(), getVersion: () => Promise.resolve( '2.0.0' ) };
+  const bridge = { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) };
   for ( const name of Object.values( runEvents ) ) {
     bridge[name] = () => () => {};
   }

@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -40,7 +41,7 @@ function emit( list, payload ) {
 
 it( 'startRun starts the run', async () => {
   const outputDir = fs.mkdtempSync( path.join( os.tmpdir(), 'raxml-run-' ) );
-  const startRun = jest.fn( async () => {} );
+  const startRun = vi.fn( async () => {} );
   bridge( { startRun } );
   const run = new Run( { onError() {} }, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );

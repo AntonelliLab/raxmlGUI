@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reaction, runInAction } from 'mobx';
 
 import AppStore from './AppStore';
@@ -8,17 +9,17 @@ let bridge;
 
 beforeEach( () => {
   listeners = {};
-  const subscribe = ( key ) => jest.fn( ( listener ) => {
+  const subscribe = ( key ) => vi.fn( ( listener ) => {
     listeners[key] = listener;
     return () => {
       delete listeners[key];
     };
   } );
   bridge = {
-    getVersion: jest.fn( async () => '2.0.0' ),
-    getDarkMode: jest.fn( async () => false ),
-    setDarkMode: jest.fn( async () => {} ),
-    copyText: jest.fn( async () => {} ),
+    getVersion: vi.fn( async () => '2.0.0' ),
+    getDarkMode: vi.fn( async () => false ),
+    setDarkMode: vi.fn( async () => {} ),
+    copyText: vi.fn( async () => {} ),
     onLightMode: subscribe( 'light' ),
     onDarkMode: subscribe( 'dark' ),
   };
@@ -110,7 +111,7 @@ describe( 'citation', () => {
   } );
 
   it( 'copyToClipboard copies the text in the current format', async () => {
-    jest.spyOn( console, 'log' ).mockImplementation( () => {} );
+    vi.spyOn( console, 'log' ).mockImplementation( () => {} );
     const { citation } = new AppStore();
     citation.setFormat( 'bib' );
     await citation.copyToClipboard();

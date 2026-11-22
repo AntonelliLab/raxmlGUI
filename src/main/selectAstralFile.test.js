@@ -1,8 +1,9 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { selectAstralFile } from './selectAstralFile';
 
 it( 'selectAstralFile resolves the chosen ASTRAL path and name', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   let options;
   const dialogResult = {
     canceled: false,
@@ -22,7 +23,7 @@ it( 'selectAstralFile resolves the chosen ASTRAL path and name', async () => {
 } );
 
 it( 'selectAstralFile resolves null when the person cancels', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const chosen = await selectAstralFile( async () => ( {
     canceled: true,
     filePaths: [],
@@ -32,7 +33,7 @@ it( 'selectAstralFile resolves null when the person cancels', async () => {
 } );
 
 it( 'selectAstralFile rejects when the dialog fails', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const err = new Error( 'dialog failed' );
   await expect( selectAstralFile( async () => {
     throw err;

@@ -1,4 +1,6 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it } from 'vitest';
+
 const fs = require( 'fs' );
 const path = require( 'path' );
 
@@ -18,7 +20,7 @@ function walk( dir ) {
     const full = path.join( dir, entry.name );
     if ( entry.isDirectory() ) {
       out.push( ...walk( full ) );
-    } else if ( /\.(js|jsx|ts|tsx)$/.test( entry.name ) && !entry.name.endsWith( '.test.js' ) ) {
+    } else if ( /\.(js|jsx|ts|tsx)$/.test( entry.name ) && !/\.test\.jsx?$/.test( entry.name ) ) {
       out.push( full );
     }
   }

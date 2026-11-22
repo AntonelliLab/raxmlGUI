@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
 import Run from './Run';
 import { runEvents } from './StoreBase';
@@ -29,7 +30,7 @@ function emit( list, payload ) {
 }
 
 it( 'startModelSelection starts model selection', async () => {
-  const startModelSelection = jest.fn( async () => {} );
+  const startModelSelection = vi.fn( async () => {} );
   bridge( { startModelSelection } );
   const run = new Run( { onError() {} }, 7 );
   run.setOutputDir( '/out' );
@@ -77,7 +78,7 @@ it( 'a model selection result sets the model', () => {
 } );
 
 it( 'the model-selection cancel control uses cancelModelSelection', () => {
-  const cancelModelSelection = jest.fn();
+  const cancelModelSelection = vi.fn();
   bridge( { cancelModelSelection } );
   const run = new Run( { onError() {} }, 7 );
   run.addAlignments( [{ path: '/data/primates.fasta' }] );
