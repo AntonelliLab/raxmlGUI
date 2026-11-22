@@ -1,16 +1,17 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import type { Dialog } from 'electron';
+import type { AppUpdater } from 'electron-updater';
 import { checkForUpdates, listenForUpdates } from './updates';
 
 function updater() {
-  const listeners = Object.create( null );
+  const listeners: Record<string, ( payload?: unknown ) => void> = Object.create( null );
   return {
-    on( event, fn ) {
+    on( event: string, fn: ( payload?: unknown ) => void ) {
       listeners[event] = fn;
     },
-    emit( event, payload ) {
+    emit( event: string, payload?: unknown ) {
       const fn = listeners[event];
       if ( fn ) {
         fn( payload );
@@ -28,7 +29,7 @@ it( 'No on Found Updates leaves the current version', async () => {
     showMessageBox: vi.fn( () => choice ),
     showErrorBox: vi.fn(),
   };
-  listenForUpdates( updates, dialog );
+  listenForUpdates( updates as unknown as AppUpdater, dialog as unknown as Dialog );
   updates.emit( 'update-available' );
   await choice;
   expect( dialog.showMessageBox ).toHaveBeenCalledWith( {
@@ -46,10 +47,10 @@ it( 'Yes downloads the update with no window, bar, or percent', async () => {
   const updates = updater();
   const choice = Promise.resolve( { response: 0 } );
   const dialog = {
-    showMessageBox: vi.fn( () => choice ),
+    showMessageBox: vi.fn<( options: unknown ) => Promise<{ response: number }>>( () => choice ),
     showErrorBox: vi.fn(),
   };
-  listenForUpdates( updates, dialog );
+  listenForUpdates( updates as unknown as AppUpdater, dialog as unknown as Dialog );
   updates.emit( 'update-available' );
   await choice;
   expect( updates.downloadUpdate ).toHaveBeenCalledWith();
@@ -71,7 +72,7 @@ it( 'a finished download quits to install', async () => {
     showMessageBox: vi.fn( () => Promise.resolve( { response: 0 } ) ),
     showErrorBox: vi.fn(),
   };
-  listenForUpdates( updates, dialog );
+  listenForUpdates( updates as unknown as AppUpdater, dialog as unknown as Dialog );
   updates.emit( 'update-downloaded' );
   await dialog.showMessageBox.mock.results[0].value;
   await new Promise( ( resolve ) => setImmediate( resolve ) );
@@ -88,7 +89,7 @@ it( 'a failed update uses the error dialog', () => {
     showMessageBox: vi.fn(),
     showErrorBox: vi.fn(),
   };
-  listenForUpdates( updates, dialog );
+  listenForUpdates( updates as unknown as AppUpdater, dialog as unknown as Dialog );
   const failure = new Error( 'network down' );
   updates.emit( 'error', failure );
   expect( dialog.showErrorBox ).toHaveBeenCalledWith( 'Error: ', expect.stringContaining( 'network down' ) );
@@ -108,8 +109,11 @@ it( 'the shell opens no update progress window', () => {
 } );
 
 it( 'an offline update check rejects nothing (the error event already reports it)', async () => {
-  const updates = { ...updater(), autoDownload: true };
-  updates.checkForUpdates = vi.fn( () => Promise.reject( new Error( 'net::ERR_INTERNET_DISCONNECTED' ) ) );
-  await expect( checkForUpdates( updates ) ).resolves.toBeUndefined();
+  const updates = {
+    ...updater(),
+    autoDownload: true,
+    checkForUpdates: vi.fn( () => Promise.reject( new Error( 'net::ERR_INTERNET_DISCONNECTED' ) ) ),
+  };
+  await expect( checkForUpdates( updates as unknown as AppUpdater ) ).resolves.toBeUndefined();
   expect( updates.autoDownload ).toBe( false );
 } );

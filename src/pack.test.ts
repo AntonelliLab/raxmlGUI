@@ -66,7 +66,7 @@ it( 'packs the built shell and the production dependencies', async () => {
   expect( included( main, 'vitest.config.mjs' ) ).toBe( false );
   expect( included( main, 'static/bin/Mac/raxml-ng' ) ).toBe( false );
   expect( included( main, 'scripts/notarize.js' ) ).toBe( false );
-  expect( included( main, 'src/test/setup.js' ) ).toBe( false );
+  expect( included( main, 'src/test/setup.ts' ) ).toBe( false );
   expect( included( main, 'test-results/results.json' ) ).toBe( false );
   expect( included( main, 'playwright-report/index.html' ) ).toBe( false );
   expect( included( main, path.join( buildResourcesDir, 'favicon.ico' ) ) ).toBe( false );

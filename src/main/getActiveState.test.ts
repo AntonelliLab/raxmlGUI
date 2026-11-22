@@ -1,4 +1,3 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 
 const { mockSend, mockOn, mockRemoveListener } = vi.hoisted( () => ( {
@@ -9,8 +8,8 @@ const { mockSend, mockOn, mockRemoveListener } = vi.hoisted( () => ( {
 
 vi.mock( 'electron', () => ( {
   ipcMain: {
-    on: ( ...args ) => mockOn( ...args ),
-    removeListener: ( ...args ) => mockRemoveListener( ...args ),
+    on: ( ...args: unknown[] ) => mockOn( ...args ),
+    removeListener: ( ...args: unknown[] ) => mockRemoveListener( ...args ),
   },
 } ) );
 
@@ -24,7 +23,7 @@ const { getActiveState } = await import( './getActiveState' );
 const { STATE_REPORT, STATE_REPORT_RESULT } = await import( '../constants/ipc' );
 
 it( 'asks the active window and resolves the matching report', async () => {
-  let onResult;
+  let onResult: ( event: unknown, payload: unknown ) => void;
   mockOn.mockImplementation( ( channel, listener ) => {
     expect( channel ).toBe( STATE_REPORT_RESULT );
     onResult = listener;
