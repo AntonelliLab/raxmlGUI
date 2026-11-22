@@ -16,7 +16,7 @@ export default defineConfig( {
     environment: 'jsdom',
     globals: false,
     clearMocks: false,
-    include: [ 'src/**/*.test.{js,jsx,ts,tsx}', 'e2e/helpers/**/*.test.ts' ],
+    include: [ 'src/**/*.test.{ts,tsx}', 'e2e/helpers/**/*.test.ts' ],
     // Order matters: the bridge is installed before the page store loads, then the MobX check wraps each test.
     setupFiles: [ './src/test/setup.ts', './src/test/mobxActionWarning.ts' ],
   },
