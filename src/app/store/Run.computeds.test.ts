@@ -1,34 +1,35 @@
-// @ts-nocheck — the test is not typed yet.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
+import type { RendererBridge } from '../../common/rendererBridge';
+import type { CheckOutputResult } from '../../main/checkOutput';
+import { installBridge } from '../../test/setup';
+
+import type Alignment from './Alignment';
+import type AstralTree from './AstralTree';
 import Run from './Run';
 import { analysisOptions, binaries } from './RunOptions';
-import { runEvents } from './StoreBase';
 
 const modeltestName = binaries.find( ( b ) => b.type === 'modeltest' ).name;
 
-let checkOutput;
-let stops = [];
+let checkOutput: Mock<RendererBridge['checkOutput']>;
+let stops: ( () => void )[] = [];
 
 // The run subscribes to bridge events in its constructor; the stub accepts and ignores them.
 beforeEach( () => {
   stops = [];
-  checkOutput = vi.fn( async ( { outputName } ) => ( {
+  checkOutput = vi.fn<RendererBridge['checkOutput']>( async ( { outputName } ) => ( {
     ok: true,
     outputNameUnused: outputName,
     resultFilenames: [],
-  } ) );
-  const bridge = { checkOutput, getVersion: () => Promise.resolve( '2.0.0' ) };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = () => () => {};
-  }
-  window.rendererBridge = bridge;
+  } as CheckOutputResult ) );
+  installBridge( { checkOutput, getVersion: () => Promise.resolve( '2.0.0' ) } );
 } );
 
 afterEach( () => stops.forEach( ( stop ) => stop() ) );
 
-const nucleotide = ( over = {} ) => ( {
+const nucleotide = ( over: Record<string, unknown> = {} ): Alignment => ( {
   name: 'a.fasta',
   path: '/in/a.fasta',
   filename: 'a.fasta',
@@ -41,11 +42,11 @@ const nucleotide = ( over = {} ) => ( {
   showModifiedSnack: false,
   showModifiedDialog: false,
   modeltestLoading: false,
-  modificationMessages: [],
+  modificationMessages: [] as string[],
   ngSubstitutionModelCmd: 'GTR+G',
   partition: { isDefault: true, isComplete: true },
   ...over,
-} );
+} as unknown as Alignment );
 
 function makeRun( { alignments = [nucleotide()], binary = 'raxmlHPC', outputDir = '/out' } = {} ) {
   const run = new Run( null, 1 );
@@ -60,8 +61,8 @@ function makeRun( { alignments = [nucleotide()], binary = 'raxmlHPC', outputDir 
 }
 
 // outputNameAvailable only settles inside a reaction, so reads that touch it go through here.
-function read( fn ) {
-  let value;
+function read<T>( fn: () => T ): T {
+  let value: T;
   autorun( () => {
     value = fn();
   } )();
@@ -69,7 +70,7 @@ function read( fn ) {
 }
 
 // outputNameAvailable is async and only computes while observed.
-async function observeOutput( run ) {
+async function observeOutput( run: Run ) {
   stops.push( autorun( () => run.outputNameAvailable.get() ) );
   await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 }
@@ -137,7 +138,7 @@ describe( 'Run alignment computeds', () => {
     expect( run.hasAstralTree ).toBe( false );
     expect( run.canLoadAstralTree ).toBe( false );
     runInAction( () => {
-      run.astralTree = { path: '/in/t.tre' };
+      run.astralTree = { path: '/in/t.tre' } as AstralTree;
     } );
     expect( run.hasAstralTree ).toBe( true );
   } );
@@ -232,7 +233,7 @@ describe( 'Run state computeds', () => {
     const { missing } = run;
     expect( run.ok ).toBe( !missing );
     runInAction( () => {
-      run.error = 'boom';
+      run.error = { message: 'boom' };
     } );
     expect( run.ok ).toBe( false );
   } );
@@ -244,7 +245,7 @@ describe( 'Run state computeds', () => {
   it( 'startDisabled is true while running or in error', () => {
     const run = makeRun();
     runInAction( () => {
-      run.error = 'boom';
+      run.error = { message: 'boom' };
     } );
     expect( run.startDisabled ).toBe( true );
     runInAction( () => {
@@ -291,7 +292,7 @@ describe( 'Run output computeds', () => {
       ok: false,
       outputNameUnused: 'output_2',
       resultFilenames: ['a.tre'],
-    } );
+    } as CheckOutputResult );
     const run = makeRun();
     await observeOutput( run );
     expect( read( () => run.outputNameOk ) ).toBe( false );
@@ -303,7 +304,7 @@ describe( 'Run output computeds', () => {
   } );
 
   it( 'haveResult needs result files from the current output directory', async () => {
-    checkOutput.mockResolvedValue( { ok: false, outputNameUnused: 'x', resultFilenames: ['a.tre'] } );
+    checkOutput.mockResolvedValue( { ok: false, outputNameUnused: 'x', resultFilenames: ['a.tre'] } as CheckOutputResult );
     const run = makeRun();
     await observeOutput( run );
     runInAction( () => {
@@ -346,7 +347,7 @@ describe( 'Run command', () => {
     const run = makeRun( { binary: 'raxmlHPC' } );
     run.analysis.setValue( 'FT' );
     await observeOutput( run );
-    const seen = [];
+    const seen: string[] = [];
     stops.push( autorun( () => seen.push( run.command ) ) );
     run.analysis.setValue( 'ML' );
     expect( seen[seen.length - 1] ).toContain( '-f d' );
