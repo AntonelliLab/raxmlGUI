@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 
 const alignment = {
@@ -28,7 +29,7 @@ function add( parseAlignment ) {
 }
 
 it( 'the alignment load keeps the path when parsing changes nothing', async () => {
-  const parseAlignment = jest.fn( async () => ( { alignment, change: null } ) );
+  const parseAlignment = vi.fn( async () => ( { alignment, change: null } ) );
   const { run, pending } = add( parseAlignment );
   await pending;
 

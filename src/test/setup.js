@@ -1,6 +1,6 @@
 import os from 'node:os';
 
-import { runEvents } from '../src/app/store/StoreBase';
+import { runEvents } from '../app/store/StoreBase';
 
 // React 19 flushes a render inside act() when this flag is set.
 global.IS_REACT_ACT_ENVIRONMENT = true;

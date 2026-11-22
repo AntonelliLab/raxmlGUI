@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 
 function install( host ) {
   let reads = 0;
@@ -15,24 +16,21 @@ function install( host ) {
   return () => reads;
 }
 
-function load() {
-  let Run;
-  let Alignment;
-  jest.isolateModules( () => {
-    Run = require( './Run' ).default;
-    Alignment = require( './Alignment' ).default;
-  } );
+async function load() {
+  vi.resetModules();
+  const Run = ( await import( './Run' ) ).default;
+  const Alignment = ( await import( './Alignment' ) ).default;
   return { Run, Alignment };
 }
 
-it( 'reads the host once and uses it for Windows 7', () => {
+it( 'reads the host once and uses it for Windows 7', async () => {
   const reads = install( {
     windows: true,
     release: '6.1.7601',
     arch: 'x64',
     cpuModel: 'Intel',
   } );
-  const { Run, Alignment } = load();
+  const { Run, Alignment } = await load();
   const run = new Run( {}, 7 );
   const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
 
@@ -42,14 +40,14 @@ it( 'reads the host once and uses it for Windows 7', () => {
   expect( alignment.modeltestDisabled ).toBe( true );
 } );
 
-it( 'uses the later Windows binaries when the release is not 6.1', () => {
+it( 'uses the later Windows binaries when the release is not 6.1', async () => {
   install( {
     windows: true,
     release: '10.0.19045',
     arch: 'x64',
     cpuModel: 'Intel',
   } );
-  const { Run, Alignment } = load();
+  const { Run, Alignment } = await load();
   const run = new Run( {}, 7 );
   const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
 
@@ -58,14 +56,14 @@ it( 'uses the later Windows binaries when the release is not 6.1', () => {
   expect( alignment.modeltestDisabled ).toBe( false );
 } );
 
-it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
+it( 'picks the arm modeltest binary from the arch or the cpu model', async () => {
   install( {
     windows: false,
     release: '25.0.0',
     arch: 'arm64',
     cpuModel: 'Intel',
   } );
-  let { Run } = load();
+  let { Run } = await load();
   expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
@@ -74,7 +72,7 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
     arch: 'x64',
     cpuModel: 'Apple M4',
   } );
-  ( { Run } = load() );
+  ( { Run } = await load() );
   expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
@@ -83,6 +81,6 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', () => {
     arch: 'x64',
     cpuModel: 'Intel',
   } );
-  ( { Run } = load() );
+  ( { Run } = await load() );
   expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng' );
 } );

@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 
 it( 'each tree picker keeps the chosen file', async () => {
   const run = new Run( {}, 7 );
-  const selectTree = jest.fn()
+  const selectTree = vi.fn()
     .mockResolvedValueOnce( { type: 'tree', filePath: '/data/start.nwk' } )
     .mockResolvedValueOnce( { type: 'backboneConstraint', filePath: '/data/backbone.nwk' } )
     .mockResolvedValueOnce( { type: 'multifurcatingConstraint', filePath: '/data/multi.nwk' } );
@@ -25,7 +26,7 @@ it( 'cancel leaves the trees unchanged', async () => {
   const run = new Run( {}, 7 );
   run.tree.setFilePath( '/data/already.nwk' );
   window.rendererBridge = {
-    selectTree: jest.fn( async () => null ),
+    selectTree: vi.fn( async () => null ),
   };
 
   await run.loadTreeFile();

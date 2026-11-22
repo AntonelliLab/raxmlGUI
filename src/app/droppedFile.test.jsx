@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
@@ -21,10 +22,10 @@ function baseRun( extra ) {
     tree: closedTree,
     backboneConstraint: closedTree,
     multifurcatingConstraint: closedTree,
-    addAlignments: jest.fn(),
-    addPartitionFiles: jest.fn(),
-    addTreeFiles: jest.fn(),
-    addAstralFiles: jest.fn(),
+    addAlignments: vi.fn(),
+    addPartitionFiles: vi.fn(),
+    addTreeFiles: vi.fn(),
+    addAstralFiles: vi.fn(),
     loadAlignmentFiles() {},
     loadAstralTree() {},
     loadPartitionFile() {},
@@ -39,7 +40,6 @@ function mountInput( run ) {
   const div = document.createElement( 'div' );
   const root = createRoot( div );
   // createRoot().render paints on a later tick. act flushes that paint.
-  // eslint-disable-next-line testing-library/no-unnecessary-act
   act( () => {
     root.render(
       <ThemeProvider theme={theme.light}>

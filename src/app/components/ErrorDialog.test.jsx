@@ -1,16 +1,16 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import ErrorDialog from './ErrorDialog';
 
 it( 'the reload action reloads the window', () => {
-  const reload = jest.fn();
+  const reload = vi.fn();
   window.rendererBridge = { reload };
   const div = document.createElement( 'div' );
   document.body.appendChild( div );
   const root = createRoot( div );
   // createRoot().render paints on a later tick. act flushes that paint.
-  // eslint-disable-next-line testing-library/no-unnecessary-act
   act( () => {
     root.render(
       <ErrorDialog
@@ -40,7 +40,6 @@ function renderDialog( error ) {
   document.body.appendChild( div );
   const root = createRoot( div );
   // createRoot().render paints on a later tick. act flushes that paint.
-  // eslint-disable-next-line testing-library/no-unnecessary-act
   act( () => {
     root.render(
       <ErrorDialog
@@ -71,11 +70,11 @@ Locale: en-US`;
       return { command: 'raxml -s primates.fasta', stdout: '' };
     },
   };
-  const debugInfo = jest.fn( async () => {
+  const debugInfo = vi.fn( async () => {
     order.push( 'debug' );
     return info;
   } );
-  const openExternal = jest.fn( async () => {
+  const openExternal = vi.fn( async () => {
     order.push( 'open' );
   } );
   window.rendererBridge = { debugInfo, openExternal };

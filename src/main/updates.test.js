@@ -1,10 +1,8 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { setImmediate } from 'timers';
 import { checkForUpdates, listenForUpdates } from './updates';
-
-global.setImmediate = setImmediate;
 
 function updater() {
   const listeners = Object.create( null );
@@ -18,8 +16,8 @@ function updater() {
         fn( payload );
       }
     },
-    downloadUpdate: jest.fn(),
-    quitAndInstall: jest.fn(),
+    downloadUpdate: vi.fn(),
+    quitAndInstall: vi.fn(),
   };
 }
 
@@ -27,8 +25,8 @@ it( 'No on Found Updates leaves the current version', async () => {
   const updates = updater();
   const choice = Promise.resolve( { response: 1 } );
   const dialog = {
-    showMessageBox: jest.fn( () => choice ),
-    showErrorBox: jest.fn(),
+    showMessageBox: vi.fn( () => choice ),
+    showErrorBox: vi.fn(),
   };
   listenForUpdates( updates, dialog );
   updates.emit( 'update-available' );
@@ -48,8 +46,8 @@ it( 'Yes downloads the update with no window, bar, or percent', async () => {
   const updates = updater();
   const choice = Promise.resolve( { response: 0 } );
   const dialog = {
-    showMessageBox: jest.fn( () => choice ),
-    showErrorBox: jest.fn(),
+    showMessageBox: vi.fn( () => choice ),
+    showErrorBox: vi.fn(),
   };
   listenForUpdates( updates, dialog );
   updates.emit( 'update-available' );
@@ -70,8 +68,8 @@ it( 'Yes downloads the update with no window, bar, or percent', async () => {
 it( 'a finished download quits to install', async () => {
   const updates = updater();
   const dialog = {
-    showMessageBox: jest.fn( () => Promise.resolve( { response: 0 } ) ),
-    showErrorBox: jest.fn(),
+    showMessageBox: vi.fn( () => Promise.resolve( { response: 0 } ) ),
+    showErrorBox: vi.fn(),
   };
   listenForUpdates( updates, dialog );
   updates.emit( 'update-downloaded' );
@@ -87,8 +85,8 @@ it( 'a finished download quits to install', async () => {
 it( 'a failed update uses the error dialog', () => {
   const updates = updater();
   const dialog = {
-    showMessageBox: jest.fn(),
-    showErrorBox: jest.fn(),
+    showMessageBox: vi.fn(),
+    showErrorBox: vi.fn(),
   };
   listenForUpdates( updates, dialog );
   const failure = new Error( 'network down' );
@@ -111,7 +109,7 @@ it( 'the shell opens no update progress window', () => {
 
 it( 'an offline update check rejects nothing (the error event already reports it)', async () => {
   const updates = { ...updater(), autoDownload: true };
-  updates.checkForUpdates = jest.fn( () => Promise.reject( new Error( 'net::ERR_INTERNET_DISCONNECTED' ) ) );
+  updates.checkForUpdates = vi.fn( () => Promise.reject( new Error( 'net::ERR_INTERNET_DISCONNECTED' ) ) );
   await expect( checkForUpdates( updates ) ).resolves.toBeUndefined();
   expect( updates.autoDownload ).toBe( false );
 } );

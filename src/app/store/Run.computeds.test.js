@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
@@ -13,7 +14,7 @@ let stops = [];
 // The run subscribes to bridge events in its constructor; the stub accepts and ignores them.
 beforeEach( () => {
   stops = [];
-  checkOutput = jest.fn( async ( { outputName } ) => ( {
+  checkOutput = vi.fn( async ( { outputName } ) => ( {
     ok: true,
     outputNameUnused: outputName,
     resultFilenames: [],

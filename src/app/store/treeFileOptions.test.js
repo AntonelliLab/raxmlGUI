@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
@@ -24,9 +25,9 @@ function observe( fn ) {
 }
 
 beforeEach( () => {
-  showItemInFolder = jest.fn( async () => {} );
-  openPath = jest.fn( async () => {} );
-  selectTree = jest.fn();
+  showItemInFolder = vi.fn( async () => {} );
+  openPath = vi.fn( async () => {} );
+  selectTree = vi.fn();
   window.rendererBridge = { showItemInFolder, openPath, selectTree };
   run = new Run( {}, 3 );
   disposers = [];

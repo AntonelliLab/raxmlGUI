@@ -1,7 +1,8 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
 
-import { stubBridge as sharedStubBridge, track } from '../../../jest/storeBridge';
+import { stubBridge as sharedStubBridge, track } from '../../test/storeBridge';
 
 import Run from './Run';
 import { runEvents } from './StoreBase';
@@ -14,8 +15,8 @@ let fire;
 function stubBridge( extra = {} ) {
   ( { bridge, listeners, fire } = sharedStubBridge( {
     parseAlignment: () => new Promise( () => {} ),
-    startModelSelection: jest.fn( async () => {} ),
-    cancelModelSelection: jest.fn(),
+    startModelSelection: vi.fn( async () => {} ),
+    cancelModelSelection: vi.fn(),
     ...extra,
   } ) );
 }
@@ -322,14 +323,13 @@ describe( 'Alignment constructor', () => {
     expect( typeof alignment.modeltestDisabled ).toBe( 'boolean' );
   } );
 
-  it( 'disables modeltest on Windows 7', () => {
+  it( 'disables modeltest on Windows 7', async () => {
     window.rendererBridge = { ...bridge, host: { ...bridge.host, windows: true, release: '6.1.7601' } };
-    jest.isolateModules( () => {
-      const IsolatedRun = require( './Run' ).default;
-      const run = new IsolatedRun( {}, 1 );
-      run.addAlignments( [{ path: '/a.fasta' }] );
-      expect( run.alignments[0].modeltestDisabled ).toBe( true );
-    } );
+    vi.resetModules();
+    const IsolatedRun = ( await import( './Run' ) ).default;
+    const run = new IsolatedRun( {}, 1 );
+    run.addAlignments( [{ path: '/a.fasta' }] );
+    expect( run.alignments[0].modeltestDisabled ).toBe( true );
   } );
 } );
 
@@ -348,7 +348,7 @@ describe( 'Alignment loadParsedAlignment', () => {
   }
 
   it( 'writes the parsed fields', async () => {
-    const parseAlignment = jest.fn( async () => ( { alignment: parsed, change: null } ) );
+    const parseAlignment = vi.fn( async () => ( { alignment: parsed, change: null } ) );
     const { alignment } = await load( parseAlignment );
     expect( parseAlignment ).toHaveBeenCalledWith( '7_/data/primates.fasta', '/data/primates.fasta' );
     expect( alignment.sequences ).toEqual( parsed.sequences );
@@ -425,7 +425,7 @@ describe( 'Alignment loadParsedAlignment', () => {
 
 describe( 'Alignment model selection', () => {
   it( 'runModelTest reports an error for fewer than three sequences', async () => {
-    const onError = jest.fn();
+    const onError = vi.fn();
     const { alignment } = setup( { onError } );
     set( alignment, { numSequences: 2 } );
     await alignment.runModelTest();

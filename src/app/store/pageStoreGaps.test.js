@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
@@ -8,14 +9,14 @@ let bridge;
 
 beforeEach( () => {
   bridge = {
-    cancelModelSelection: jest.fn(),
+    cancelModelSelection: vi.fn(),
     parseAlignment: () => new Promise( () => {} ),
   };
   window.rendererBridge = bridge;
 } );
 
 function makeRun() {
-  const parent = { onError: jest.fn(), deleteRun: jest.fn() };
+  const parent = { onError: vi.fn(), deleteRun: vi.fn() };
   const run = new Run( parent, 7 );
   run.addAlignments( [{ path: '/data/a.fasta' }, { path: '/data/b.fasta' }] );
   return { run, parent };

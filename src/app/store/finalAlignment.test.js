@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import Run from './Run';
@@ -114,19 +115,19 @@ describe( 'FinalAlignment observables', () => {
 describe( 'FinalAlignment actions', () => {
   function stubBridge() {
     const bridge = {
-      writeFile: jest.fn( async () => {} ),
-      openPath: jest.fn( async () => {} ),
-      showItemInFolder: jest.fn( async () => {} ),
+      writeFile: vi.fn( async () => {} ),
+      openPath: vi.fn( async () => {} ),
+      showItemInFolder: vi.fn( async () => {} ),
     };
     window.rendererBridge = bridge;
     return bridge;
   }
 
   beforeEach( () => {
-    jest.spyOn( console, 'log' ).mockImplementation( () => {} );
-    jest.spyOn( console, 'error' ).mockImplementation( () => {} );
+    vi.spyOn( console, 'log' ).mockImplementation( () => {} );
+    vi.spyOn( console, 'error' ).mockImplementation( () => {} );
   } );
-  afterEach( () => jest.restoreAllMocks() );
+  afterEach( () => vi.restoreAllMocks() );
 
   it( 'writeConcatenatedAlignment fills gaps or drops taxons', async () => {
     const f = makeRun( [A, B] ).finalAlignment;

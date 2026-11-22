@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { when } from 'mobx';
 import Run from './Run';
 
 it( 'the output-name check uses checkOutput', async () => {
-  const checkOutput = jest.fn( async () => ( {
+  const checkOutput = vi.fn( async () => ( {
     outputDir: '/data/out',
     outputName: 'tree',
     ok: false,

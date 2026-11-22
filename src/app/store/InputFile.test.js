@@ -1,4 +1,5 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
 import AstralTree from './AstralTree';
@@ -9,9 +10,9 @@ let bridge;
 
 beforeEach( () => {
   bridge = {
-    getVersion: jest.fn( () => Promise.resolve( '2.0.0' ) ),
-    openPath: jest.fn( () => Promise.resolve() ),
-    showItemInFolder: jest.fn( () => Promise.resolve() ),
+    getVersion: vi.fn( () => Promise.resolve( '2.0.0' ) ),
+    openPath: vi.fn( () => Promise.resolve() ),
+    showItemInFolder: vi.fn( () => Promise.resolve() ),
   };
   window.rendererBridge = bridge;
 } );
@@ -23,7 +24,7 @@ function track( fn ) {
   return { seen, stop };
 }
 
-const run = { id: 'run1', removeAstralTree: jest.fn() };
+const run = { id: 'run1', removeAstralTree: vi.fn() };
 
 describe( 'StoreBase', () => {
   it( 'initialises the version from the renderer bridge', async () => {
@@ -35,10 +36,10 @@ describe( 'StoreBase', () => {
   } );
 
   it( 'subscribe registers a bridge listener and unlisten stops them all', () => {
-    const stopA = jest.fn();
-    const stopB = jest.fn();
-    bridge.onRunStdout = jest.fn( () => stopA );
-    bridge.onRunStderr = jest.fn( () => stopB );
+    const stopA = vi.fn();
+    const stopB = vi.fn();
+    bridge.onRunStdout = vi.fn( () => stopA );
+    bridge.onRunStderr = vi.fn( () => stopB );
     const store = new StoreBase();
     const listener = () => {};
     store.subscribe( 'onRunStdout', listener );
@@ -52,7 +53,7 @@ describe( 'StoreBase', () => {
   } );
 
   it( 'dispose stops the listeners', () => {
-    const stop = jest.fn();
+    const stop = vi.fn();
     bridge.onRunStdout = () => stop;
     const store = new StoreBase();
     store.subscribe( 'onRunStdout', () => {} );

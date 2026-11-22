@@ -1,8 +1,9 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import { selectAlignment } from './selectAlignment';
 
 it( 'selectAlignment resolves the chosen alignment paths and names', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   let options;
   const dialogResult = {
     canceled: false,
@@ -25,7 +26,7 @@ it( 'selectAlignment resolves the chosen alignment paths and names', async () =>
 } );
 
 it( 'selectAlignment resolves null when the person cancels', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const chosen = await selectAlignment( async () => ( {
     canceled: true,
     filePaths: [],
@@ -35,7 +36,7 @@ it( 'selectAlignment resolves null when the person cancels', async () => {
 } );
 
 it( 'selectAlignment rejects when the dialog fails', async () => {
-  const debug = jest.spyOn( console, 'debug' ).mockImplementation( () => {} );
+  const debug = vi.spyOn( console, 'debug' ).mockImplementation( () => {} );
   const err = new Error( 'dialog failed' );
   await expect( selectAlignment( async () => {
     throw err;

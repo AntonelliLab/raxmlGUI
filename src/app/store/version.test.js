@@ -1,8 +1,9 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import AppStore from './AppStore';
 
 it( 'the page learns the app version from getVersion', async () => {
-  const getVersion = jest.fn( async () => '2.0.18' );
+  const getVersion = vi.fn( async () => '2.0.18' );
   window.rendererBridge = { getVersion };
   const store = new AppStore();
 

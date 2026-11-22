@@ -1,9 +1,10 @@
-// @ts-nocheck — Jest globals. checkJs has no test runner types.
+// @ts-nocheck — the test is not typed yet.
+import { expect, it, vi } from 'vitest';
 import Run from './Run';
 
 it( 'the output-directory picker sets the chosen directory', async () => {
   const run = new Run( {}, 7 );
-  const selectOutputDir = jest.fn( async () => '/data/results' );
+  const selectOutputDir = vi.fn( async () => '/data/results' );
   window.rendererBridge = { selectOutputDir };
 
   await run.selectOutputDir();
@@ -16,7 +17,7 @@ it( 'cancel leaves the output directory unchanged', async () => {
   const run = new Run( {}, 7 );
   run.setOutputDir( '/data/already' );
   window.rendererBridge = {
-    selectOutputDir: jest.fn( async () => null ),
+    selectOutputDir: vi.fn( async () => null ),
   };
 
   await run.selectOutputDir();

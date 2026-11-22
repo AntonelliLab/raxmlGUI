@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 const { parseModelTestLog } = require('./modeltestOutcome');
 const { compareOutcome, formatReport } = require('./fixtures');
 
