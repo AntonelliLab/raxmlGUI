@@ -1,10 +1,17 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun } from 'mobx';
 
+import type { RendererBridge } from '../../common/rendererBridge';
+import type { CheckOutputResult } from '../../main/checkOutput';
+import type { AlignmentParseResult } from '../../main/parseAlignment';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 
-const stayParsed = async () => ( {
+// The tests build runs without a parent.
+type RunParent = ConstructorParameters<typeof Run>[0];
+
+const stayParsed = async (): Promise<AlignmentParseResult> => ( {
   alignment: {
     sequences: [],
     fileFormat: 'fasta',
@@ -15,29 +22,29 @@ const stayParsed = async () => ( {
     typecheckingComplete: true,
   },
   change: null,
-} );
+} as unknown as AlignmentParseResult );
 
-const checkOutput = vi.fn( async ( { outputName } ) => ( {
+const checkOutput = vi.fn<RendererBridge['checkOutput']>( async ( { outputName } ) => ( {
   ok: true,
   outputNameUnused: outputName,
   resultFilenames: [],
-} ) );
+} as CheckOutputResult ) );
 
 const flush = () => new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 
 // Runs `read` in an autorun and returns every value it saw, newest last.
-function watch( read ) {
-  const seen = [];
+function watch<T>( read: () => T ) {
+  const seen: T[] = [];
   const dispose = autorun( () => seen.push( read() ) );
   return { seen, dispose };
 }
 
-let run;
+let run: Run;
 
 beforeEach( () => {
   checkOutput.mockClear();
-  window.rendererBridge = { parseAlignment: stayParsed, checkOutput };
-  run = new Run( {}, 7 );
+  installBridge( { parseAlignment: stayParsed, checkOutput } );
+  run = new Run( {} as RunParent, 7 );
 } );
 
 describe( 'output name and directory', () => {
@@ -71,8 +78,8 @@ describe( 'output name and directory', () => {
   } );
 
   it( 'openOutputDir opens the output directory', async () => {
-    const openPath = vi.fn( async () => {} );
-    window.rendererBridge = { checkOutput, openPath };
+    const openPath = vi.fn<RendererBridge['openPath']>( async () => '' );
+    installBridge( { checkOutput, openPath } );
     run.setOutputDir( '/out' );
 
     await run.openOutputDir();
@@ -135,11 +142,11 @@ describe( 'alignments', () => {
   } );
 
   it( 'removeAlignment removes it and keeps the partition while others remain', async () => {
-    window.rendererBridge = {
+    installBridge( {
       parseAlignment: stayParsed,
       checkOutput,
       readFile: async () => 'DNA, g = 1-10\n',
-    };
+    } );
     run.addAlignments( [
       { path: '/data/primates.fasta' },
       { path: '/data/cats.phy' },
@@ -153,11 +160,11 @@ describe( 'alignments', () => {
   } );
 
   it( 'removing the last alignment resets the partition file', async () => {
-    window.rendererBridge = {
+    installBridge( {
       parseAlignment: stayParsed,
       checkOutput,
       readFile: async () => 'DNA, g = 1-10\n',
-    };
+    } );
     run.addAlignments( [{ path: '/data/primates.fasta' }] );
     await run.addPartitionFiles( [{ path: '/data/g.part' }] );
     const { seen, dispose } = watch( () => run.haveAlignments );
@@ -172,7 +179,7 @@ describe( 'alignments', () => {
 
   it( 'removeAlignment ignores an alignment the run does not hold', () => {
     run.addAlignments( [{ path: '/data/primates.fasta' }] );
-    const other = new Run( {}, 8 );
+    const other = new Run( {} as RunParent, 8 );
     other.addAlignments( [{ path: '/data/other.fasta' }] );
 
     run.removeAlignment( other.alignments[0] );
@@ -222,15 +229,15 @@ describe( 'ASTRAL tree', () => {
 
 describe( 'partition file', () => {
   it( 'loadPartitionFile shows the path and content after the read resolves', async () => {
-    let finishRead;
-    const readFile = vi.fn(
-      () => new Promise( ( resolve ) => { finishRead = resolve; } ),
+    let finishRead: ( content: string ) => void;
+    const readFile = vi.fn<RendererBridge['readFile']>(
+      () => new Promise<string>( ( resolve ) => { finishRead = resolve; } ),
     );
-    window.rendererBridge = {
+    installBridge( {
       checkOutput,
       selectPartitionFile: async () => '/data/genes.part',
       readFile,
-    };
+    } );
     const { seen, dispose } = watch( () => `${run.partitionFile}|${run.partitionFileContent}` );
 
     const loading = run.loadPartitionFile();
@@ -249,7 +256,7 @@ describe( 'partition file', () => {
   } );
 
   it( 'a loaded partition file moves its computeds and blocks the alignment picker', async () => {
-    window.rendererBridge = { checkOutput, readFile: async () => 'x' };
+    installBridge( { checkOutput, readFile: async () => 'x' } );
     const name = watch( () => run.partitionFileName );
     const have = watch( () => run.havePartitionFile );
     const canLoad = watch( () => run.canLoadAlignment );
@@ -265,14 +272,15 @@ describe( 'partition file', () => {
   } );
 
   it( 'addPartitionFiles with no files changes nothing', async () => {
-    window.rendererBridge = { checkOutput, readFile: vi.fn() };
+    const readFile = vi.fn<RendererBridge['readFile']>();
+    installBridge( { checkOutput, readFile } );
     await run.addPartitionFiles( [] );
     expect( run.partitionFile ).toBe( '' );
-    expect( window.rendererBridge.readFile ).not.toHaveBeenCalled();
+    expect( readFile ).not.toHaveBeenCalled();
   } );
 
   it( 'removePartitionFile clears the path and the content', async () => {
-    window.rendererBridge = { checkOutput, readFile: async () => 'x' };
+    installBridge( { checkOutput, readFile: async () => 'x' } );
     await run.addPartitionFiles( [{ path: '/data/genes.part' }] );
     const { seen, dispose } = watch( () => run.havePartitionFile );
 
@@ -286,7 +294,7 @@ describe( 'partition file', () => {
 } );
 
 describe( 'tree files', () => {
-  it.each( [ 'tree', 'backboneConstraint', 'multifurcatingConstraint' ] )(
+  it.each( [ 'tree', 'backboneConstraint', 'multifurcatingConstraint' ] as const )(
     'addTreeFiles sets the %s file',
     ( type ) => {
       const { seen, dispose } = watch( () => run[type].haveFile );

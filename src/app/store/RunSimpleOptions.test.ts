@@ -1,7 +1,7 @@
-// @ts-nocheck — the test is not typed yet.
 import { afterEach, describe, expect, it } from 'vitest';
 import { autorun, runInAction } from 'mobx';
 
+import type Alignment from './Alignment';
 import Run from './Run';
 import { binaries, MAX_NUM_CPUS } from './RunOptions';
 
@@ -10,7 +10,7 @@ const plain = binaries.find( ( b ) => b.type === 'raxml' && !/PTHREADS|-ng/.test
 
 // Run.analysis is a computed that builds a new option on each evaluation, so an
 // unobserved run forgets a set analysis value. A kept-alive reaction models the page.
-const stops = [];
+const stops: ( () => void )[] = [];
 afterEach( () => stops.splice( 0 ).forEach( ( stop ) => stop() ) );
 
 // The initial binary is raxml-ng on some hosts; most tests start from classic RAxML.
@@ -24,20 +24,20 @@ const newRun = () => {
 };
 
 // Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
+function track<T>( fn: () => T ) {
+  const seen: T[] = [];
   const stop = autorun( () => seen.push( fn() ) );
   return { seen, stop };
 }
 
-const set = ( option, value ) => runInAction( () => {
+const set = ( option: { value: unknown }, value: unknown ) => runInAction( () => {
   option.value = value;
 } );
 
-const setAnalysis = ( run, value ) => set( run.analysis, value );
+const setAnalysis = ( run: Run, value: string ) => set( run.analysis, value );
 
-const addAlignment = ( run, dataType ) => runInAction( () => {
-  run.alignments.push( { dataType, taxons: ['a', 'b'], partition: { isDefault: true } } );
+const addAlignment = ( run: Run, dataType: string ) => runInAction( () => {
+  run.alignments.push( { dataType, taxons: ['a', 'b'], partition: { isDefault: true } } as unknown as Alignment );
 } );
 
 describe( 'Binary', () => {
@@ -151,8 +151,10 @@ describe( 'Analysis and RaxmlNgAnalysis', () => {
   } );
 } );
 
+type OptionName = 'numRuns' | 'numRepetitions' | 'branchLength' | 'sHlike' | 'combinedOutput' | 'startingTree';
+
 describe( 'analysis dependent availability', () => {
-  const cases = [
+  const cases: [ OptionName, string[], string[] ][] = [
     // [option name, analyses that use it, analyses that do not]
     ['numRuns', ['ML', 'ML+tBS'], ['FT', 'ML+rBS', 'RBS']],
     ['numRepetitions', ['ML+rBS', 'ML+tBS', 'BS+con'], ['FT', 'ML', 'PD']],
@@ -201,7 +203,7 @@ describe( 'analysis dependent availability', () => {
 describe( 'option lists', () => {
   it( 'lists the values the run offers', () => {
     const run = newRun();
-    const values = ( option ) => option.options.map( ( o ) => o.value );
+    const values = ( option: { options: { value: unknown }[] } ) => option.options.map( ( o ) => o.value );
     expect( values( run.numRuns ) ).toEqual( [1, 10, 20, 50, 100, 500] );
     expect( values( run.numRepetitions ) ).toEqual(
       [100, 200, 500, 1000, 10000, 'autoMR', 'autoMRE', 'autoMRE_IGN', 'autoFC'],
@@ -237,7 +239,7 @@ describe( 'option values reach the run command', () => {
     set( run.branchLength, true );
     set( run.sHlike, true );
     stop();
-    const steps = ( command ) => command.split( ' &&\\\n' ).length;
+    const steps = ( command: string ) => command.split( ' &&\\\n' ).length;
     expect( seen.map( steps ) ).toEqual( [1, 2, 3] );
   } );
 
