@@ -1,7 +1,10 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import { when } from 'mobx';
+import { installBridge } from '../../test/setup';
 import Run from './Run';
+
+// The run reads nothing from its parent here, so the stand-in is empty.
+type RunParent = ConstructorParameters<typeof Run>[0];
 
 it( 'the output-name check uses checkOutput', async () => {
   const checkOutput = vi.fn( async () => ( {
@@ -12,8 +15,8 @@ it( 'the output-name check uses checkOutput', async () => {
     outputNameUnused: 'tree_1',
     resultFilenames: ['tree.raxml.log'],
   } ) );
-  window.rendererBridge = { checkOutput };
-  const run = new Run( {}, 7 );
+  installBridge( { checkOutput } );
+  const run = new Run( {} as RunParent, 7 );
   run.setOutputDir( '/data/out' );
   run.setOutputName( 'tree' );
 

@@ -1,46 +1,36 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it } from 'vitest';
+
+import { stubBridge } from '../../test/storeBridge';
+
 import RunList from './RunList';
 
+// The run list subscribes to the menu events; stubBridge keeps each listener so a test can fire it.
 function bridge() {
-  const listeners = {};
-  const subscribe = ( key ) => ( listener ) => {
-    listeners[key] = listener;
-    return () => {};
-  };
-  window.rendererBridge = {
-    onAddRun: subscribe( 'add' ),
-    onRemoveRun: subscribe( 'remove' ),
-    onLightMode: subscribe( 'light' ),
-    onDarkMode: subscribe( 'dark' ),
-    onToggleBackboneConstraint: subscribe( 'backbone' ),
-    onToggleMultifurcatingConstraint: subscribe( 'multifurcating' ),
-  };
-  return listeners;
+  return stubBridge().fire;
 }
 
 it( 'onAddRun and onRemoveRun update the page runs', () => {
-  const listeners = bridge();
+  const fire = bridge();
   const runs = new RunList();
 
-  listeners.add();
+  fire( 'onAddRun' );
   expect( runs.runs ).toHaveLength( 2 );
 
-  listeners.remove();
+  fire( 'onRemoveRun' );
   expect( runs.runs ).toHaveLength( 1 );
 } );
 
 it( 'onToggleBackboneConstraint and onToggleMultifurcatingConstraint update those constraints', () => {
-  const listeners = bridge();
+  const fire = bridge();
   const runs = new RunList();
 
-  listeners.backbone();
+  fire( 'onToggleBackboneConstraint' );
   expect( runs.activeRun.useBackboneConstraint ).toBe( true );
-  listeners.backbone();
+  fire( 'onToggleBackboneConstraint' );
   expect( runs.activeRun.useBackboneConstraint ).toBe( false );
 
-  listeners.multifurcating();
+  fire( 'onToggleMultifurcatingConstraint' );
   expect( runs.activeRun.useMultifurcatingConstraint ).toBe( true );
-  listeners.multifurcating();
+  fire( 'onToggleMultifurcatingConstraint' );
   expect( runs.activeRun.useMultifurcatingConstraint ).toBe( false );
 } );

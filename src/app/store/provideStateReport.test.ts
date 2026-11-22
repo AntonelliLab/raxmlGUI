@@ -1,9 +1,10 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
+
+import { installBridge } from '../../test/setup';
 
 it( 'provideStateReport registers the store report once', async () => {
   const provideStateReport = vi.fn();
-  window.rendererBridge = { provideStateReport };
+  installBridge( { provideStateReport } );
 
   vi.resetModules();
   const store = ( await import( './index' ) ).default;
