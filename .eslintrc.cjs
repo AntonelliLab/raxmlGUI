@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['react-app', 'react-app/jest'],
+  extends: ['react-app'],
   ignorePatterns: ['build/', 'dist/', 'docs/', 'node_modules/'],
   plugins: ['lodash'],
   rules: {
