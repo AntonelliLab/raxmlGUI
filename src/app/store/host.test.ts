@@ -1,18 +1,30 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 
-function install( host ) {
+import type { HostInfo } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
+
+import type Alignment from './Alignment';
+import type Run from './Run';
+
+// The run and the alignment read only the host here, so their owners are empty stand-ins.
+type RunParent = ConstructorParameters<typeof Run>[0];
+type AlignmentOwner = ConstructorParameters<typeof Alignment>[0];
+
+function install( host: HostInfo ) {
   let reads = 0;
   const bridge = {
-    parseAlignment: () => new Promise( () => {} ),
+    parseAlignment: () => new Promise<never>( () => {} ),
   };
+  // A getter counts the reads; installBridge copies it without reading it.
   Object.defineProperty( bridge, 'host', {
+    configurable: true,
+    enumerable: true,
     get() {
       reads += 1;
       return host;
     },
   } );
-  window.rendererBridge = bridge;
+  installBridge( bridge );
   return () => reads;
 }
 
@@ -31,8 +43,8 @@ it( 'reads the host once and uses it for Windows 7', async () => {
     cpuModel: 'Intel',
   } );
   const { Run, Alignment } = await load();
-  const run = new Run( {}, 7 );
-  const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
+  const run = new Run( {} as RunParent, 7 );
+  const alignment = new Alignment( { id: 7 } as AlignmentOwner, '/data/primates.fasta' );
 
   expect( reads() ).toBe( 1 );
   expect( run.binary.options.map( ( option ) => option.value ) ).toContain( 'raxmlHPC_Win7.exe' );
@@ -48,8 +60,8 @@ it( 'uses the later Windows binaries when the release is not 6.1', async () => {
     cpuModel: 'Intel',
   } );
   const { Run, Alignment } = await load();
-  const run = new Run( {}, 7 );
-  const alignment = new Alignment( { id: 7 }, '/data/primates.fasta' );
+  const run = new Run( {} as RunParent, 7 );
+  const alignment = new Alignment( { id: 7 } as AlignmentOwner, '/data/primates.fasta' );
 
   expect( run.binary.options.map( ( option ) => option.value ) ).toContain( 'raxmlHPC.exe' );
   expect( run.binary.options.map( ( option ) => option.value ) ).not.toContain( 'raxmlHPC_Win7.exe' );
@@ -64,7 +76,7 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', async () =>
     cpuModel: 'Intel',
   } );
   let { Run } = await load();
-  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
+  expect( new Run( {} as RunParent, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
     windows: false,
@@ -73,7 +85,7 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', async () =>
     cpuModel: 'Apple M4',
   } );
   ( { Run } = await load() );
-  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
+  expect( new Run( {} as RunParent, 7 ).modeltestName ).toBe( 'modeltest-ng-ARM64' );
 
   install( {
     windows: false,
@@ -82,5 +94,5 @@ it( 'picks the arm modeltest binary from the arch or the cpu model', async () =>
     cpuModel: 'Intel',
   } );
   ( { Run } = await load() );
-  expect( new Run( {}, 7 ).modeltestName ).toBe( 'modeltest-ng' );
+  expect( new Run( {} as RunParent, 7 ).modeltestName ).toBe( 'modeltest-ng' );
 } );

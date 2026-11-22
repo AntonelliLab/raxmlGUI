@@ -1,18 +1,19 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { autorun, runInAction } from 'mobx';
+
+import type { RendererBridge } from '../../common/rendererBridge';
+import { installBridge } from '../../test/setup';
 
 import Run from './Run';
 import RunList from './RunList';
 
-let bridge;
+let bridge: RendererBridge;
 
 beforeEach( () => {
-  bridge = {
+  bridge = installBridge( {
     cancelModelSelection: vi.fn(),
     parseAlignment: () => new Promise( () => {} ),
-  };
-  window.rendererBridge = bridge;
+  } );
 } );
 
 function makeRun() {
@@ -84,7 +85,7 @@ describe( 'disableCheckUndeterminedSequence', () => {
     // analysis is a computed that builds its option; keep it observed so a set value sticks.
     const keepAnalysis = autorun( () => run.analysis );
     runInAction( () => { run.analysis.value = 'FT'; } );
-    const seen = [];
+    const seen: boolean[] = [];
     const stop = autorun( () => seen.push( run.args.flat().includes( '-O' ) ) );
 
     runInAction( () => { run.disableCheckUndeterminedSequence = false; } );

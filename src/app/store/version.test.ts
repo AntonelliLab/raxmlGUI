@@ -1,10 +1,11 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
+import { installBridge } from '../../test/setup';
+
 import AppStore from './AppStore';
 
 it( 'the page learns the app version from getVersion', async () => {
   const getVersion = vi.fn( async () => '2.0.18' );
-  window.rendererBridge = { getVersion };
+  installBridge( { getVersion } );
   const store = new AppStore();
 
   await Promise.all( getVersion.mock.results.map( ( result ) => result.value ) );

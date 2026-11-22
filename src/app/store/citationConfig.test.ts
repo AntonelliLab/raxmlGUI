@@ -1,39 +1,39 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reaction, runInAction } from 'mobx';
 
+import type { RendererBridge } from '../../common/rendererBridge';
+import { stubBridge } from '../../test/storeBridge';
+
 import AppStore from './AppStore';
 
-let listeners;
-let bridge;
+let bridge: RendererBridge;
+let fire: ReturnType<typeof stubBridge>['fire'];
+let listeners: ReturnType<typeof stubBridge>['listeners'];
 
+// The page store subscribes to the theme events; stubBridge keeps each listener so a test can fire it.
 beforeEach( () => {
-  listeners = {};
-  const subscribe = ( key ) => vi.fn( ( listener ) => {
-    listeners[key] = listener;
-    return () => {
-      delete listeners[key];
-    };
-  } );
-  bridge = {
+  ( { bridge, fire, listeners } = stubBridge( {
     getVersion: vi.fn( async () => '2.0.0' ),
     getDarkMode: vi.fn( async () => false ),
     setDarkMode: vi.fn( async () => {} ),
     copyText: vi.fn( async () => {} ),
-    onLightMode: subscribe( 'light' ),
-    onDarkMode: subscribe( 'dark' ),
-  };
-  window.rendererBridge = bridge;
+  } ) );
 } );
 
-async function settle() {
-  await Promise.all( bridge.getDarkMode.mock.results.map( ( r ) => r.value ) );
+// The events that still have a live listener.
+function subscribed() {
+  return Object.entries( listeners ).filter( ( [ , live ] ) => live.length ).map( ( [ name ] ) => name ).sort();
 }
 
-function track( expression ) {
-  const seen = [];
+// Unlike the shared track, this records only changes, not the initial value.
+function track<T>( expression: () => T ) {
+  const seen: T[] = [];
   const stop = reaction( expression, ( value ) => seen.push( value ) );
   return { seen, stop };
+}
+
+async function settle() {
+  await Promise.all( vi.mocked( bridge.getDarkMode ).mock.results.map( ( r ) => r.value ) );
 }
 
 describe( 'citation', () => {
@@ -116,13 +116,13 @@ describe( 'citation', () => {
     citation.setFormat( 'bib' );
     await citation.copyToClipboard();
     expect( bridge.copyText ).toHaveBeenCalledWith( citation.allText );
-    expect( bridge.copyText.mock.calls[0][0] ).toContain( '@article{' );
+    expect( vi.mocked( bridge.copyText ).mock.calls[0][0] ).toContain( '@article{' );
   } );
 } );
 
 describe( 'config dark mode', () => {
   it( 'starts light and loads dark mode from the renderer bridge', async () => {
-    bridge.getDarkMode.mockImplementation( async () => 1 );
+    vi.mocked( bridge.getDarkMode ).mockImplementation( async () => 1 as unknown as boolean );
     const { config } = new AppStore();
     expect( config.isDarkMode ).toBe( false );
     await settle();
@@ -130,7 +130,7 @@ describe( 'config dark mode', () => {
   } );
 
   it( 'a falsy loaded value stays light', async () => {
-    bridge.getDarkMode.mockImplementation( async () => undefined );
+    vi.mocked( bridge.getDarkMode ).mockImplementation( async () => undefined as unknown as boolean );
     const { config } = new AppStore();
     await settle();
     expect( config.isDarkMode ).toBe( false );
@@ -141,8 +141,10 @@ describe( 'config dark mode', () => {
     await settle();
     const { seen, stop } = track( () => config.isDarkMode );
 
+    // @ts-expect-error the page passes a non-boolean on purpose; the runtime guard coerces it
     config.setDarkMode( 'yes' );
     expect( config.isDarkMode ).toBe( true );
+    // @ts-expect-error the page passes a non-boolean on purpose; the runtime guard coerces it
     config.setDarkMode( 0 );
     expect( config.isDarkMode ).toBe( false );
     runInAction( () => {
@@ -151,26 +153,26 @@ describe( 'config dark mode', () => {
     stop();
 
     expect( seen ).toEqual( [true, false, true] );
-    expect( bridge.setDarkMode.mock.calls ).toEqual( [[true], [false]] );
+    expect( vi.mocked( bridge.setDarkMode ).mock.calls ).toEqual( [[true], [false]] );
   } );
 
   it( 'dark and light menu events switch the theme', async () => {
     const { config } = new AppStore();
     await settle();
 
-    listeners.dark();
+    fire( 'onDarkMode' );
     expect( config.isDarkMode ).toBe( true );
-    listeners.light();
+    fire( 'onLightMode' );
     expect( config.isDarkMode ).toBe( false );
-    expect( bridge.setDarkMode.mock.calls ).toEqual( [[true], [false]] );
+    expect( vi.mocked( bridge.setDarkMode ).mock.calls ).toEqual( [[true], [false]] );
   } );
 
   it( 'dispose stops listening for menu events', async () => {
     const { config } = new AppStore();
     await settle();
-    expect( Object.keys( listeners ).sort() ).toEqual( ['dark', 'light'] );
+    expect( subscribed() ).toEqual( ['onDarkMode', 'onLightMode'] );
 
     config.dispose();
-    expect( listeners ).toEqual( {} );
+    expect( subscribed() ).toEqual( [] );
   } );
 } );
