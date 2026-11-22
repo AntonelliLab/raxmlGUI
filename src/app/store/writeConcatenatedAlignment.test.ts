@@ -1,11 +1,12 @@
-// @ts-nocheck — the test is not typed yet.
 import { expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
+import { installBridge } from '../../test/setup';
+
 import Run from './Run';
 
 it( 'writes one concatenated FASTA', async () => {
-  const run = new Run( {}, 7 );
-  window.rendererBridge = { parseAlignment: () => new Promise( () => {} ) };
+  const run = new Run( {} as Run['parent'], 7 );
+  installBridge( { parseAlignment: () => new Promise( () => {} ) } );
   run.addAlignments( [
     { path: '/data/a.fasta' },
     { path: '/data/b.fasta' },
@@ -23,7 +24,7 @@ it( 'writes one concatenated FASTA', async () => {
     run.alignments[1].length = 2;
   } );
   const writeFile = vi.fn( async () => {} );
-  window.rendererBridge = { writeFile };
+  installBridge( { writeFile } );
 
   await run.finalAlignment.writeConcatenatedAlignment();
 

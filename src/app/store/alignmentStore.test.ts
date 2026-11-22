@@ -1,18 +1,24 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { runInAction } from 'mobx';
 
+import type { AlignmentParseResult } from '../../main/parseAlignment';
+import type { ModelSelectionResult } from '../../main/modelSelection';
+import type { RendererBridge } from '../../common/rendererBridge';
+import type { DataType } from '../../common/typecheckAlignment';
+import { installBridge } from '../../test/setup';
 import { stubBridge as sharedStubBridge, track } from '../../test/storeBridge';
 
 import Run from './Run';
 import { runEvents } from './StoreBase';
 
-let bridge;
-let listeners;
-let fire;
+type Stubbed = ReturnType<typeof sharedStubBridge>;
+
+let bridge: Stubbed['bridge'];
+let listeners: Stubbed['listeners'];
+let fire: Stubbed['fire'];
 
 // Alignment construction subscribes to bridge events and parses.
-function stubBridge( extra = {} ) {
+function stubBridge( extra: Partial<RendererBridge> = {} ): void {
   ( { bridge, listeners, fire } = sharedStubBridge( {
     parseAlignment: () => new Promise( () => {} ),
     startModelSelection: vi.fn( async () => {} ),
@@ -21,17 +27,20 @@ function stubBridge( extra = {} ) {
   } ) );
 }
 
-function setup( { onError = () => {}, path = '/data/primates.fasta' } = {} ) {
-  const run = new Run( { onError }, 7 );
+function setup( {
+  onError = () => {},
+  path = '/data/primates.fasta',
+}: { onError?: Run['parent']['onError']; path?: string } = {} ) {
+  const run = new Run( { onError } as Run['parent'], 7 );
   run.addAlignments( [{ path }] );
   return { run, alignment: run.alignments[0] };
 }
 
-function set( object, values ) {
+function set<T extends object>( object: T, values: Partial<T> ): void {
   runInAction( () => Object.assign( object, values ) );
 }
 
-const parsed = {
+const parsed: AlignmentParseResult['alignment'] = {
   sequences: [
     { taxon: 'Homo', code: 'ACGT' },
     { taxon: 'Mus', code: 'ACGA' },
@@ -39,7 +48,7 @@ const parsed = {
   fileFormat: 'fasta',
   numSequences: 2,
   length: 4,
-  dataType: 'dna',
+  dataType: 'nucleotide',
   hasInvariantSites: true,
   typecheckingComplete: true,
 };
@@ -125,6 +134,7 @@ describe( 'Alignment observable fields update the page store', () => {
       mixed: ['mixed', false, null],
     };
     for ( const [dataType, expected] of Object.entries( types ) ) {
+      // @ts-expect-error 'dna' is outside DataType: it exercises the dead case kept for #269.
       set( alignment, { dataType } );
       expect( seen[seen.length - 1] ).toEqual( expected );
     }
@@ -221,7 +231,7 @@ describe( 'Alignment observable fields update the page store', () => {
     set( alignment, { dataType: 'multistate' } );
     alignment.substitutionModel.setValue( 'MULTIx_GTR' );
     const { seen, stop } = track( () => alignment.ngSubstitutionModelCmd );
-    alignment.multistateNumber.setValue( 5 );
+    alignment.multistateNumber.setValue( '5' );
     expect( seen[0] ).toContain( 'MULTI' );
     expect( seen[seen.length - 1] ).toBe( alignment.substitutionModel.value.replace( 'x', '5' ) + '' );
     stop();
@@ -281,10 +291,11 @@ describe( 'Alignment observable fields update the page store', () => {
       modeltestLoading: true,
       partitionText: 'x',
     };
-    const { seen, stop } = track( () => JSON.stringify( Object.keys( values ).map( ( k ) => alignment[k] ) ) );
+    const keys = Object.keys( values ) as ( keyof typeof values )[];
+    const { seen, stop } = track( () => JSON.stringify( keys.map( ( k ) => alignment[k] ) ) );
     set( alignment, values );
-    for ( const [key, value] of Object.entries( values ) ) {
-      expect( alignment[key] ).toEqual( value );
+    for ( const key of keys ) {
+      expect( alignment[key] ).toEqual( values[key] );
     }
     expect( seen.length ).toBe( 2 );
     stop();
@@ -324,18 +335,20 @@ describe( 'Alignment constructor', () => {
   } );
 
   it( 'disables modeltest on Windows 7', async () => {
-    window.rendererBridge = { ...bridge, host: { ...bridge.host, windows: true, release: '6.1.7601' } };
+    const { host } = bridge;
+    installBridge( { host: { ...host, windows: true, release: '6.1.7601' } } );
     vi.resetModules();
     const IsolatedRun = ( await import( './Run' ) ).default;
-    const run = new IsolatedRun( {}, 1 );
+    const run = new IsolatedRun( {} as Run['parent'], 1 );
     run.addAlignments( [{ path: '/a.fasta' }] );
     expect( run.alignments[0].modeltestDisabled ).toBe( true );
+    installBridge( { host } );
   } );
 } );
 
 describe( 'Alignment loadParsedAlignment', () => {
-  async function load( parse, run ) {
-    let pending;
+  async function load( parse: RendererBridge['parseAlignment'] ) {
+    let pending!: Promise<AlignmentParseResult>;
     stubBridge( {
       parseAlignment: ( ...args ) => {
         pending = parse( ...args );
@@ -369,7 +382,7 @@ describe( 'Alignment loadParsedAlignment', () => {
 
   it( 'keeps the substitution matrix when the run data type is unchanged', async () => {
     const { run, alignment } = await load( async () => ( {
-      alignment: { ...parsed, dataType: 'dna' },
+      alignment: { ...parsed, dataType: 'nucleotide' },
       change: null,
     } ) );
     expect( run.substitutionMatrix.value ).toBe( 'GTR' );
@@ -511,7 +524,7 @@ describe( 'Alignment model selection', () => {
 } );
 
 describe( 'Alignment setModelFromString', () => {
-  function apply( result, dataType = 'nucleotide' ) {
+  function apply( result: ModelSelectionResult, dataType: DataType = 'nucleotide' ) {
     const { run, alignment } = setup();
     set( alignment, { dataType, modeltestLoading: true } );
     alignment.setModelFromString( result );
