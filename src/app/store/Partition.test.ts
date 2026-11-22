@@ -1,31 +1,18 @@
-// @ts-nocheck — the test is not typed yet.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { autorun, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 
 import Alignment from './Alignment';
+import type Run from './Run';
 import RunList from './RunList';
-import { runEvents } from './StoreBase';
+import type { DataType } from '../../common/typecheckAlignment';
+import { stubBridge, track } from '../../test/storeBridge';
 
-// The run and alignment subscribe to bridge events; a no-op bridge is enough here.
-function stubBridge() {
-  const bridge = { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) };
-  for ( const name of Object.values( runEvents ) ) {
-    bridge[name] = () => () => {};
-  }
-  window.rendererBridge = bridge;
-}
-
-// Records every value an autorun sees, so a test can prove it re-ran.
-function track( fn ) {
-  const seen = [];
-  const stop = autorun( () => seen.push( fn() ) );
-  return { seen, stop };
-}
-
-let run;
+let run: Run;
 
 // Adds an alignment to the run the way loading a file would, minus the file.
-function addAlignment( { dataType = 'nucleotide', length = 100 } = {} ) {
+function addAlignment(
+  { dataType = 'nucleotide', length = 100 }: { dataType?: DataType; length?: number } = {},
+): Alignment {
   const alignment = new Alignment( run, `/data/aln${run.alignments.length}.fasta` );
   runInAction( () => {
     alignment.dataType = dataType;
@@ -36,7 +23,7 @@ function addAlignment( { dataType = 'nucleotide', length = 100 } = {} ) {
 }
 
 // Sets the end of the part to add, then adds it.
-function addPartEndingAt( partition, end ) {
+function addPartEndingAt( partition: Alignment['partition'], end: number ): void {
   runInAction( () => {
     partition.partToAdd.end.value = end;
   } );
@@ -44,7 +31,8 @@ function addPartEndingAt( partition, end ) {
 }
 
 beforeEach( () => {
-  stubBridge();
+  // The run and alignment subscribe to bridge events; a no-op bridge is enough here.
+  stubBridge( { cancelRun: vi.fn(), getVersion: () => Promise.resolve( '2.0.0' ) } );
   run = new RunList().activeRun;
   runInAction( () => {
     run.binary.value = 'raxmlHPC';
