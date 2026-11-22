@@ -1,3 +1,1 @@
-module.exports = {
-  init() {},
-};
+export function init(): void {}

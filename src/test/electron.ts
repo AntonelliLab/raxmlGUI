@@ -1,16 +1,14 @@
-const os = require( 'os' );
+import os from 'node:os';
 
-const ipcRenderer = {
-  on() {},
-  removeListener() {},
-  send() {},
+export const ipcRenderer = {
+  on(): void {},
+  removeListener(): void {},
+  send(): void {},
   // electron-store reads this while the page store is imported.
-  sendSync() {
+  sendSync(): { defaultCwd: string; appVersion: string } {
     return {
       defaultCwd: os.tmpdir(),
       appVersion: '0.0.0-test',
     };
   },
 };
-
-module.exports = { ipcRenderer };
