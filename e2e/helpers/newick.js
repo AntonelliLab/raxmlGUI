@@ -76,7 +76,10 @@ function edges(root) {
   const first = getTaxa(root)[0];
   /** @type {Map<string, number | null>} */
   const out = new Map();
-  /** @param {Node} node */
+  /**
+   * @param {Node} node
+   * @param {boolean} isRoot
+   */
   const walk = (node, isRoot) => {
     const leaves = leafNames(node).sort();
     if (!isRoot) {
