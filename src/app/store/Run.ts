@@ -539,8 +539,8 @@ class Run extends StoreBase {
   }
 
   clearShowModified = (): void => {
-    for ( let i = 0; i < this.alignments.length; i++ ) {
-      this.alignments[i].clearModified();
+    for ( const alignment of this.alignments ) {
+      alignment.clearModified();
     }
   };
 
@@ -1000,7 +1000,7 @@ class Run extends StoreBase {
           first.push( '-g', quote( this.multifurcatingConstraint.filePath, { windows } ) );
         }
         break;
-      case 'ML+tBS': // ML + thorough bootstrap
+      case 'ML+tBS': { // ML + thorough bootstrap
         // params: [params.runs, params.reps, params.brL, params.outGroup],
         // cmd= """cd %s %s \
         // &&%s %s -b %s %s %s -p %s -N %s %s -s %s -n %s %s -w %s %s -O && cd %s \
@@ -1114,7 +1114,8 @@ class Run extends StoreBase {
         third.push( '-w', quote( this.outputDir, { windows } ) );
 
         break;
-      case 'BS+con': // Bootstrap + consensus
+      }
+      case 'BS+con': { // Bootstrap + consensus
         // params: [params.reps, params.brL, params.outGroup],
         // BStrees_file= """  "%sRAxML_bootstrap.%s"    """ % (path_dirsimple, out_file)
         // cmd= """cd %s %s \
@@ -1187,6 +1188,7 @@ class Run extends StoreBase {
           second.push( '-g', quote( this.multifurcatingConstraint.filePath, { windows } ) );
         }
         break;
+      }
       case 'AS': // Ancestral states
         // params: [params.tree],
         // cmd = """cd %s %s &&%s %s -f A -t "%s" -s %s %s -n %s -O -w %s %s %s""" \

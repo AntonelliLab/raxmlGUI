@@ -35,7 +35,7 @@ export async function runAstral(
   const javaBin = 'java';
   const [arg] = args;
   arg.splice( 0, 0, '-jar', quote( path.join( binaryDir, binaryName ) ) );
-  let exitCode: ProcessExit = 0;
+  let exitCode: ProcessExit;
   try {
     console.log( 'arg', arg );
     console.log( `ASTRAL?` );

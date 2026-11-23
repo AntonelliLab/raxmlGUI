@@ -192,9 +192,9 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
   const anyMatch = new RegExp( `RAxML_info\\.${outputName}\\.tre` );
   const filenames = await fs.readdir( outputDir );
   const infoFiles = filenames.filter( ( filename ) => anyMatch.test( filename ) );
-  for ( let i = 0; i < infoFiles.length; i++ ) {
-    const infoPath = path.join( outputDir, infoFiles[i] );
-    const newPath = path.join( outputDir, infoFiles[i].replace( '.tre', '.txt' ) );
+  for ( const infoFile of infoFiles ) {
+    const infoPath = path.join( outputDir, infoFile );
+    const newPath = path.join( outputDir, infoFile.replace( '.tre', '.txt' ) );
     await fs.rename( infoPath, newPath );
   }
   // Rename the raxml-ng output files to add .tre or .txt extension
@@ -216,9 +216,9 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
                 logMatch.test( f ) ||
                 aPMatch.test( f ) ||
                 aSMatch.test( f ) ) {
-        return ( f += '.txt' );
+        return `${f}.txt`;
       }
-      return ( f += '.tre' );
+      return `${f}.tre`;
     } );
     for ( let i = 0; i < outputFiles.length; i++ ) {
       const infoPath = path.join( outputDir, outputFiles[i] );

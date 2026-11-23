@@ -369,7 +369,6 @@ class Alignment extends InputFile<AlignmentOwner> {
     }
     if ( /CAT/.test( model ) ) {
       this.run.substitutionRate.setValue( 'CAT' );
-      model = model.replace( 'CAT', '' );
     }
     // Checks for the different nucleotide substitution matrices
     // Default is GTR

@@ -65,7 +65,9 @@ export async function runModelSelection(
     // Remove binary checkpoint as that may be invalid
     await fs.unlink( `${outputPath}.ckp` );
   }
-  catch ( _err: unknown ) { }
+  catch ( _err: unknown ) {
+    // No checkpoint file to remove is fine
+  }
   const args: string[] = [];
   if ( dataType === 'nucleotide' ) {
     args.push( '-d', 'nt' );
@@ -86,7 +88,7 @@ export async function runModelSelection(
   const onStdOut = ( content: string ): void => {
     stdOuts.push( content );
   };
-  let exitCode: ProcessExit = 0;
+  let exitCode: ProcessExit;
   try {
     if ( !stillRunning( id, token ) ) {
       return;

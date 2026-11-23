@@ -12,18 +12,9 @@ export interface FastaAlignment {
   fileFormat: 'FASTA';
 }
 
-export const isFasta = ( lines: string[] ): boolean => {
-  for ( let i = 0; i < lines.length; ++i ) {
-    const line = lines[0].trim();
-    if ( line.length === 0 || line[0] === '#' ) {
-      continue;
-    }
-    if ( line[0] === '>' ) {
-      return true;
-    }
-  }
-  return false;
-};
+export const isFasta = ( lines: string[] ): boolean =>
+  // Only the first line counts; a blank or # first line means not FASTA.
+  lines[0]?.trim()[0] === '>';
 export const parse = ( lines: string[] ): FastaAlignment => {
   if ( !isFasta( lines ) ) {
     throw new Error( `Could not parse the file as a FASTA file` );
