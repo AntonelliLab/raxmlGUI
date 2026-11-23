@@ -8,8 +8,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
-  // The lint fixtures are known-bad on purpose; src/lint.test.ts lints them with `ignore: false`.
-  { ignores: [ 'build/', 'dist/', 'out/', 'docs/', 'node_modules/', 'src/test/lintFixtures/' ] },
+  { ignores: [ 'build/', 'dist/', 'out/', 'docs/', 'node_modules/' ] },
 
   js.configs.recommended,
   tseslint.configs.recommended,
