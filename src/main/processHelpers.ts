@@ -8,6 +8,7 @@ import * as ipc from '../constants/ipc';
 import { is, platform } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
+import { userFixMessage } from './binaryErrors';
 import {
   forgetRun,
   runResult,
@@ -100,10 +101,11 @@ export async function runProcess(
       const proc = spawnProcess( binaryDir, binaryName, args );
       trackRun( id, proc );
       let exited = false;
-      let unwritableFile: RegExpMatchArray | null = null;
+      // Last stdout only: the binary prints its fatal reason just before exiting.
+      let stdoutTail = '';
       proc.stdout.on( 'data', ( buffer: string | Buffer ) => {
         const content = String( buffer );
-        unwritableFile = unwritableFile || content.match( /The file (.+?) RAxML wants to open for writing or appending can not be opened/ );
+        stdoutTail = ( stdoutTail + content ).slice( -8192 );
         console.log( 'on stdout:', content );
         onStdOut( content );
         send( event, ipc.RUN_STDOUT, { id, content } );
@@ -137,8 +139,9 @@ export async function runProcess(
           resolve( result );
           return;
         }
-        if ( unwritableFile && result instanceof Error ) {
-          reject( new UserFixError( `RAxML could not write to the output file '${unwritableFile[1]}'. Check that the output folder is writable and that the file is not open in another program.` ) );
+        const fixMessage = result instanceof Error && userFixMessage( stdoutTail );
+        if ( fixMessage ) {
+          reject( new UserFixError( fixMessage ) );
           return;
         }
         if ( message === 'error' || result instanceof Error ) {
@@ -147,7 +150,8 @@ export async function runProcess(
         }
         resolve( result ); // Add code last to get through code 0
       };
-      ( ['error', 'exit', 'close'] as const ).forEach( ( message ) => {
+      // Not 'exit': stdout can still deliver the binary's last line after it, and the user-fix match needs that line.
+      ( ['error', 'close'] as const ).forEach( ( message ) => {
         proc.on( message, onQuit( message ) as ( ...args: unknown[] ) => void );
       } );
     }
