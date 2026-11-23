@@ -72,7 +72,7 @@ class RunList extends AppStore {
   };
 
   onUnhandledError = ( { title, error }: { title: string; error: unknown } ): void => {
-    console.log( `Unhandled error:`, error );
+    console.log( 'Unhandled error:', error );
     this.errorTitle = title;
     this.error = error;
   };

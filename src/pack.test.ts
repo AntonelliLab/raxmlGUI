@@ -3,11 +3,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { getConfig } from 'app-builder-lib/out/util/config';
+// @ts-expect-error electron-builder does not declare its pack matchers.
+import { getMainFileMatchers, getNodeModuleFileMatcher } from 'app-builder-lib/out/fileMatcher';
 import type { FileSet } from 'app-builder-lib';
 import { scripts } from '../package.json';
-
-// electron-builder does not declare its pack matchers, so they load untyped.
-const { getMainFileMatchers, getNodeModuleFileMatcher } = require( 'app-builder-lib/out/fileMatcher' );
 
 const root = path.join( __dirname, '..' );
 const fileStat = { isDirectory: () => false };

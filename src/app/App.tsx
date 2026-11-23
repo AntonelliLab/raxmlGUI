@@ -98,7 +98,7 @@ const App = (): React.JSX.Element => {
       message = `Converted your ${run.convertedAlignmentFrom} alignment into fasta!`;
     }
     if ( run.modified ) {
-      message = `Made a copy of your input file, because there were some issues!`;
+      message = 'Made a copy of your input file, because there were some issues!';
     }
     return (
       <Snackbar
@@ -471,7 +471,7 @@ const App = (): React.JSX.Element => {
             >
               {run.exitCode === 0
                 ? 'Calculation finished!'
-                : `Calculation cancelled!`}
+                : 'Calculation cancelled!'}
             </Alert>
           </Snackbar>
           {fileModifiedSnack( run )}

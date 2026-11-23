@@ -101,7 +101,7 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
   console.log( `Try writing to output file '${resultFilePath}'...` );
   try {
     await fs.writeFile( resultFilePath, 'test' );
-    console.log( ` -> writing to output file ok!` );
+    console.log( ' -> writing to output file ok!' );
   }
   catch ( err: unknown ) {
     console.error( 'Error writing to output file:', err );
@@ -192,14 +192,14 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
   const anyMatch = new RegExp( `RAxML_info\\.${outputName}\\.tre` );
   const filenames = await fs.readdir( outputDir );
   const infoFiles = filenames.filter( ( filename ) => anyMatch.test( filename ) );
-  for ( let i = 0; i < infoFiles.length; i++ ) {
-    const infoPath = path.join( outputDir, infoFiles[i] );
-    const newPath = path.join( outputDir, infoFiles[i].replace( '.tre', '.txt' ) );
+  for ( const infoFile of infoFiles ) {
+    const infoPath = path.join( outputDir, infoFile );
+    const newPath = path.join( outputDir, infoFile.replace( '.tre', '.txt' ) );
     await fs.rename( infoPath, newPath );
   }
   // Rename the raxml-ng output files to add .tre or .txt extension
   if ( usesRaxmlNg ) {
-    console.log( `Renaming raxml-ng output files to add .tre or .txt extension...` );
+    console.log( 'Renaming raxml-ng output files to add .tre or .txt extension...' );
     const anyMatch = new RegExp( `${outputName}.raxml` );
     const filenames = await fs.readdir( outputDir );
     const outputFiles = filenames.filter( ( filename ) => anyMatch.test( filename ) );
@@ -208,7 +208,7 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
     const logMatch = new RegExp( `${outputName}.raxml.log` );
     const aPMatch = new RegExp( `${outputName}.raxml.ancestralProbs` );
     const aSMatch = new RegExp( `${outputName}.raxml.ancestralStates` );
-    let renamedFiles = outputFiles.map( ( f ) => {
+    const renamedFiles = outputFiles.map( ( f ) => {
       if ( rbaMatch.test( f ) ) {
         return f;
       }
@@ -216,9 +216,9 @@ export async function startRun( event: IpcMainEvent, { id, args, binaryName, out
                 logMatch.test( f ) ||
                 aPMatch.test( f ) ||
                 aSMatch.test( f ) ) {
-        return ( f += '.txt' );
+        return `${f}.txt`;
       }
-      return ( f += '.tre' );
+      return `${f}.tre`;
     } );
     for ( let i = 0; i < outputFiles.length; i++ ) {
       const infoPath = path.join( outputDir, outputFiles[i] );

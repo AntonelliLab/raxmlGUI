@@ -81,7 +81,7 @@ UR  - https://doi.org/10.1111/2041-210X.13512
 Y2  - 2021/02/18
 ER  - 
 `,
-      txt: `Edler, D, Klein, J, Antonelli, A, Silvestro, D. raxmlGUI 2.0: A graphical interface and toolkit for phylogenetic analyses using RAxML. Methods Ecol Evol. 2021; 12: 373– 377. https://doi.org/10.1111/2041-210X.13512`,
+      txt: 'Edler, D, Klein, J, Antonelli, A, Silvestro, D. raxmlGUI 2.0: A graphical interface and toolkit for phylogenetic analyses using RAxML. Methods Ecol Evol. 2021; 12: 373– 377. https://doi.org/10.1111/2041-210X.13512',
     },
     {
       name: 'RAxML',
@@ -120,7 +120,7 @@ SN  - 1367-4803
 Y2  - 10/17/2019
 UR  - https://doi.org/10.1093/bioinformatics/btu033
 ER  - `,
-      txt: `Alexandros Stamatakis, RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies, Bioinformatics, Volume 30, Issue 9, 1 May 2014, Pages 1312–1313, https://doi.org/10.1093/bioinformatics/btu033`,
+      txt: 'Alexandros Stamatakis, RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies, Bioinformatics, Volume 30, Issue 9, 1 May 2014, Pages 1312–1313, https://doi.org/10.1093/bioinformatics/btu033',
     },
     {
       name: 'RAxML-NG',
@@ -162,7 +162,7 @@ SN  - 1367-4803
 Y2  - 7/17/2020
 UR  - https://doi.org/10.1093/bioinformatics/btz305
 ER  - `,
-      txt: `Alexey M Kozlov, Diego Darriba, Tomáš Flouri, Benoit Morel, Alexandros Stamatakis, RAxML-NG: a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference, Bioinformatics, Volume 35, Issue 21, 1 November 2019, Pages 4453–4455, https://doi.org/10.1093/bioinformatics/btz305`,
+      txt: 'Alexey M Kozlov, Diego Darriba, Tomáš Flouri, Benoit Morel, Alexandros Stamatakis, RAxML-NG: a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference, Bioinformatics, Volume 35, Issue 21, 1 November 2019, Pages 4453–4455, https://doi.org/10.1093/bioinformatics/btz305',
     },
     {
       name: 'ModelTest-NG',
@@ -205,7 +205,7 @@ SN  - 0737-4038
 Y2  - 9/5/2020
 UR  - https://doi.org/10.1093/molbev/msz189
 ER  - `,
-      txt: `Diego Darriba, David Posada, Alexey M Kozlov, Alexandros Stamatakis, Benoit Morel, Tomas Flouri, ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models, Molecular Biology and Evolution, Volume 37, Issue 1, January 2020, Pages 291–294, https://doi.org/10.1093/molbev/msz189`,
+      txt: 'Diego Darriba, David Posada, Alexey M Kozlov, Alexandros Stamatakis, Benoit Morel, Tomas Flouri, ModelTest-NG: A New and Scalable Tool for the Selection of DNA and Protein Evolutionary Models, Molecular Biology and Evolution, Volume 37, Issue 1, January 2020, Pages 291–294, https://doi.org/10.1093/molbev/msz189',
     },
   ];
 

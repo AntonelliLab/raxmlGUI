@@ -135,8 +135,7 @@ async function readalGetFormat( alignmentPath: string ): Promise<string | undefi
   console.log( 'Readal stderr', stderr );
   const replaced = String( stdout ).replace( alignmentPath, '' );
   const formats = ['clustal', 'fasta', 'nbrf', 'nexus', 'mega', 'phylip'];
-  for ( let i = 0; i < formats.length; i++ ) {
-    const f = formats[i];
+  for ( const f of formats ) {
     if ( replaced.includes( f ) ) {
       return f;
     }

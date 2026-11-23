@@ -82,7 +82,7 @@ function AstralTreeCard( {
               backgroundColor: ( theme ) => theme.palette.input.main,
               border: ( theme ) => `1px solid ${theme.palette.input.darker}`,
             }}
-            label={"trees"}
+            label={'trees'}
             color="secondary"
           />
         }

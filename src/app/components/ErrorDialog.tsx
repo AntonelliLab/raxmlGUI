@@ -94,7 +94,7 @@ export default function ErrorDialog( {
           color="secondary"
           autoFocus
         >
-        Report issue on mail
+          Report issue on mail
         </Button>
         <Button
           onClick={handleReportToGithub}
@@ -102,7 +102,7 @@ export default function ErrorDialog( {
           color="secondary"
           autoFocus
         >
-        Report issue on GitHub
+          Report issue on GitHub
         </Button>
         <Button onClick={closeHandler} variant="outlined">
           {closeMessage}
@@ -113,12 +113,12 @@ export default function ErrorDialog( {
   const Message = !reported
     ? (
       <DialogContentText>
-      Please help us solve the issue by reporting it.
+        Please help us solve the issue by reporting it.
       </DialogContentText>
     )
     : (
       <Alert severity="success" sx={{ width: '100%' }}>
-      Thanks for reporting the issue!
+        Thanks for reporting the issue!
       </Alert>
     );
 
