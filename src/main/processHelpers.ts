@@ -150,7 +150,8 @@ export async function runProcess(
         }
         resolve( result ); // Add code last to get through code 0
       };
-      ( ['error', 'exit', 'close'] as const ).forEach( ( message ) => {
+      // Not 'exit': stdout can still deliver the binary's last line after it, and the user-fix match needs that line.
+      ( ['error', 'close'] as const ).forEach( ( message ) => {
         proc.on( message, onQuit( message ) as ( ...args: unknown[] ) => void );
       } );
     }
