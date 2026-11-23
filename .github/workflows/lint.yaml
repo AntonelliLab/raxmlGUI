@@ -26,5 +26,5 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
-      - name: Page render test
-        run: yarn react-test
+      - name: Unit tests
+        run: yarn test
