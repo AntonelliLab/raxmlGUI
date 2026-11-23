@@ -17,12 +17,12 @@ export const isFasta = ( lines: string[] ): boolean =>
   lines[0]?.trim()[0] === '>';
 export const parse = ( lines: string[] ): FastaAlignment => {
   if ( !isFasta( lines ) ) {
-    throw new Error( `Could not parse the file as a FASTA file` );
+    throw new Error( 'Could not parse the file as a FASTA file' );
   }
   let lineIndex = 0;
   const parseTaxon = ( line: string ): string => {
     if ( line[0] !== '>' ) {
-      throw new Error( `Expected a '>' to start a taxon line` );
+      throw new Error( 'Expected a \'>\' to start a taxon line' );
     }
     const taxon = line.substring( 1 );
     if ( !taxon ) {

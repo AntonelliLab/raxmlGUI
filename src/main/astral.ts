@@ -38,7 +38,7 @@ export async function runAstral(
   let exitCode: ProcessExit;
   try {
     console.log( 'arg', arg );
-    console.log( `ASTRAL?` );
+    console.log( 'ASTRAL?' );
     exitCode = await runProcess( id, event, '', javaBin, arg );
     if ( exitCode !== 0 ) {
       if ( exitCode === 'SIGTERM' ) {

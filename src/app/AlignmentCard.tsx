@@ -156,7 +156,7 @@ function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
         component="span"
         sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
       >
-      Parsing... {alignment.numSequencesParsed}{' '}
+        Parsing... {alignment.numSequencesParsed}{' '}
       </Box>
     );
 
@@ -320,7 +320,7 @@ function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
               {alignment.modeltestLoading
                 ? (
                   <MenuItem onClick={closeMenuAndRun( alignment.cancelModelTest )}>
-                  Cancel modeltest
+                    Cancel modeltest
                   </MenuItem>
                 )
                 : null}
@@ -345,14 +345,14 @@ function AlignmentCard( { alignment }: AlignmentCardProps ): React.JSX.Element {
           ? null
           : (
             <Typography variant="caption" color="primary">
-            Partition not complete, click{' '}
+              Partition not complete, click{' '}
               <strong
                 style={{ cursor: 'pointer' }}
                 onClick={alignment.setShowPartition}
               >
-              here
+                here
               </strong>{' '}
-            to edit.
+              to edit.
             </Typography>
           )}
       </CardActions>
@@ -399,7 +399,7 @@ function FinalAlignmentCard( {
         component="span"
         sx={{ color: ( theme ) => theme.palette.primary.secondaryText }}
       >
-      Parsing... {alignment.numSequencesParsed}{' '}
+        Parsing... {alignment.numSequencesParsed}{' '}
       </Box>
     );
 

@@ -65,11 +65,13 @@ interface ModelExtra {
 }
 
 // Merged, not class fields: assigned later, so no own property at construction.
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- deliberate merge, see above
 interface Alignment {
   numSequencesParsed: number;
   model: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- the class half of the merge above
 class Alignment extends InputFile<AlignmentOwner> {
   substitutionModel: RaxmlNgAlignmentSubstitutionModel;
   multistateNumber: MultistateNumber;
@@ -223,8 +225,8 @@ class Alignment extends InputFile<AlignmentOwner> {
       BIN, morph = 3677-3851
     */
     let partitionFileText = '';
-    let site = 1;
-    let index = 0;
+    const site = 1;
+    const index = 0;
     const total = this.length;
     const name = `${this.dataType}_${index}`;
     partitionFileText += `${this.partitionType}, ${name} = ${site}-${total}\n`;

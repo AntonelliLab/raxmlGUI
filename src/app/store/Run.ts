@@ -189,7 +189,7 @@ class Run extends StoreBase {
     )[0]?.name;
   }
 
-  id: number = 0;
+  id = 0;
 
   binary: Binary = new Binary( this );
   numThreads = new NumThreads( this );
@@ -367,7 +367,7 @@ class Run extends StoreBase {
 
   error: ErrorObject | null = null;
 
-  get missing(): "" | "Missing tree, please load one." {
+  get missing(): '' | 'Missing tree, please load one.' {
     if ( !this.tree.notAvailable && !this.tree.filePath ) {
       return 'Missing tree, please load one.';
     }
@@ -1430,6 +1430,7 @@ Results saved to: ${this.outputDir}
 
   alignments: Alignment[] = [];
   astralTree: AstralTree | null | undefined = undefined;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types -- the annotation keeps the type undefined, not implicit any
   code: undefined = undefined;
   data = '';
   path: string | undefined = undefined;

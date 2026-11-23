@@ -160,7 +160,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                       }}
                       onClick={run.loadAlignmentFiles}
                     >
-                    Load alignment
+                      Load alignment
                     </Button>
                   )
                   : null}
@@ -192,7 +192,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                     }}
                     onClick={run.loadAstralTree}
                   >
-                  Load input trees
+                    Load input trees
                   </Button>
                 </Box>
               )}
@@ -220,7 +220,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                     onClick={run.loadAlignmentFiles}
                     title="Concatenate new alignments and create partition"
                   >
-                  Add alignment
+                    Add alignment
                   </Button>
                 </Box>
               )}
@@ -258,7 +258,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                       onClick={run.loadAlignmentFiles}
                       title="Concatenate new alignments and automatically generate a partition"
                     >
-                    Add alignment
+                      Add alignment
                     </Button>
                   </Box>
                 )}
@@ -286,7 +286,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                       onClick={run.loadPartitionFile}
                       title="Load a partition file for the current alignment"
                     >
-                    Load partition
+                      Load partition
                     </Button>
                   </Box>
                 )}
@@ -340,7 +340,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                           }}
                           onClick={run.loadTreeFile}
                         >
-                      Add Tree
+                          Add Tree
                         </Button>
                       </Box>
                     )}
@@ -390,7 +390,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                           }}
                           onClick={run.loadBackboneConstraintFile}
                         >
-                      Add Backbone Constraint
+                          Add Backbone Constraint
                         </Button>
                       </Box>
                     )}
@@ -440,7 +440,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                           }}
                           onClick={run.loadMultifurcatingConstraintFile}
                         >
-                      Add Multifurcating Constraint
+                          Add Multifurcating Constraint
                         </Button>
                       </Box>
                     )}

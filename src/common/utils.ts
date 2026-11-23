@@ -13,7 +13,7 @@ export const is: Is = {
 };
 
 export const platform = <T>(
-  object: { [key: string]: T | ( () => T ) | undefined },
+  object: Record<string, T | ( () => T ) | undefined>,
 ): T => {
   let platformKey: string = process.platform;
   if ( is.macos ) {

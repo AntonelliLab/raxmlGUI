@@ -67,14 +67,14 @@ const Raxml = ( { run, store }: RaxmlProps ): React.JSX.Element => {
               variant="outlined"
               onClick={run.cancelModeltestOnAlignment}
             >
-            Cancel modeltest
+              Cancel modeltest
             </Button>
           )
           : null}
         {run.running
           ? (
             <Button variant="outlined" onClick={run.cancel}>
-            Cancel
+              Cancel
             </Button>
           )
           : null}
