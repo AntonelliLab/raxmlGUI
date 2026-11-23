@@ -41,6 +41,7 @@ import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
 import type { ErrorObject } from 'serialize-error';
 import type { AstralSuccessPayload } from '../../main/astral';
+import type { StateReport } from '../../main/getActiveState';
 import type { RunOutputPayload } from '../../main/processHelpers';
 import type { RunFinishedPayload, RunErrorPayload } from '../../main/startRun';
 
@@ -1680,17 +1681,11 @@ Results saved to: ${this.outputDir}
     this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
-  generateReport = ( { maxStdoutLength = 1000 }: { maxStdoutLength?: number } = {} ): { command: string; stdout: string; } => {
-    const { command, stdout } = this;
-    return {
-      command,
-      stdout:
-        stdout.length > maxStdoutLength
-          ? `[${
-            stdout.length - maxStdoutLength
-          } more characters]...${stdout.slice( -maxStdoutLength )}`
-          : stdout,
-    };
+  generateReport = ( { maxStdoutLength = 1000 }: { maxStdoutLength?: number } = {} ): StateReport => {
+    const tail = ( text: string ): string => ( text.length > maxStdoutLength
+      ? `[${text.length - maxStdoutLength} more characters]...${text.slice( -maxStdoutLength )}`
+      : text );
+    return { command: this.command, stdout: tail( this.stdout ), stderr: tail( this.stderr ) };
   };
 }
 

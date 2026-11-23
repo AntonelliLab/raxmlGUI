@@ -19,12 +19,22 @@ ${fenced( activeState )}
 Process: renderer`;
 }
 
+export function githubIssueTitle( error: Error ): string {
+  const firstLine = String( error.message ?? '' ).split( '\n' )[0].trim();
+  const title = firstLine
+    ? `${error.name}: ${firstLine}`
+    : error.name;
+  return title.length > 100
+    ? `${title.slice( 0, 99 )}…`
+    : title;
+}
+
 export async function reportIssueToGitHub( error: Error ): Promise<void> {
   const { rendererBridge, store } = window;
   const body = githubIssueBody( error, store.generateReport() );
   const info = await rendererBridge.debugInfo();
   const url = new URL( 'https://github.com/AntonelliLab/raxmlGUI/issues/new' );
-  url.searchParams.set( 'title', error.name );
+  url.searchParams.set( 'title', githubIssueTitle( error ) );
   url.searchParams.set( 'body', `${body}\n${info}` );
   await rendererBridge.openExternal( url.toString() );
 }
