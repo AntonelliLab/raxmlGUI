@@ -63,6 +63,10 @@ export function send(
   channel: string,
   data: { error?: unknown; [key: string]: unknown },
 ): void {
+  // A run can outlive its window; sending to a destroyed WebContents throws.
+  if ( event.sender.isDestroyed() ) {
+    return;
+  }
   if ( !data.error ) {
     event.sender.send( channel, data );
     return;
