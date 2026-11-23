@@ -93,6 +93,7 @@ ipcMain.handle( ipc.DEBUG_INFO, (): string => {
     version: app.getVersion(),
     electron: process.versions.electron,
     platform: process.platform,
+    arch: process.arch,
     release: os.release(),
     locale: app.getLocale(),
   } );
