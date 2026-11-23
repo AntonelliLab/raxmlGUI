@@ -64,7 +64,8 @@ const defaultBridge = withBridgeEvents( { host } );
 let bridge = defaultBridge;
 
 // The setter serves the tests that still assign a bridge directly; each conversion ticket moves its files to installBridge.
-Object.defineProperty( window, 'rendererBridge', {
+// A `@vitest-environment node` file has no window; it gets no page bridge.
+Object.defineProperty( globalThis.window ?? {}, 'rendererBridge', {
   configurable: true,
   enumerable: true,
   get() {
