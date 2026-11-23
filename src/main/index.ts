@@ -128,7 +128,8 @@ function initialize(): void {
   app.on( 'activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if ( mainWindow === null ) {
+    // macOS can emit activate before ready; the ready handler opens the window then.
+    if ( app.isReady() && mainWindow === null ) {
       createMainWindow();
     }
   } );
