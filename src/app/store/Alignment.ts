@@ -14,7 +14,7 @@ import {
 } from './AlignmentOptions';
 import { runEvents } from './StoreBase';
 import { getFinalDataType } from '../../common/typecheckAlignment';
-import UserFixError from '../../common/errors';
+import UserFixError, { restoreUserFixError } from '../../common/errors';
 import { host } from './host';
 import type { DataType } from '../../common/typecheckAlignment';
 import type { AlignmentSequence } from '../../main/parseAlignment';
@@ -432,7 +432,8 @@ class Alignment extends InputFile<AlignmentOwner> {
           }
         }
       } );
-    } catch ( error: unknown ) {
+    } catch ( bridgeError: unknown ) {
+      const error = restoreUserFixError( bridgeError );
       runInAction( () => {
         console.error( `Error loading file '${this.path}':`, error );
         this.error = error;

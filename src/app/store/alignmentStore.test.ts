@@ -434,6 +434,14 @@ describe( 'Alignment loadParsedAlignment', () => {
     expect( run.alignments ).toEqual( [] );
     expect( listeners[runEvents.onModelSelectionSuccess] ).toEqual( [] );
   } );
+
+  it( 'a user-fix error from main stays a user-fix error after the bridge', async () => {
+    const message = "The alignment file '/data/primates.fasta' does not exist.";
+    const { run } = await load( async () => {
+      throw new Error( `Error invoking remote method 'alignment-parse': UserFixError: ${message}` );
+    } );
+    expect( run.error ).toMatchObject( { isUserFix: true, message } );
+  } );
 } );
 
 describe( 'Alignment model selection', () => {
