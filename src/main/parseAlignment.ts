@@ -94,8 +94,8 @@ export async function parseAlignment(
     taxons.set( sequence.taxon, index );
   } );
   if ( modified ) {
-    const baseName = path.basename( actualPath, path.extname( actualPath ) );
-    newFilePath = actualPath.replace( baseName, `${baseName}_modified` );
+    const { dir, name, ext } = path.parse( actualPath );
+    newFilePath = path.join( dir, `${name}_modified${ext}` );
     await write( newFilePath, alignment );
   }
   const change = newFilePath

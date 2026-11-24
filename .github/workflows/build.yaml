@@ -42,6 +42,10 @@ jobs:
       - name: Install deps
         run: yarn
 
+      # lint.yaml runs the unit tests on Linux only; path handling differs on Windows and macOS.
+      - name: Unit tests
+        run: yarn test
+
       - name: Download binaries
         run: npm run download-binaries
 
