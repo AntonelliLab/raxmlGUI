@@ -41,13 +41,17 @@ it( 'send skips a destroyed window instead of throwing', () => {
 } );
 
 // A stand-in binary: node prints the fatal line, then exits with RAxML's failure code.
-const failWith = ( line: string ) => runProcess(
-  'test',
-  eventWith( false ).event,
-  path.dirname( process.execPath ),
-  path.basename( process.execPath ),
-  ['-e', `process.stdout.write(${JSON.stringify( line )}); process.exit(255)`],
-);
+// The line goes through the env and the script has no quotes or spaces: on Windows the args pass through cmd.exe.
+const failWith = ( line: string ) => {
+  vi.stubEnv( 'RAXMLGUI_TEST_STDOUT', line );
+  return runProcess(
+    'test',
+    eventWith( false ).event,
+    path.dirname( process.execPath ),
+    path.basename( process.execPath ),
+    ['-e', 'process.exitCode=255,process.stdout.write(process.env.RAXMLGUI_TEST_STDOUT)'],
+  );
+};
 
 it( 'runProcess rejects with a UserFixError when the binary prints a known cause', async () => {
   await expect( failWith( 'ERROR: Bad base (_) at site 99 of sequence 1\n' ) ).rejects.toMatchObject( {

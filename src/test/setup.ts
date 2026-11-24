@@ -13,8 +13,9 @@ type RunEventName = keyof typeof runEvents;
 const runEventNames = Object.values( runEvents ) as RunEventName[];
 const runEventStub = () => (): void => {};
 
+// Pinned off Windows: the store tests expect the macOS/Linux binary list (raxml-ng); host.test.ts covers Windows.
 const host: HostInfo = {
-  windows: process.platform === 'win32',
+  windows: false,
   release: os.release(),
   arch: os.arch(),
   cpuModel: os.cpus()[0].model,
