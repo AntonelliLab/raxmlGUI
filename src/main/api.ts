@@ -34,6 +34,8 @@ if ( !is.development ) {
   Sentry.init( {
     dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
     maxValueLength: 2000,
+    release: `raxmlGUI@${app.getVersion()}`,
+    dataCollection: { userInfo: false },
   } );
 }
 const fs = _fs.promises;

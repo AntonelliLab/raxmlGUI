@@ -11,9 +11,7 @@ import store from './store';
 import './bootstrap';
 
 if ( process.env.NODE_ENV !== 'development' ) {
-  Sentry.init( {
-    dsn: 'https://d92efa46c2ba43f38250b202c791a2c2@o117148.ingest.sentry.io/6517975',
-  } );
+  Sentry.init();
 }
 
 const Index = (): React.JSX.Element => {

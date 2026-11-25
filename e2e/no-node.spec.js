@@ -29,11 +29,14 @@ test.describe('Node shut out', () => {
           : null,
       bridgeRequire: typeof window.require,
       bridgeProcess: typeof window.process,
+      // @ts-expect-error set by the @sentry/electron auto-registered preload
+      sentryIpc: typeof window.__SENTRY_IPC__,
     }));
 
     expect(probe.require).toBe('undefined');
     expect(probe.bridgeRequire).toBe('undefined');
     expect(probe.bridgeProcess).toBe('undefined');
     expect(probe.processVersions && probe.processVersions.node).toBeFalsy();
+    expect(probe.sentryIpc).toBe('object');
   });
 });
