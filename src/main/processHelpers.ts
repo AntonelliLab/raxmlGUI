@@ -34,11 +34,11 @@ interface RunProcessHooks {
   onStdErr?: ( content: string ) => void;
 }
 
+// Packaged: electron-builder's extraResources copies static/ beside the asar. Unpacked: out/main/ sits two levels below the repo root.
 export function getStaticDir(): string {
-  if ( process.env.RAXMLGUI_E2E === '1' ) {
-    return path.join( __dirname, '..', '..', 'static' );
-  }
-  return __static;
+  return app.isPackaged
+    ? path.join( process.resourcesPath, 'static' )
+    : path.join( __dirname, '..', '..', 'static' );
 }
 
 export const get_space_safe_binary_path = ( bin_path: string ): string => {
