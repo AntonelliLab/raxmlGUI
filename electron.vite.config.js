@@ -23,6 +23,10 @@ export default defineConfig( ( { command } ) => ( {
       __static: JSON.stringify( resolve( __dirname, 'static' ) ),
     },
     plugins: sourceMapUpload( command ),
+    build: {
+      // electron-store 12 and conf are ESM-only, so a CommonJS main bundles them instead of calling require().
+      externalizeDeps: { exclude: ['electron-store', 'conf'] },
+    },
   },
   preload: {
     build: {
