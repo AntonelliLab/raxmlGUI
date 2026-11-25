@@ -64,7 +64,7 @@
     "classnames": "^2.3.2",
     "clean-stack": "3.0.1",
     "d3-array": "^3.2.5",
-    "electron-log": "^4.4.8",
+    "electron-log": "^5.4.4",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.8.12",
     "filenamify": "^4.3.0",
