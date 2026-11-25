@@ -96,7 +96,7 @@
     "@vitejs/plugin-react": "5.2.0",
     "dotenv": "^17.4.2",
     "electron": "^45.2.3",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^26.18.1",
     "electron-vite": "^6.0.0",
     "eslint": "^8.57.0",
     "eslint-config-react-app": "7.0.1",
@@ -134,7 +134,8 @@
       "!static{,/**/*}",
       "!scripts{,/**/*}",
       "!test-results{,/**/*}",
-      "!playwright-report{,/**/*}"
+      "!playwright-report{,/**/*}",
+      "!node_modules/@oxc-parser{,/**/*}"
     ],
     "extraResources": [
       "assets/"

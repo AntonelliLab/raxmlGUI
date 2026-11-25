@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 
-import { getConfig } from 'app-builder-lib/out/util/config';
+import { getConfig } from 'app-builder-lib/out/util/config/config';
 import type { FileSet } from 'app-builder-lib';
 import { scripts } from '../package.json';
 
