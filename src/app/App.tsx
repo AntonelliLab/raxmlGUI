@@ -171,7 +171,7 @@ const App = (): React.JSX.Element => {
             >
               <Tabs
                 value={store.activeIndex}
-                onChange={( event, value ) => store.setActive( value )}
+                onChange={( _event, value ) => store.setActive( value )}
               >
                 {TabItems}
               </Tabs>

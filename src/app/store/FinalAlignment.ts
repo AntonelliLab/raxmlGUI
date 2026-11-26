@@ -103,10 +103,7 @@ class FinalAlignment {
     const setMethod = this.fillTaxonGapsWithEmptySeqeunces
       ? union
       : intersection;
-    return setMethod.apply(
-      setMethod,
-      this.run.alignments.map( ( { taxons } ) => taxons ),
-    );
+    return setMethod( ...this.run.alignments.map( ( { taxons } ) => taxons ) );
   }
 
   get numSequences(): number {

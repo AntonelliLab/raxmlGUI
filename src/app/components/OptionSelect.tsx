@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import type { SxProps, Theme } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';

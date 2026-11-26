@@ -141,7 +141,7 @@ async function readalGetFormat( alignmentPath: string ): Promise<string | undefi
       return f;
     }
   }
-  return;
+  return undefined;
 }
 // Function to convert an alignment to fasta with readal
 async function convertAlignment( alignmentPath: string ): Promise<string> {

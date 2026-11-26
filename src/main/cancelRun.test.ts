@@ -31,7 +31,7 @@ it( 'cancelRun stops that run and sends no terminal event', async () => {
 } );
 
 it( 'a late exit from a cancelled run leaves the next run tracked', () => {
-  const oldProc = { kill() { this.killed = true; } };
+  const oldProc: { killed?: boolean; kill(): void } = { kill() { this.killed = true; } };
   const nextProc: { killed?: boolean; kill(): void } = { kill() { this.killed = true; } };
   const token = beginRun( 8 );
   trackRun( 8, oldProc );
