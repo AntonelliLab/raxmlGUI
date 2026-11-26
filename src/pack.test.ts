@@ -4,7 +4,7 @@ import path from 'path';
 
 import { getConfig } from 'app-builder-lib/out/util/config/config';
 import type { FileSet } from 'app-builder-lib';
-import { scripts } from '../package.json';
+import { build, scripts } from '../package.json';
 
 // electron-builder does not declare its pack matchers, so they load untyped.
 const { getMainFileMatchers, getNodeModuleFileMatcher } = require( 'app-builder-lib/out/fileMatcher' );
@@ -99,6 +99,17 @@ it( 'packs the built shell and the production dependencies', async () => {
       to: 'static/bin',
     },
   ] );
+} );
+
+it( 'sets the Electron Fuses of the packaged app', () => {
+  expect( build.electronFuses ).toEqual( {
+    runAsNode: false,
+    enableCookieEncryption: true,
+    enableNodeOptionsEnvironmentVariable: false,
+    enableNodeCliInspectArguments: false,
+    enableEmbeddedAsarIntegrityValidation: true,
+    onlyLoadAppFromAsar: true,
+  } );
 } );
 
 it( 'pack scripts build the shell, then run electron-builder', () => {
