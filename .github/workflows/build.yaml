@@ -86,7 +86,11 @@ jobs:
         run: |
           [ -n "$CSC_LINK" ] || unset CSC_LINK CSC_KEY_PASSWORD
           force=()
-          [ "${{ matrix.platform }}" = mac ] && [ "$REQUIRE_NOTARIZE" = true ] && force=(-c.forceCodeSigning=true)
+          if [ "${{ matrix.platform }}" = mac ] && [ "$REQUIRE_NOTARIZE" = true ]; then
+            force=(-c.forceCodeSigning=true)
+            # electron-builder skips signing whenever GITHUB_BASE_REF is set. Only same-repo PRs reach here; fork PRs get no secrets.
+            export CSC_FOR_PULL_REQUEST=true
+          fi
           yarn electron-builder --${{ matrix.platform }} \
             --publish ${{ startsWith(github.ref, 'refs/tags/v') && 'always' || 'never' }} \
             "${force[@]}"
