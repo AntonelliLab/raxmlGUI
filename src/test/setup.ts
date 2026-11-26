@@ -13,8 +13,9 @@ type RunEventName = keyof typeof runEvents;
 const runEventNames = Object.values( runEvents ) as RunEventName[];
 const runEventStub = () => (): void => {};
 
+// Pinned off Windows: the store tests expect the macOS/Linux binary list (raxml-ng); host.test.ts covers Windows.
 const host: HostInfo = {
-  windows: process.platform === 'win32',
+  windows: false,
   release: os.release(),
   arch: os.arch(),
   cpuModel: os.cpus()[0].model,
@@ -64,7 +65,8 @@ const defaultBridge = withBridgeEvents( { host } );
 let bridge = defaultBridge;
 
 // The setter serves the tests that still assign a bridge directly; each conversion ticket moves its files to installBridge.
-Object.defineProperty( window, 'rendererBridge', {
+// A `@vitest-environment node` file has no window; it gets no page bridge.
+Object.defineProperty( globalThis.window ?? {}, 'rendererBridge', {
   configurable: true,
   enumerable: true,
   get() {

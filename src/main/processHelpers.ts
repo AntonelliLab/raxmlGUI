@@ -8,6 +8,7 @@ import * as ipc from '../constants/ipc';
 import { is, platform } from '../common/utils';
 import UserFixError from '../common/errors';
 import { activeWindow } from './utils/utils';
+import { userFixMessage } from './binaryErrors';
 import {
   forgetRun,
   runResult,
@@ -34,11 +35,11 @@ interface RunProcessHooks {
   onStdErr?: ( content: string ) => void;
 }
 
+// Packaged: electron-builder's extraResources copies static/ beside the asar. Unpacked: out/main/ sits two levels below the repo root.
 export function getStaticDir(): string {
-  if ( process.env.RAXMLGUI_E2E === '1' ) {
-    return path.join( __dirname, '..', '..', 'static' );
-  }
-  return __static;
+  return app.isPackaged
+    ? path.join( process.resourcesPath, 'static' )
+    : path.join( __dirname, '..', '..', 'static' );
 }
 
 export const get_space_safe_binary_path = ( bin_path: string ): string => {
@@ -63,6 +64,10 @@ export function send(
   channel: string,
   data: { error?: unknown; [key: string]: unknown },
 ): void {
+  // A run can outlive its window; sending to a destroyed WebContents throws.
+  if ( event.sender.isDestroyed() ) {
+    return;
+  }
   if ( !data.error ) {
     event.sender.send( channel, data );
     return;
@@ -96,10 +101,11 @@ export async function runProcess(
       const proc = spawnProcess( binaryDir, binaryName, args );
       trackRun( id, proc );
       let exited = false;
-      let unwritableFile: RegExpMatchArray | null = null;
+      // Last stdout only: the binary prints its fatal reason just before exiting.
+      let stdoutTail = '';
       proc.stdout.on( 'data', ( buffer: string | Buffer ) => {
         const content = String( buffer );
-        unwritableFile = unwritableFile || content.match( /The file (.+?) RAxML wants to open for writing or appending can not be opened/ );
+        stdoutTail = ( stdoutTail + content ).slice( -8192 );
         console.log( 'on stdout:', content );
         onStdOut( content );
         send( event, ipc.RUN_STDOUT, { id, content } );
@@ -133,8 +139,9 @@ export async function runProcess(
           resolve( result );
           return;
         }
-        if ( unwritableFile && result instanceof Error ) {
-          reject( new UserFixError( `RAxML could not write to the output file '${unwritableFile[1]}'. Check that the output folder is writable and that the file is not open in another program.` ) );
+        const fixMessage = result instanceof Error && userFixMessage( stdoutTail );
+        if ( fixMessage ) {
+          reject( new UserFixError( fixMessage ) );
           return;
         }
         if ( message === 'error' || result instanceof Error ) {
@@ -143,7 +150,8 @@ export async function runProcess(
         }
         resolve( result ); // Add code last to get through code 0
       };
-      ( ['error', 'exit', 'close'] as const ).forEach( ( message ) => {
+      // Not 'exit': stdout can still deliver the binary's last line after it, and the user-fix match needs that line.
+      ( ['error', 'close'] as const ).forEach( ( message ) => {
         proc.on( message, onQuit( message ) as ( ...args: unknown[] ) => void );
       } );
     }

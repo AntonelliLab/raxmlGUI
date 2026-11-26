@@ -23,7 +23,7 @@ yarn download-binaries
 yarn test:e2e
 ```
 
-The launch sets `RAXMLGUI_E2E=1`. That skips auto-update checks and points the main process at the repo `static/` directory (example files, binaries, and test output). The built page loads that example alignment from the same flag.
+The launch sets `RAXMLGUI_E2E=1`. That skips auto-update checks. The unpacked main process reads example files and binaries from the repo `static/` directory and writes test output there. The built page loads that example alignment from the same flag.
 
 
 ## Input formats

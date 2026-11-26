@@ -243,13 +243,15 @@ describe( 'RunList', () => {
     vi.mocked( console.log ).mockRestore();
   } );
 
-  it( 'generateReport reports the active run with truncated stdout', () => {
+  it( 'generateReport reports the active run with truncated stdout and stderr', () => {
     const list = new RunList();
     runInAction( () => {
       list.activeRun.stdout = 'abcdef';
+      list.activeRun.stderr = 'ghijkl';
     } );
     const report = list.generateReport( { maxStdoutLength: 3 } );
     expect( report.stdout ).toBe( '[3 more characters]...def' );
+    expect( report.stderr ).toBe( '[3 more characters]...jkl' );
     expect( report.command ).toBe( list.activeRun.command );
     expect( list.generateReport().stdout ).toBe( 'abcdef' );
   } );

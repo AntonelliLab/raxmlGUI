@@ -3,6 +3,7 @@ interface DebugInfoInput {
   version: string;
   electron: string;
   platform: string;
+  arch: string;
   release: string;
   locale: string;
 }
@@ -12,11 +13,12 @@ export function debugInfo( {
   version,
   electron,
   platform,
+  arch,
   release,
   locale,
 }: DebugInfoInput ): string {
   return `${name} ${version}
 Electron ${electron}
-${platform} ${release}
+${platform} ${arch} ${release}
 Locale: ${locale}`;
 }

@@ -8,6 +8,7 @@ import { activeWindow } from './utils/utils';
 export interface StateReport {
   command: string;
   stdout: string;
+  stderr: string;
 }
 
 interface StateReportPayload {

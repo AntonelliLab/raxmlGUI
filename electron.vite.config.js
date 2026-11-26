@@ -18,10 +18,6 @@ function sourceMapUpload( command ) {
 
 export default defineConfig( ( { command } ) => ( {
   main: {
-    // electron-webpack injected this path. The main process still reads the repo's static files through it.
-    define: {
-      __static: JSON.stringify( resolve( __dirname, 'static' ) ),
-    },
     plugins: sourceMapUpload( command ),
     build: {
       // electron-store 12 and conf are ESM-only, so a CommonJS main bundles them instead of calling require().

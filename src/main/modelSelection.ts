@@ -65,7 +65,9 @@ export async function runModelSelection(
     // Remove binary checkpoint as that may be invalid
     await fs.unlink( `${outputPath}.ckp` );
   }
-  catch ( _err: unknown ) { }
+  catch ( _err: unknown ) {
+    // No checkpoint file to remove is fine
+  }
   const args: string[] = [];
   if ( dataType === 'nucleotide' ) {
     args.push( '-d', 'nt' );
@@ -86,12 +88,15 @@ export async function runModelSelection(
   const onStdOut = ( content: string ): void => {
     stdOuts.push( content );
   };
-  let exitCode: ProcessExit = 0;
+  // The page report shows the active run's command, so the error carries the modeltest-ng one.
+  // Its stderr already reaches the report through RUN_STDERR.
+  const modeltestCommand = `\nCommand: ${binaryName} ${args.join( ' ' )}`;
+  let exitCode: ProcessExit;
   try {
     if ( !stillRunning( id, token ) ) {
       return;
     }
-    console.log( `Run modeltest-ng with args:`, args );
+    console.log( 'Run modeltest-ng with args:', args );
     exitCode = await runProcess( id, event, binaryDir, binaryName, args, {
       onStdOut,
     } );
@@ -99,7 +104,7 @@ export async function runModelSelection(
       return;
     }
     if ( exitCode !== 0 ) {
-      throw new Error( `Error trying to run modeltest-ng, exited with code '${exitCode}'.` );
+      throw new Error( `Error trying to run modeltest-ng, exited with code '${exitCode}'.${modeltestCommand}` );
     }
   }
   catch ( err: unknown ) {
@@ -128,9 +133,9 @@ export async function runModelSelection(
     } satisfies ModelSelectionSuccessPayload );
   }
   catch ( err: unknown ) {
-    console.error( `Couldn't parse best models from modeltest-ng output:`, err );
+    console.error( 'Couldn\'t parse best models from modeltest-ng output:', err );
     console.log( 'output:', commands );
-    const error = new Error( `Couldn't parse best models from modeltest-ng output. Check alignment log.` );
+    const error = new Error( `Couldn't parse best models from modeltest-ng output. Check alignment log.${modeltestCommand}` );
     error.name = 'Modeltest error';
     reportFailure( error );
   }

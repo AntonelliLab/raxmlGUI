@@ -17,6 +17,14 @@ interface Alignment {
 }
 
 export const parseAlignment = async ( filePath: string ): Promise<Alignment> => {
+  try {
+    await fs.promises.access( filePath );
+  } catch ( err: unknown ) {
+    if ( ( err as NodeJS.ErrnoException ).code !== 'ENOENT' ) {
+      throw err;
+    }
+    throw new UserFixError( `The alignment file '${filePath}' does not exist. It may have been moved, renamed or deleted after it was added: ${( err as Error ).message}` );
+  }
   return new Promise( ( resolve, reject ) => {
     const rl = readline.createInterface( {
       input: fs.createReadStream( filePath ),

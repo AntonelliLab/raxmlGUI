@@ -4,4 +4,4 @@ interface AppStoreSchema {
   darkMode?: boolean;
 }
 
-export const appStore: Store<AppStoreSchema> = new Store();
+export const appStore = new Store<AppStoreSchema>();

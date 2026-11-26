@@ -106,7 +106,7 @@ const Output = ( { run }: OutputProps ): React.JSX.Element => {
         ? (
           <Box component="form" my={1}>
             <Button onClick={run.openOutputDir} variant="outlined">
-            Open folder
+              Open folder
             </Button>
           </Box>
         )

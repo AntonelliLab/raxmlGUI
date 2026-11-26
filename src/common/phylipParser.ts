@@ -92,7 +92,7 @@ export const parse = ( lines: string[] ): PhylipAlignment => {
     } else {
       // Should be sequential
       if ( isInterleaved ) {
-        throw new UserFixError( `File is specified as interleaved in header but no empty lines separating interleaved sections found` );
+        throw new UserFixError( 'File is specified as interleaved in header but no empty lines separating interleaved sections found' );
       }
       // Is sequential, check consistent number of lines for each taxa
       // (the total number of sequence lines should be a multiple of the number of sequences specified)
@@ -145,7 +145,7 @@ export const parse = ( lines: string[] ): PhylipAlignment => {
     return { taxon, code };
   };
   const checkIsRelaxed = (): boolean => {
-    console.log( `Checking if strict or relaxed from first sequence...` );
+    console.log( 'Checking if strict or relaxed from first sequence...' );
     // Check the length of the code part assuming strict and relaxe and see which matches
     const seqIfStrict = parseSeqAssumingStrictName( 0 );
     if ( seqIfStrict.code.length === length ) {

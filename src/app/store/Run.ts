@@ -41,6 +41,7 @@ import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
 import type { ErrorObject } from 'serialize-error';
 import type { AstralSuccessPayload } from '../../main/astral';
+import type { StateReport } from '../../main/getActiveState';
 import type { RunOutputPayload } from '../../main/processHelpers';
 import type { RunFinishedPayload, RunErrorPayload } from '../../main/startRun';
 
@@ -189,7 +190,7 @@ class Run extends StoreBase {
     )[0]?.name;
   }
 
-  id: number = 0;
+  id = 0;
 
   binary: Binary = new Binary( this );
   numThreads = new NumThreads( this );
@@ -367,7 +368,7 @@ class Run extends StoreBase {
 
   error: ErrorObject | null = null;
 
-  get missing(): "" | "Missing tree, please load one." {
+  get missing(): '' | 'Missing tree, please load one.' {
     if ( !this.tree.notAvailable && !this.tree.filePath ) {
       return 'Missing tree, please load one.';
     }
@@ -539,8 +540,8 @@ class Run extends StoreBase {
   }
 
   clearShowModified = (): void => {
-    for ( let i = 0; i < this.alignments.length; i++ ) {
-      this.alignments[i].clearModified();
+    for ( const alignment of this.alignments ) {
+      alignment.clearModified();
     }
   };
 
@@ -1000,7 +1001,7 @@ class Run extends StoreBase {
           first.push( '-g', quote( this.multifurcatingConstraint.filePath, { windows } ) );
         }
         break;
-      case 'ML+tBS': // ML + thorough bootstrap
+      case 'ML+tBS': { // ML + thorough bootstrap
         // params: [params.runs, params.reps, params.brL, params.outGroup],
         // cmd= """cd %s %s \
         // &&%s %s -b %s %s %s -p %s -N %s %s -s %s -n %s %s -w %s %s -O && cd %s \
@@ -1114,7 +1115,8 @@ class Run extends StoreBase {
         third.push( '-w', quote( this.outputDir, { windows } ) );
 
         break;
-      case 'BS+con': // Bootstrap + consensus
+      }
+      case 'BS+con': { // Bootstrap + consensus
         // params: [params.reps, params.brL, params.outGroup],
         // BStrees_file= """  "%sRAxML_bootstrap.%s"    """ % (path_dirsimple, out_file)
         // cmd= """cd %s %s \
@@ -1187,6 +1189,7 @@ class Run extends StoreBase {
           second.push( '-g', quote( this.multifurcatingConstraint.filePath, { windows } ) );
         }
         break;
+      }
       case 'AS': // Ancestral states
         // params: [params.tree],
         // cmd = """cd %s %s &&%s %s -f A -t "%s" -s %s %s -n %s -O -w %s %s %s""" \
@@ -1428,6 +1431,7 @@ Results saved to: ${this.outputDir}
 
   alignments: Alignment[] = [];
   astralTree: AstralTree | null | undefined = undefined;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types -- the annotation keeps the type undefined, not implicit any
   code: undefined = undefined;
   data = '';
   path: string | undefined = undefined;
@@ -1677,17 +1681,11 @@ Results saved to: ${this.outputDir}
     this.useMultifurcatingConstraint = !this.useMultifurcatingConstraint;
   };
 
-  generateReport = ( { maxStdoutLength = 1000 }: { maxStdoutLength?: number } = {} ): { command: string; stdout: string; } => {
-    const { command, stdout } = this;
-    return {
-      command,
-      stdout:
-        stdout.length > maxStdoutLength
-          ? `[${
-            stdout.length - maxStdoutLength
-          } more characters]...${stdout.slice( -maxStdoutLength )}`
-          : stdout,
-    };
+  generateReport = ( { maxStdoutLength = 1000 }: { maxStdoutLength?: number } = {} ): StateReport => {
+    const tail = ( text: string ): string => ( text.length > maxStdoutLength
+      ? `[${text.length - maxStdoutLength} more characters]...${text.slice( -maxStdoutLength )}`
+      : text );
+    return { command: this.command, stdout: tail( this.stdout ), stderr: tail( this.stderr ) };
   };
 }
 

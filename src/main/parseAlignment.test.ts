@@ -1,3 +1,4 @@
+import path from 'path';
 import { expect, it } from 'vitest';
 import { parseAlignment } from './parseAlignment';
 import type { Alignment } from './parseAlignment';
@@ -80,11 +81,11 @@ it( 'parseAlignment reports the written file when it renames a taxon', async () 
   } ) );
 
   expect( written ).toEqual( {
-    filePath: '/data/primates_modified.fasta',
+    filePath: path.join( '/data', 'primates_modified.fasta' ),
     taxon: 'A_B',
   } );
   expect( parsed.change ).toEqual( {
-    newFilePath: '/data/primates_modified.fasta',
+    newFilePath: path.join( '/data', 'primates_modified.fasta' ),
     format: 'fasta',
     converted: undefined,
     modified: true,
@@ -92,6 +93,22 @@ it( 'parseAlignment reports the written file when it renames a taxon', async () 
       'Illegal characters in sequence name = taxon \'A B\' found.',
     ],
   } );
+} );
+
+it.each( [
+  [ '/tmp/abc/abc.fas', path.join( '/tmp/abc', 'abc_modified.fas' ) ],
+  [ '/tmp/abc ML/abc.fas', path.join( '/tmp/abc ML', 'abc_modified.fas' ) ],
+] )( 'parseAlignment writes the modified file beside %s when a parent folder contains its base name', async ( filePath, expected ) => {
+  const alignment = { sequences: [ { taxon: 'A B', code: 'AAAA' } ] };
+  let writtenPath;
+  const parsed = await parseAlignment( 'align-1', filePath, tools( async () => alignment as Alignment, {
+    write: async ( writePath ) => {
+      writtenPath = writePath;
+    },
+  } ) );
+
+  expect( writtenPath ).toBe( expected );
+  expect( parsed.change?.newFilePath ).toBe( expected );
 } );
 
 it( 'parseAlignment numbers a repeated taxon name', async () => {

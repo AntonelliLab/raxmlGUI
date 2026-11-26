@@ -188,7 +188,7 @@ function PartitionEditor( {
                 title="Clear partition entries"
                 onClick={partition.reset}
               >
-              Reset
+                Reset
               </Button>
             </Grid>
           )}
