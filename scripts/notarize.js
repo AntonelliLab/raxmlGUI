@@ -32,6 +32,13 @@ exports.default = async function notarizing(context) {
   const appleIdPassword = process.env.APPLEIDPASS;
   const teamId = process.env.APPLEIDTEAM;
 
+  // CI sets this on tag and same-repo PR builds, which must prove notarizing works.
+  if (process.env.REQUIRE_NOTARIZE === 'true' && !(appleId && appleIdPassword && teamId)) {
+    throw new Error(
+      'Refusing to skip notarization: REQUIRE_NOTARIZE is set but APPLEID, APPLEIDPASS or APPLEIDTEAM is missing.'
+    );
+  }
+
   if (!appleId) {
     console.log(
       'Johannes: Skipping notarization of app because no AppleID is given.'

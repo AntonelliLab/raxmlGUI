@@ -1,6 +1,10 @@
 name: Build/release
 
-on: push
+on:
+  push:
+  # A PR builds and, from a branch in this repo, signs and notarizes; it never publishes.
+  pull_request:
+    branches: [master]
 
 permissions:
   contents: read
@@ -70,16 +74,24 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.sentry_project }}
           SENTRY_AUTH_TOKEN: ${{ secrets.sentry_auth_token }}
 
-      # Only a v* tag publishes; a macOS tag build fails without a signing certificate.
+      # GitHub gives no secrets to a PR from a fork, so its macOS build cannot sign.
+      - name: Warn that a fork PR builds unsigned
+        if: matrix.platform == 'mac' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "::warning::PR from a fork; the macOS app is built unsigned and not notarized. Push the branch to ${{ github.repository }} to check signing."
+
+      # Only a v* tag publishes. A macOS build from a tag or a same-repo PR fails unless it signs and notarizes.
       - name: Package and publish
         shell: bash
         # electron-builder reads an empty CSC_LINK on macOS as a certificate path, so drop it when the secret is missing.
         run: |
           [ -n "$CSC_LINK" ] || unset CSC_LINK CSC_KEY_PASSWORD
+          force=()
+          [ "${{ matrix.platform }}" = mac ] && [ "$REQUIRE_NOTARIZE" = true ] && force=(-c.forceCodeSigning=true)
           yarn electron-builder --${{ matrix.platform }} \
             --publish ${{ startsWith(github.ref, 'refs/tags/v') && 'always' || 'never' }} \
-            ${{ matrix.platform == 'mac' && startsWith(github.ref, 'refs/tags/v') && '-c.forceCodeSigning=true' || '' }}
+            "${force[@]}"
         env:
+          REQUIRE_NOTARIZE: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ matrix.platform == 'mac' && secrets.mac_certs || '' }}
           CSC_KEY_PASSWORD: ${{ matrix.platform == 'mac' && secrets.mac_certs_password || '' }}
