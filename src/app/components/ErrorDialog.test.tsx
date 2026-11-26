@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import React, { act } from 'react';
+import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { RendererBridge } from '../../common/rendererBridge';
 import type RunList from '../store/RunList';

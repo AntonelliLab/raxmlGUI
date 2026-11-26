@@ -75,17 +75,19 @@ export const writeAlignment = async ( filePath: string, alignment: Alignment ): 
   console.log( `Write alignment in FASTA format to ${filePath}` );
   console.log( alignment );
   const writeStream = fs.createWriteStream( filePath );
-  const write = util.promisify( writeStream.write );
-  const end = util.promisify( writeStream.end );
+  const write = util.promisify(
+    ( chunk: string, cb: ( err?: Error | null ) => void ) => writeStream.write( chunk, cb ),
+  );
+  const end = util.promisify( ( cb: () => void ) => writeStream.end( cb ) );
   for ( let i = 0; i < alignment.sequences.length; ++i ) {
     const prefix = i === 0
       ? '>'
       : '\n>';
     const sequence = alignment.sequences[i];
-    await write.call( writeStream, `${prefix}${sequence.taxon}\n` );
-    await write.call( writeStream, sequence.code );
+    await write( `${prefix}${sequence.taxon}\n` );
+    await write( sequence.code );
   }
-  await end.call( writeStream );
+  await end();
 };
 
 interface Io {

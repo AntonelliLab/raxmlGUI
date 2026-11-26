@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import React, { act } from 'react';
+import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import Page from './index';
 import store from './store';
