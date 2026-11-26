@@ -1,7 +1,10 @@
 name: Build/release
 
 on:
+  # Branches build through their PR; a push-run on every branch would duplicate it.
   push:
+    branches: [master]
+    tags: ['v*']
   # A PR builds and, from a branch in this repo, signs and notarizes; it never publishes.
   pull_request:
     branches: [master]
@@ -74,28 +77,32 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.sentry_project }}
           SENTRY_AUTH_TOKEN: ${{ secrets.sentry_auth_token }}
 
-      # GitHub gives no secrets to a PR from a fork, so its macOS build cannot sign.
-      - name: Warn that a fork PR builds unsigned
-        if: matrix.platform == 'mac' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        run: echo "::warning::PR from a fork; the macOS app is built unsigned and not notarized. Push the branch to ${{ github.repository }} to check signing."
-
-      # Only a v* tag publishes. A macOS build from a tag or a same-repo PR fails unless it signs and notarizes.
+      # Only a v* tag publishes. A macOS build from a tag, or from a PR that has the signing secret, fails unless it signs and notarizes.
       - name: Package and publish
         shell: bash
-        # electron-builder reads an empty CSC_LINK on macOS as a certificate path, so drop it when the secret is missing.
         run: |
-          [ -n "$CSC_LINK" ] || unset CSC_LINK CSC_KEY_PASSWORD
+          signing=$REQUIRE_NOTARIZE
+          if [ -n "$CSC_LINK" ]; then
+            [ "$GITHUB_EVENT_NAME" = pull_request ] && signing=true
+          else
+            # electron-builder reads an empty CSC_LINK on macOS as a certificate path, so drop it.
+            unset CSC_LINK CSC_KEY_PASSWORD
+            # GitHub gives no Actions secrets to fork PRs or Dependabot runs; those build unsigned.
+            if [ "${{ matrix.platform }}" = mac ] && [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+              echo "::warning::No signing secret in this run (fork or Dependabot PR); the macOS app is built unsigned and not notarized."
+            fi
+          fi
           force=()
-          if [ "${{ matrix.platform }}" = mac ] && [ "$REQUIRE_NOTARIZE" = true ]; then
+          if [ "${{ matrix.platform }}" = mac ] && [ "$signing" = true ]; then
             force=(-c.forceCodeSigning=true)
-            # electron-builder skips signing whenever GITHUB_BASE_REF is set. Only same-repo PRs reach here; fork PRs get no secrets.
+            # electron-builder skips signing whenever GITHUB_BASE_REF is set, which it is on every PR.
             export CSC_FOR_PULL_REQUEST=true
           fi
           yarn electron-builder --${{ matrix.platform }} \
             --publish ${{ startsWith(github.ref, 'refs/tags/v') && 'always' || 'never' }} \
             "${force[@]}"
         env:
-          REQUIRE_NOTARIZE: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+          REQUIRE_NOTARIZE: ${{ startsWith(github.ref, 'refs/tags/v') }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ matrix.platform == 'mac' && secrets.mac_certs || '' }}
           CSC_KEY_PASSWORD: ${{ matrix.platform == 'mac' && secrets.mac_certs_password || '' }}
