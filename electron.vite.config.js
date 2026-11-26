@@ -19,6 +19,10 @@ function sourceMapUpload( command ) {
 export default defineConfig( ( { command } ) => ( {
   main: {
     plugins: sourceMapUpload( command ),
+    build: {
+      // electron-store 12 and conf are ESM-only, so a CommonJS main bundles them instead of calling require().
+      externalizeDeps: { exclude: ['electron-store', 'conf'] },
+    },
   },
   preload: {
     build: {
