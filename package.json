@@ -154,6 +154,8 @@
     },
     "mac": {
       "identity": "Johannes Klein (9VR92ZCXA8)",
+      "type": "distribution",
+      "notarize": false,
       "mergeASARs": false,
       "target": [
         {

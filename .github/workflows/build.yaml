@@ -2,6 +2,9 @@ name: Build/release
 
 on: push
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-24.04
@@ -26,9 +29,19 @@ jobs:
     needs: lint
     runs-on: ${{ matrix.os }}
 
+    # Publishing uploads release assets with the workflow token.
+    permissions:
+      contents: write
+
     strategy:
       matrix:
-        os: [macos-15, ubuntu-24.04, windows-latest]
+        include:
+          - os: macos-15
+            platform: mac
+          - os: ubuntu-24.04
+            platform: linux
+          - os: windows-latest
+            platform: win
 
     steps:
       - name: Check out Git repository
@@ -45,19 +58,27 @@ jobs:
       - name: Download binaries
         run: npm run download-binaries
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.github_token }}
-          mac_certs: ${{ secrets.mac_certs }}
-          mac_certs_password: ${{ secrets.mac_certs_password }}
-
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      - name: Build
+        run: yarn build
         env:
+          SENTRY_URL: ${{ secrets.sentry_url }}
+          SENTRY_ORG: ${{ secrets.sentry_org }}
+          SENTRY_PROJECT: ${{ secrets.sentry_project }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.sentry_auth_token }}
+
+      # Only a v* tag publishes; a macOS tag build fails without a signing certificate.
+      - name: Package and publish
+        shell: bash
+        # electron-builder reads an empty CSC_LINK on macOS as a certificate path, so drop it when the secret is missing.
+        run: |
+          [ -n "$CSC_LINK" ] || unset CSC_LINK CSC_KEY_PASSWORD
+          yarn electron-builder --${{ matrix.platform }} \
+            --publish ${{ startsWith(github.ref, 'refs/tags/v') && 'always' || 'never' }} \
+            ${{ matrix.platform == 'mac' && startsWith(github.ref, 'refs/tags/v') && '-c.forceCodeSigning=true' || '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ matrix.platform == 'mac' && secrets.mac_certs || '' }}
+          CSC_KEY_PASSWORD: ${{ matrix.platform == 'mac' && secrets.mac_certs_password || '' }}
           # macOS notarization API key
           APPLEID: ${{ secrets.apple_id }}
           APPLEIDPASS: ${{ secrets.apple_id_pass }}
