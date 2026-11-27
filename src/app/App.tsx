@@ -33,6 +33,7 @@ import CitationModal from './CitationModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorDialog from './components/ErrorDialog';
 import ModifiedDialog from './components/ModifiedDialog';
+import UpdateDownloadDialog from './components/UpdateDownloadDialog';
 
 const VerticalHeading = styled( Typography )( () => ( {
   writingMode: 'vertical-rl',
@@ -522,6 +523,7 @@ const App = (): React.JSX.Element => {
             </Modal>
           )
           : null}
+        <UpdateDownloadDialog download={store.updateDownload} />
         <ErrorDialog error={store.error} title={store.errorTitle} onClose={store.clearError} />
       </Box>
     </React.Fragment>

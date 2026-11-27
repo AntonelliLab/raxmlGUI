@@ -17,6 +17,7 @@ export const runEvents = {
   onToggleBackboneConstraint: 'onToggleBackboneConstraint',
   onToggleMultifurcatingConstraint: 'onToggleMultifurcatingConstraint',
   onUnhandledError: 'onUnhandledError',
+  onUpdateDownload: 'onUpdateDownload',
 } as const;
 
 export default class StoreBase {

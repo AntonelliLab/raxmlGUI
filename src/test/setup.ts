@@ -45,6 +45,10 @@ function withBridgeEvents( next: TestBridge ): TestBridge {
   if ( typeof next.getVersion !== 'function' ) {
     next.getVersion = () => Promise.resolve( undefined );
   }
+  // The run list seeds the update download when it listens.
+  if ( typeof next.getUpdateDownload !== 'function' ) {
+    next.getUpdateDownload = () => Promise.resolve( { status: 'idle' } );
+  }
   // The output panel checks the output name; MobX 6 re-renders it inside the render test when this rejects.
   if ( typeof next.checkOutput !== 'function' ) {
     next.checkOutput = ( { outputDir, outputName } ) =>

@@ -8,7 +8,7 @@ import './api';
 import MenuBuilder from './menu';
 import { is } from '../common/utils';
 import { pageWindowPreferences } from './pageWindowPreferences';
-import { checkForUpdates, listenForUpdates } from './updates';
+import { applyUpdateDownloadBar, checkForUpdates, listenForUpdates } from './updates';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
@@ -34,7 +34,7 @@ const isE2eMode = process.env.RAXMLGUI_E2E === '1';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null = null;
-listenForUpdates( autoUpdater, dialog );
+listenForUpdates( autoUpdater, dialog, () => mainWindow );
 /**
  * Add event listeners...
  */
@@ -62,6 +62,8 @@ function initialize(): void {
     // Create the browser window.
     const win = new BrowserWindow( mainWindowOptions );
     mainWindow = win;
+    // a macOS window reopened mid-download gets the bar back
+    applyUpdateDownloadBar( win );
     // and load the index.html of the app.
     let startUrl = process.env.ELECTRON_RENDERER_URL ||
             url.format( {
