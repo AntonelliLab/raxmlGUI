@@ -9,6 +9,7 @@ import MenuBuilder from './menu';
 import { is } from '../common/utils';
 import { pageWindowPreferences } from './pageWindowPreferences';
 import { applyUpdateDownloadBar, checkForUpdates, listenForUpdates } from './updates';
+import { confirmCloseWithRuns } from './confirmClose';
 // TODO: Have removed electron-debug dependency, because it used remote module. Maybe we need some alternative.
 //-------------------------------------------------------------------
 // From https://github.com/iffy/electron-updater-example/blob/master/main.js
@@ -82,6 +83,7 @@ function initialize(): void {
     if ( isDevMode && !isE2eMode ) {
       win.webContents.openDevTools();
     }
+    confirmCloseWithRuns( win, dialog, app );
     // Emitted when the window is closed.
     win.on( 'closed', function () {
       // Dereference the window object, usually you would store windows
