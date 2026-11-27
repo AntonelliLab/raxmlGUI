@@ -52,11 +52,11 @@ function mountInput( run: object ) {
 }
 
 function button( div: HTMLElement, text: string ) {
-  return Array.from( div.querySelectorAll( 'button' ) ).find( ( node ) => node.textContent.trim() === text );
+  return Array.from( div.querySelectorAll( 'button' ) ).find( ( node ) => node.textContent.trim() === text )!;
 }
 
 async function drop( target: Element, name: string ) {
-  const input = target.closest( '[role="presentation"]' ).querySelector( 'input[type="file"]' );
+  const input = target.closest( '[role="presentation"]' )!.querySelector( 'input[type="file"]' )!;
   const file = new File( ['x'], name );
   Object.defineProperty( input, 'files', {
     configurable: true,
@@ -79,7 +79,7 @@ it( 'each drop target keeps the dropped file path', async () => {
         'cats.fasta': '/tmp/drop-6',
         'dogs.fasta': '/tmp/drop-7',
         'genes.part': '/tmp/drop-8',
-      }[file.name];
+      }[file.name]!;
     },
   } );
 
@@ -109,7 +109,7 @@ it( 'each drop target keeps the dropped file path', async () => {
   } );
   const secondView = mountInput( second );
   await drop(
-    secondView.div.querySelector( 'button[title="Concatenate new alignments and create partition"]' ),
+    secondView.div.querySelector( 'button[title="Concatenate new alignments and create partition"]' )!,
     'cats.fasta',
   );
   expect( second.addAlignments ).toHaveBeenCalledWith( [{ path: '/tmp/drop-6' }] );
@@ -122,7 +122,7 @@ it( 'each drop target keeps the dropped file path', async () => {
   } );
   const thirdView = mountInput( third );
   await drop(
-    thirdView.div.querySelector( 'button[title="Concatenate new alignments and automatically generate a partition"]' ),
+    thirdView.div.querySelector( 'button[title="Concatenate new alignments and automatically generate a partition"]' )!,
     'dogs.fasta',
   );
   await drop( button( thirdView.div, 'Load partition' ), 'genes.part' );

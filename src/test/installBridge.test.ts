@@ -28,7 +28,7 @@ test( 'the defaults the setup stubs are still there', () => {
 } );
 
 test( 'a supplied host getter is installed without being read', () => {
-  const original = Object.getOwnPropertyDescriptor( window.rendererBridge, 'host' );
+  const original = Object.getOwnPropertyDescriptor( window.rendererBridge, 'host' )!;
   const read = vi.fn( () => original.value );
 
   installBridge( Object.defineProperty( {}, 'host', { configurable: true, enumerable: true, get: read } ) );

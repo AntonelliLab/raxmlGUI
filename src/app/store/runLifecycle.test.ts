@@ -83,7 +83,7 @@ describe( 'start', () => {
     bridge.checkOutput = vi.fn( async () => ( {
       ok: false,
       outputNameUnused: 'primates_2',
-      resultFilenames: [],
+      resultFilenames: [] as string[],
     } as CheckOutputResult ) );
     const name = track( () => run.outputName );
     const safe = track( () => run.outputNameSafe );
@@ -273,7 +273,7 @@ describe( 'cancel', () => {
 
   it( 'stops a start that is still writing files from starting the run', async () => {
     const { run } = makeRun();
-    let release: () => void;
+    let release!: () => void;
     bridge.writeFile = vi.fn(
       () => new Promise<void>( ( resolve ) => {
         release = resolve;

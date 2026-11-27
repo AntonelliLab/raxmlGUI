@@ -40,7 +40,7 @@ beforeEach( () => {
   run = new Run( {} as Partial<RunParent> as RunParent, 3 );
   disposers = [];
   // The default binary is raxml-ng; these tests use the classic RAxML analyses.
-  run.binary.setValue( run.binary.options.find( ( { value } ) => value.includes( 'raxmlHPC' ) ).value );
+  run.binary.setValue( run.binary.options.find( ( { value } ) => value.includes( 'raxmlHPC' ) )!.value );
   observe( () => run.analysis.value );
 } );
 
@@ -50,7 +50,7 @@ afterEach( () => {
 
 describe.each( files )( '%s file', ( key, filePath ) => {
   const option = () => run[key];
-  const filename = filePath.split( '/' ).pop();
+  const filename = filePath.split( '/' ).pop()!;
   const stem = filename.replace( /\.\w+$/, '' );
 
   it( 'starts without a file', () => {

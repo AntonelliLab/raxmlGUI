@@ -29,7 +29,7 @@ function loadPreloadConfig() {
     throw new Error( result.stderr || result.stdout );
   }
   const line = result.stdout.split( '\n' ).find( ( item ) => item.startsWith( 'PRELOAD_CONFIG ' ) );
-  return JSON.parse( line.slice( 'PRELOAD_CONFIG '.length ) );
+  return JSON.parse( line!.slice( 'PRELOAD_CONFIG '.length ) );
 }
 
 function buildShell() {

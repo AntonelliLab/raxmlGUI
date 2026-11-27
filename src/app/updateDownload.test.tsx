@@ -43,15 +43,15 @@ it( 'the page follows the update download in a dialog that cannot be dismissed',
       hear( payload );
     } );
     expect( title() ).toBe( 'Downloading update' );
-    const dialog = document.querySelector( '[role="dialog"]' );
+    const dialog = document.querySelector( '[role="dialog"]' )!;
     expect( dialog.textContent ).toContain( percent );
     expect( dialog.textContent ).toContain( status );
     expect( dialog.querySelector( 'button' ) ).toBeNull();
   }
 
   act( () => {
-    document.querySelector( '[role="dialog"]' ).dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
-    document.querySelector<HTMLElement>( '.MuiBackdrop-root' ).click();
+    document.querySelector( '[role="dialog"]' )!.dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+    document.querySelector<HTMLElement>( '.MuiBackdrop-root' )!.click();
   } );
   expect( title() ).toBe( 'Downloading update' );
 
@@ -79,7 +79,7 @@ it( 'a page that starts mid-download shows the dialog with no event pushed', asy
     root.render( <Page /> );
   } );
   expect( title() ).toBe( 'Downloading update' );
-  expect( document.querySelector( '[role="dialog"]' ).textContent ).toContain( '37%' );
+  expect( document.querySelector( '[role="dialog"]' )!.textContent ).toContain( '37%' );
 
   act( () => {
     root.unmount();

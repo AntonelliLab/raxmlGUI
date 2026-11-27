@@ -5,8 +5,10 @@ import type Alignment from './Alignment';
 import Run from './Run';
 import { binaries, MAX_NUM_CPUS } from './RunOptions';
 
-const threaded = binaries.find( ( b ) => /PTHREADS/.test( b.name ) );
-const plain = binaries.find( ( b ) => b.type === 'raxml' && !/PTHREADS|-ng/.test( b.name ) );
+type RunParent = ConstructorParameters<typeof Run>[0];
+
+const threaded = binaries.find( ( b ) => /PTHREADS/.test( b.name ) )!;
+const plain = binaries.find( ( b ) => b.type === 'raxml' && !/PTHREADS|-ng/.test( b.name ) )!;
 
 // Run.analysis is a computed that builds a new option on each evaluation, so an
 // unobserved run forgets a set analysis value. A kept-alive reaction models the page.
@@ -15,7 +17,7 @@ afterEach( () => stops.splice( 0 ).forEach( ( stop ) => stop() ) );
 
 // The initial binary is raxml-ng on some hosts; most tests start from classic RAxML.
 const newRun = () => {
-  const run = new Run( null, 1 );
+  const run = new Run( {} as RunParent, 1 );
   stops.push( autorun( () => run.analysis ) );
   runInAction( () => {
     run.binary.value = plain.name;
@@ -42,8 +44,8 @@ const addAlignment = ( run: Run, dataType: string ) => runInAction( () => {
 
 describe( 'Binary', () => {
   it( 'defaults to the initial binary and offers every binary', () => {
-    const run = new Run( null, 1 );
-    expect( run.binary.value ).toBe( binaries.find( ( b ) => b.initial ).name );
+    const run = new Run( {} as RunParent, 1 );
+    expect( run.binary.value ).toBe( binaries.find( ( b ) => b.initial )!.name );
     expect( run.binary.options.map( ( o ) => o.value ) ).toEqual(
       binaries.map( ( b ) => b.name ),
     );
@@ -51,7 +53,7 @@ describe( 'Binary', () => {
 
   it( 'derives version and type from the chosen binary and updates reactions', () => {
     const run = newRun();
-    const modeltest = binaries.find( ( b ) => b.type === 'modeltest' );
+    const modeltest = binaries.find( ( b ) => b.type === 'modeltest' )!;
     const { seen, stop } = track( () => [run.binary.version, run.binary.type] );
     set( run.binary, modeltest.name );
     stop();

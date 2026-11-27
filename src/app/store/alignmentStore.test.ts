@@ -117,7 +117,7 @@ describe( 'Alignment observable fields update the page store', () => {
     runInAction( () => {
       run.binary.value = run.binary.options.find(
         ( { value } ) => !value.includes( 'raxml-ng' ),
-      ).value;
+      )!.value;
     } );
     expect( run.usesRaxmlNg ).toBe( false );
     const { seen, stop } = track( () => [
@@ -144,14 +144,14 @@ describe( 'Alignment observable fields update the page store', () => {
   it( 'aaMatrixName updates partitionType and modelExtra, and onChangeAAMatrixName sets it', () => {
     const { run, alignment } = setup();
     set( run.binary, {
-      value: run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) ).value,
+      value: run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) )!.value,
     } );
     set( alignment, { dataType: 'protein' } );
     const { seen, stop } = track( () => [
       alignment.partitionType,
       alignment.modelExtra?.value,
     ] );
-    alignment.modelExtra.onChange( 'WAG' );
+    alignment.modelExtra!.onChange( 'WAG' );
     expect( alignment.aaMatrixName ).toBe( 'WAG' );
     expect( seen[seen.length - 1] ).toEqual( ['WAG', 'WAG'] );
     stop();
@@ -160,8 +160,8 @@ describe( 'Alignment observable fields update the page store', () => {
   it( 'modelExtra is null for protein with raxml-ng', () => {
     const { run, alignment } = setup();
     set( alignment, { dataType: 'protein' } );
-    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) );
-    const old = run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) );
+    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) )!;
+    const old = run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) )!;
     set( run.binary, { value: old.value } );
     const { seen, stop } = track( () => alignment.modelExtra?.value );
     set( run.binary, { value: ng.value } );
@@ -187,8 +187,8 @@ describe( 'Alignment observable fields update the page store', () => {
   it( 'dataType, length and aaMatrixName update partitionFileContent', () => {
     const { run, alignment } = setup();
     set( alignment, { dataType: 'nucleotide', length: 10 } );
-    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) );
-    const old = run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) );
+    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) )!;
+    const old = run.binary.options.find( ( { value } ) => !value.includes( 'raxml-ng' ) )!;
     set( run.binary, { value: old.value } );
     const { seen, stop } = track( () => alignment.partitionFileContent );
     set( alignment, { length: 12 } );
@@ -239,7 +239,7 @@ describe( 'Alignment observable fields update the page store', () => {
 
   it( 'hasInvariantSites updates ascertainment bias availability', () => {
     const { run, alignment } = setup();
-    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) );
+    const ng = run.binary.options.find( ( { value } ) => value.includes( 'raxml-ng' ) )!;
     set( run.binary, { value: ng.value } );
     const { seen, stop } = track( () => alignment.ngAscertainmentBias.notAvailable );
     set( alignment, { hasInvariantSites: true } );
@@ -518,10 +518,10 @@ describe( 'Alignment model selection', () => {
   it( 'dispose stops listening and cancels a running model selection', () => {
     const { alignment } = setup();
     set( alignment, { modeltestLoading: true } );
-    const before = listeners[runEvents.onModelSelectionSuccess].length;
+    const before = listeners[runEvents.onModelSelectionSuccess]!.length;
     alignment.dispose();
     expect( bridge.cancelModelSelection ).toHaveBeenCalledWith( alignment.id );
-    expect( listeners[runEvents.onModelSelectionSuccess].length ).toBe( before - 1 );
+    expect( listeners[runEvents.onModelSelectionSuccess]!.length ).toBe( before - 1 );
   } );
 
   it( 'remove disposes and removes the alignment from the run', () => {

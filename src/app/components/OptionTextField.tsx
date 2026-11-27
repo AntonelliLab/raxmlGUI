@@ -7,7 +7,7 @@ export interface OptionTextFieldOptionLike {
   value: string | number | boolean;
   setValue: ( value: string ) => void;
   notAvailable: boolean;
-  hoverInfo: string;
+  hoverInfo?: string;
   haveError: boolean;
   disabled?: boolean;
   placeholder?: string;

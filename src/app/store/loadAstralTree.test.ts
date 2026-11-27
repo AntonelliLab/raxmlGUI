@@ -18,7 +18,7 @@ it( 'the ASTRAL file picker adds the chosen file', async () => {
   await run.loadAstralTree();
 
   expect( selectAstralFile ).toHaveBeenCalledWith( 7 );
-  expect( run.astralTree.path ).toBe( '/data/trees.tre' );
+  expect( run.astralTree!.path ).toBe( '/data/trees.tre' );
 } );
 
 it( 'cancel leaves the ASTRAL file unchanged', async () => {
@@ -30,7 +30,7 @@ it( 'cancel leaves the ASTRAL file unchanged', async () => {
   await run.loadAstralTree();
 
   expect( selectAstralFile ).toHaveBeenCalledWith( 7 );
-  expect( run.astralTree.path ).toBe( '/data/already.tre' );
+  expect( run.astralTree!.path ).toBe( '/data/already.tre' );
 } );
 
 it( 'a dialog failure fails the ASTRAL file choice', async () => {
@@ -43,5 +43,5 @@ it( 'a dialog failure fails the ASTRAL file choice', async () => {
   } );
 
   await expect( run.loadAstralTree() ).rejects.toThrow( 'dialog failed' );
-  expect( run.astralTree.path ).toBe( '/data/already.tre' );
+  expect( run.astralTree!.path ).toBe( '/data/already.tre' );
 } );
