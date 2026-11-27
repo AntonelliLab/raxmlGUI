@@ -103,14 +103,15 @@ export async function runProcess(
       let exited = false;
       // Last stdout only: the binary prints its fatal reason just before exiting.
       let stdoutTail = '';
-      proc.stdout.on( 'data', ( buffer: string | Buffer ) => {
+      // execFile always opens stdout and stderr pipes; the optional chain only satisfies their nullable type.
+      proc.stdout?.on( 'data', ( buffer: string | Buffer ) => {
         const content = String( buffer );
         stdoutTail = ( stdoutTail + content ).slice( -8192 );
         console.log( 'on stdout:', content );
         onStdOut( content );
         send( event, ipc.RUN_STDOUT, { id, content } );
       } );
-      proc.stderr.on( 'data', ( buffer: string | Buffer ) => {
+      proc.stderr?.on( 'data', ( buffer: string | Buffer ) => {
         const content = String( buffer );
         console.error( 'on stderr:', content );
         onStdErr( content );

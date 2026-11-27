@@ -50,7 +50,7 @@ function initDev( exampleFiles: ExampleFilesPayload ): void {
   ].map( ( filename ) => ( {
     path: join( exampleFilesDir, 'phylip', filename ),
   } ) );
-  const useFiles = [].concat( useFastaFiles, usePhylipFiles );
+  const useFiles = [ ...useFastaFiles, ...usePhylipFiles ];
   store.activeRun.addAlignments( useFiles );
   store.activeRun.setOutputDir( exampleFiles.outdir );
   setTimeout( () => {
