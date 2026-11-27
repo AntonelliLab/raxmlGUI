@@ -7,6 +7,10 @@ import FinalAlignment from './FinalAlignment';
 import AstralTree from './AstralTree';
 import StoreBase, { runEvents } from './StoreBase';
 import { host } from './host';
+import { commandText, settingsText } from './command';
+import type { CmdArg } from './command';
+import { astralArgs } from './command/astral';
+import { modeltestNgArgs } from './command/modeltestNg';
 import {
   binaries,
   analysisOptions,
@@ -56,8 +60,6 @@ interface RunParent {
 interface FilePathEntry {
   path: string;
 }
-// A CLI argument: seeds and thread counts are pushed as numbers.
-type CmdArg = string | number;
 
 class Run extends StoreBase {
   parent: RunParent;
@@ -484,10 +486,10 @@ class Run extends StoreBase {
 
   get args(): CmdArg[][] {
     if ( this.usesAstral ) {
-      return this.astralArgs();
+      return astralArgs( this, { windows } );
     }
     if ( this.usesModeltestNg ) {
-      return this.modeltestNgArgs();
+      return modeltestNgArgs( this, { windows } );
     }
     if ( this.usesRaxmlNg ) {
       return this.raxmlNgArgs();
@@ -569,43 +571,6 @@ class Run extends StoreBase {
     }
     return model;
   }
-
-  astralArgs = (): string[][] => {
-    const first: string[] = [];
-    if ( this.astralTree ) {
-      first.push( '-i', quote( this.astralTree.path, { windows } ) );
-    }
-    first.push(
-      '-o',
-      quote( join( this.outputDir, `ASTRAL_${this.outputNameSafe}.tre` ), { windows } ),
-    );
-    return [first];
-  };
-
-  modeltestNgArgs = (): CmdArg[][] => {
-    const first: CmdArg[] = [];
-    // data type
-    if ( this.dataType === 'nucleotide' ) {
-      first.push( '-d', 'nt' );
-    } else if ( this.dataType === 'protein' ) {
-      first.push( '-d', 'aa' );
-    }
-    // alignment file
-    first.push( '-i', quote( this.finalAlignment.path, { windows } ) );
-    // output file, modeltest errors if this file already exists
-    first.push(
-      '-o',
-      quote( join( this.outputDir, `RAxML_GUI_ModelTest_${this.outputNameSafe}` ), { windows } ),
-    );
-    // modeltest throws errors if the output file already exists
-    first.push( '--force' );
-    // Number of processors
-    first.push( '-p', this.numThreads.value );
-    // TODO: in able to support partitioned modeltest we need to change the partition file text
-    // https://github.com/ddarriba/modeltest/wiki/Input-Data#partition-files
-    // partition scheme
-    return [first];
-  };
 
   raxmlNgArgs = (): CmdArg[][] => {
     const first: CmdArg[] = [];
@@ -1303,32 +1268,17 @@ class Run extends StoreBase {
   };
 
   get command(): string {
-    if ( this.usesAstral ) {
-      return this.args
-        .map( ( cmdArgs ) => `java -jar ${this.binary.value} ${cmdArgs.join( ' ' )}` )
-        .join( ' &&\\\n' );
-    }
-    return this.args
-      .map( ( cmdArgs ) => `${this.binary.value} ${cmdArgs.join( ' ' )}` )
-      .join( ' &&\\\n' );
+    return commandText( this.binary.value, this.args, this.usesAstral );
   }
 
   get settingsFileContent(): string {
-    let text = `The analysis was run using raxmlGUI 2.0 (version ${this.version}) as follows:
-Analysis: ${this.analysisOption.title}
-Binary: ${this.binary.value} version ${this.binary.version}
-Results saved to: ${this.outputDir}
-`;
-    let argumentext = 'RAxML was called with these arguments:\n';
-    this.args.map(
-      ( arg, index ) => ( argumentext += `${index + 1}.) ${arg.join( ' ' )}\n` ),
-    );
-    text += argumentext;
-    // TODO: should we be more precise about what the single params mean?
-    //     text += `To repeat the analysis use the following seeds:
-    // Bootstrap seed: ${this.seedBootstrap}
-    // Parsimony seed: ${this.seedParsimony}`;
-    return text;
+    return settingsText( {
+      appVersion: this.version,
+      analysisTitle: this.analysisOption.title,
+      binary: this.binary,
+      outputDir: this.outputDir,
+      args: this.args,
+    } );
   }
 
   get settingsFilePath(): string {
