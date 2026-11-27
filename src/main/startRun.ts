@@ -3,7 +3,7 @@ import util from 'util';
 import _fs from 'fs';
 import childProcess from 'child_process';
 import type { ExecOptions } from 'child_process';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import { is } from '../common/utils';
@@ -75,7 +75,7 @@ async function combineOutput( outputDir: string, outputFilename: string ): Promi
   console.log( stdout, stderr );
 }
 
-export async function startRun( event: IpcMainEvent, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath }: StartRunPayload ): Promise<void> {
+export async function startRun( event: IpcMainInvokeEvent, { id, args, binaryName, outputDir, outputFilename, outputName, combinedOutput, usesRaxmlNg, usesModeltestNg, inputPath }: StartRunPayload ): Promise<void> {
   const token = beginRun( id );
   stopRun( id );
   const reportError = ( error: unknown ): void => {

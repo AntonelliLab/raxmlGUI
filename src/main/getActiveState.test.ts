@@ -23,7 +23,7 @@ const { getActiveState } = await import( './getActiveState' );
 const { STATE_REPORT, STATE_REPORT_RESULT } = await import( '../constants/ipc' );
 
 it( 'asks the active window and resolves the matching report', async () => {
-  let onResult: ( event: unknown, payload: unknown ) => void;
+  let onResult!: ( event: unknown, payload: unknown ) => void;
   mockOn.mockImplementation( ( channel, listener ) => {
     expect( channel ).toBe( STATE_REPORT_RESULT );
     onResult = listener;

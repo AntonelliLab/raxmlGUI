@@ -16,7 +16,7 @@ interface Choice {
 
 interface AlignmentLike {
   run: unknown;
-  dataType: string;
+  dataType: string | undefined;
   partitionType: string;
   length: number;
   partition: { partToAdd: { type: { value: string } } };
@@ -29,7 +29,7 @@ interface PartLike {
   codon: { value: string };
 }
 
-class PartBase<Value> extends Option<Value> {
+class PartBase<Value, Input = Value> extends Option<Value, unknown, Input> {
   part: PartLike;
   constructor(
     part: PartLike,
@@ -85,6 +85,9 @@ class PartType extends PartBase<string> {
   }
   get options(): Choice[] {
     const { dataType } = this.alignment;
+    if ( dataType === undefined ) {
+      return [];
+    }
     let opts = [dataType];
     if ( dataType === '' || dataType === 'mixed' ) {
       opts = ['DNA', 'BIN', 'MULTI', 'protein'];
@@ -126,7 +129,8 @@ class PartName extends PartBase<string> {
     return false;
   }
 }
-class PartStart extends PartBase<number> {
+// OptionTextField hands start and end the field's text; the number schema casts it.
+class PartStart extends PartBase<number, number | string> {
   disabled: boolean;
   constructor( part: PartLike, value = 1 ) {
     super( part, value, 'from', 'Start position for this part', '', {
@@ -143,7 +147,7 @@ class PartStart extends PartBase<number> {
   }
 }
 
-class PartEnd extends PartBase<number> {
+class PartEnd extends PartBase<number, number | string> {
   constructor( part: PartLike, value = 1 ) {
     super(
       part,
@@ -156,7 +160,7 @@ class PartEnd extends PartBase<number> {
           name: 'part-end',
           message: () => `Must be in interval [${this.min}, ${this.max}]`,
           test: ( value ) => {
-            return value >= this.min && value <= this.max;
+            return value !== undefined && value >= this.min && value <= this.max;
           },
         } ),
         allowOnlyValidChange: false,

@@ -16,7 +16,7 @@ interface ShellPlugins {
   rendererRelease: string | null;
 }
 
-function shellBuild( command: string, env: Record<string, string> ): ShellPlugins {
+function shellBuild( command: string, env: NodeJS.ProcessEnv ): ShellPlugins {
   const childEnv = { ...process.env };
   [ 'SENTRY_ORG', 'SENTRY_AUTH_TOKEN', 'SENTRY_PROJECT', 'SENTRY_RELEASE', 'SENTRY_URL' ].forEach( ( key ) => {
     delete childEnv[ key ];
@@ -49,7 +49,7 @@ function shellBuild( command: string, env: Record<string, string> ): ShellPlugin
     throw new Error( result.stderr || result.stdout );
   }
   const line = result.stdout.split( '\n' ).find( ( item ) => item.startsWith( 'SOURCE_MAPS ' ) );
-  return JSON.parse( line.slice( 'SOURCE_MAPS '.length ) );
+  return JSON.parse( line!.slice( 'SOURCE_MAPS '.length ) );
 }
 
 const credentials = { SENTRY_ORG: 'antonelli-lab', SENTRY_AUTH_TOKEN: 'token' };

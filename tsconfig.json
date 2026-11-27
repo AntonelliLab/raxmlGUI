@@ -11,13 +11,10 @@
     "useDefineForClassFields": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
+    "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictBindCallApply": true,
     "skipLibCheck": true
   },
   "include": ["src", "e2e/helpers/**/*.test.ts"]

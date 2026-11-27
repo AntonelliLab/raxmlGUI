@@ -11,7 +11,9 @@ import type AstralTree from './AstralTree';
 import Run from './Run';
 import { analysisOptions, binaries } from './RunOptions';
 
-const modeltestName = binaries.find( ( b ) => b.type === 'modeltest' ).name;
+type RunParent = ConstructorParameters<typeof Run>[0];
+
+const modeltestName = binaries.find( ( b ) => b.type === 'modeltest' )!.name;
 
 let checkOutput: Mock<RendererBridge['checkOutput']>;
 let stops: ( () => void )[] = [];
@@ -22,7 +24,7 @@ beforeEach( () => {
   checkOutput = vi.fn<RendererBridge['checkOutput']>( async ( { outputName } ) => ( {
     ok: true,
     outputNameUnused: outputName,
-    resultFilenames: [],
+    resultFilenames: [] as string[],
   } as CheckOutputResult ) );
   installBridge( { checkOutput, getVersion: () => Promise.resolve( '2.0.0' ) } );
 } );
@@ -49,7 +51,7 @@ const nucleotide = ( over: Record<string, unknown> = {} ): Alignment => ( {
 } as unknown as Alignment );
 
 function makeRun( { alignments = [nucleotide()], binary = 'raxmlHPC', outputDir = '/out' } = {} ) {
-  const run = new Run( null, 1 );
+  const run = new Run( {} as RunParent, 1 );
   runInAction( () => {
     run.binary.value = binary;
     run.outputDir = outputDir;
@@ -62,7 +64,7 @@ function makeRun( { alignments = [nucleotide()], binary = 'raxmlHPC', outputDir 
 
 // outputNameAvailable only settles inside a reaction, so reads that touch it go through here.
 function read<T>( fn: () => T ): T {
-  let value: T;
+  let value!: T;
   autorun( () => {
     value = fn();
   } )();
@@ -219,7 +221,7 @@ describe( 'Run alignment computeds', () => {
 describe( 'Run state computeds', () => {
   it( 'missing asks for a tree only for an analysis that needs one', () => {
     const run = makeRun( { binary: 'raxmlHPC' } );
-    const needsTree = analysisOptions.find( ( o ) => o.params.includes( 'tree' ) );
+    const needsTree = analysisOptions.find( ( o ) => o.params.includes( 'tree' ) )!;
     run.analysis.setValue( 'FT' );
     expect( run.missing ).toBe( '' );
     run.analysis.setValue( needsTree.value );

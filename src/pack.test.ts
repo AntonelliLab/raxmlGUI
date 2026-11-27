@@ -17,7 +17,7 @@ function included( filter: ( file: string, stat: typeof fileStat ) => boolean, r
 
 async function packFilters() {
   const config = await getConfig( root, null, null );
-  const buildResourcesDir = config.directories.buildResources;
+  const buildResourcesDir = config.directories!.buildResources!;
   const macroExpander = ( pattern: string ) => pattern;
   const info = {
     isPrepackedAppAsar: false,
@@ -49,7 +49,7 @@ it( 'packs the built shell and the production dependencies', async () => {
   const {
     config, buildResourcesDir, main, modules,
   } = await packFilters();
-  const patterns = ( config.files as FileSet[] ).flatMap( ( set ) => set.filter );
+  const patterns = ( config.files as FileSet[] ).flatMap( ( set ) => set.filter! );
   const icons = path.join( root, buildResourcesDir );
 
   expect( patterns.every( ( pattern ) => pattern.startsWith( '!' ) ) ).toBe( true );
@@ -75,7 +75,7 @@ it( 'packs the built shell and the production dependencies', async () => {
   expect( config.publish ).toEqual( { provider: 'github' } );
   expect( config.extraMetadata ).toBeUndefined();
   expect( config.extraResources ).toEqual( [ { filter: [ 'assets/' ] } ] );
-  expect( config.mac.extraResources ).toEqual( [
+  expect( config.mac!.extraResources ).toEqual( [
     {
       from: 'static/bin/Mac',
       to: 'static/bin',
@@ -86,13 +86,13 @@ it( 'packs the built shell and the production dependencies', async () => {
       filter: [ '*.txt' ],
     },
   ] );
-  expect( config.win.extraResources ).toEqual( [
+  expect( config.win!.extraResources ).toEqual( [
     {
       from: 'static/bin/Windows',
       to: 'static/bin',
     },
   ] );
-  expect( config.linux.extraResources ).toEqual( [
+  expect( config.linux!.extraResources ).toEqual( [
     {
       from: 'static/bin/Linux',
       to: 'static/bin',

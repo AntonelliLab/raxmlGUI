@@ -8,7 +8,7 @@ interface InputFileOwner {
 }
 
 class InputFile<Owner extends InputFileOwner = InputFileOwner> extends StoreBase {
-  run: Owner = null;
+  run: Owner;
 
   constructor( run: Owner, path: string ) {
     super();

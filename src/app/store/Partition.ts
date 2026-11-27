@@ -15,7 +15,7 @@ interface PartitionAlignment {
   // Read by the part options, which this file hands each part to.
   run: unknown;
   partition: Partition;
-  dataType: string;
+  dataType: string | undefined;
   partitionType: string;
   aaMatrixName: string;
   length: number;
@@ -30,7 +30,7 @@ interface PartValues {
   codon: string;
 }
 
-const getPartitionType = ( dataType: string, aaMatrixName = 'BLOSUM62' ): string => {
+const getPartitionType = ( dataType: string | undefined, aaMatrixName = 'BLOSUM62' ): string => {
   // for old raxml
   switch ( dataType ) {
     case 'dna':
@@ -43,7 +43,8 @@ const getPartitionType = ( dataType: string, aaMatrixName = 'BLOSUM62' ): string
     case 'multistate':
       return 'MULTI';
     default:
-      return dataType;
+      // '' until the alignment is parsed.
+      return dataType ?? '';
   }
 };
 

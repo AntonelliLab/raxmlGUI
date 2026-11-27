@@ -36,6 +36,7 @@ import {
   MultifurcatingConstraintTree,
 } from './RunOptions';
 import type { AnalysisChoice } from './RunOptions';
+import type { DataType } from '../../common/typecheckAlignment';
 import { basename, join, quote } from '../paths';
 import remove from 'lodash/remove';
 import UserFixError from '../../common/errors';
@@ -207,10 +208,14 @@ class Run extends StoreBase {
   }
 
   get analysisOption(): AnalysisChoice {
-    return this.raxmlNgSwitch(
+    const option = this.raxmlNgSwitch(
       raxmlNgAnalysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
       analysisOptions.find( ( opt ) => opt.value === this.analysis.value ),
     );
+    if ( !option ) {
+      throw new Error( `No analysis option for analysis '${this.analysis.value}'` );
+    }
+    return option;
   }
 
   // Analysis params
@@ -362,7 +367,7 @@ class Run extends StoreBase {
       : [];
   }
 
-  get dataType(): string {
+  get dataType(): DataType | undefined {
     return this.finalAlignment.dataType;
   }
 
@@ -536,7 +541,7 @@ class Run extends StoreBase {
       return null;
     }
     const convertedAlignments = this.alignments.filter( ( a ) => a.converted );
-    return convertedAlignments[0].convertedFrom;
+    return convertedAlignments[0].convertedFrom ?? null;
   }
 
   clearShowModified = (): void => {
@@ -567,7 +572,9 @@ class Run extends StoreBase {
 
   astralArgs = (): string[][] => {
     const first: string[] = [];
-    first.push( '-i', quote( this.astralTree?.path, { windows } ) );
+    if ( this.astralTree ) {
+      first.push( '-i', quote( this.astralTree.path, { windows } ) );
+    }
     first.push(
       '-o',
       quote( join( this.outputDir, `ASTRAL_${this.outputNameSafe}.tre` ), { windows } ),

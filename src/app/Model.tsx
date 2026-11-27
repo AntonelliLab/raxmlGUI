@@ -11,25 +11,25 @@ import type { OptionCheckOptionLike } from './components/OptionCheck';
 interface ModelRun {
   usesModeltestNg: boolean;
   usesAstral: boolean;
-  analysis: OptionSelectOptionLike;
-  numRuns: OptionSelectOptionLike;
-  numRepetitions: OptionSelectOptionLike;
-  numRepetitionsNg: OptionSelectOptionLike;
+  analysis: OptionSelectOptionLike<string>;
+  numRuns: OptionSelectOptionLike<number>;
+  numRepetitions: OptionSelectOptionLike<number | string>;
+  numRepetitionsNg: OptionSelectOptionLike<number | string>;
   branchLength: OptionCheckOptionLike;
   sHlike: OptionCheckOptionLike;
   combinedOutput: OptionCheckOptionLike;
-  startingTree: OptionSelectOptionLike;
-  outGroup: OptionSelectOptionLike;
+  startingTree: OptionSelectOptionLike<string>;
+  outGroup: OptionSelectOptionLike<string[]>;
   haveRandomSeed: boolean;
   randomSeed: number;
   setRandomSeed: ( value: string ) => void;
-  substitutionMatrix: OptionSelectOptionLike;
-  substitutionRate: OptionSelectOptionLike;
-  substitutionI: OptionSelectOptionLike;
-  substitutionAscertainment: OptionSelectOptionLike;
-  multistateModel: OptionSelectOptionLike;
+  substitutionMatrix: OptionSelectOptionLike<string>;
+  substitutionRate: OptionSelectOptionLike<string>;
+  substitutionI: OptionSelectOptionLike<string>;
+  substitutionAscertainment: OptionSelectOptionLike<string>;
+  multistateModel: OptionSelectOptionLike<string>;
   estimatedFrequencies: OptionCheckOptionLike;
-  baseFrequencies: OptionSelectOptionLike;
+  baseFrequencies: OptionSelectOptionLike<string>;
 }
 
 export interface ModelProps {

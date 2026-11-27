@@ -5,12 +5,23 @@ export type DataType = 'protein' | 'nucleotide' | 'multistate' | 'binary' | 'mix
 export interface TypecheckableAlignment {
   sequences: { taxon: string; code: string; dataType?: DataType }[];
   length: number;
+  numSequences: number;
+  fileFormat: string;
   hasInvariantSites?: boolean;
   dataType?: DataType;
   typecheckingComplete?: boolean;
 }
 
-export const getFinalDataType = ( dataTypes: ( DataType | undefined )[] ): DataType | undefined => {
+export type TypecheckedAlignment<T extends TypecheckableAlignment = TypecheckableAlignment> = T & {
+  dataType: DataType;
+  hasInvariantSites: boolean;
+  typecheckingComplete: boolean;
+};
+
+// A list that ends in a parsed alignment's data type always has a final data type.
+export function getFinalDataType( dataTypes: [...( DataType | undefined )[], DataType] ): DataType;
+export function getFinalDataType( dataTypes: ( DataType | undefined )[] ): DataType | undefined;
+export function getFinalDataType( dataTypes: ( DataType | undefined )[] ): DataType | undefined {
   const notUndefinedTypes = dataTypes.filter( ( d ) => d !== undefined );
   if ( notUndefinedTypes.length === 0 ) {
     return undefined;
@@ -28,7 +39,7 @@ export const getFinalDataType = ( dataTypes: ( DataType | undefined )[] ): DataT
     }
   }
   return firstType;
-};
+}
 // Valid characters taken from Standard-RAxML (axml.c)
 const reInvalidBinary = /[^01-?]/g;
 const reInvalidDNA = /[^ABCDGHKMRSTUVWYNOX?-]/gi;
@@ -77,7 +88,7 @@ function hasInvariantSites( length: number, sequences: TypecheckableAlignment['s
   }
   return false;
 }
-export default function typecheckAlignment<T extends TypecheckableAlignment>( alignment: T ): T {
+export default function typecheckAlignment<T extends TypecheckableAlignment>( alignment: T ): TypecheckedAlignment<T> {
   const acgMatch = /[ACGN?]/i; // Include 'N' and '?' as symbols for missing characters in DNA
   // const proteinMatch = /[RNDEQHILKMFPSWYVXBZJ]/i;
   const proteinMatch = /[EFJIJLOPQZX]/i;
@@ -151,8 +162,13 @@ export default function typecheckAlignment<T extends TypecheckableAlignment>( al
       throw new UserFixError( `Invalid character '${seq.code[invalidSiteIndex]}' at site ${invalidSiteIndex + 1} in sequence ${index + 1} (${sample}) for inferred data type '${dataType}'` );
     }
   } );
-  alignment.hasInvariantSites = hasInvariantSites( alignment.length, alignment.sequences );
-  alignment.dataType = dataType;
-  alignment.typecheckingComplete = true;
-  return alignment;
+  if ( dataType === undefined ) {
+    // Every sequence matched no data type, for example only 'T' or '-'.
+    throw new UserFixError( `Invalid alignment: cannot determine data type of any of the ${numSequencesTypechecked} sequences` );
+  }
+  return Object.assign( alignment, {
+    hasInvariantSites: hasInvariantSites( alignment.length, alignment.sequences ),
+    dataType,
+    typecheckingComplete: true,
+  } );
 }

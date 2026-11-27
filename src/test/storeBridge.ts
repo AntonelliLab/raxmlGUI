@@ -24,7 +24,7 @@ export function stubBridge( extra: Partial<RendererBridge> = {} ): StubbedBridge
     events[name] = ( listener: Listener ) => {
       ( listeners[name] ||= [] ).push( listener );
       return () => {
-        listeners[name] = listeners[name].filter( ( l ) => l !== listener );
+        listeners[name] = listeners[name]!.filter( ( l ) => l !== listener );
       };
     };
   }

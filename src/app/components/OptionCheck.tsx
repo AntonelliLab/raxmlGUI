@@ -9,7 +9,7 @@ export interface OptionCheckOptionLike {
   value: boolean;
   setValue: ( value: boolean ) => void;
   notAvailable: boolean;
-  hoverInfo: string;
+  hoverInfo?: string;
 }
 
 export interface OptionCheckProps {

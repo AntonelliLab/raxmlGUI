@@ -33,7 +33,7 @@ type InputRun = PartitionFileCardProps['run'] & {
   inputIsAlignment: boolean;
   alignments: ( AlignmentCardProps['alignment'] & { path: string } )[];
   inputIsTree: boolean;
-  astralTree: AstralTreeCardProps['astralTree'];
+  astralTree: AstralTreeCardProps['astralTree'] | null | undefined;
   canLoadAlignment: boolean;
   haveAlignments: boolean;
   canLoadPartitionFile: boolean;
@@ -60,7 +60,7 @@ function droppedPath( file: File ): string {
 }
 
 const Input = ( { run }: InputProps ): React.JSX.Element => {
-  // run.hasAstralTree is the condition on which to show an astral tree card
+  // run.astralTree (hasAstralTree) is the condition on which to show an astral tree card
   // For some reason when changed in the mobx store a rerender is not triggered with this boolean with the conditional below alone
   // With this if the component rerenders as should be
   if ( run.hasAstralTree ) {
@@ -143,7 +143,7 @@ const Input = ( { run }: InputProps ): React.JSX.Element => {
                     />
                   ) )
                   : null}
-                {run.inputIsTree && run.hasAstralTree
+                {run.inputIsTree && run.astralTree
                   ? (
                     <AstralTreeCard astralTree={run.astralTree} />
                   )

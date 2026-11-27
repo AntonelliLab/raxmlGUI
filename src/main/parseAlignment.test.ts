@@ -126,7 +126,7 @@ it( 'parseAlignment numbers a repeated taxon name', async () => {
     'Homo',
     'Homo_1',
   ] );
-  expect( parsed.change.modificationMessages ).toEqual( [
+  expect( parsed.change!.modificationMessages ).toEqual( [
     'Identical sequence names: 1 and 2 = Homo',
   ] );
 } );
@@ -141,7 +141,7 @@ it( 'parseAlignment shortens a taxon name past 256 characters', async () => {
   } ) );
 
   expect( alignment.sequences[0].taxon ).toBe( 'A'.repeat( 253 ) );
-  expect( parsed.change.modificationMessages ).toEqual( [
+  expect( parsed.change!.modificationMessages ).toEqual( [
     `Taxon name is too long: '${taxon}'.`,
   ] );
 } );

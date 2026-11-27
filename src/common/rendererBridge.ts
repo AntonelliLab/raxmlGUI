@@ -33,6 +33,12 @@ export type UpdateDownload =
 
 export type UpdateDownloadPayload = UpdateDownload & { id: string };
 
+// `error` arrives as main's `serializeError` output.
+export interface UnhandledErrorPayload {
+  title: string;
+  error: unknown;
+}
+
 // An event payload the page does not read yet; the leaf that reads it tightens it.
 type Listener = ( payload: unknown ) => void;
 type Unsubscribe = () => void;
@@ -77,7 +83,7 @@ export interface RendererBridge {
   onDarkMode: ( listener: () => void ) => Unsubscribe;
   onToggleBackboneConstraint: ( listener: Listener ) => Unsubscribe;
   onToggleMultifurcatingConstraint: ( listener: Listener ) => Unsubscribe;
-  onUnhandledError: ( listener: Listener ) => Unsubscribe;
+  onUnhandledError: ( listener: ( payload: UnhandledErrorPayload ) => void ) => Unsubscribe;
   onUpdateDownload: ( listener: ( payload: UpdateDownloadPayload ) => void ) => Unsubscribe;
   getUpdateDownload: () => Promise<UpdateDownload>;
   getPathForFile: ( file: File ) => string;
