@@ -46,7 +46,7 @@ interface AlignmentOwner {
   substitutionRate: SettableOption<string>;
   substitutionMatrix: SettableOption<string>;
   alignments: Alignment[];
-  dataType: string;
+  dataType: string | undefined;
   error: unknown;
   afterRun: () => void;
   removeAlignment: ( alignment: Alignment ) => void;
@@ -215,7 +215,8 @@ class Alignment extends InputFile<AlignmentOwner> {
       case 'multistate':
         return 'MULTI';
       default:
-        return this.dataType;
+        // '' until the alignment is parsed.
+        return this.dataType ?? '';
     }
   }
 
@@ -292,15 +293,24 @@ class Alignment extends InputFile<AlignmentOwner> {
       );
       return;
     }
+    const { dataType } = this;
+    // dataType check narrows for the compiler; modelTestCanRun already excludes undefined.
+    if ( !this.modelTestCanRun || dataType === undefined ) {
+      return;
+    }
+    const binaryName = this.run.modeltestName;
+    if ( binaryName === undefined ) {
+      throw new Error( 'No modeltest binary in the binaries list' );
+    }
     this.modeltestLoading = true;
     const { rendererBridge } = window;
     await rendererBridge.startModelSelection( {
       id: this.id,
       filePath: this.path,
       outputDir: this.run.outputDir,
-      dataType: this.dataType,
+      dataType,
       numThreads: this.run.numThreads.value,
-      binaryName: this.run.modeltestName,
+      binaryName,
     } );
   };
 
@@ -320,14 +330,17 @@ class Alignment extends InputFile<AlignmentOwner> {
     model = model.replace( 'TrN', 'TN93' );
     model = model.replace( 'TPM1', 'K81' );
     this.substitutionModel.setValue( model );
-    if ( /\+F[O|E]?/.test( raxmlNG ) ) {
-      this.ngStationaryFrequencies.setValue( /\+F[O|E]?/.exec( raxmlNG )[0] );
+    const frequencies = raxmlNG.match( /\+F[O|E]?/ );
+    if ( frequencies ) {
+      this.ngStationaryFrequencies.setValue( frequencies[0] );
     }
-    if ( /\+IC?/.test( raxmlNG ) ) {
-      this.ngInvariantSites.setValue( /\+IC?/.exec( raxmlNG )[0] );
+    const invariantSites = raxmlNG.match( /\+IC?/ );
+    if ( invariantSites ) {
+      this.ngInvariantSites.setValue( invariantSites[0] );
     }
-    if ( /\+GA?/.test( raxmlNG ) ) {
-      this.ngRateHeterogeneity.setValue( /\+GA?/.exec( raxmlNG )[0] );
+    const rateHeterogeneity = raxmlNG.match( /\+GA?/ );
+    if ( rateHeterogeneity ) {
+      this.ngRateHeterogeneity.setValue( rateHeterogeneity[0] );
     }
     if ( /\+ASC_LEWIS/.test( raxmlNG ) ) {
       this.ngAscertainmentBias.setValue( '+ASC_LEWIS' );
@@ -350,7 +363,8 @@ class Alignment extends InputFile<AlignmentOwner> {
       console.log( 'parsing matrix name...' );
       const { options } = raxmlSettings.aminoAcidSubstitutionMatrixOptions;
       const re = new RegExp( `(${options.join( '|' )})$` );
-      const matrixName = re.exec( model )[1];
+      // Null on an unlisted matrix throws a TypeError, as before; #403 owns that case.
+      const matrixName = re.exec( model )![1];
       this.aaMatrixName = matrixName;
       model = model.replace( re, '' );
     }
@@ -396,11 +410,10 @@ class Alignment extends InputFile<AlignmentOwner> {
     try {
       const parsed = await rendererBridge.parseAlignment( this.id, this.path );
       const { alignment, change } = parsed;
-      const newDataType = getFinalDataType(
-        this.run.alignments
-          .map( ( { dataType } ) => dataType )
-          .concat( alignment.dataType ),
-      );
+      const newDataType = getFinalDataType( [
+        ...this.run.alignments.map( ( { dataType } ) => dataType ),
+        alignment.dataType,
+      ] );
       runInAction( () => {
         if ( this.run.dataType !== newDataType ) {
           this.run.substitutionMatrix.value =
@@ -422,8 +435,8 @@ class Alignment extends InputFile<AlignmentOwner> {
         if ( change ) {
           this.path = change.newFilePath;
           this.convertedFrom = change.format;
-          this.converted = change.converted;
-          this.modified = change.modified;
+          this.converted = change.converted ?? false;
+          this.modified = change.modified ?? false;
           this.modificationMessages = change.modificationMessages;
           if ( change.modificationMessages.length > 0 ) {
             this.showModifiedDialog = true;

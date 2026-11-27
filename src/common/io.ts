@@ -4,6 +4,9 @@ import util from 'util';
 import phylipParser from './phylipParser';
 import fastaParser from './fastaParser';
 import typecheckAlignment from './typecheckAlignment';
+import type { TypecheckedAlignment } from './typecheckAlignment';
+import type { FastaAlignment } from './fastaParser';
+import type { PhylipAlignment } from './phylipParser';
 import UserFixError from './errors';
 
 interface AlignmentSequence {
@@ -16,7 +19,7 @@ interface Alignment {
   length: number;
 }
 
-export const parseAlignment = async ( filePath: string ): Promise<Alignment> => {
+export const parseAlignment = async ( filePath: string ): Promise<TypecheckedAlignment> => {
   try {
     await fs.promises.access( filePath );
   } catch ( err: unknown ) {
@@ -32,7 +35,7 @@ export const parseAlignment = async ( filePath: string ): Promise<Alignment> => 
     } );
     const lines: string[] = [];
     let error: Error | null = null;
-    let alignment: Alignment | null = null;
+    let alignment: FastaAlignment | PhylipAlignment | null = null;
     rl.on( 'line', ( line ) => {
       lines.push( line );
     } ).on( 'close', () => {
@@ -55,17 +58,18 @@ export const parseAlignment = async ( filePath: string ): Promise<Alignment> => 
         if ( !alignment || alignment.sequences.length === 0 ) {
           return reject( new Error( `Couldn't parse any sequences from file ${filePath}` ) );
         }
+        let typechecked: TypecheckedAlignment;
         try {
-          typecheckAlignment( alignment );
+          typechecked = typecheckAlignment( alignment );
         } catch ( err: unknown ) {
           console.error( 'Error checking data type:', err );
           return reject( err );
         }
-        const alignmentRestricted = Object.assign( {}, alignment, {
-          sequences: alignment.sequences.slice( 0, 2 ),
+        const alignmentRestricted = Object.assign( {}, typechecked, {
+          sequences: typechecked.sequences.slice( 0, 2 ),
         } );
         console.log( 'Alignment with first two sequences:', alignmentRestricted );
-        resolve( alignment );
+        resolve( typechecked );
       }
     } );
   } );
@@ -91,7 +95,7 @@ export const writeAlignment = async ( filePath: string, alignment: Alignment ): 
 };
 
 interface Io {
-  parseAlignment: ( filePath: string ) => Promise<Alignment>;
+  parseAlignment: ( filePath: string ) => Promise<TypecheckedAlignment>;
   writeAlignment: ( filePath: string, alignment: Alignment ) => Promise<void>;
 }
 

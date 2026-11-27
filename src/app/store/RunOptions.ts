@@ -18,7 +18,7 @@ interface RunOwner {
   finalAlignment: { hasInvariantSites: boolean };
   taxons: string[];
   haveAlignments: boolean;
-  dataType: string;
+  dataType: string | undefined;
   usesRaxmlNg: boolean;
   usesModeltestNg: boolean;
   useBackboneConstraint: boolean;
@@ -528,7 +528,7 @@ export class SubstitutionMatrix extends Option<string, RunOwner> {
     } );
   }
   get options(): Choice<string>[] {
-    if ( !this.run.haveAlignments ) {
+    if ( !this.run.haveAlignments || this.run.dataType === undefined ) {
       return [];
     }
     const modelSettings = ( raxmlMatrixOptions as Record<string, { options: readonly string[] }> )[this.run.dataType];

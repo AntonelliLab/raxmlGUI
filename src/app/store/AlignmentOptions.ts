@@ -18,7 +18,7 @@ interface RunLike {
 
 interface AlignmentLike {
   run: RunLike;
-  dataType: string;
+  dataType: string | undefined;
   hasInvariantSites: boolean;
   multistateNumber: { value: string };
 }
@@ -35,7 +35,7 @@ class RaxmlNgAlignmentSubstitutionModel extends Option<string, RunLike> {
     this.alignment = alignment;
   }
   get options(): Choice[] {
-    if ( !this.alignment.run.haveAlignments ) {
+    if ( !this.alignment.run.haveAlignments || this.alignment.dataType === undefined ) {
       return [];
     }
     const modelSettings = ( raxmlNgModelOptions as Record<string, { options: readonly string[] }> )[this.alignment.dataType];

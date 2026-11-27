@@ -1,22 +1,14 @@
 import path from 'path';
 
-import type { DataType } from '../common/typecheckAlignment';
+import type { TypecheckedAlignment } from '../common/typecheckAlignment';
 
 export interface AlignmentSequence {
   taxon: string;
   code: string;
 }
 
-// Optional fields: the parsers and typecheck add them, io.parseAlignment does not declare them.
-export interface Alignment {
-  sequences: AlignmentSequence[];
-  length: number;
-  numSequences?: number;
-  fileFormat?: string;
-  dataType?: DataType;
-  hasInvariantSites?: boolean;
-  typecheckingComplete?: boolean;
-}
+// What io.parseAlignment resolves: parsed, then typechecked.
+export type Alignment = TypecheckedAlignment;
 
 interface AlignmentParseTools {
   readFormat: ( filePath: string ) => Promise<string>;

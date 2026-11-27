@@ -40,7 +40,7 @@ export default class StoreBase {
 
   unlisten = (): void => {
     while ( this.eventStops.length ) {
-      this.eventStops.pop()();
+      this.eventStops.pop()?.();
     }
   };
 
