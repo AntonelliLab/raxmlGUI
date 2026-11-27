@@ -24,7 +24,7 @@ function bridge( extra: Partial<RendererBridge> = {} ) {
         stops.push( 'success' );
       };
     },
-    checkOutput: async () => ( { ok: true, resultFilenames: [] } as CheckOutputResult ),
+    checkOutput: async () => ( { ok: true, resultFilenames: [] as string[] } as CheckOutputResult ),
     parseAlignment: () => new Promise( () => {} ),
     ...extra,
   } );

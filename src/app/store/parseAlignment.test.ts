@@ -107,5 +107,5 @@ it( 'a failed parse removes the alignment', async () => {
   await pending.catch( () => {} );
 
   expect( run.alignments ).toEqual( [] );
-  expect( run.error.message ).toBe( 'unrecognized format' );
+  expect( run.error!.message ).toBe( 'unrecognized format' );
 } );

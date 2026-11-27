@@ -27,7 +27,7 @@ const stayParsed = async (): Promise<AlignmentParseResult> => ( {
 const checkOutput = vi.fn<RendererBridge['checkOutput']>( async ( { outputName } ) => ( {
   ok: true,
   outputNameUnused: outputName,
-  resultFilenames: [],
+  resultFilenames: [] as string[],
 } as CheckOutputResult ) );
 
 const flush = () => new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
@@ -209,9 +209,9 @@ describe( 'ASTRAL tree', () => {
     run.addAstralFiles( { path: '/data/second.tre' } );
     dispose();
 
-    expect( run.astralTree.path ).toBe( '/data/trees.tre' );
-    expect( run.outputName ).toBe( run.astralTree.name );
-    expect( run.outputDir ).toBe( run.astralTree.dir );
+    expect( run.astralTree!.path ).toBe( '/data/trees.tre' );
+    expect( run.outputName ).toBe( run.astralTree!.name );
+    expect( run.outputDir ).toBe( run.astralTree!.dir );
     expect( seen ).toEqual( [ false, true ] );
   } );
 
@@ -229,7 +229,7 @@ describe( 'ASTRAL tree', () => {
 
 describe( 'partition file', () => {
   it( 'loadPartitionFile shows the path and content after the read resolves', async () => {
-    let finishRead: ( content: string ) => void;
+    let finishRead!: ( content: string ) => void;
     const readFile = vi.fn<RendererBridge['readFile']>(
       () => new Promise<string>( ( resolve ) => { finishRead = resolve; } ),
     );

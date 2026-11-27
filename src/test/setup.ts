@@ -42,8 +42,9 @@ function withBridgeEvents( next: TestBridge ): TestBridge {
     next.provideStateReport = () => {};
   }
   // The page store calls getVersion while it is constructed.
+  // It resolves undefined, not '', so settings text matches what tests captured before it settles.
   if ( typeof next.getVersion !== 'function' ) {
-    next.getVersion = () => Promise.resolve( undefined );
+    next.getVersion = () => Promise.resolve( undefined as unknown as string );
   }
   // The run list seeds the update download when it listens.
   if ( typeof next.getUpdateDownload !== 'function' ) {

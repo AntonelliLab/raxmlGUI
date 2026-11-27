@@ -20,7 +20,7 @@ type RunParent = ConstructorParameters<typeof Run>[0];
 const parent = { onError() {} } as Partial<RunParent> as RunParent;
 
 const binaryNamed = ( run: Run, prefix: string ) => run.binary.options
-  .map( ( o ) => o.value ).find( ( v: string ) => v.startsWith( prefix ) );
+  .map( ( o ) => o.value ).find( ( v: string ) => v.startsWith( prefix ) )!;
 const ngName = () => binaryNamed( new Run( parent, 1 ), 'raxml-ng' );
 
 // The default binary depends on the host platform, so pin a classic RAxML one.

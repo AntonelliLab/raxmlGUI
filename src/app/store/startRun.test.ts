@@ -37,7 +37,7 @@ function bridge( extra: Partial<RendererBridge> = {} ) {
     [runEvents.onRunFinished]: subscribe( 'finished' ),
     [runEvents.onRunError]: subscribe( 'error' ),
     parseAlignment: () => new Promise( () => {} ),
-    checkOutput: async () => ( { ok: true, resultFilenames: [] } as CheckOutputResult ),
+    checkOutput: async () => ( { ok: true, resultFilenames: [] as string[] } as CheckOutputResult ),
     writeFile: async () => {},
     async cancelRun() {},
     ...extra,

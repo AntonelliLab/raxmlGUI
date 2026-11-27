@@ -35,7 +35,7 @@ it( 'the page shows an unhandled error title and error', () => {
     } );
   } );
 
-  expect( document.getElementById( 'error-dialog-title' ).textContent ).toBe( 'Unhandled Error' );
+  expect( document.getElementById( 'error-dialog-title' )!.textContent ).toBe( 'Unhandled Error' );
   expect( document.body.textContent ).toContain( 'disk full' );
 
   act( () => {

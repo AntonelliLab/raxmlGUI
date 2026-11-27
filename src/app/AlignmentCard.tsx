@@ -29,7 +29,7 @@ interface CardModelExtra {
   value: string;
   onChange: ( value: string ) => void;
   notAvailable: boolean;
-  hoverInfo: string;
+  hoverInfo?: string;
   error: unknown;
 }
 

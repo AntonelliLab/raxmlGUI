@@ -25,7 +25,7 @@ function useOtherBinary( run: Run ) {
   runInAction( () => {
     run.binary.value = run.binary.options.find(
       ( o ) => !o.value.includes( 'raxml-ng' ),
-    ).value;
+    )!.value;
   } );
 }
 

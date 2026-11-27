@@ -38,7 +38,7 @@ function makeAlignment(
     if ( !ng ) {
       run.binary.value = run.binary.options
         .map( ( o ) => o.value )
-        .find( ( v ) => /raxml/i.test( v ) && !v.includes( 'raxml-ng' ) );
+        .find( ( v ) => /raxml/i.test( v ) && !v.includes( 'raxml-ng' ) )!;
     }
     // 'dna' is the dead case of #269; the store still maps it to DNA.
     alignment.dataType = dataType as DataType;

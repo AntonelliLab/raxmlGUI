@@ -14,7 +14,7 @@ export interface OptionSelectChoice {
 export interface OptionSelectOptionLike<Value extends string | number | readonly string[]> {
   notAvailable?: boolean;
   title: string;
-  hoverInfo: string;
+  hoverInfo?: string;
   options: readonly OptionSelectChoice[];
   value: Value;
   setValue: ( value: Value ) => void;
