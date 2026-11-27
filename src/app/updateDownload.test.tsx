@@ -65,3 +65,24 @@ it( 'the page follows the update download in a dialog that cannot be dismissed',
   } );
   div.remove();
 } );
+
+it( 'a page that starts mid-download shows the dialog with no event pushed', async () => {
+  installBridge( {
+    getUpdateDownload: () => Promise.resolve( { status: 'downloading', percent: 37 } ),
+  } );
+  store.listen();
+
+  const div = document.createElement( 'div' );
+  document.body.appendChild( div );
+  const root = createRoot( div );
+  await act( async () => {
+    root.render( <Page /> );
+  } );
+  expect( title() ).toBe( 'Downloading update' );
+  expect( document.querySelector( '[role="dialog"]' ).textContent ).toContain( '37%' );
+
+  act( () => {
+    root.unmount();
+  } );
+  div.remove();
+} );

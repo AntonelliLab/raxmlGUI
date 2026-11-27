@@ -79,6 +79,7 @@ export interface RendererBridge {
   onToggleMultifurcatingConstraint: ( listener: Listener ) => Unsubscribe;
   onUnhandledError: ( listener: Listener ) => Unsubscribe;
   onUpdateDownload: ( listener: ( payload: UpdateDownloadPayload ) => void ) => Unsubscribe;
+  getUpdateDownload: () => Promise<UpdateDownload>;
   getPathForFile: ( file: File ) => string;
 }
 

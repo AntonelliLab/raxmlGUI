@@ -17,6 +17,7 @@ import {
   FILE_SHOW_IN_FOLDER,
   GET_DARK_MODE,
   GET_VERSION,
+  GET_UPDATE_DOWNLOAD,
   HOST,
   SET_DARK_MODE,
   LIGHT_MODE,
@@ -194,6 +195,9 @@ const rendererBridge = {
   },
   onUpdateDownload( listener: ( payload: UpdateDownloadPayload ) => void ) {
     return onEvent( UPDATE_DOWNLOAD, listener );
+  },
+  getUpdateDownload() {
+    return ipcRenderer.invoke( GET_UPDATE_DOWNLOAD );
   },
   getPathForFile( file: File ): string {
     return webUtils.getPathForFile( file );

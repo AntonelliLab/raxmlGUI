@@ -16,6 +16,7 @@ import { selectAstralFile } from './selectAstralFile';
 import { selectOutputDir } from './selectOutputDir';
 import { checkOutput } from './checkOutput';
 import { debugInfo } from './debugInfo';
+import { getUpdateDownload } from './updates';
 import { selectPartitionFile } from './selectPartitionFile';
 import { selectTree } from './selectTree';
 import { appStore } from './appStore';
@@ -71,6 +72,7 @@ ipcMain.on( ipc.HOST, ( event: IpcMainEvent ) => {
   };
 } );
 ipcMain.handle( ipc.GET_VERSION, (): string => app.getVersion() );
+ipcMain.handle( ipc.GET_UPDATE_DOWNLOAD, getUpdateDownload );
 ipcMain.handle( ipc.GET_DARK_MODE, (): boolean => Boolean( appStore.get( 'darkMode' ) ) );
 ipcMain.handle( ipc.SET_DARK_MODE, ( _event: IpcMainInvokeEvent, value: boolean ): void => {
   appStore.set( 'darkMode', value );

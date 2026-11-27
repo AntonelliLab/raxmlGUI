@@ -1,0 +1,10 @@
+{
+  "key": "heldUpdateDownload",
+  "method": "getUpdateDownload",
+  "args": [],
+  "channel": "GET_UPDATE_DOWNLOAD",
+  "result": {
+    "status": "downloading",
+    "percent": 42
+  }
+}

@@ -99,6 +99,8 @@ class RunList extends AppStore {
   listen = (): void => {
     this.subscribe( runEvents.onUnhandledError, this.onUnhandledError );
     this.subscribe( runEvents.onUpdateDownload, this.onUpdateDownload );
+    // A reloaded or reopened page starts mid-download; seed from main's held state.
+    window.rendererBridge.getUpdateDownload().then( this.onUpdateDownload );
     this.subscribe( runEvents.onAddRun, this.addRun );
     this.subscribe( runEvents.onRemoveRun, this.deleteActive );
     this.subscribe( runEvents.onToggleBackboneConstraint, this.onBackboneConstraint );
