@@ -29,7 +29,7 @@ interface PartLike {
   codon: { value: string };
 }
 
-class PartBase<Value> extends Option<Value> {
+class PartBase<Value, Input = Value> extends Option<Value, unknown, Input> {
   part: PartLike;
   constructor(
     part: PartLike,
@@ -126,7 +126,8 @@ class PartName extends PartBase<string> {
     return false;
   }
 }
-class PartStart extends PartBase<number> {
+// OptionTextField hands start and end the field's text; the number schema casts it.
+class PartStart extends PartBase<number, number | string> {
   disabled: boolean;
   constructor( part: PartLike, value = 1 ) {
     super( part, value, 'from', 'Start position for this part', '', {
@@ -143,7 +144,7 @@ class PartStart extends PartBase<number> {
   }
 }
 
-class PartEnd extends PartBase<number> {
+class PartEnd extends PartBase<number, number | string> {
   constructor( part: PartLike, value = 1 ) {
     super(
       part,

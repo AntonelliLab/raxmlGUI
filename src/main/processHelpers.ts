@@ -1,5 +1,5 @@
 import { app, Notification } from 'electron';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import path from 'path';
 import childProcess from 'child_process';
 import type { ChildProcess } from 'child_process';
@@ -60,7 +60,7 @@ const binParentDir = app.isPackaged
 export const binaryDir: string = path.join( getStaticDir(), 'bin', binParentDir );
 
 export function send(
-  event: IpcMainEvent,
+  event: IpcMainInvokeEvent,
   channel: string,
   data: { error?: unknown; [key: string]: unknown },
 ): void {
@@ -89,7 +89,7 @@ export function spawnProcess(
 
 export async function runProcess(
   id: TrackedId,
-  event: IpcMainEvent,
+  event: IpcMainInvokeEvent,
   binaryDir: string,
   binaryName: string,
   args: string[],

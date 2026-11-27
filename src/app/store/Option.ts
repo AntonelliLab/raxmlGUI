@@ -8,8 +8,8 @@ interface OptionSettings {
   helperText?: string;
 }
 
-/** Reactive option with optional validation */
-class Option<Value = unknown, Owner = unknown> {
+/** Reactive option with optional validation. `Input` is what `setValue` takes before the schema casts it. */
+class Option<Value = unknown, Owner = unknown, Input = Value> {
   run: Owner;
   defaultValue: Value;
   title: string;
@@ -49,12 +49,13 @@ class Option<Value = unknown, Owner = unknown> {
     this.helperText = helperText;
     this.value = defaultValue;
   }
-  setValue( value: Value ): void {
+  setValue( value: Input ): void {
     const isValid = this.schema.isValidSync( value );
     if ( !this.allowOnlyValidChange || isValid ) {
+      // An invalid input is kept as typed, so `value` can hold an uncast `Input` despite its type.
       this.value = isValid
         ? this.schema.cast( value )
-        : value;
+        : value as unknown as Value;
     }
   }
   reset(): void {

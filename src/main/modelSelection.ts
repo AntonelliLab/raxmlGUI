@@ -1,7 +1,7 @@
 import path from 'path';
 import _fs from 'fs';
 import parsePath from 'parse-filepath';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import * as ipc from '../constants/ipc';
 import { quote } from '../common/utils';
 import {
@@ -48,7 +48,7 @@ export interface ModelSelectionFailurePayload {
 }
 
 export async function runModelSelection(
-  event: IpcMainEvent,
+  event: IpcMainInvokeEvent,
   payload: ModelSelectionPayload,
 ): Promise<void> {
   const { id, filePath, outputDir, dataType, numThreads, binaryName } = payload;

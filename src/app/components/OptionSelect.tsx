@@ -11,27 +11,27 @@ export interface OptionSelectChoice {
   title: string | number;
 }
 
-export interface OptionSelectOptionLike {
+export interface OptionSelectOptionLike<Value extends string | number | readonly string[]> {
   notAvailable?: boolean;
   title: string;
   hoverInfo: string;
   options: readonly OptionSelectChoice[];
-  value: string | number | readonly string[];
-  setValue: ( value: unknown ) => void;
+  value: Value;
+  setValue: ( value: Value ) => void;
   multiple?: boolean;
   error: unknown;
   placeholder?: string;
 }
 
-export interface OptionSelectProps {
-  option: OptionSelectOptionLike;
+export interface OptionSelectProps<Value extends string | number | readonly string[]> {
+  option: OptionSelectOptionLike<Value>;
   sx?: SxProps<Theme>;
 }
 
-const OptionSelect = observer( function OptionSelect( {
+function OptionSelect<Value extends string | number | readonly string[]>( {
   option,
   sx,
-}: OptionSelectProps ) {
+}: OptionSelectProps<Value> ) {
   if ( option.notAvailable || option.options.length === 0 ) {
     return null;
   }
@@ -59,7 +59,8 @@ const OptionSelect = observer( function OptionSelect( {
     <FormControl variant="standard" sx={sx} title={option.hoverInfo}>
       <Select
         value={option.value}
-        onChange={( e ) => option.setValue( e.target.value )}
+        // MUI's change event types the value as `Value | string`.
+        onChange={( e ) => option.setValue( e.target.value as Value )}
         inputProps={{
           name: option.title,
           id: option.title,
@@ -76,6 +77,6 @@ const OptionSelect = observer( function OptionSelect( {
       <FormHelperText>{option.title}</FormHelperText>
     </FormControl>
   );
-} );
+}
 
-export default OptionSelect;
+export default observer<typeof OptionSelect>( OptionSelect );

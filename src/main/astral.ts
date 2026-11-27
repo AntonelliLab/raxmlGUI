@@ -1,5 +1,5 @@
 import path from 'path';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import * as ipc from '../constants/ipc';
 import { quote } from '../common/utils';
 import {
@@ -28,7 +28,7 @@ export interface AstralSuccessPayload {
 }
 
 export async function runAstral(
-  event: IpcMainEvent,
+  event: IpcMainInvokeEvent,
   payload: AstralPayload,
 ): Promise<void> {
   const { id, binaryName, args } = payload;

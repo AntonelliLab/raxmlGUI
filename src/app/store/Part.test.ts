@@ -297,10 +297,10 @@ describe( 'part options', () => {
     const { start } = makeAlignment().partition.partToAdd;
     expect( start.notAvailable ).toBe( false );
     expect( start.disabled ).toBe( true );
-    // @ts-expect-error A numeric string on purpose: the schema casts it to a number.
+    // The schema casts a numeric string to a number.
     start.setValue( '7' );
     expect( start.value ).toBe( 7 );
-    // @ts-expect-error A non-numeric string on purpose: an invalid value is stored as given.
+    // An invalid value is stored as given.
     start.setValue( 'abc' );
     expect( start.value ).toBe( 'abc' );
   } );

@@ -18,6 +18,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictBindCallApply": true,
+    "strictFunctionTypes": true,
     "skipLibCheck": true
   },
   "include": ["src", "e2e/helpers/**/*.test.ts"]

@@ -21,12 +21,12 @@ interface PartPositionOption extends Omit<OptionTextFieldOptionLike, 'setValue'>
 
 interface EditorPartition {
   partToAdd: {
-    type: OptionSelectOptionLike;
-    aaType: OptionSelectOptionLike;
+    type: OptionSelectOptionLike<string>;
+    aaType: OptionSelectOptionLike<string>;
     name: OptionTextFieldOptionLike;
     start: PartPositionOption;
     end: PartPositionOption;
-    codon: OptionSelectOptionLike;
+    codon: OptionSelectOptionLike<string>;
   };
   progress: number;
   currentEndValue: number;

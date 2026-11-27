@@ -1,6 +1,6 @@
 import { observable, computed, action, makeObservable } from 'mobx';
 import type { StateReport } from '../../main/getActiveState';
-import type { UpdateDownload } from '../../common/rendererBridge';
+import type { UnhandledErrorPayload, UpdateDownload } from '../../common/rendererBridge';
 import Run from './Run';
 import AppStore from './AppStore';
 import { runEvents } from './StoreBase';
@@ -74,7 +74,7 @@ class RunList extends AppStore {
     this.error = error;
   };
 
-  onUnhandledError = ( { title, error }: { title: string; error: unknown } ): void => {
+  onUnhandledError = ( { title, error }: UnhandledErrorPayload ): void => {
     console.log( 'Unhandled error:', error );
     this.errorTitle = title;
     this.error = error;

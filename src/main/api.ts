@@ -10,6 +10,7 @@ import { serializeError } from 'serialize-error';
 import * as Sentry from '@sentry/electron/main';
 import * as ipc from '../constants/ipc';
 import io from '../common/io';
+import type { UnhandledErrorPayload } from '../common/rendererBridge';
 import { parseAlignment } from './parseAlignment';
 import { selectAlignment } from './selectAlignment';
 import { selectAstralFile } from './selectAstralFile';
@@ -48,7 +49,7 @@ function handleError( title: string, error: unknown ): void {
     win.webContents.send( ipc.UNHANDLED_ERROR, {
       title,
       error: serializeError( error ),
-    } );
+    } satisfies UnhandledErrorPayload );
   }
 }
 process.on( 'uncaughtException', ( error: Error ) => {

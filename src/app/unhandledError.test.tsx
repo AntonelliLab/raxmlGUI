@@ -4,9 +4,10 @@ import { createRoot } from 'react-dom/client';
 import Page from './index';
 import store from './store';
 import { installBridge } from '../test/setup';
+import type { UnhandledErrorPayload } from '../common/rendererBridge';
 
 it( 'the page shows an unhandled error title and error', () => {
-  let hear: ( payload: unknown ) => void;
+  let hear: ( payload: UnhandledErrorPayload ) => void;
   installBridge( {
     onUnhandledError( listener ) {
       hear = listener;

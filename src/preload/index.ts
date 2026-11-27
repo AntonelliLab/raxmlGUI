@@ -44,7 +44,7 @@ import {
   UPDATE_DOWNLOAD,
   WRITE_FILE,
 } from '../constants/ipc';
-import type { RendererBridge, HostInfo, UpdateDownloadPayload } from '../common/rendererBridge';
+import type { RendererBridge, HostInfo, UnhandledErrorPayload, UpdateDownloadPayload } from '../common/rendererBridge';
 import type { CheckOutputArgs } from '../main/checkOutput';
 import type { StateReport } from '../main/getActiveState';
 import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
@@ -190,7 +190,7 @@ const rendererBridge = {
   onToggleMultifurcatingConstraint( listener: ( payload: unknown ) => void ) {
     return onEvent( TOGGLE_MULTIFURCATING_CONSTRAINT, listener );
   },
-  onUnhandledError( listener: ( payload: unknown ) => void ) {
+  onUnhandledError( listener: ( payload: UnhandledErrorPayload ) => void ) {
     return onEvent( UNHANDLED_ERROR, listener );
   },
   onUpdateDownload( listener: ( payload: UpdateDownloadPayload ) => void ) {

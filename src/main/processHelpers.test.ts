@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import path from 'path';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 
 vi.mock( 'electron', () => ( {
   app: { isPackaged: false, getAppPath: () => '' },
@@ -25,7 +25,7 @@ const eventWith = ( destroyed: boolean ) => {
       }
     } ),
   };
-  return { event: { sender } as unknown as IpcMainEvent, sender };
+  return { event: { sender } as unknown as IpcMainInvokeEvent, sender };
 };
 
 it( 'send delivers to a live window', () => {

@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import type { IpcMainEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 
 import { runModelSelection } from './modelSelection';
 import { ALIGNMENT_MODEL_SELECTION_FAILURE } from '../constants/ipc';
@@ -18,7 +18,7 @@ afterEach( () => {
 it( 'a failed modeltest-ng run reports its own command', async () => {
   vi.spyOn( console, 'log' ).mockImplementation( () => {} );
   vi.spyOn( console, 'error' ).mockImplementation( () => {} );
-  await runModelSelection( {} as IpcMainEvent, {
+  await runModelSelection( {} as IpcMainInvokeEvent, {
     id: 'a1',
     filePath: '/data/primates.fasta',
     outputDir: '/nonexistent-out',

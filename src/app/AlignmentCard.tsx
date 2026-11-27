@@ -44,12 +44,12 @@ interface CardAlignment {
   loading: boolean;
   showPartition: boolean;
   partition: { isComplete: boolean };
-  substitutionModel: OptionSelectOptionLike;
+  substitutionModel: OptionSelectOptionLike<string>;
   multistateNumber: OptionTextFieldOptionLike;
-  ngStationaryFrequencies: OptionSelectOptionLike;
-  ngInvariantSites: OptionSelectOptionLike;
-  ngRateHeterogeneity: OptionSelectOptionLike;
-  ngAscertainmentBias: OptionSelectOptionLike;
+  ngStationaryFrequencies: OptionSelectOptionLike<string>;
+  ngInvariantSites: OptionSelectOptionLike<string>;
+  ngRateHeterogeneity: OptionSelectOptionLike<string>;
+  ngAscertainmentBias: OptionSelectOptionLike<string>;
   modelExtra: CardModelExtra | null;
   modelTestCanRun: boolean;
   modeltestLoading: boolean;

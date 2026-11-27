@@ -12,8 +12,8 @@ import { FormHelperText } from '@mui/material';
 
 interface RaxmlRun {
   command: string;
-  binary: OptionSelectOptionLike;
-  numThreads: OptionSelectOptionLike;
+  binary: OptionSelectOptionLike<string>;
+  numThreads: OptionSelectOptionLike<number>;
   modelTestIsRunningOnAlignment: boolean;
   cancelModeltestOnAlignment: () => void;
   running: boolean;
