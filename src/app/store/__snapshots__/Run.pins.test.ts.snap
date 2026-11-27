@@ -1,0 +1,1511 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ASTRAL args > with a loaded tree 1`] = `
+[
+  [
+    "-i",
+    "/in/genes.tre",
+    "-o",
+    "/out/ASTRAL_pin.tre",
+  ],
+]
+`;
+
+exports[`ASTRAL args > without a tree 1`] = `
+[
+  [
+    "-o",
+    "/out/ASTRAL_pin.tre",
+  ],
+]
+`;
+
+exports[`ModelTest-NG args > binary 1`] = `
+[
+  [
+    "-i",
+    "/in/a.fasta",
+    "-o",
+    "/out/RAxML_GUI_ModelTest_pin",
+    "--force",
+    "-p",
+    3,
+  ],
+]
+`;
+
+exports[`ModelTest-NG args > nucleotide 1`] = `
+[
+  [
+    "-d",
+    "nt",
+    "-i",
+    "/in/a.fasta",
+    "-o",
+    "/out/RAxML_GUI_ModelTest_pin",
+    "--force",
+    "-p",
+    3,
+  ],
+]
+`;
+
+exports[`ModelTest-NG args > protein 1`] = `
+[
+  [
+    "-d",
+    "aa",
+    "-i",
+    "/in/a.fasta",
+    "-o",
+    "/out/RAxML_GUI_ModelTest_pin",
+    "--force",
+    "-p",
+    3,
+  ],
+]
+`;
+
+exports[`RAxML args > AS alternate 1`] = `
+[
+  [
+    "-f",
+    "A",
+    "-t",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > AS bare 1`] = `
+[
+  [
+    "-f",
+    "A",
+    "-t",
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > AS full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "A",
+    "-t",
+    "/in/start.tre",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > BS+con alternate 1`] = `
+[
+  [
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    100,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-J",
+    "MR",
+    "-w",
+    "/out",
+    "-z",
+    "/out/RAxML_bootstrap.pin.tre",
+    "-n",
+    "consensus.pin.tre",
+  ],
+]
+`;
+
+exports[`RAxML args > BS+con bare 1`] = `
+[
+  [
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    100,
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-m",
+    "GTRGAMMA",
+    "-J",
+    "MR",
+    "-w",
+    "/out",
+    "-z",
+    "/out/RAxML_bootstrap.pin.tre",
+    "-n",
+    "consensus.pin.tre",
+  ],
+]
+`;
+
+exports[`RAxML args > BS+con full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-k",
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    200,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-O",
+    "-o",
+    "t1,t2",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+  [
+    "-T",
+    3,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-J",
+    "MR",
+    "-w",
+    "/out",
+    "-z",
+    "/out/RAxML_bootstrap.pin.tre",
+    "-n",
+    "consensus.pin.tre",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML args > FT alternate 1`] = `
+[
+  [
+    "-f",
+    "E",
+    "-p",
+    123,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-t",
+    "/out/RAxML_fastTree.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > FT bare 1`] = `
+[
+  [
+    "-f",
+    "E",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > FT full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "E",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-O",
+    "-o",
+    "t1,t2",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+  [
+    "-T",
+    3,
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-t",
+    "/out/RAxML_fastTree.pin.tre",
+    "-n",
+    "brL.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+  [
+    "-T",
+    3,
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-t",
+    "/out/RAxML_result.brL.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > ML alternate 1`] = `
+[
+  [
+    "-f",
+    "d",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-N",
+    1,
+    "-O",
+    "-p",
+    123,
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-t",
+    "/out/RAxML_bestTree.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > ML bare 1`] = `
+[
+  [
+    "-f",
+    "d",
+    "-m",
+    "GTRGAMMA",
+    "-N",
+    1,
+    "-p",
+    123,
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > ML full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "d",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-N",
+    10,
+    "-O",
+    "-p",
+    123,
+    "-n",
+    "pin.tre",
+    "-o",
+    "t1,t2",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+  [
+    "-T",
+    3,
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-t",
+    "/out/RAxML_bestTree.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+rBS alternate 1`] = `
+[
+  [
+    "-f",
+    "a",
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    100,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+rBS bare 1`] = `
+[
+  [
+    "-f",
+    "a",
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    100,
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+rBS full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "a",
+    "-x",
+    123,
+    "-p",
+    123,
+    "-N",
+    200,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-k",
+    "-O",
+    "-o",
+    "t1,t2",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+tBS alternate 1`] = `
+[
+  [
+    "-b",
+    123,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-p",
+    123,
+    "-N",
+    100,
+    "-O",
+    "-n",
+    "pinR.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "d",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-p",
+    123,
+    "-N",
+    1,
+    "-O",
+    "-n",
+    "pinB.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "b",
+    "-t",
+    "/out/RAxML_bestTree.pinB.tre",
+    "-z",
+    "/out/RAxML_bootstrap.pinR.tre",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+tBS bare 1`] = `
+[
+  [
+    "-b",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "-p",
+    123,
+    "-N",
+    100,
+    "-n",
+    "pinR.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-f",
+    "d",
+    "-m",
+    "GTRGAMMA",
+    "-p",
+    123,
+    "-N",
+    1,
+    "-n",
+    "pinB.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-f",
+    "b",
+    "-t",
+    "/out/RAxML_bestTree.pinB.tre",
+    "-z",
+    "/out/RAxML_bootstrap.pinR.tre",
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > ML+tBS full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-b",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-k",
+    "-p",
+    123,
+    "-N",
+    200,
+    "-O",
+    "-o",
+    "t1,t2",
+    "-n",
+    "pinR.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+  [
+    "-T",
+    3,
+    "-f",
+    "d",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-p",
+    123,
+    "-N",
+    10,
+    "-O",
+    "-o",
+    "t1,t2",
+    "-n",
+    "pinB.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+  [
+    "-T",
+    3,
+    "-f",
+    "b",
+    "-t",
+    "/out/RAxML_bestTree.pinB.tre",
+    "-z",
+    "/out/RAxML_bootstrap.pinR.tre",
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > PD alternate 1`] = `
+[
+  [
+    "-f",
+    "x",
+    "-p",
+    123,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > PD bare 1`] = `
+[
+  [
+    "-f",
+    "x",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > PD full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "x",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-O",
+    "-t",
+    "/in/start.tre",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > RBS alternate 1`] = `
+[
+  [
+    "-f",
+    "D",
+    "-p",
+    123,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`RAxML args > RBS bare 1`] = `
+[
+  [
+    "-f",
+    "D",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`RAxML args > RBS full 1`] = `
+[
+  [
+    "-T",
+    3,
+    "-f",
+    "D",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "--HKY85",
+    "-k",
+    "-o",
+    "t1,t2",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/parts.txt",
+    "-r",
+    "/in/backbone.tre",
+    "-g",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > AS alternate 1`] = `
+[
+  [
+    "--ancestral",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--tree",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > AS bare 1`] = `
+[
+  [
+    "--ancestral",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--tree",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > AS full 1`] = `
+[
+  [
+    "--ancestral",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--tree",
+    "/in/start.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > CC alternate 1`] = `
+[
+  [
+    "--parse",
+    "--model",
+    "/in/RAxML_pin.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > CC bare 1`] = `
+[
+  [
+    "--parse",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > CC full 1`] = `
+[
+  [
+    "--parse",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+    "--tree-constraint",
+    "/in/backbone.tre",
+    "--tree-constraint",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+TBE+con alternate 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/RAxML_pin.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--bs-metric",
+    "tbe",
+    "--tree",
+    "rand{1}",
+    "--bs-trees",
+    100,
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+TBE+con bare 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--bs-metric",
+    "tbe",
+    "--tree",
+    "rand{1}",
+    "--bs-trees",
+    100,
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+TBE+con full 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--threads",
+    3,
+    "--outgroup",
+    "t1,t2",
+    "--bs-metric",
+    "tbe",
+    "--tree",
+    "rand{10}",
+    "--bs-trees",
+    "autoMRE",
+    "--tree-constraint",
+    "/in/backbone.tre",
+    "--tree-constraint",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+tBS+con alternate 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/RAxML_pin.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--bs-metric",
+    "fbp",
+    "--tree",
+    "rand{1}",
+    "--bs-trees",
+    100,
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+tBS+con bare 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--bs-metric",
+    "fbp",
+    "--tree",
+    "rand{1}",
+    "--bs-trees",
+    100,
+  ],
+]
+`;
+
+exports[`RAxML-NG args > ML+tBS+con full 1`] = `
+[
+  [
+    "--all",
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--threads",
+    3,
+    "--outgroup",
+    "t1,t2",
+    "--bs-metric",
+    "fbp",
+    "--tree",
+    "rand{10}",
+    "--bs-trees",
+    "autoMRE",
+    "--tree-constraint",
+    "/in/backbone.tre",
+    "--tree-constraint",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > SC alternate 1`] = `
+[
+  [
+    "--check",
+    "--model",
+    "/in/RAxML_pin.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > SC bare 1`] = `
+[
+  [
+    "--check",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > SC full 1`] = `
+[
+  [
+    "--check",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--msa",
+    "/in/a.fasta",
+    "--tree-constraint",
+    "/in/backbone.tre",
+    "--tree-constraint",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > TI alternate 1`] = `
+[
+  [
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/RAxML_pin.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--tree",
+    "rand{1}",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > TI bare 1`] = `
+[
+  [
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "GTR+G",
+    "--prefix",
+    "/out/pin",
+    "--seed",
+    123,
+    "--tree",
+    "rand{1}",
+  ],
+]
+`;
+
+exports[`RAxML-NG args > TI full 1`] = `
+[
+  [
+    "--msa",
+    "/in/a.fasta",
+    "--model",
+    "/in/parts.txt",
+    "--prefix",
+    "/out/pin",
+    "--threads",
+    3,
+    "--seed",
+    123,
+    "--outgroup",
+    "t1,t2",
+    "--tree",
+    "rand{10}",
+    "--tree-constraint",
+    "/in/backbone.tre",
+    "--tree-constraint",
+    "/in/multifurcating.tre",
+  ],
+]
+`;
+
+exports[`args for an analysis the builder does not know > RAxML 1`] = `[]`;
+
+exports[`args for an analysis the builder does not know > RAxML-NG 1`] = `[]`;
+
+exports[`args, branches the three variants miss > RAxML FT alternate with branch lengths 1`] = `
+[
+  [
+    "-f",
+    "E",
+    "-p",
+    123,
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-t",
+    "/out/RAxML_fastTree.pin.tre",
+    "-n",
+    "brL.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "ASC_MULTIGAMMA",
+    "--asc-corr=lewis",
+    "-K",
+    "MK",
+    "-t",
+    "/out/RAxML_result.brL.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+    "-q",
+    "/in/RAxML_pin.part.txt",
+  ],
+]
+`;
+
+exports[`args, branches the three variants miss > RAxML FT with branch lengths and SH-like values on a default partition 1`] = `
+[
+  [
+    "-f",
+    "E",
+    "-p",
+    123,
+    "-m",
+    "GTRGAMMA",
+    "-O",
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "-t",
+    "/out/RAxML_fastTree.pin.tre",
+    "-n",
+    "brL.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "-t",
+    "/out/RAxML_result.brL.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`args, branches the three variants miss > RAxML ML with SH-like values on a default partition 1`] = `
+[
+  [
+    "-f",
+    "d",
+    "-m",
+    "GTRGAMMA",
+    "-N",
+    1,
+    "-O",
+    "-p",
+    123,
+    "-n",
+    "pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+  [
+    "-f",
+    "e",
+    "-m",
+    "GTRGAMMA",
+    "-t",
+    "/out/RAxML_bestTree.pin.tre",
+    "-n",
+    "sh.pin.tre",
+    "-s",
+    "/in/a.fasta",
+    "-w",
+    "/out",
+  ],
+]
+`;
+
+exports[`args, branches the three variants miss > RAxML-NG AS with two alignments 1`] = `
+[
+  [
+    "--ancestral",
+    "--msa",
+    "/out/RAxML_pin_concat.txt",
+    "--model",
+    "/out/RAxML_pin_concat.part.txt",
+    "--prefix",
+    "/out/pin",
+    "--tree",
+  ],
+]
+`;
+
+exports[`command and settings file > ASTRAL > command 1`] = `"java -jar astral.5.7.8.jar -i /in/genes.tre -o /out/ASTRAL_pin.tre"`;
+
+exports[`command and settings file > ASTRAL > settingsFileContent 1`] = `
+"The analysis was run using raxmlGUI 2.0 (version 2.0.0) as follows:
+Analysis: ML + rapid bootstrap
+Binary: astral.5.7.8.jar version 5.7.8
+Results saved to: /out
+RAxML was called with these arguments:
+1.) -i /in/genes.tre -o /out/ASTRAL_pin.tre
+"
+`;
+
+exports[`command and settings file > ModelTest-NG > command 1`] = `"modeltest-ng -d nt -i /in/a.fasta -o /out/RAxML_GUI_ModelTest_pin --force -p 3"`;
+
+exports[`command and settings file > ModelTest-NG > settingsFileContent 1`] = `
+"The analysis was run using raxmlGUI 2.0 (version 2.0.0) as follows:
+Analysis: ML + rapid bootstrap
+Binary: modeltest-ng version 0.1.7
+Results saved to: /out
+RAxML was called with these arguments:
+1.) -d nt -i /in/a.fasta -o /out/RAxML_GUI_ModelTest_pin --force -p 3
+"
+`;
+
+exports[`command and settings file > RAxML > command 1`] = `
+"raxmlHPC-PTHREADS-SSE3 -T 3 -b 123 -m GTRGAMMA --HKY85 -k -p 123 -N 200 -O -o t1,t2 -n pinR.tre -s /in/a.fasta -w /out -q /in/parts.txt -r /in/backbone.tre -g /in/multifurcating.tre &&\\
+raxmlHPC-PTHREADS-SSE3 -T 3 -f d -m GTRGAMMA --HKY85 -p 123 -N 10 -O -o t1,t2 -n pinB.tre -s /in/a.fasta -w /out -q /in/parts.txt -r /in/backbone.tre -g /in/multifurcating.tre &&\\
+raxmlHPC-PTHREADS-SSE3 -T 3 -f b -t /out/RAxML_bestTree.pinB.tre -z /out/RAxML_bootstrap.pinR.tre -m GTRGAMMA --HKY85 -O -n pin.tre -s /in/a.fasta -w /out"
+`;
+
+exports[`command and settings file > RAxML > settingsFileContent 1`] = `
+"The analysis was run using raxmlGUI 2.0 (version 2.0.0) as follows:
+Analysis: ML + thorough bootstrap
+Binary: raxmlHPC-PTHREADS-SSE3 version 8.2.12
+Results saved to: /out
+RAxML was called with these arguments:
+1.) -T 3 -b 123 -m GTRGAMMA --HKY85 -k -p 123 -N 200 -O -o t1,t2 -n pinR.tre -s /in/a.fasta -w /out -q /in/parts.txt -r /in/backbone.tre -g /in/multifurcating.tre
+2.) -T 3 -f d -m GTRGAMMA --HKY85 -p 123 -N 10 -O -o t1,t2 -n pinB.tre -s /in/a.fasta -w /out -q /in/parts.txt -r /in/backbone.tre -g /in/multifurcating.tre
+3.) -T 3 -f b -t /out/RAxML_bestTree.pinB.tre -z /out/RAxML_bootstrap.pinR.tre -m GTRGAMMA --HKY85 -O -n pin.tre -s /in/a.fasta -w /out
+"
+`;
+
+exports[`command and settings file > RAxML-NG > command 1`] = `"raxml-ng --all --msa /in/a.fasta --model /in/parts.txt --prefix /out/pin --seed 123 --outgroup t1,t2 --bs-metric tbe --tree rand{10} --bs-trees autoMRE --tree-constraint /in/backbone.tre --tree-constraint /in/multifurcating.tre"`;
+
+exports[`command and settings file > RAxML-NG > settingsFileContent 1`] = `
+"The analysis was run using raxmlGUI 2.0 (version 2.0.0) as follows:
+Analysis: ML + transfer bootstrap expectation + consensus
+Binary: raxml-ng version 1.2.2
+Results saved to: /out
+RAxML was called with these arguments:
+1.) --all --msa /in/a.fasta --model /in/parts.txt --prefix /out/pin --seed 123 --outgroup t1,t2 --bs-metric tbe --tree rand{10} --bs-trees autoMRE --tree-constraint /in/backbone.tre --tree-constraint /in/multifurcating.tre
+"
+`;
