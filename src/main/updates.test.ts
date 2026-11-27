@@ -36,7 +36,10 @@ function updater( download: () => Promise<unknown> = () => Promise.resolve( [] )
 }
 
 function fakeWindow() {
-  return { setProgressBar: vi.fn<( value: number ) => void>() };
+  return {
+    setProgressBar: vi.fn<( value: number ) => void>(),
+    webContents: { send: vi.fn<( channel: string, payload: { status: string } ) => void>() },
+  };
 }
 
 function progress( percent: number ) {
@@ -59,6 +62,9 @@ async function startDownload( options: {
   const calls: string[] = [];
   win?.setProgressBar.mockImplementation( ( value ) => {
     calls.push( `bar ${value}` );
+  } );
+  win?.webContents.send.mockImplementation( ( _channel, payload ) => {
+    calls.push( `send ${payload.status}` );
   } );
   const choice = Promise.resolve( { response: 0 } );
   const dialog = {
@@ -112,6 +118,21 @@ it( 'Yes downloads the update and shows its progress on the icon', async () => {
   expect( dialog.showErrorBox ).not.toHaveBeenCalled();
 } );
 
+it( 'every state change is sent to the page', async () => {
+  const { updates, win } = await startDownload();
+  updates.emit( 'download-progress', progress( 42 ) );
+  updates.emit( 'download-progress', progress( 10 ) );
+  updates.emit( 'update-downloaded' );
+  updates.emit( 'error', new Error( 'network down' ) );
+  expect( win?.webContents.send.mock.calls ).toEqual( [
+    ['UPDATE_DOWNLOAD', { id: 'update', status: 'connecting' }],
+    ['UPDATE_DOWNLOAD', { id: 'update', status: 'downloading', percent: 42 }],
+    ['UPDATE_DOWNLOAD', { id: 'update', status: 'restarted', percent: 10 }],
+    ['UPDATE_DOWNLOAD', { id: 'update', status: 'done' }],
+    ['UPDATE_DOWNLOAD', { id: 'update', status: 'idle' }],
+  ] );
+} );
+
 it( 'the download-progress listener is registered before any download starts', () => {
   const updates = updater();
   listenForUpdates( updates as unknown as AppUpdater, {} as Dialog, () => null );
@@ -159,7 +180,7 @@ it( 'an error mid-download resets the state, clears the bar, then shows the erro
   calls.length = 0;
   updates.emit( 'error', new Error( 'network down' ) );
   expect( getUpdateDownload() ).toEqual( { status: 'idle' } );
-  expect( calls ).toEqual( ['bar -1', 'error box'] );
+  expect( calls ).toEqual( ['send idle', 'bar -1', 'error box'] );
   expect( logs() ).toEqual( [
     'Update available.',
     'Update download started.',

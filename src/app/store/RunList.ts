@@ -1,5 +1,6 @@
 import { observable, computed, action, makeObservable } from 'mobx';
 import type { StateReport } from '../../main/getActiveState';
+import type { UpdateDownload } from '../../common/rendererBridge';
 import Run from './Run';
 import AppStore from './AppStore';
 import { runEvents } from './StoreBase';
@@ -23,6 +24,8 @@ class RunList extends AppStore {
       deleteActive: action,
       onError: action,
       onUnhandledError: action,
+      updateDownload: observable,
+      onUpdateDownload: action,
       onBackboneConstraint: action,
       onMultifurcatingConstraint: action,
     } );
@@ -77,6 +80,12 @@ class RunList extends AppStore {
     this.error = error;
   };
 
+  updateDownload: UpdateDownload = { status: 'idle' };
+
+  onUpdateDownload = ( download: UpdateDownload ): void => {
+    this.updateDownload = download;
+  };
+
   onBackboneConstraint = (): void => {
     this.activeRun.useBackboneConstraint =
       !this.activeRun.useBackboneConstraint;
@@ -89,6 +98,7 @@ class RunList extends AppStore {
 
   listen = (): void => {
     this.subscribe( runEvents.onUnhandledError, this.onUnhandledError );
+    this.subscribe( runEvents.onUpdateDownload, this.onUpdateDownload );
     this.subscribe( runEvents.onAddRun, this.addRun );
     this.subscribe( runEvents.onRemoveRun, this.deleteActive );
     this.subscribe( runEvents.onToggleBackboneConstraint, this.onBackboneConstraint );

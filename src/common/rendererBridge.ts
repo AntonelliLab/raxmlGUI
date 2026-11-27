@@ -31,6 +31,8 @@ export type UpdateDownload =
   | { status: 'restarted'; percent: number }
   | { status: 'done' };
 
+export type UpdateDownloadPayload = UpdateDownload & { id: string };
+
 // An event payload the page does not read yet; the leaf that reads it tightens it.
 type Listener = ( payload: unknown ) => void;
 type Unsubscribe = () => void;
@@ -76,6 +78,7 @@ export interface RendererBridge {
   onToggleBackboneConstraint: ( listener: Listener ) => Unsubscribe;
   onToggleMultifurcatingConstraint: ( listener: Listener ) => Unsubscribe;
   onUnhandledError: ( listener: Listener ) => Unsubscribe;
+  onUpdateDownload: ( listener: ( payload: UpdateDownloadPayload ) => void ) => Unsubscribe;
   getPathForFile: ( file: File ) => string;
 }
 

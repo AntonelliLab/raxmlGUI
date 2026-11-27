@@ -40,9 +40,10 @@ import {
   TOGGLE_MULTIFURCATING_CONSTRAINT,
   TREE_SELECT,
   UNHANDLED_ERROR,
+  UPDATE_DOWNLOAD,
   WRITE_FILE,
 } from '../constants/ipc';
-import type { RendererBridge, HostInfo } from '../common/rendererBridge';
+import type { RendererBridge, HostInfo, UpdateDownloadPayload } from '../common/rendererBridge';
 import type { CheckOutputArgs } from '../main/checkOutput';
 import type { StateReport } from '../main/getActiveState';
 import type { StartRunPayload, RunFinishedPayload, RunErrorPayload } from '../main/startRun';
@@ -190,6 +191,9 @@ const rendererBridge = {
   },
   onUnhandledError( listener: ( payload: unknown ) => void ) {
     return onEvent( UNHANDLED_ERROR, listener );
+  },
+  onUpdateDownload( listener: ( payload: UpdateDownloadPayload ) => void ) {
+    return onEvent( UPDATE_DOWNLOAD, listener );
   },
   getPathForFile( file: File ): string {
     return webUtils.getPathForFile( file );

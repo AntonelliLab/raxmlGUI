@@ -2,6 +2,7 @@ import log from 'electron-log';
 import type { BrowserWindow, Dialog } from 'electron';
 import type { AppUpdater, ProgressInfo } from 'electron-updater';
 import type { UpdateDownload } from '../common/rendererBridge';
+import { UPDATE_DOWNLOAD } from '../constants/ipc';
 
 type WindowGetter = () => BrowserWindow | null;
 
@@ -35,7 +36,9 @@ export function applyUpdateDownloadBar( win: BrowserWindow | null ): void {
 
 function setDownload( next: UpdateDownload ): void {
   download = next;
-  applyUpdateDownloadBar( getWindow() );
+  const win = getWindow();
+  win?.webContents.send( UPDATE_DOWNLOAD, { id: 'update', ...next } );
+  applyUpdateDownloadBar( win );
 }
 
 // checkForUpdates rejects as well as emitting 'error'; the listener already reports it,

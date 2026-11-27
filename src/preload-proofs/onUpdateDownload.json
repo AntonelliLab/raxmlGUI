@@ -1,0 +1,11 @@
+{
+  "key": "updateDownload",
+  "method": "onUpdateDownload",
+  "channel": "UPDATE_DOWNLOAD",
+  "subscribe": true,
+  "result": {
+    "id": "update",
+    "status": "downloading",
+    "percent": 42
+  }
+}
