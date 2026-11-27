@@ -12,7 +12,8 @@ const stemOf = ( baseName: string ): string => {
 const parsed = ( filePath: string ): { base: string; name: string; dir: string } => {
   const sep = sepOf( filePath );
   const chunks = filePath.split( /[/\\]/ );
-  const baseName = chunks.pop();
+  // split() always returns at least one chunk, so pop() never yields undefined.
+  const baseName = chunks.pop() ?? '';
   let directory = '';
   if ( chunks.length === 1 && chunks[0] === '' ) {
     directory = sep;

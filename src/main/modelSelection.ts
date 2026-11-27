@@ -119,9 +119,12 @@ export async function runModelSelection(
     // Each '> [program]' is written three times, for BIC, AIC and AICc respectively. Use AICc.
     const cmdRaxml = commands.filter( ( cmd ) => cmd.startsWith( '  > raxmlHPC-SSE3' ) )[2];
     const cmdRaxmlNG = commands.filter( ( cmd ) => cmd.startsWith( '  > raxml-ng' ) )[2];
-    const modelRaxml = /-m (\S+)/.exec( cmdRaxml )[1];
+    const modelRaxml = /-m (\S+)/.exec( cmdRaxml )?.[1];
     const extraFlag = /--(\S+)/.exec( cmdRaxml )?.[0];
-    const modelRaxmlNG = /--model (\S+)/.exec( cmdRaxmlNG )[1];
+    const modelRaxmlNG = /--model (\S+)/.exec( cmdRaxmlNG )?.[1];
+    if ( !modelRaxml || !modelRaxmlNG ) {
+      throw new Error( 'No best-model command in modeltest-ng output' );
+    }
     console.log( `-> raxml: ${modelRaxml}, extraFlag: ${extraFlag}, raxml-ng: ${modelRaxmlNG}` );
     send( event, ipc.ALIGNMENT_MODEL_SELECTION_SUCCESS, {
       id,
