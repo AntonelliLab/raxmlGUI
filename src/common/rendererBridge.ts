@@ -23,6 +23,14 @@ export interface HostInfo {
   cpuModel: string;
 }
 
+export type UpdateDownload =
+  | { status: 'idle' }
+  | { status: 'connecting' }
+  | { status: 'downloading'; percent: number }
+  // a differential download fell back to a full one, so the percent dropped
+  | { status: 'restarted'; percent: number }
+  | { status: 'done' };
+
 // An event payload the page does not read yet; the leaf that reads it tightens it.
 type Listener = ( payload: unknown ) => void;
 type Unsubscribe = () => void;
