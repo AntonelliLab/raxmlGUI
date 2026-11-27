@@ -42,6 +42,15 @@ export function stopRun( id: TrackedId ): void {
   console.log( `Killed RAxML process ${id}` );
 }
 
+export function hasRuns(): boolean {
+  return Object.keys( processes ).length > 0;
+}
+
+// The app has a single window, so every tracked run belongs to it.
+export function stopAllRuns(): void {
+  Object.keys( processes ).forEach( cancelRun );
+}
+
 export function cancelRun( id: TrackedId ): void {
   const key = String( id );
   generation[key] = ( generation[key] || 0 ) + 1;
